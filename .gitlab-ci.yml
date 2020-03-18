@@ -20,20 +20,14 @@ build:
     paths:
       - public/
 
-
 deploy-dev:
   stage: deploy-dev
-  image: python:3.6
+  image: coxauto/aws-ebcli
   environment:
-    name: staging
-    url: http://ttc-admin.devserver.london
+   name: s3-dev
+   url: http://ttc-admin.devserver.london
   only:
-  - dev
-  variables:
-    EB_ENV: "admin-react"
+    - dev
   script:
-  - pip install awscli
-  - apt-get update
-  - apt-get install -y zip
-  - chmod +x ./deploy.sh
-  - ./deploy.sh
+    - aws eb deploy
+
