@@ -1,5 +1,4 @@
 stages:
-  - build
   - deploy-dev
 
 # test:
@@ -9,16 +8,16 @@ stages:
 #     - yarn
 #     - yarn run test
 
-build:
-  stage: build
-  image: node:10
-  script: 
-    - yarn  
-    - yarn run build
-  artifacts:
-    expire_in: 3d
-    paths:
-      - /
+# build:
+#   stage: build
+#   image: node:10
+#   script: 
+#     - yarn  
+#     - yarn run build
+#   artifacts:
+#     expire_in: 3d
+#     paths:
+#       - /
 
 deploy-dev:
   stage: deploy-dev
@@ -31,6 +30,7 @@ deploy-dev:
   only:
     - dev
   script:
+    - apt-get -y install git
     - pip install awsebcli --upgrade --user
     - export PATH=~/.local/bin/:$PATH
     - eb deploy react-admin
