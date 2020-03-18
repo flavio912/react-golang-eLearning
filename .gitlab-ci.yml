@@ -1,0 +1,31 @@
+stages:
+  - test
+  - build
+  - deploy-dev
+
+test:
+  stage: test
+  image: node:10
+  script:
+    - yarn
+    - yarn run test
+
+build:
+  stage: build
+  image: node:10
+  script: 
+    - yarn  
+    - yarn run build
+
+deploy-dev:
+  stage: deploy-dev
+  image: cgswong/aws
+  environment:
+   name: s3-dev
+   url: http://ttc-admin.devserver.london
+  image: cgswong/aws
+  only:
+    - dev
+  script:
+    - aws s3 sync public/ s3://ttc-admin.devserver.london --acl public-read --cache-control max-age=0,public
+
