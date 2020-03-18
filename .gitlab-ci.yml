@@ -26,6 +26,8 @@ deploy-dev:
   environment:
    name: s3-dev
    url: http://ttc-admin.devserver.london
+  variables:
+    EB_ENV: "react-admin"
   only:
     - dev
   script:
