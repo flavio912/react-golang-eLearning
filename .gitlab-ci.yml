@@ -2,12 +2,12 @@ stages:
   - build
   - deploy-dev
 
-test:
-  stage: test
-  image: node:10
-  script:
-    - yarn
-    - yarn run test
+# test:
+#   stage: test
+#   image: node:10
+#   script:
+#     - yarn
+#     - yarn run test
 
 build:
   stage: build
