@@ -22,7 +22,7 @@ build:
 
 deploy-dev:
   stage: deploy-dev
-  image: coxauto/aws-ebcli
+  image: python:3.8-slim-buster
   environment:
    name: s3-dev
    url: http://ttc-admin.devserver.london
@@ -31,5 +31,6 @@ deploy-dev:
   only:
     - dev
   script:
-    - aws eb deploy
+    - pip install awsebcli --upgrade --user
+    - eb deploy
 
