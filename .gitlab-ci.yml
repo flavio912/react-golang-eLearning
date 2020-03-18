@@ -15,16 +15,25 @@ build:
   script: 
     - yarn  
     - yarn run build
+  artifacts:
+    expire_in: 3d
+    paths:
+      - public/
+
 
 deploy-dev:
   stage: deploy-dev
-  image: cgswong/aws
+  image: python:3.6
   environment:
-   name: s3-dev
-   url: http://ttc-admin.devserver.london
-  image: cgswong/aws
+    name: staging
+    url: http://ttc-admin.devserver.london
   only:
-    - dev
+  - dev
+  variables:
+    EB_ENV: "admin-react"
   script:
-    - aws s3 sync public/ s3://ttc-admin.devserver.london --acl public-read --cache-control max-age=0,public
-
+  - pip install awscli
+  - apt-get update
+  - apt-get install -y zip
+  - chmod +x ./deploy.sh
+  - ./deploy.sh
