@@ -32,5 +32,6 @@ deploy-dev:
     - dev
   script:
     - pip install awsebcli --upgrade --user
+    - echo 'export PATH=~/.local/bin/:$PATH' >> $BASH_ENV
     - eb deploy
 
