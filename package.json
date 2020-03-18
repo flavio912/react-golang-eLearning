@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "start": "react-scripts start",
-    "startProd": "serve -s build -p 8081",
+    "startProd": "serve -s build -l tcp://0.0.0.0:80",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
