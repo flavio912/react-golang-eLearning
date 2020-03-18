@@ -31,7 +31,6 @@ deploy-dev:
     - dev
   script:
     - apt-get update
-    - apt-get upgrade
     - apt-get -y install git
     - pip install awsebcli --upgrade --user
     - export PATH=~/.local/bin/:$PATH
