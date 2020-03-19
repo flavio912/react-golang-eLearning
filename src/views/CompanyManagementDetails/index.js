@@ -31,6 +31,7 @@ function CompanyManagementDetails({ match, history }) {
   const { id, tab: currentTab } = match.params;
   const tabs = [
     { value: 'summary', label: 'Summary' },
+    { value: 'Courses', label: 'Courses' },
     { value: 'users', label: 'Users' },
     { value: 'invoices', label: 'Invoices' },
     { value: 'logs', label: 'Logs' }

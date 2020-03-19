@@ -6,6 +6,7 @@ import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
 import DashboardAnalyticsView from './views/DashboardAnalytics';
+import TutorsView from './views/TutorsList';
 import DashboardDefaultView from './views/DashboardDefault';
 import OverviewView from './views/Overview';
 import PresentationView from './views/Presentation';
@@ -14,7 +15,7 @@ export default [
   {
     path: '/',
     exact: true,
-    component: () => <Redirect to="/presentation" />
+    component: () => <Redirect to="/dashboard" />
   },
   {
     path: '/auth',
@@ -24,11 +25,6 @@ export default [
         path: '/auth/login',
         exact: true,
         component: lazy(() => import('src/views/Login'))
-      },
-      {
-        path: '/auth/register',
-        exact: true,
-        component: lazy(() => import('src/views/Register'))
       },
       {
         component: () => <Redirect to="/errors/error-404" />
@@ -69,74 +65,9 @@ export default [
         component: lazy(() => import('src/views/Calendar'))
       },
       {
-        path: '/changelog',
-        exact: true,
-        component: lazy(() => import('src/views/Changelog'))
-      },
-      {
-        path: '/chat',
-        exact: true,
-        component: lazy(() => import('src/views/Chat'))
-      },
-      {
-        path: '/chat/:id',
-        exact: true,
-        component: lazy(() => import('src/views/Chat'))
-      },
-      {
-        path: '/components/buttons',
-        exact: true,
-        component: lazy(() => import('src/views/Buttons'))
-      },
-      {
-        path: '/components/cards',
-        exact: true,
-        component: lazy(() => import('src/views/Cards'))
-      },
-      {
-        path: '/components/chips',
-        exact: true,
-        component: lazy(() => import('src/views/Chips'))
-      },
-      {
-        path: '/components/forms',
-        exact: true,
-        component: lazy(() => import('src/views/Forms'))
-      },
-      {
-        path: '/components/lists',
-        exact: true,
-        component: lazy(() => import('src/views/Lists'))
-      },
-      {
-        path: '/components/modals',
-        exact: true,
-        component: lazy(() => import('src/views/Modals'))
-      },
-      {
-        path: '/components/typography',
-        exact: true,
-        component: lazy(() => import('src/views/Typography'))
-      },
-      {
         path: '/dashboard',
         exact: true,
         component: DashboardDefaultView
-      },
-      {
-        path: '/invoices/:id',
-        exact: true,
-        component: lazy(() => import('src/views/InvoiceDetails'))
-      },
-      {
-        path: '/kanban-board',
-        exact: true,
-        component: lazy(() => import('src/views/KanbanBoard'))
-      },
-      {
-        path: '/mail',
-        exact: true,
-        component: lazy(() => import('src/views/Mail'))
       },
       {
         path: '/companies',
@@ -154,11 +85,6 @@ export default [
         component: lazy(() => import('src/views/CompanyManagementDetails'))
       },
       {
-        path: '/companies/projects',
-        exact: true,
-        component: lazy(() => import('src/views/ProjectManagementList'))
-      },
-      {
         path: '/companies/orders',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementList'))
@@ -169,14 +95,14 @@ export default [
         component: lazy(() => import('src/views/OrderManagementDetails'))
       },
       {
+        path: '/tutors',
+        exact: true,
+        component: TutorsView
+      },
+      {
         path: '/overview',
         exact: true,
         component: OverviewView
-      },
-      {
-        path: '/presentation',
-        exact: true,
-        component: PresentationView
       },
       {
         path: '/profile/:id',

@@ -11,7 +11,7 @@ const useStyles = makeStyles(() => ({
 function Header({ className, ...rest }) {
   const classes = useStyles();
   const customer = {
-    name: 'FexEx'
+    name: 'FedEx'
   };
 
   return (

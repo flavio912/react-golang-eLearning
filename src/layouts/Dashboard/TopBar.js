@@ -237,15 +237,6 @@ function TopBar({ onOpenNavBarMobile, className, ...rest }) {
             </ClickAwayListener>
           </Popper>
         </Hidden>
-        <IconButton
-          className={classes.chatButton}
-          color="inherit"
-          onClick={handleChatBarOpen}
-        >
-          <Badge badgeContent={6} color="secondary">
-            <PeopleIcon />
-          </Badge>
-        </IconButton>
         <Hidden mdDown>
           <IconButton
             className={classes.notificationsButton}

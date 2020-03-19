@@ -7,7 +7,7 @@ import FilterListIcon from '@material-ui/icons/FilterList';
 import Search from './Search';
 import Filter from './Filter';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     display: 'flex',
     alignItems: 'center',
@@ -27,9 +27,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function SearchBar({
-  onFilter, onSearch, className, ...rest
-}) {
+function SearchBar({ onFilter, onSearch, className, ...rest }) {
   const classes = useStyles();
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -49,24 +47,22 @@ function SearchBar({
       spacing={3}
     >
       <Grid item>
-        <Search
-          className={classes.search}
-          onSearch={onSearch}
-        />
+        <Search className={classes.search} onSearch={onSearch} />
       </Grid>
       <Grid item>
-        <Button
-          className={classes.filterButton}
-          color="primary"
-          onClick={handleFilterOpen}
-          size="small"
-          variant="outlined"
-        >
-          <FilterListIcon className={classes.filterIcon} />
-          {' '}
-Show filters
-        </Button>
+        {onFilter && (
+          <Button
+            className={classes.filterButton}
+            color="primary"
+            onClick={handleFilterOpen}
+            size="small"
+            variant="outlined"
+          >
+            <FilterListIcon className={classes.filterIcon} /> Show filters
+          </Button>
+        )}
       </Grid>
+
       <Filter
         onClose={handleFilterClose}
         onFilter={onFilter}

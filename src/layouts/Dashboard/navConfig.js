@@ -19,12 +19,16 @@ import PersonIcon from '@material-ui/icons/PersonOutlined';
 import ReceiptIcon from '@material-ui/icons/ReceiptOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import ViewConfigIcon from '@material-ui/icons/ViewComfy';
+import LibraryBooks from '@material-ui/icons/LibraryBooks';
+import Class from '@material-ui/icons/Class';
+import AssignmentInd from '@material-ui/icons/AssignmentInd';
+import Layers from '@material-ui/icons/Layers';
 import ListIcon from '@material-ui/icons/List';
 import Label from 'src/components/Label';
 
 export default [
   {
-    subheader: 'Pages',
+    subheader: 'Management',
     items: [
       {
         title: 'Dashboard',
@@ -37,203 +41,59 @@ export default [
         icon: BarChartIcon
       },
       {
-        title: 'Customer Details',
-        href: '/companies/1/summary'
-      },
-      {
-        title: 'Projects',
-        href: '/management/projects'
-      },
-      {
-        title: 'Orders',
-        href: '/management/orders'
-      },
-      {
-        title: 'Order Details',
-        href: '/management/orders/1'
-      },
-      {
-        title: 'Social Feed',
-        href: '/social-feed',
-        icon: PeopleIcon
-      },
-      {
-        title: 'Profile',
-        href: '/profile',
-        icon: PersonIcon,
-        items: [
-          {
-            title: 'Timeline',
-            href: '/profile/1/timeline'
-          },
-          {
-            title: 'Connections',
-            href: '/profile/1/connections'
-          },
-          {
-            title: 'Projects',
-            href: '/profile/1/projects'
-          },
-          {
-            title: 'Reviews',
-            href: '/profile/1/reviews'
-          }
-        ]
-      },
-      {
-        title: 'Project',
-        href: '/projects',
-        icon: FolderIcon,
-        items: [
-          {
-            title: 'Browse',
-            href: '/projects'
-          },
-          {
-            title: 'Create',
-            href: '/projects/create'
-          },
-          {
-            title: 'Overview',
-            href: '/projects/1/overview'
-          },
-          {
-            title: 'Files',
-            href: '/projects/1/files'
-          },
-          {
-            title: 'Activity',
-            href: '/projects/1/activity'
-          },
-          {
-            title: 'Subscribers',
-            href: '/projects/1/subscribers'
-          }
-        ]
-      },
-      {
-        title: 'Invoice',
-        href: '/invoices/1',
-        icon: ReceiptIcon
-      },
-      {
         title: 'Calendar',
         href: '/calendar',
         icon: CalendarTodayIcon,
         label: () => <Label color={colors.green[500]}>New</Label>
-      },
-      {
-        title: 'Settings',
-        href: '/settings',
-        icon: SettingsIcon,
-        items: [
-          {
-            title: 'General',
-            href: '/settings/general'
-          },
-          {
-            title: 'Subscription',
-            href: '/settings/subscription'
-          },
-          {
-            title: 'Notifications',
-            href: '/settings/notifications'
-          },
-          {
-            title: 'Security',
-            href: '/settings/security'
-          }
-        ]
-      },
-      {
-        title: 'Authentication',
-        href: '/auth',
-        icon: LockOpenIcon,
-        items: [
-          {
-            title: 'Login',
-            href: '/auth/login'
-          },
-          {
-            title: 'Register',
-            href: '/auth/register'
-          }
-        ]
-      },
-      {
-        title: 'Errors',
-        href: '/errors',
-        icon: ErrorIcon,
-        items: [
-          {
-            title: 'Error 401',
-            href: '/errors/error-401'
-          },
-          {
-            title: 'Error 404',
-            href: '/errors/error-404'
-          },
-          {
-            title: 'Error 500',
-            href: '/errors/error-500'
-          }
-        ]
       }
     ]
   },
   {
-    subheader: 'Support',
+    subheader: 'Courses',
     items: [
       {
-        title: 'Components',
-        href: '/components',
-        icon: ViewConfigIcon,
+        title: 'Online Courses',
+        href: '/courses',
+        icon: LibraryBooks,
         items: [
           {
-            title: 'Buttons',
-            href: '/components/buttons'
+            title: 'Courses',
+            href: '/courses'
           },
           {
-            title: 'Cards',
-            href: '/components/cards'
+            title: 'Modules',
+            href: '/courses'
           },
           {
-            title: 'Chips',
-            href: '/components/chips'
-          },
-          {
-            title: 'Lists',
-            href: '/components/lists'
-          },
-          {
-            title: 'Forms',
-            href: '/components/forms'
-          },
-          {
-            title: 'Modals',
-            href: '/components/modals'
-          },
-          {
-            title: 'Typography',
-            href: '/components/typography'
+            title: 'Lessons',
+            href: '/courses'
           }
         ]
       },
       {
-        title: 'Presentation',
-        href: '/presentation',
-        icon: PresentToAllIcon
+        title: 'Classroom Courses',
+        href: '/classroom-courses',
+        icon: Class
       },
       {
-        title: 'Getting started',
-        href: '/getting-started',
-        icon: CodeIcon
+        title: 'Tutors',
+        href: '/tutors',
+        icon: AssignmentInd
+      }
+    ]
+  },
+  {
+    subheader: 'Page Settings',
+    items: [
+      {
+        title: 'Page Editor',
+        href: '/page-editor',
+        icon: Layers
       },
       {
-        title: 'Changelog',
-        href: '/changelog',
-        icon: ListIcon,
-        label: () => <Label color={colors.blue['500']}>v1.3.0</Label>
+        title: 'Global Settings',
+        href: '/settings',
+        icon: SettingsIcon
       }
     ]
   }

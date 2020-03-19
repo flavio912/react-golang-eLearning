@@ -26,6 +26,7 @@ import getInitials from 'src/utils/getInitials';
 import ReviewStars from 'src/components/ReviewStars';
 import GenericMoreButton from 'src/components/GenericMoreButton';
 import TableEditBar from 'src/components/TableEditBar';
+import Label from 'src/components/Label';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -125,6 +126,7 @@ function Results({ className, companies, ...rest }) {
                     <TableCell>Name</TableCell>
                     <TableCell>No. Delegates</TableCell>
                     <TableCell>No. Managers</TableCell>
+                    <TableCell>Payment Type</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
@@ -163,6 +165,11 @@ function Results({ className, companies, ...rest }) {
                       </TableCell>
                       <TableCell>{company.noDelegates}</TableCell>
                       <TableCell>{company.noManagers}</TableCell>
+                      <TableCell>
+                        <Label color={'rgb(119, 125, 156)'}>
+                          {company.paymentType}
+                        </Label>
+                      </TableCell>
                       <TableCell align="right">
                         <Button
                           color="primary"

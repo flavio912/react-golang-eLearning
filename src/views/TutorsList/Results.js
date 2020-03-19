@@ -73,39 +73,12 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Users({ className, ...rest }) {
+function Results({ className, tutors, ...rest }) {
   const classes = useStyles();
 
   const [toggle, setToggle] = useState('all');
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const exampleUsers = [
-    {
-      fullName: 'Tom Emmerson',
-      userId: 'tom_emmerson',
-      roles: ['Manager'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    }
-  ];
 
   const handleChangePage = (event, page) => {
     setPage(page);
@@ -117,47 +90,22 @@ function Users({ className, ...rest }) {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Managers and Delegates" />
-      <Divider />
-      <div className={classes.searchRow}>
-        <div className={classes.search}>
-          <SearchIcon className={classes.searchIcon} color="inherit" />
-          <Input
-            className={classes.searchInput}
-            disableUnderline
-            placeholder="Search users"
-          />
-        </div>
-        <ToggleButtonGroup
-          exclusive
-          value={toggle}
-          onChange={(_, value) => {
-            setToggle(value);
-          }}
-        >
-          <ToggleButton value="all">Show All</ToggleButton>
-          <ToggleButton value="manager">Managers Only</ToggleButton>
-        </ToggleButtonGroup>
-      </div>
-      <Divider />
       <Table>
         <TableHead>
           <TableRow>
             <TableCell>User</TableCell>
-            <TableCell>Roles</TableCell>
-            <TableCell>Valid Certificates</TableCell>
-            <TableCell>Expiring Certificates</TableCell>
+            <TableCell>CIN Number</TableCell>
             <TableCell>Last Login</TableCell>
             <TableCell>Created At</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {exampleUsers.map(user => (
-            <TableRow key={user.userId}>
+          {tutors.map(tutor => (
+            <TableRow key={tutor.uuid}>
               <TableCell>
                 <div className={classes.nameCell}>
-                  <Avatar className={classes.avatar} src={user.logo}>
-                    {getInitials(user.fullName)}
+                  <Avatar className={classes.avatar} src={tutor.logo}>
+                    {getInitials(tutor.fullName)}
                   </Avatar>
                   <div>
                     <Link
@@ -166,23 +114,17 @@ function Users({ className, ...rest }) {
                       to="/companies/1"
                       variant="h6"
                     >
-                      {user.fullName}
+                      {tutor.fullName}
                     </Link>
-                    <div>{user.email}</div>
+                    <div>{tutor.email}</div>
                   </div>
                 </div>
               </TableCell>
+              <TableCell>{tutor.cin}</TableCell>
               <TableCell>
-                {user.roles.map((role, index) => (
-                  <Label style={{ marginRight: 5 }} key={index}>
-                    {role}
-                  </Label>
-                ))}
+                {moment(tutor.lastLogin.date).format('LLL')}
               </TableCell>
-              <TableCell>{user.noValidCerts}</TableCell>
-              <TableCell>{user.noExpiringCerts}</TableCell>
-              <TableCell>{moment(user.lastLogin.date).format('LLL')}</TableCell>
-              <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+              <TableCell>{moment(tutor.createdAt).format('LLL')}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -190,7 +132,7 @@ function Users({ className, ...rest }) {
       <CardActions className={classes.actions}>
         <TablePagination
           component="div"
-          count={exampleUsers.length}
+          count={tutors.length}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           page={page}
@@ -202,8 +144,9 @@ function Users({ className, ...rest }) {
   );
 }
 
-Users.propTypes = {
-  className: PropTypes.string
+Results.propTypes = {
+  className: PropTypes.string,
+  tutors: PropTypes.object
 };
 
-export default Users;
+export default Results;
