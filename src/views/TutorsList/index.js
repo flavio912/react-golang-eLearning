@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import uuid from 'uuid/v1';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
-import axios from 'src/utils/axios';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
@@ -21,7 +19,7 @@ const useStyles = makeStyles(theme => ({
 function TutorsList() {
   const classes = useStyles();
 
-  const handleFilter = () => {};
+  // const handleFilter = () => {};
 
   const handleSearch = () => {};
 

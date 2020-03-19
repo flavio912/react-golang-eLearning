@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import uuid from 'uuid/v1';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
-import axios from 'src/utils/axios';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';

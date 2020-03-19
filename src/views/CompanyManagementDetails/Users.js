@@ -1,19 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
 import getInitials from 'src/utils/getInitials';
 import {
-  Button,
   Card,
   CardHeader,
   CardActions,
-  CardContent,
   Divider,
-  ButtonGroup,
   Table,
   TableBody,
   Link,
@@ -22,13 +18,10 @@ import {
   TablePagination,
   Input,
   TableHead,
-  TableRow,
-  colors
+  TableRow
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import axios from 'src/utils/axios';
 import Label from 'src/components/Label';
-import GenericMoreButton from 'src/components/GenericMoreButton';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 
 const useStyles = makeStyles(theme => ({

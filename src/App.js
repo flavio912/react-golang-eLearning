@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Router } from 'react-router-dom';
 import { renderRoutes } from 'react-router-config';
 import { createBrowserHistory } from 'history';
@@ -14,7 +14,6 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import CookiesNotification from './components/CookiesNotification';
 import ScrollReset from './components/ScrollReset';
 import StylesProvider from './components/StylesProvider';
-import DirectionToggle from './components/DirectionToggle';
 import './mixins/chartjs';
 import './mixins/moment';
 import './mixins/validate';
