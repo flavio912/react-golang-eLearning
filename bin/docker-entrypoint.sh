@@ -1,4 +1,4 @@
 #!/bin/sh
 
 yarn
-yarn run startProd
+yarn run startNewProd
