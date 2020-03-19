@@ -26,11 +26,7 @@ const history = createBrowserHistory();
 const store = configureStore();
 
 function App() {
-  const [direction, setDirection] = useState('ltr');
-
-  const handleDirecitonToggle = () => {
-    setDirection((prevDirection) => (prevDirection === 'ltr' ? 'rtl' : 'ltr'));
-  };
+  const direction = 'ltr';
 
   return (
     <StoreProvider store={store}>
@@ -41,10 +37,6 @@ function App() {
               <ScrollReset />
               <GoogleAnalytics />
               <CookiesNotification />
-              <DirectionToggle
-                direction={direction}
-                onToggle={handleDirecitonToggle}
-              />
               {renderRoutes(routes)}
             </Router>
           </MuiPickersUtilsProvider>
