@@ -1,5 +1,4 @@
 #!/bin/sh
 
-yarn install
-yarn run build
+yarn
 yarn run startProd
