@@ -2,20 +2,14 @@ import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Container,
-  Tabs,
-  Tab,
-  Divider,
-  colors
-} from '@material-ui/core';
+import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
 import Page from 'src/components/Page';
 import Header from './Header';
 import Summary from './Summary';
 import Invoices from './Invoices';
 import Logs from './Logs';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3)
@@ -31,11 +25,13 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function CustomerManagementDetails({ match, history }) {
+function CompanyManagementDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
   const tabs = [
     { value: 'summary', label: 'Summary' },
+    { value: 'managers', label: 'Managers' },
+    { value: 'delegates', label: 'Delegates' },
     { value: 'invoices', label: 'Invoices' },
     { value: 'logs', label: 'Logs' }
   ];
@@ -45,18 +41,15 @@ function CustomerManagementDetails({ match, history }) {
   };
 
   if (!currentTab) {
-    return <Redirect to={`/management/customers/${id}/summary`} />;
+    return <Redirect to={`/companies/${id}/summary`} />;
   }
 
-  if (!tabs.find((tab) => tab.value === currentTab)) {
+  if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
   }
 
   return (
-    <Page
-      className={classes.root}
-      title="Customer Management Details"
-    >
+    <Page className={classes.root} title="Company Management Details">
       <Container maxWidth={false}>
         <Header />
         <Tabs
@@ -66,12 +59,8 @@ function CustomerManagementDetails({ match, history }) {
           value={currentTab}
           variant="scrollable"
         >
-          {tabs.map((tab) => (
-            <Tab
-              key={tab.value}
-              label={tab.label}
-              value={tab.value}
-            />
+          {tabs.map(tab => (
+            <Tab key={tab.value} label={tab.label} value={tab.value} />
           ))}
         </Tabs>
         <Divider className={classes.divider} />
@@ -85,9 +74,9 @@ function CustomerManagementDetails({ match, history }) {
   );
 }
 
-CustomerManagementDetails.propTypes = {
+CompanyManagementDetails.propTypes = {
   history: PropTypes.object.isRequired,
   match: PropTypes.object.isRequired
 };
 
-export default CustomerManagementDetails;
+export default CompanyManagementDetails;

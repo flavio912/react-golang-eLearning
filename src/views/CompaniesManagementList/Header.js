@@ -12,37 +12,19 @@ function Header({ className, ...rest }) {
   const classes = useStyles();
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <Grid
-        alignItems="flex-end"
-        container
-        justify="space-between"
-        spacing={3}
-      >
+    <div {...rest} className={clsx(classes.root, className)}>
+      <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
-          <Typography
-            component="h2"
-            gutterBottom
-            variant="overline"
-          >
+          <Typography component="h2" gutterBottom variant="overline">
             Management
           </Typography>
-          <Typography
-            component="h1"
-            variant="h3"
-          >
-            Customers
+          <Typography component="h1" variant="h3">
+            Companies
           </Typography>
         </Grid>
         <Grid item>
-          <Button
-            color="primary"
-            variant="contained"
-          >
-            Add customer
+          <Button color="primary" variant="contained">
+            Add company
           </Button>
         </Grid>
       </Grid>

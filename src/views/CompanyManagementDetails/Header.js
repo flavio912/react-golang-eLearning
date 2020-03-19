@@ -11,25 +11,15 @@ const useStyles = makeStyles(() => ({
 function Header({ className, ...rest }) {
   const classes = useStyles();
   const customer = {
-    name: 'Ekaterina Tankova'
+    name: 'FexEx'
   };
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <Typography
-        component="h2"
-        gutterBottom
-        variant="overline"
-      >
-        Customers
+    <div {...rest} className={clsx(classes.root, className)}>
+      <Typography component="h2" gutterBottom variant="overline">
+        Companies
       </Typography>
-      <Typography
-        component="h1"
-        variant="h3"
-      >
+      <Typography component="h1" variant="h3">
         {customer.name}
       </Typography>
     </div>

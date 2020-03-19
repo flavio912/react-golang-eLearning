@@ -27,7 +27,7 @@ import ReviewStars from 'src/components/ReviewStars';
 import GenericMoreButton from 'src/components/GenericMoreButton';
 import TableEditBar from 'src/components/TableEditBar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   content: {
     padding: 0
@@ -50,77 +50,60 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Results({ className, customers, ...rest }) {
+function Results({ className, companies, ...rest }) {
   const classes = useStyles();
-  const [selectedCustomers, setSelectedCustomers] = useState([]);
+  const [selectedCompanies, setSelectedCompanies] = useState([]);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleSelectAll = (event) => {
-    const selectedCustomers = event.target.checked
-      ? customers.map((customer) => customer.id)
+  const handleSelectAll = event => {
+    const selectedCompanies = event.target.checked
+      ? companies.map(company => company.id)
       : [];
 
-    setSelectedCustomers(selectedCustomers);
+    setSelectedCompanies(selectedCompanies);
   };
 
   const handleSelectOne = (event, id) => {
-    const selectedIndex = selectedCustomers.indexOf(id);
-    let newSelectedCustomers = [];
+    const selectedIndex = selectedCompanies.indexOf(id);
+    let newSelectedCompanies = [];
 
     if (selectedIndex === -1) {
-      newSelectedCustomers = newSelectedCustomers.concat(selectedCustomers, id);
+      newSelectedCompanies = newSelectedCompanies.concat(selectedCompanies, id);
     } else if (selectedIndex === 0) {
-      newSelectedCustomers = newSelectedCustomers.concat(
-        selectedCustomers.slice(1)
+      newSelectedCompanies = newSelectedCompanies.concat(
+        selectedCompanies.slice(1)
       );
-    } else if (selectedIndex === selectedCustomers.length - 1) {
-      newSelectedCustomers = newSelectedCustomers.concat(
-        selectedCustomers.slice(0, -1)
+    } else if (selectedIndex === selectedCompanies.length - 1) {
+      newSelectedCompanies = newSelectedCompanies.concat(
+        selectedCompanies.slice(0, -1)
       );
     } else if (selectedIndex > 0) {
-      newSelectedCustomers = newSelectedCustomers.concat(
-        selectedCustomers.slice(0, selectedIndex),
-        selectedCustomers.slice(selectedIndex + 1)
+      newSelectedCompanies = newSelectedCompanies.concat(
+        selectedCompanies.slice(0, selectedIndex),
+        selectedCompanies.slice(selectedIndex + 1)
       );
     }
 
-    setSelectedCustomers(newSelectedCustomers);
+    setSelectedCompanies(newSelectedCompanies);
   };
 
   const handleChangePage = (event, page) => {
     setPage(page);
   };
 
-  const handleChangeRowsPerPage = (event) => {
+  const handleChangeRowsPerPage = event => {
     setRowsPerPage(event.target.value);
   };
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
-      <Typography
-        color="textSecondary"
-        gutterBottom
-        variant="body2"
-      >
-        {customers.length}
-        {' '}
-        Records found. Page
-        {' '}
-        {page + 1}
-        {' '}
-        of
-        {' '}
-        {Math.ceil(customers.length / rowsPerPage)}
+    <div {...rest} className={clsx(classes.root, className)}>
+      <Typography color="textSecondary" gutterBottom variant="body2">
+        {companies.length} Records found. Page {page + 1} of{' '}
+        {Math.ceil(companies.length / rowsPerPage)}
       </Typography>
       <Card>
-        <CardHeader
-          action={<GenericMoreButton />}
-          title="All customers"
-        />
+        <CardHeader action={<GenericMoreButton />} title="All companies" />
         <Divider />
         <CardContent className={classes.content}>
           <PerfectScrollbar>
@@ -130,78 +113,62 @@ function Results({ className, customers, ...rest }) {
                   <TableRow>
                     <TableCell padding="checkbox">
                       <Checkbox
-                        checked={selectedCustomers.length === customers.length}
+                        checked={selectedCompanies.length === companies.length}
                         color="primary"
                         indeterminate={
-                          selectedCustomers.length > 0
-                          && selectedCustomers.length < customers.length
+                          selectedCompanies.length > 0 &&
+                          selectedCompanies.length < companies.length
                         }
                         onChange={handleSelectAll}
                       />
                     </TableCell>
                     <TableCell>Name</TableCell>
-                    <TableCell>Location</TableCell>
-                    <TableCell>Money spent</TableCell>
-                    <TableCell>Type</TableCell>
-                    <TableCell>Projects held</TableCell>
-                    <TableCell>Reviews</TableCell>
+                    <TableCell>No. Delegates</TableCell>
+                    <TableCell>No. Managers</TableCell>
                     <TableCell align="right">Actions</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {customers.slice(0, rowsPerPage).map((customer) => (
+                  {companies.slice(0, rowsPerPage).map(company => (
                     <TableRow
                       hover
-                      key={customer.id}
-                      selected={selectedCustomers.indexOf(customer.id) !== -1}
+                      key={company.id}
+                      selected={selectedCompanies.indexOf(company.id) !== -1}
                     >
                       <TableCell padding="checkbox">
                         <Checkbox
-                          checked={
-                            selectedCustomers.indexOf(customer.id) !== -1
-                          }
+                          checked={selectedCompanies.indexOf(company.id) !== -1}
                           color="primary"
-                          onChange={(event) => handleSelectOne(event, customer.id)}
-                          value={selectedCustomers.indexOf(customer.id) !== -1}
+                          onChange={event => handleSelectOne(event, company.id)}
+                          value={selectedCompanies.indexOf(company.id) !== -1}
                         />
                       </TableCell>
                       <TableCell>
                         <div className={classes.nameCell}>
-                          <Avatar
-                            className={classes.avatar}
-                            src={customer.avatar}
-                          >
-                            {getInitials(customer.name)}
+                          <Avatar className={classes.avatar} src={company.logo}>
+                            {getInitials(company.name)}
                           </Avatar>
                           <div>
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to="/management/customers/1"
+                              to="/companies/1"
                               variant="h6"
                             >
-                              {customer.name}
+                              {company.name}
                             </Link>
-                            <div>{customer.email}</div>
+                            <div>{company.email}</div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell>{customer.location}</TableCell>
-                      <TableCell>
-                        {customer.currency}
-                        {customer.spent}
-                      </TableCell>
-                      <TableCell>{customer.type}</TableCell>
-                      <TableCell>{customer.projects}</TableCell>
-                      <TableCell>
-                        <ReviewStars value={customer.rating} />
-                      </TableCell>
+                      <TableCell>{company.noDelegates}</TableCell>
+                      <TableCell>{company.noManagers}</TableCell>
                       <TableCell align="right">
                         <Button
                           color="primary"
                           component={RouterLink}
                           size="small"
-                          to="/management/customers/1"
+                          to="/companies/1"
                           variant="outlined"
                         >
                           View
@@ -217,7 +184,7 @@ function Results({ className, customers, ...rest }) {
         <CardActions className={classes.actions}>
           <TablePagination
             component="div"
-            count={customers.length}
+            count={companies.length}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
             page={page}
@@ -226,18 +193,18 @@ function Results({ className, customers, ...rest }) {
           />
         </CardActions>
       </Card>
-      <TableEditBar selected={selectedCustomers} />
+      <TableEditBar selected={selectedCompanies} />
     </div>
   );
 }
 
 Results.propTypes = {
   className: PropTypes.string,
-  customers: PropTypes.array
+  companies: PropTypes.array
 };
 
 Results.defaultProps = {
-  customers: []
+  companies: []
 };
 
 export default Results;

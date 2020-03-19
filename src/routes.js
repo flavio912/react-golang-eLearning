@@ -119,12 +119,7 @@ export default [
         component: lazy(() => import('src/views/Typography'))
       },
       {
-        path: '/dashboards/analytics',
-        exact: true,
-        component: DashboardAnalyticsView
-      },
-      {
-        path: '/dashboards/default',
+        path: '/dashboard',
         exact: true,
         component: DashboardDefaultView
       },
@@ -144,27 +139,27 @@ export default [
         component: lazy(() => import('src/views/Mail'))
       },
       {
-        path: '/management/customers',
+        path: '/companies',
         exact: true,
-        component: lazy(() => import('src/views/CustomerManagementList'))
+        component: lazy(() => import('src/views/CompaniesManagementList'))
       },
       {
-        path: '/management/customers/:id',
+        path: '/companies/:id',
         exact: true,
-        component: lazy(() => import('src/views/CustomerManagementDetails'))
+        component: lazy(() => import('src/views/CompanyManagementDetails'))
       },
       {
-        path: '/management/customers/:id/:tab',
+        path: '/companies/:id/:tab',
         exact: true,
-        component: lazy(() => import('src/views/CustomerManagementDetails'))
+        component: lazy(() => import('src/views/CompanyManagementDetails'))
       },
       {
-        path: '/management/projects',
+        path: '/companies/projects',
         exact: true,
         component: lazy(() => import('src/views/ProjectManagementList'))
       },
       {
-        path: '/management/orders',
+        path: '/companies/orders',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementList'))
       },

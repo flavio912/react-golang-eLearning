@@ -7,7 +7,7 @@ import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
 import Results from './Results';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3)
@@ -17,9 +17,9 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function CustomerManagementList() {
+function CompaniesManagementList() {
   const classes = useStyles();
-  const [customers, setCustomers] = useState([]);
+  const [companies, setCompanies] = useState([]);
 
   const handleFilter = () => {};
 
@@ -28,15 +28,15 @@ function CustomerManagementList() {
   useEffect(() => {
     let mounted = true;
 
-    const fetchCustomers = () => {
-      axios.get('/api/management/customers').then((response) => {
+    const fetchCompanies = () => {
+      axios.get('/api/companies').then(response => {
         if (mounted) {
-          setCustomers(response.data.customers);
+          setCompanies(response.data.companies);
         }
       });
     };
 
-    fetchCustomers();
+    fetchCompanies();
 
     return () => {
       mounted = false;
@@ -44,25 +44,16 @@ function CustomerManagementList() {
   }, []);
 
   return (
-    <Page
-      className={classes.root}
-      title="Customer Management List"
-    >
+    <Page className={classes.root} title="Companies Management List">
       <Container maxWidth={false}>
         <Header />
-        <SearchBar
-          onFilter={handleFilter}
-          onSearch={handleSearch}
-        />
-        {customers && (
-          <Results
-            className={classes.results}
-            customers={customers}
-          />
+        <SearchBar onFilter={handleFilter} onSearch={handleSearch} />
+        {companies && (
+          <Results className={classes.results} companies={companies} />
         )}
       </Container>
     </Page>
   );
 }
 
-export default CustomerManagementList;
+export default CompaniesManagementList;

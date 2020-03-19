@@ -27,51 +27,30 @@ export default [
     subheader: 'Pages',
     items: [
       {
-        title: 'Overview',
-        href: '/overview',
-        icon: HomeIcon
+        title: 'Dashboard',
+        href: '/dashboard',
+        icon: DashboardIcon
       },
       {
-        title: 'Dashboards',
-        href: '/dashboards',
-        icon: DashboardIcon,
-        items: [
-          {
-            title: 'Default',
-            href: '/dashboards/default'
-          },
-          {
-            title: 'Analytics',
-            href: '/dashboards/analytics'
-          }
-        ]
+        title: 'Companies',
+        href: '/companies',
+        icon: BarChartIcon
       },
       {
-        title: 'Management',
-        href: '/management',
-        icon: BarChartIcon,
-        items: [
-          {
-            title: 'Customers',
-            href: '/management/customers'
-          },
-          {
-            title: 'Customer Details',
-            href: '/management/customers/1/summary'
-          },
-          {
-            title: 'Projects',
-            href: '/management/projects'
-          },
-          {
-            title: 'Orders',
-            href: '/management/orders'
-          },
-          {
-            title: 'Order Details',
-            href: '/management/orders/1'
-          }
-        ]
+        title: 'Customer Details',
+        href: '/companies/1/summary'
+      },
+      {
+        title: 'Projects',
+        href: '/management/projects'
+      },
+      {
+        title: 'Orders',
+        href: '/management/orders'
+      },
+      {
+        title: 'Order Details',
+        href: '/management/orders/1'
       },
       {
         title: 'Social Feed',
@@ -136,37 +115,6 @@ export default [
         title: 'Invoice',
         href: '/invoices/1',
         icon: ReceiptIcon
-      },
-      {
-        title: 'Kanban Board',
-        href: '/kanban-board',
-        icon: ListAltIcon
-      },
-      {
-        title: 'Mail',
-        href: '/mail',
-        icon: MailIcon,
-        label: () => (
-          <Label
-            color={colors.red[500]}
-            shape="rounded"
-          >
-            2
-          </Label>
-        )
-      },
-      {
-        title: 'Chat',
-        href: '/chat',
-        icon: ChatIcon,
-        label: () => (
-          <Label
-            color={colors.red[500]}
-            shape="rounded"
-          >
-            4
-          </Label>
-        )
       },
       {
         title: 'Calendar',
