@@ -18,7 +18,7 @@ build:
   artifacts:
     expire_in: 3d
     paths:
-      - /build
+      - build/
 
 deploy-dev:
   stage: deploy-dev
