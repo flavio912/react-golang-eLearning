@@ -1,4 +1,5 @@
 stages:
+  - build
   - deploy-dev
 
 # test:
@@ -8,16 +9,16 @@ stages:
 #     - yarn
 #     - yarn run test
 
-# build:
-#   stage: build
-#   image: node:10
-#   script: 
-#     - yarn  
-#     - yarn run build
-#   artifacts:
-#     expire_in: 3d
-#     paths:
-#       - /
+build:
+  stage: build
+  image: node:10
+  script: 
+    - yarn  
+    - yarn run build
+  artifacts:
+    expire_in: 3d
+    paths:
+      - /build
 
 deploy-dev:
   stage: deploy-dev
