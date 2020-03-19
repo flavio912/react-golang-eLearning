@@ -31,6 +31,8 @@ deploy-dev:
   only:
     - dev
   script:
+    - apt-get update
+    - apt-get -y install git
     - pip install awsebcli --upgrade --user
     - export PATH=~/.local/bin/:$PATH
     - eb deploy react-admin
