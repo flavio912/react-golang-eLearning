@@ -11,14 +11,10 @@ import {
   Divider,
   TextField,
   Typography,
-  Select,
   FormLabel,
   Checkbox,
   FormControlLabel,
-  Input,
-  FormGroup,
-  MenuItem,
-  Chip
+  FormGroup
 } from '@material-ui/core';
 import clsx from 'clsx';
 
@@ -47,8 +43,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const permissionOptions = ['Manager', 'Delegate'];
-
 export default function AddUser({
   onClose,
   open,
@@ -58,7 +52,6 @@ export default function AddUser({
 }) {
   const classes = useStyles();
   const [values, setValues] = useState({});
-  const [permissions, setPermissions] = useState([]);
 
   const handleFieldChange = event => {
     event.persist();
