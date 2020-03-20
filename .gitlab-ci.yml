@@ -22,22 +22,39 @@ build:
 
 deploy-dev:
   stage: deploy-dev
-  image: python:3.8-slim-buster
+  image: python:3.6
   environment:
-   name: s3-dev
-   url: http://ttc-admin.devserver.london
-  variables:
-    EB_ENV: "react-admin"
+    name: staging
+    url: http://ttc-admin.devserver.london
   only:
     - dev
+  variables:
+    EB_ENV: "react-admin"
   script:
+    - pip install awscli
     - apt-get update
-    - apt-get -y install git
-    - pip install awsebcli --upgrade --user
-    - export PATH=~/.local/bin/:$PATH
-    - eb deploy react-admin
-  artifacts:
-    expire_in: 3d
-    paths:
-      - /
+    - apt-get install -y zip
+    - chmod +x ./bin/deploy.sh
+    - ./bin/deploy.sh
+
+# deploy-dev:
+#   stage: deploy-dev
+#   image: python:3.8-slim-buster
+#   environment:
+#    name: s3-dev
+#    url: http://ttc-admin.devserver.london
+#   variables:
+#     EB_ENV: "react-admin"
+#   only:
+#     - dev
+#   script:
+#     - apt-get update
+#     - apt-get -y install git
+#     - pip install awsebcli --upgrade --user
+#     - export PATH=~/.local/bin/:$PATH
+#     - eb deploy react-admin
+#   artifacts:
+#     expire_in: 3d
+#     paths:
+#       - /
 
