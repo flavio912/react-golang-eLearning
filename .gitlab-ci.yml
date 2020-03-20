@@ -22,7 +22,7 @@ build:
 
 deploy-dev:
   stage: deploy-dev
-  image: python:3.6
+  image: python:3.8-slim-buster
   environment:
     name: staging
     url: http://ttc-admin.devserver.london

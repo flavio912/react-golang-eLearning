@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import uuid from 'uuid/v4';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
 import Page from 'src/components/Page';
@@ -49,6 +50,16 @@ function CompanyManagementDetails({ match, history }) {
     return <Redirect to="/errors/error-404" />;
   }
 
+  const company = {
+    id: uuid(),
+    name: 'FedEx',
+    email: 'kate@fedex.com',
+    logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
+    noDelegates: 40,
+    noManagers: 1,
+    paymentType: 'Contract'
+  };
+
   return (
     <Page className={classes.root} title="Company Management Details">
       <Container maxWidth={false}>
@@ -68,7 +79,7 @@ function CompanyManagementDetails({ match, history }) {
         <div className={classes.content}>
           {currentTab === 'summary' && <Summary />}
           {currentTab === 'invoices' && <Invoices />}
-          {currentTab === 'users' && <Users />}
+          {currentTab === 'users' && <Users company={company} />}
           {currentTab === 'logs' && <Logs />}
         </div>
       </Container>

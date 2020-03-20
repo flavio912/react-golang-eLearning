@@ -13,6 +13,7 @@ import {
   Table,
   TableBody,
   Link,
+  Button,
   TableCell,
   Avatar,
   TablePagination,
@@ -23,6 +24,7 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import Label from 'src/components/Label';
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import AddUser from './AddUser';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -63,14 +65,20 @@ const useStyles = makeStyles(theme => ({
     height: 42,
     width: 42,
     marginRight: theme.spacing(2)
+  },
+  options: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: theme.spacing(2)
   }
 }));
 
-function Users({ className, ...rest }) {
+function Users({ className, company, ...rest }) {
   const classes = useStyles();
 
   const [toggle, setToggle] = useState('all');
   const [page, setPage] = useState(0);
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const exampleUsers = [
@@ -108,90 +116,112 @@ function Users({ className, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
+  const onAddUserModalClose = () => {
+    setAddUserModalOpen(false);
+  };
+
+  const openAddUserModal = () => {
+    setAddUserModalOpen(true);
+  };
+
   return (
-    <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Managers and Delegates" />
-      <Divider />
-      <div className={classes.searchRow}>
-        <div className={classes.search}>
-          <SearchIcon className={classes.searchIcon} color="inherit" />
-          <Input
-            className={classes.searchInput}
-            disableUnderline
-            placeholder="Search users"
-          />
-        </div>
-        <ToggleButtonGroup
-          exclusive
-          value={toggle}
-          onChange={(_, value) => {
-            setToggle(value);
-          }}
-        >
-          <ToggleButton value="all">Show All</ToggleButton>
-          <ToggleButton value="manager">Managers Only</ToggleButton>
-        </ToggleButtonGroup>
+    <div>
+      <div className={classes.options}>
+        <Button variant="contained" color="primary" onClick={openAddUserModal}>
+          Add User
+        </Button>
       </div>
-      <Divider />
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>User</TableCell>
-            <TableCell>Roles</TableCell>
-            <TableCell>Valid Certificates</TableCell>
-            <TableCell>Expiring Certificates</TableCell>
-            <TableCell>Last Login</TableCell>
-            <TableCell>Created At</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {exampleUsers.map(user => (
-            <TableRow key={user.userId}>
-              <TableCell>
-                <div className={classes.nameCell}>
-                  <Avatar className={classes.avatar} src={user.logo}>
-                    {getInitials(user.fullName)}
-                  </Avatar>
-                  <div>
-                    <Link
-                      color="inherit"
-                      component={RouterLink}
-                      to="/companies/1"
-                      variant="h6"
-                    >
-                      {user.fullName}
-                    </Link>
-                    <div>{user.email}</div>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell>
-                {user.roles.map((role, index) => (
-                  <Label style={{ marginRight: 5 }} key={index}>
-                    {role}
-                  </Label>
-                ))}
-              </TableCell>
-              <TableCell>{user.noValidCerts}</TableCell>
-              <TableCell>{user.noExpiringCerts}</TableCell>
-              <TableCell>{moment(user.lastLogin.date).format('LLL')}</TableCell>
-              <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+      <Card {...rest} className={clsx(classes.root, className)}>
+        <CardHeader title="Managers and Delegates" />
+        <Divider />
+        <div className={classes.searchRow}>
+          <div className={classes.search}>
+            <SearchIcon className={classes.searchIcon} color="inherit" />
+            <Input
+              className={classes.searchInput}
+              disableUnderline
+              placeholder="Search users"
+            />
+          </div>
+          <ToggleButtonGroup
+            exclusive
+            value={toggle}
+            onChange={(_, value) => {
+              setToggle(value);
+            }}
+          >
+            <ToggleButton value="all">Show All</ToggleButton>
+            <ToggleButton value="manager">Managers Only</ToggleButton>
+          </ToggleButtonGroup>
+        </div>
+        <Divider />
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>User</TableCell>
+              <TableCell>Roles</TableCell>
+              <TableCell>Valid Certificates</TableCell>
+              <TableCell>Expiring Certificates</TableCell>
+              <TableCell>Last Login</TableCell>
+              <TableCell>Created At</TableCell>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <CardActions className={classes.actions}>
-        <TablePagination
-          component="div"
-          count={exampleUsers.length}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
-      </CardActions>
-    </Card>
+          </TableHead>
+          <TableBody>
+            {exampleUsers.map(user => (
+              <TableRow key={user.userId}>
+                <TableCell>
+                  <div className={classes.nameCell}>
+                    <Avatar className={classes.avatar} src={user.logo}>
+                      {getInitials(user.fullName)}
+                    </Avatar>
+                    <div>
+                      <Link
+                        color="inherit"
+                        component={RouterLink}
+                        to="/companies/1"
+                        variant="h6"
+                      >
+                        {user.fullName}
+                      </Link>
+                      <div>{user.email}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {user.roles.map((role, index) => (
+                    <Label style={{ marginRight: 5 }} key={index}>
+                      {role}
+                    </Label>
+                  ))}
+                </TableCell>
+                <TableCell>{user.noValidCerts}</TableCell>
+                <TableCell>{user.noExpiringCerts}</TableCell>
+                <TableCell>
+                  {moment(user.lastLogin.date).format('LLL')}
+                </TableCell>
+                <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <CardActions className={classes.actions}>
+          <TablePagination
+            component="div"
+            count={exampleUsers.length}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </CardActions>
+      </Card>
+      <AddUser
+        open={addUserModalOpen}
+        onClose={onAddUserModalClose}
+        company={company}
+      />
+    </div>
   );
 }
 
