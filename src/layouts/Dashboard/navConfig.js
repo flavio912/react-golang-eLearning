@@ -1,16 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 /* eslint-disable react/display-name */
-import React from 'react';
-import { colors } from '@material-ui/core';
 import BarChartIcon from '@material-ui/icons/BarChart';
-import CalendarTodayIcon from '@material-ui/icons/CalendarToday';
 import DashboardIcon from '@material-ui/icons/DashboardOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import Class from '@material-ui/icons/Class';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Layers from '@material-ui/icons/Layers';
-import Label from 'src/components/Label';
 
 export default [
   {
@@ -25,12 +21,6 @@ export default [
         title: 'Companies',
         href: '/companies',
         icon: BarChartIcon
-      },
-      {
-        title: 'Calendar',
-        href: '/calendar',
-        icon: CalendarTodayIcon,
-        label: () => <Label color={colors.green[500]}>New</Label>
       }
     ]
   },

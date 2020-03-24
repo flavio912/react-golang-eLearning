@@ -6,7 +6,6 @@ import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
 import TutorsView from './views/TutorsList';
-import DashboardDefaultView from './views/DashboardDefault';
 import OverviewView from './views/Overview';
 
 export default [
@@ -58,14 +57,9 @@ export default [
     component: DashboardLayout,
     routes: [
       {
-        path: '/calendar',
-        exact: true,
-        component: lazy(() => import('src/views/Calendar'))
-      },
-      {
         path: '/dashboard',
         exact: true,
-        component: DashboardDefaultView
+        component: lazy(() => import('src/views/Calendar'))
       },
       {
         path: '/companies',
@@ -76,6 +70,16 @@ export default [
         path: '/companies/:id',
         exact: true,
         component: lazy(() => import('src/views/CompanyManagementDetails'))
+      },
+      {
+        path: '/users/:id',
+        exact: true,
+        component: lazy(() => import('src/views/UserPage'))
+      },
+      {
+        path: '/users/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/UserPage'))
       },
       {
         path: '/companies/:id/:tab',
@@ -101,36 +105,6 @@ export default [
         path: '/overview',
         exact: true,
         component: OverviewView
-      },
-      {
-        path: '/profile/:id',
-        exact: true,
-        component: lazy(() => import('src/views/Profile'))
-      },
-      {
-        path: '/profile/:id/:tab',
-        exact: true,
-        component: lazy(() => import('src/views/Profile'))
-      },
-      {
-        path: '/projects/create',
-        exact: true,
-        component: lazy(() => import('src/views/ProjectCreate'))
-      },
-      {
-        path: '/projects/:id',
-        exact: true,
-        component: lazy(() => import('src/views/ProjectDetails'))
-      },
-      {
-        path: '/projects/:id/:tab',
-        exact: true,
-        component: lazy(() => import('src/views/ProjectDetails'))
-      },
-      {
-        path: '/projects',
-        exact: true,
-        component: lazy(() => import('src/views/ProjectList'))
       },
       {
         path: '/settings',

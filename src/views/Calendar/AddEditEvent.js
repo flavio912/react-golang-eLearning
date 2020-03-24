@@ -20,7 +20,7 @@ import {
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteOutlined';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     position: 'absolute',
     top: '50%',
@@ -49,8 +49,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const defaultEvent = {
-  title: 'Event title',
-  desc: 'Event description',
+  title: 'Course title',
+  desc: 'Course description',
   allDay: false,
   start: moment().toDate(),
   end: moment().toDate()
@@ -70,9 +70,9 @@ const AddEditEvent = forwardRef((props, ref) => {
   const [values, setValues] = useState(event || { ...defaultEvent });
   const mode = event ? 'edit' : 'add';
 
-  const handleFieldChange = (e) => {
+  const handleFieldChange = e => {
     e.persist();
-    setValues((prevValues) => ({
+    setValues(prevValues => ({
       ...prevValues,
       [e.target.name]:
         e.target.type === 'checkbox' ? e.target.checked : e.target.value
@@ -102,19 +102,11 @@ const AddEditEvent = forwardRef((props, ref) => {
   };
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-      ref={ref}
-    >
+    <Card {...rest} className={clsx(classes.root, className)} ref={ref}>
       <form>
         <CardContent>
-          <Typography
-            align="center"
-            gutterBottom
-            variant="h3"
-          >
-            {mode === 'add' ? 'Add Event' : 'Edit Event'}
+          <Typography align="center" gutterBottom variant="h3">
+            {mode === 'add' ? 'Add Course' : 'Edit Course'}
           </Typography>
           <TextField
             className={classes.field}
@@ -136,13 +128,13 @@ const AddEditEvent = forwardRef((props, ref) => {
           />
           <FormControlLabel
             className={classes.field}
-            control={(
+            control={
               <Switch
                 checked={values.allDay}
                 name="allDay"
                 onChange={handleFieldChange}
               />
-            )}
+            }
             label="All day"
           />
           <TextField
@@ -169,10 +161,7 @@ const AddEditEvent = forwardRef((props, ref) => {
         </CardContent>
         <Divider />
         <CardActions>
-          <IconButton
-            edge="start"
-            onClick={handleDelete}
-          >
+          <IconButton edge="start" onClick={handleDelete}>
             <DeleteIcon />
           </IconButton>
           <Button

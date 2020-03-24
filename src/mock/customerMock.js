@@ -7,7 +7,7 @@ mock.onGet('/api/companies').reply(200, {
     {
       id: uuid(),
       name: 'FedEx',
-      email: '',
+      email: 'user@user.com',
       logo: '/images/avatars/avatar_2.png',
       noDelegates: 40,
       noManagers: 1
@@ -33,18 +33,19 @@ mock.onGet('/api/companies').reply(200, {
 
 mock.onGet('/api/management/customers/1/summary').reply(200, {
   summary: {
-    name: 'Ekaterina Tankova',
-    email: 'ekaterina@devias.io',
-    phone: '+55 748 327 439',
-    state: 'Alabama',
-    country: 'United States',
-    zipCode: '240355',
-    address1: 'Street John Wick, no. 7',
-    address2: 'House #25',
-    iban: '4142 **** **** **** ****',
-    autoCC: false,
-    verified: true,
-    currency: '$',
+    name: 'John Doe',
+    email: 'john@doe.com',
+    username: 'john_doe1',
+    uuid: uuid(),
+    firstName: 'John',
+    lastName: 'Doe',
+    createdAt: '2020-02-03',
+    lastLogin: '2020-03-03',
+    jobTitle: 'Senior Manager',
+    phone: '07415388528',
+    company: {
+      name: 'FedEx'
+    },
     invoices: [
       {
         id: uuid(),
@@ -72,7 +73,7 @@ mock.onGet('/api/management/customers/1/summary').reply(200, {
     emails: [
       {
         id: uuid(),
-        description: 'Order confirmation',
+        description: 'Password reset',
         created_at: moment()
           .subtract(3, 'days')
           .subtract(5, 'hours')
@@ -80,7 +81,7 @@ mock.onGet('/api/management/customers/1/summary').reply(200, {
       },
       {
         id: uuid(),
-        description: 'Order confirmation',
+        description: 'Signup email',
         created_at: moment()
           .subtract(4, 'days')
           .subtract(11, 'hours')

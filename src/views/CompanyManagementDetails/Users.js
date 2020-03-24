@@ -178,7 +178,7 @@ function Users({ className, company, ...rest }) {
                       <Link
                         color="inherit"
                         component={RouterLink}
-                        to="/companies/1"
+                        to="/users/1"
                         variant="h6"
                       >
                         {user.fullName}

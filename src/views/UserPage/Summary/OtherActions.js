@@ -45,7 +45,7 @@ function OtherActions({ className, ...rest }) {
       <CardContent>
         <div className={classes.mainActions}></div>
         <Typography className={classes.notice} variant="body2">
-          Note: Once deleted data cannot be retrieved
+          Note: This cannot be undone. Once deleted, all user data is lost
         </Typography>
         <Button className={classes.deleteButton}>
           <DeleteIcon className={classes.buttonIcon} />

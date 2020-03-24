@@ -5,12 +5,13 @@ import { makeStyles } from '@material-ui/styles';
 import {
   Card,
   CardHeader,
-  CardContent,
-  Button,
   Divider,
-  Typography
+  Table,
+  TableHead,
+  TableBody,
+  TableCell,
+  TableRow
 } from '@material-ui/core';
-import DeleteIcon from '@material-ui/icons/DeleteOutline';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -40,18 +41,23 @@ function OtherActions({ className, ...rest }) {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Other actions" />
+      <CardHeader title="User certificates" />
       <Divider />
-      <CardContent>
-        <div className={classes.mainActions}></div>
-        <Typography className={classes.notice} variant="body2">
-          Note: Once deleted data cannot be retrieved
-        </Typography>
-        <Button className={classes.deleteButton}>
-          <DeleteIcon className={classes.buttonIcon} />
-          Delete Customer Account
-        </Button>
-      </CardContent>
+      <Table>
+        <TableHead>
+          <TableRow>
+            <TableCell>Certificate Name</TableCell>
+            <TableCell>Expires In</TableCell>
+            <TableCell>Expiration</TableCell>
+            <TableCell>Download</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          <TableRow>
+            <TableCell></TableCell>
+          </TableRow>
+        </TableBody>
+      </Table>
     </Card>
   );
 }

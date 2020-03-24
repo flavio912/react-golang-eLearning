@@ -8,55 +8,21 @@ mock.onGet('/api/calendar').reply(200, {
   events: [
     {
       id: uuid(),
-      title: 'Call Samantha',
-      desc: 'Inform about new contract',
+      title: 'Dangerous Goods Course v2',
+      desc:
+        'Some important information about the course that will be shown to users',
       color: colors.green['700'],
-      start: moment('2019-07-01 16:55:00'),
-      end: moment('2019-07-01 17:02:00')
+      start: moment('2020-03-22 16:55:00'),
+      end: moment('2020-03-22 18:02:00')
     },
     {
       id: uuid(),
-      title: 'Meet with IBM',
-      desc: 'Discuss about new partnership',
-      start: moment('2019-07-03 08:55:00'),
-      end: moment('2019-07-04 15:02:00')
-    },
-    {
-      id: uuid(),
-      title: 'SCRUM Planning',
-      desc: 'Prepare documentation',
-      allDay: true,
-      start: moment('2019-07-14 16:55:00')
-    },
-    {
-      id: uuid(),
-      title: 'Beign SEM',
-      desc: 'Meet with team to discuss',
-      allDay: true,
-      start: moment('2019-07-18 07:00:00')
-    },
-    {
-      id: uuid(),
-      title: 'Fire John',
-      desc: 'Sorry, John',
+      title: 'Handling Course v4',
+      desc:
+        'Some important information about the course that will be shown to users',
       color: colors.green['700'],
-      start: moment('2019-07-20 08:55:00'),
-      end: moment('2019-07-20 09:30:00')
-    },
-    {
-      id: uuid(),
-      title: 'Call Alex',
-      desc: 'Discuss about the new project',
-      allDay: true,
-      start: moment('2019-07-30 08:00:00')
-    },
-    {
-      id: uuid(),
-      title: 'Visit Samantha',
-      color: colors.green['700'],
-      desc: 'Get a new quote for the payment processor',
-      start: moment('2019-07-30 08:00:00'),
-      end: moment('2019-07-30 09:00:00')
+      start: moment('2020-03-24 16:55:00'),
+      end: moment('2020-03-24 18:02:00')
     }
   ]
 });

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
+import moment from 'moment';
 import {
   Card,
   CardHeader,
@@ -12,11 +13,9 @@ import {
   Table,
   TableBody,
   TableRow,
-  TableCell,
-  colors
+  TableCell
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
-import Label from 'src/components/Label';
 import CustomerEditModal from './CustomerEditModal';
 
 const useStyles = makeStyles(theme => ({
@@ -47,50 +46,44 @@ function CustomerInfo({ customer, className, ...rest }) {
   const handleEditClose = () => {
     setOpenEdit(false);
   };
-
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Customer info" />
+      <CardHeader title="User info" />
       <Divider />
       <CardContent className={classes.content}>
         <Table>
           <TableBody>
             <TableRow>
-              <TableCell>Email</TableCell>
-              <TableCell>
-                {customer.email}
-                <div>
-                  <Label
-                    color={
-                      customer.verified ? colors.green[600] : colors.orange[600]
-                    }
-                  >
-                    {customer.verified
-                      ? 'Email verified'
-                      : 'Email not verified'}
-                  </Label>
-                </div>
-              </TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>{`${customer.firstName} ${customer.lastName}`}</TableCell>
             </TableRow>
             <TableRow selected>
-              <TableCell>Phone</TableCell>
+              <TableCell>Username</TableCell>
+              <TableCell>{customer.username}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Roles</TableCell>
               <TableCell>{customer.phone}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>State/Region</TableCell>
-              <TableCell>{customer.state}</TableCell>
+              <TableCell>Email</TableCell>
+              <TableCell>{customer.email}</TableCell>
             </TableRow>
             <TableRow selected>
-              <TableCell>Country</TableCell>
-              <TableCell>{customer.country}</TableCell>
+              <TableCell>Job Title</TableCell>
+              <TableCell>{customer.jobTitle}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Address 1</TableCell>
-              <TableCell>{customer.address1}</TableCell>
+              <TableCell>Phone</TableCell>
+              <TableCell>{customer.phone}</TableCell>
             </TableRow>
             <TableRow selected>
-              <TableCell>Address 2</TableCell>
-              <TableCell>{customer.address2}</TableCell>
+              <TableCell>Last Login</TableCell>
+              <TableCell>{moment(customer.lastLogin).format('LLL')}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Created At</TableCell>
+              <TableCell>{moment(customer.createdAt).format('LLL')}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

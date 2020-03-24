@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import moment from 'moment';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
@@ -95,7 +94,7 @@ function Calendar() {
   const theme = useTheme();
   const mobileDevice = useMediaQuery(theme.breakpoints.down('sm'));
   const [view, setView] = useState('dayGridWeek');
-  const [date, setDate] = useState(moment('2019-07-30 08:00:00').toDate());
+  const [date, setDate] = useState(new Date());
   const [events, setEvents] = useState([]);
   const [eventModal, setEventModal] = useState({
     open: false,
@@ -199,7 +198,7 @@ function Calendar() {
   }, [mobileDevice]);
 
   return (
-    <Page className={classes.root} title="Calendar">
+    <Page className={classes.root} title="Dashboard">
       <Container maxWidth={false}>
         <Toolbar
           date={date}
@@ -221,7 +220,7 @@ function Calendar() {
               eventResizableFromStart
               events={events}
               header={false}
-              height={800}
+              height={500}
               plugins={[
                 dayGridPlugin,
                 timeGridPlugin,
