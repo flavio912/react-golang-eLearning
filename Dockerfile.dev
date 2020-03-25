@@ -6,6 +6,6 @@ COPY . /react/admin
 WORKDIR /app
 
 RUN ["yarn"]
-ENTRYPOINT ["yarn", "run", "startNewProd"]
+ENTRYPOINT ["yarn", "run", "start"]
 
-EXPOSE 80
+EXPOSE 3000
