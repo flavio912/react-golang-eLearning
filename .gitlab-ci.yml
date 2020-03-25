@@ -9,16 +9,17 @@ stages:
 #     - yarn
 #     - yarn run test
 
-build:
+build-admin:
   stage: build
   image: node:10
   script: 
+    - cd ./react/admin
     - yarn  
     - yarn run build
   artifacts:
     expire_in: 3d
     paths:
-      - build/
+      - react/admin/build/
 
 deploy-dev:
   stage: deploy-dev
@@ -36,25 +37,3 @@ deploy-dev:
     - apt-get install -y zip
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
-
-# deploy-dev:
-#   stage: deploy-dev
-#   image: python:3.8-slim-buster
-#   environment:
-#    name: s3-dev
-#    url: http://ttc-admin.devserver.london
-#   variables:
-#     EB_ENV: "react-admin"
-#   only:
-#     - dev
-#   script:
-#     - apt-get update
-#     - apt-get -y install git
-#     - pip install awsebcli --upgrade --user
-#     - export PATH=~/.local/bin/:$PATH
-#     - eb deploy react-admin
-#   artifacts:
-#     expire_in: 3d
-#     paths:
-#       - /
-
