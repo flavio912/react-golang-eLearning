@@ -2,7 +2,7 @@ FROM node:10
 
 ENV HOME /app
 
-COPY . /
+COPY . /react/admin
 WORKDIR /app
 
 COPY bin/docker-entrypoint.sh /usr/local/bin
