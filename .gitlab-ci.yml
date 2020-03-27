@@ -13,6 +13,8 @@ build-admin:
     - cd ./react/admin
     - yarn
     - yarn run build
+  tags:
+    - big
   artifacts:
     expire_in: 3d
     paths:
@@ -25,6 +27,8 @@ build-manager-storybook:
     - cd ./react/manager
     - yarn
     - yarn run storybook-build
+  tags:
+    - big
   artifacts:
     expire_in: 3d
     paths:
@@ -37,6 +41,8 @@ build-manager-webpack:
     - cd ./react/manager
     - yarn
     - yarn run build
+  tags:
+    - big
   artifacts:
     expire_in: 3d
     paths:
