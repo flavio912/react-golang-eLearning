@@ -1,6 +1,4 @@
-import Card, {PaddingOptions} from './Card';
+import Card, { PaddingOptions as _PaddingOptions } from './Card';
 
-export {
-  PaddingOptions
-}
+export type PaddingOptions = _PaddingOptions;
 export default Card;

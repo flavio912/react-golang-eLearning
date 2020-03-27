@@ -1,28 +1,37 @@
 stages:
   - build
-  - deploy-dev
+  - deploy-staging
 
-# test:
-#   stage: test
-#   image: node:10
-#   script:
-#     - yarn
-#     - yarn run test
+variables:
+  MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
+  ADMIN_IMAGE_TAG: $CI_REGISTRY_IMAGE:admin
 
 build-admin:
   stage: build
   image: node:10
-  script: 
+  script:
     - cd ./react/admin
-    - yarn  
+    - yarn
     - yarn run build
   artifacts:
     expire_in: 3d
     paths:
       - react/admin/build/
 
-deploy-dev:
-  stage: deploy-dev
+build-manager-storybook:
+  stage: build
+  image: node:10
+  script:
+    - cd ./react/manager
+    - yarn
+    - yarn run storybook-build
+  artifacts:
+    expire_in: 3d
+    paths:
+      - react/manager/storybook_build
+
+deploy-manager-staging:
+  stage: deploy-staging
   image: python:3.8-slim-buster
   environment:
     name: staging
@@ -30,10 +39,29 @@ deploy-dev:
   only:
     - dev
   variables:
-    EB_ENV: "react-admin"
+    EB_ENV: 'react-manager'
   script:
     - pip install awscli
     - apt-get update
     - apt-get install -y zip
+    - cd ./react/manager
+    - chmod +x ./bin/deploy.sh
+    - ./bin/deploy.sh
+
+deploy-staging:
+  stage: deploy-staging
+  image: python:3.8-slim-buster
+  environment:
+    name: staging
+    url: http://ttc-admin.devserver.london
+  only:
+    - dev
+  variables:
+    EB_ENV: 'react-admin'
+  script:
+    - pip install awscli
+    - apt-get update
+    - apt-get install -y zip
+    - cd ./react/admin
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh

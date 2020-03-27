@@ -1,25 +1,19 @@
 import * as React from 'react';
 import { createUseStyles } from 'react-jss';
-import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  Redirect
+} from 'react-router-dom';
 import { connect } from 'react-redux';
-
 
 type Props = {
   classes: any;
 };
 
-type State = {
-  connectionError: boolean;
-  connectionEstablished: boolean;
-  connectionInterval: number | undefined;
-  customFlash: {
-    show: boolean;
-    children: any;
-    showForSeconds: number;
-    status: string;
-    critical: boolean;
-  };
-};
+type State = {};
 
 function App() {
   return (
@@ -27,7 +21,7 @@ function App() {
       <Router>
         <Switch>
           <Route path='/' exact>
-            <Redirect to="/home"/>
+            <Redirect to='/home' />
           </Route>
           <Route path='/login'>
             <p>Login</p>
@@ -45,5 +39,7 @@ function App() {
   );
 }
 
-export default connect(() => ({}), (dispatch: any) => ({
-}))(App);
+export default connect(
+  () => ({}),
+  (dispatch: any) => ({})
+)(App);

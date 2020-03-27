@@ -1,4 +1,4 @@
-import CoreInput, { InputTypes } from './CoreInput';
+import CoreInput, { InputTypes as _InputTypes } from './CoreInput';
 
-export {InputTypes}
+export type InputTypes = _InputTypes;
 export default CoreInput;
