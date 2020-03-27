@@ -11,5 +11,4 @@ RUN ["chmod", "+x", "/scripts/run_staging.sh"]
 RUN ["yarn"]
 ENTRYPOINT ["/scripts/run_staging.sh"]
 
-EXPOSE 4000
-EXPOSE 4001
+EXPOSE 4000 4001
