@@ -2,9 +2,18 @@ version: "3.7"
 services:
   admin:
     build:
-      context: .
+      context: react/admin
       dockerfile: "Dockerfile.dev"
     volumes:
       - ./react/admin:/app
     ports:
-      - "3000:8080"
+      - "5000:3000"
+  manager:
+    build:
+      context: react/manager
+      dockerfile: "Dockerfile.dev"
+    volumes:
+      - ./react/manager:/app
+    ports:
+      - "4000:3000"
+      - "4001:3001"
