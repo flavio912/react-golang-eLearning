@@ -7,7 +7,6 @@ import {
   Link,
   Redirect
 } from 'react-router-dom';
-import { connect } from 'react-redux';
 
 type Props = {
   classes: any;
@@ -18,11 +17,9 @@ type State = {};
 function App() {
   return (
     <div>
-      <Router>
+      {/* <Router>
         <Switch>
-          <Route path='/' exact>
-            <Redirect to='/home' />
-          </Route>
+          <Route path='/' exact></Route>
           <Route path='/login'>
             <p>Login</p>
           </Route>
@@ -34,12 +31,9 @@ function App() {
             </Switch>
           </Route>
         </Switch>
-      </Router>
+      </Router> */}
     </div>
   );
 }
 
-export default connect(
-  () => ({}),
-  (dispatch: any) => ({})
-)(App);
+export default App;
