@@ -24,7 +24,7 @@ build-manager-storybook:
   stage: build
   image: node:10.16.2
   script:
-    - cd ./react/manager
+    - cd react/manager
     - yarn
     - yarn run storybook-build
   tags:
@@ -38,7 +38,7 @@ build-manager-webpack:
   stage: build
   image: node:10.16.2
   script:
-    - cd ./react/manager
+    - cd react/manager
     - yarn
     - yarn run build
   tags:
