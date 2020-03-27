@@ -2,7 +2,7 @@ FROM node:10
 
 ENV HOME /app
 
-COPY . /react/admin
+COPY . /app
 WORKDIR /app
 
 RUN ["yarn"]

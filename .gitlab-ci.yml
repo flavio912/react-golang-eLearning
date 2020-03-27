@@ -14,7 +14,8 @@ build-admin:
     - yarn
     - yarn run build
   cache:
-    untracked: true
+    paths:
+      - node_modules
   tags:
     - big
   artifacts:
@@ -30,7 +31,8 @@ build-manager-storybook:
     - yarn
     - yarn run storybook-build
   cache:
-    untracked: true
+    paths:
+      - node_modules
 
   tags:
     - big
@@ -47,7 +49,8 @@ build-manager-webpack:
     - yarn
     - yarn run build
   cache:
-    untracked: true
+    paths:
+      - node_modules
   tags:
     - big
   artifacts:
@@ -59,8 +62,8 @@ deploy-manager-staging:
   stage: deploy-staging
   image: python:3.8-slim-buster
   environment:
-    name: staging
-    url: http://ttc-admin.devserver.london
+    name: manager-staging
+    url: http://ttc-manager.devserver.london
   only:
     - dev
   variables:
@@ -73,11 +76,11 @@ deploy-manager-staging:
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
 
-deploy-staging:
+deploy-admin-staging:
   stage: deploy-staging
   image: python:3.8-slim-buster
   environment:
-    name: staging
+    name: admin-staging
     url: http://ttc-admin.devserver.london
   only:
     - dev
