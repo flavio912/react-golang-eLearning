@@ -16,8 +16,8 @@
     "@types/react-jss": "^8.6.4",
     "@types/react-redux": "^7.1.7",
     "@types/react-router-dom": "^5.1.0",
-    "@typescript-eslint/eslint-plugin": "2.19.0",
-    "@typescript-eslint/parser": "^2.2.0",
+    "@typescript-eslint/eslint-plugin": "^2.25.0",
+    "@typescript-eslint/parser": "^2.25.0",
     "babel-eslint": "10.0.3",
     "babel-jest": "^24.9.0",
     "babel-loader": "8.0.6",
@@ -26,7 +26,7 @@
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "css-loader": "2.1.1",
-    "eslint": "^6.1.0",
+    "eslint": "^6.8.0",
     "eslint-config-react-app": "^5.0.2",
     "eslint-loader": "3.0.0",
     "eslint-plugin-flowtype": "3.13.0",
@@ -80,7 +80,19 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
-    "storybook": "start-storybook -p 3001"
+    "storybook": "start-storybook -p 3001",
+    "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,ts,tsx}": [
+      "eslint --fix",
+      "git add"
+    ]
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -151,6 +163,7 @@
     ]
   },
   "devDependencies": {
+    "@storybook/addon-docs": "^5.3.17",
     "@storybook/addon-info": "^5.3.17",
     "@storybook/addon-knobs": "^5.3.17",
     "@storybook/preset-typescript": "^3.0.0",
@@ -158,6 +171,7 @@
     "@types/storybook__react": "^4.0.2",
     "awesome-typescript-loader": "^5.2.1",
     "fork-ts-checker-webpack-plugin": "^4.1.2",
+    "prettier": "2.0.2",
     "prettifier": "^0.4.0",
     "react-docgen-typescript-loader": "^3.7.1",
     "ts-jest": "^25.2.1",

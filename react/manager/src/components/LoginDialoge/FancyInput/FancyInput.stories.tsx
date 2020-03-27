@@ -1,6 +1,6 @@
 import * as React from 'react';
 import FancyInput from './FancyInput';
-import { withKnobs } from '@storybook/addon-knobs';
+import { withKnobs, text, color } from '@storybook/addon-knobs';
 
 export default {
   title: 'Login/Fancy Input',
@@ -8,5 +8,11 @@ export default {
 }
 
 export const normal = () => {
-  return <FancyInput/>
+  return (
+    <FancyInput
+      label={text('Label', 'Email')}
+      labelColor={color('Label Color', 'black')}
+      placeholder={text('Placeholder', 'joe@joe.com')}
+    />
+  )
 }

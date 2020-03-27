@@ -22,11 +22,12 @@ const useStyles = createUseStyles((theme:any) => ({
 export type PaddingOptions = 'none' | 'small' | 'medium' | 'large';
 
 type Props = {
-  children: React.ReactNode,
-  padding?: PaddingOptions,
+  children: React.ReactNode
+  padding?: PaddingOptions
+  className: string
 }
 
-function Card({ children, padding = 'none' }: Props) {
+function Card({ children, padding = 'none', className }: Props) {
   const theme = useTheme()
   const classes = useStyles({theme});
 
@@ -38,7 +39,7 @@ function Card({ children, padding = 'none' }: Props) {
   }
 
   return (
-    <div className={classNames(classes.card, paddingLink[padding])}>
+    <div className={classNames(classes.card, paddingLink[padding], className)}>
       {children}
     </div>
   )

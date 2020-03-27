@@ -1,12 +1,19 @@
 import React, {useState, ChangeEvent} from 'react'
 import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 
 const styles = createUseStyles({
+  defaultStyles: {
+    border: 'none',
+    outline: 'none'
+  }
 
+  
 })
 
+export type InputTypes = 'text' | 'password' | 'email' | 'search' | 'tel' | 'number'
 type Props = {
-  type: 'text' | 'password' | 'email' | 'search' | 'tel' | 'number'
+  type: InputTypes
   className?: string
   placeholder?: string
   onChange: (text: string) => string | void, // Function given changed text and should return what to update it to 
@@ -14,7 +21,7 @@ type Props = {
 
 function CoreInput({type, className, placeholder = '', onChange}: Props) {
   const classes = styles();
-  const [value, setValue] = useState(placeholder);
+  const [value, setValue] = useState('');
   
   const updateInput = (event: ChangeEvent<HTMLInputElement>) => {
     const newValue = onChange(event.target.value) || event.target.value;
@@ -22,7 +29,7 @@ function CoreInput({type, className, placeholder = '', onChange}: Props) {
   }
 
   return (
-    <input type={type} className={className} value={value} onChange={updateInput}/>
+    <input type={type} className={classNames(className, classes.defaultStyles)} value={value} placeholder={placeholder} onChange={updateInput}/>
   )
 }
 

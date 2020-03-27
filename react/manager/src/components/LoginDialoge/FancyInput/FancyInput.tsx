@@ -1,24 +1,50 @@
 import * as React from 'react'
-import { createUseStyles } from 'react-jss';
-import CoreInput from '../../core/CoreInput';
+import { createUseStyles, useTheme } from 'react-jss';
+import CoreInput, { InputTypes } from '../../core/CoreInput';
+import classnames from 'classnames';
 
-const styles = createUseStyles({
-
+const useStyles = createUseStyles({
+  root: {
+    position: 'relative'
+  },
+  fancyInput: {
+    fontSize: 14,
+    border: '1px solid #08080814',
+    borderRadius: 5,
+    padding: '15px 10px',
+  },
+  label: {
+    position: 'absolute',
+    background: 'white',
+    left: 12,
+    top: '-7px',
+    fontSize: 13,
+    color: (props:any) => props.labelColor,
+    padding: '0px 14px',
+  }
 })
 
 type Props = {
-
+  label: string // Text for the label
+  labelColor?: string 
+  labelClassName?: string
+  placeholder?: string
+  type?: InputTypes
+  onChange?: (text: string) => string | void
 }
 
-function FancyInput(props: Props) {
-  const classes = styles();
+function FancyInput({ label, labelColor='black', labelClassName, placeholder = '', type = 'text', onChange = () => { }}: Props) {
+  const theme = useTheme();
+  const classes = useStyles({labelColor ,theme});
 
-  const onChange = (text: string) => {
-
+  const onTextChange = (text: string) => {
+    return onChange(text)
   }
+
   return (
-    <div>
-      <CoreInput placeholder="joe@blogs.com" type="email" onChange={onChange} />
+    <div className={classes.root}>
+      <span className={classnames(classes.label, labelClassName)}>{label}</span>
+      <CoreInput placeholder={placeholder} type={type} onChange={onTextChange} className={classes.fancyInput}/>
     </div>
   )
 }
