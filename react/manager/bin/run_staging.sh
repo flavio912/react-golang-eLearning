@@ -1,4 +1,4 @@
 #!/bin/bash
-
+yarn
 yarn run prodStorybook & 
-yarn run start
+yarn run startProd

@@ -49,9 +49,10 @@
     "workbox-webpack-plugin": "4.3.1"
   },
   "scripts": {
-    "start": "node scripts/start.js -p 4000",
+    "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js",
+    "startProd": "serve build -s -p 4000",
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
     "prodStorybook": "serve storybook_build -s -p 4001",
@@ -175,6 +176,7 @@
     "prettier": "^2.0.2",
     "prettifier": "^0.4.0",
     "react-docgen-typescript-loader": "^3.7.1",
+    "serve": "^11.3.0",
     "ts-jest": "^25.2.1",
     "ts-loader": "^6.2.2",
     "typescript": "3.6.3",
