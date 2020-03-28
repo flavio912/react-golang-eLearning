@@ -5,27 +5,69 @@ package database
 
 import (
 	"errors"
+	"fmt"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"golang.org/x/crypto/bcrypt"
+	"gopkg.in/yaml.v2"
 )
 
 var (
 	gormDB *gorm.DB
 )
 
-// Connects the database
+type config struct {
+	Database struct {
+		Host         string `yaml:"host"`
+		User         string `yaml:"user"`
+		Password     string `yaml:"password"`
+		DatabaseName string `yaml:"database"`
+		Port         string `yaml:"port"`
+	} `yaml:"database"`
+}
+
+//SetupDatabase - Connects the database
 func SetupDatabase() error {
-	db, errConnect := gorm.Open("postgres",
-		"host=localhost"+
-			" port=5432"+
-			" user=pathfinder"+
-			" dbname=hackernews"+
-			" password=pathfinder"+
-			" sslmode=disable",
-	)
+	filename, _ := filepath.Abs("database/config.yml")
+	yamlFile, err := ioutil.ReadFile(filename)
+	if err != nil {
+		panic(err)
+	}
+
+	var config config
+	err = yaml.Unmarshal(yamlFile, &config)
+	if err != nil {
+		panic(err)
+	}
+
+	// Configure database rds or local test
+	host := os.Getenv("RDS_HOSTNAME")
+	port := os.Getenv("RDS_PORT")
+	username := os.Getenv("RDS_USERNAME")
+	password := os.Getenv("RDS_PASSWORD")
+	dbName := os.Getenv("RDS_DB_NAME")
+
+	if host == "" {
+		host = config.Database.Host
+		port = config.Database.Port
+		username = config.Database.User
+		password = config.Database.Password
+		dbName = config.Database.DatabaseName
+	}
+
+	connectionString := fmt.Sprintf("host=%s port=%s user=%s dbname=%s password=%s sslmode=disable",
+		host,
+		port,
+		username,
+		dbName,
+		password)
+	fmt.Print(connectionString)
+	db, errConnect := gorm.Open("postgres", connectionString)
 	if errConnect != nil {
 		return errConnect
 	}
@@ -36,6 +78,7 @@ func SetupDatabase() error {
 	return nil
 }
 
+//CreateUser - Creates a new user from required data
 func CreateUser(email, password, name string) (*models.User, error) {
 	if doesUserWithEmailExist(email) {
 		return nil, errors.New("user with email: " + email + " already exists")

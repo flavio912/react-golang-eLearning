@@ -1,5 +1,24 @@
+# One docker-compose to rule them all...
 version: '3.7'
 services:
+  api:
+    build:
+      context: api
+      dockerfile: 'Dockerfile.dev'
+    volumes:
+      - ./api:/app
+    ports:
+      - '8080:8080'
+    depends_on:
+      - api_db
+
+  api_db:
+    build:
+      context: api
+      dockerfile: 'dev_env/postgres.Dockerfile'
+    ports:
+      - '5430:5432'
+
   admin:
     build:
       context: react/admin
@@ -8,6 +27,7 @@ services:
       - ./react/admin:/app
     ports:
       - '5000:3000'
+
   manager:
     build:
       context: react/manager

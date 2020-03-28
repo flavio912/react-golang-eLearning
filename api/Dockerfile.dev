@@ -1,0 +1,8 @@
+FROM golang:1.14.1-alpine
+
+COPY . /app
+WORKDIR /app
+
+RUN ["go", "get"]
+RUN ["go", "get", "github.com/pilu/fresh"]
+ENTRYPOINT [ "fresh" ]
