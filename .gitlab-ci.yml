@@ -39,6 +39,7 @@ build-manager-storybook:
   only:
     changes:
       - react/manager/**/*
+      - .gitlab-ci.yml
   tags:
     - big
   artifacts:
@@ -56,6 +57,7 @@ build-manager-webpack:
   only:
     changes:
       - react/manager/**/*
+      - .gitlab-ci.yml
   cache:
     paths:
       - node_modules
