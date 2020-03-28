@@ -44,6 +44,11 @@ Other services can be run separetely with:
 - `docker-compose start admin` (for the admin react)
 - `docker-compose start manager` (for the manager react)
 
+### GraphQL API
+
+The graphQL api is run from `http://localhost:8080/graphql`, a simple example request
+can be found here: https://documenter.getpostman.com/view/7917882/SzYW3ftG?version=latest
+
 ## Issues with docker + postgres
 
 Database migrations mixed in with chaning branches can cause your database to be in a weird state
