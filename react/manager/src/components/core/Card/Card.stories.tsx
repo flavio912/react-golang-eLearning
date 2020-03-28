@@ -1,5 +1,4 @@
 import * as React from "react";
-import { storiesOf } from "@storybook/react";
 import Card, { PaddingOptions } from "./Card";
 import { withKnobs, select } from "@storybook/addon-knobs";
 

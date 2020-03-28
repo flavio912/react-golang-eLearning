@@ -1,5 +1,4 @@
 import * as React from 'react';
-import PropTypes from 'prop-types';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 
