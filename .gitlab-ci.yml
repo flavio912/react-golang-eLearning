@@ -15,7 +15,7 @@ build-admin:
     - yarn run build
   cache:
     paths:
-      - node_modules
+      - node_modules/
   only:
     changes:
       - react/admin/**/*
@@ -35,7 +35,7 @@ build-manager-storybook:
     - yarn run storybook-build
   cache:
     paths:
-      - node_modules
+      - node_modules/
   only:
     changes:
       - react/manager/**/*
@@ -60,7 +60,7 @@ build-manager-webpack:
       - .gitlab-ci.yml
   cache:
     paths:
-      - node_modules
+      - node_modules/
   tags:
     - big
   artifacts:
@@ -77,6 +77,9 @@ deploy-manager-storybook:
     changes:
       - react/manager/**/*
       - .gitlab-ci.yml
+  cache:
+    paths:
+      - node_modules/
   script:
     - pip install awscli
     - apt-get update

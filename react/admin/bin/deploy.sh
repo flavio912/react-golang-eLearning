@@ -21,3 +21,5 @@ echo "Updating EB environment"
 aws elasticbeanstalk update-environment \
     --environment-name $EB_ENV \
       --version-label $TAG
+
+      

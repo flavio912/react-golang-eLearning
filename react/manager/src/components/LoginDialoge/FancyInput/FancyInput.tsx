@@ -3,9 +3,11 @@ import { createUseStyles, useTheme } from 'react-jss';
 import CoreInput, { InputTypes } from '../../core/CoreInput';
 import classnames from 'classnames';
 
-const useStyles = createUseStyles({
+const useStyles = createUseStyles((theme: any) => ({
   root: {
-    position: 'relative'
+    position: 'relative',
+    display: 'flex',
+    marginTop: theme.spacing(2)
   },
   fancyInput: {
     fontSize: 14,
@@ -22,7 +24,7 @@ const useStyles = createUseStyles({
     color: (props: any) => props.labelColor,
     padding: '0px 14px'
   }
-});
+}));
 
 type Props = {
   label: string; // Text for the label
