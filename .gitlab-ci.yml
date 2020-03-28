@@ -68,7 +68,7 @@ build-manager-webpack:
 
 deploy-manager-storybook:
   stage: deploy-staging
-  image: python3.8-slim-buster
+  image: python:3.8-slim-buster
   only:
     refs:
       - dev
