@@ -55,7 +55,6 @@
     "startProd": "node server.js",
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
-    "prodStorybook": "node server_storybook.js",
     "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix"
   },
   "husky": {

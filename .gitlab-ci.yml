@@ -66,6 +66,21 @@ build-manager-webpack:
     paths:
       - react/manager/build
 
+deploy-manager-storybook:
+  stage: deploy-staging
+  image: python3.8-slim-buster
+  only:
+    refs:
+      - dev
+    changes:
+      - react/manager/**/*
+  script:
+    - pip install awscli
+    - apt-get update
+    - apt-get install -y zip
+    - cd ./react/manager
+    - aws s3 sync ./storybook_build s3://ttc-manager-storybook/ --acl=public-read
+
 deploy-manager-staging:
   stage: deploy-staging
   image: python:3.8-slim-buster
