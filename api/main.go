@@ -5,13 +5,13 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
 
 	"github.com/golang/glog"
 	graphql "github.com/graph-gophers/graphql-go"
@@ -28,12 +28,7 @@ var (
 )
 
 // Reads and parses the schema from file. Associates resolver. Panics if can't read.
-func parseSchema(path string, resolver interface{}) *graphql.Schema {
-	bstr, err := ioutil.ReadFile(path)
-	if err != nil {
-		panic(err)
-	}
-	schemaString := string(bstr)
+func parseSchema(schemaString string, resolver interface{}) *graphql.Schema {
 	parsedSchema, err := graphql.ParseSchema(schemaString, resolver, opts...)
 	if err != nil {
 		panic(err)
@@ -89,7 +84,7 @@ func main() {
 	// Setup DevAdmin user
 	updateOrCreateDevAdmin()
 
-	schema := parseSchema("./schema.graphql", &resolvers.RootResolver{})
+	_schema := parseSchema(schema.String(), &resolvers.RootResolver{})
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -110,7 +105,7 @@ func main() {
 		token := strings.ReplaceAll(r.Header.Get("Authorization"), "Bearer ", "")
 		ctx := context.WithValue(context.Background(), "token", token)
 
-		resp := schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
+		resp := _schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
 
 		if len(resp.Errors) > 0 {
 			type ErrorResponse struct {

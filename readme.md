@@ -33,13 +33,15 @@ port : service
 
 - 8080 : Golang API
 
+**Don't use docker at your own risk, it handles a lot of the heavy lifting**
+
 ### Running only certain services
 
 If you only wish to run the services separately you can run `docker-compose start api_db` to
 just run the API database (which is available at port 5430, so as not to interfear with others).
 Other services can be run separetely with:
 
-- `docker-compose start api` (for the API only - no DB)
+- `docker-compose start api` (for the API, note this also starts the DB)
 - `docker-compose start api_db` (just for the database at port 5430)
 - `docker-compose start admin` (for the admin react)
 - `docker-compose start manager` (for the manager react)

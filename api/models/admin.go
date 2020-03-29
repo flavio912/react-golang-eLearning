@@ -33,6 +33,8 @@ func (admin *Admin) BeforeSave(scope *gorm.Scope) (err error) {
 	return
 }
 
+//
+
 // ValidateAdminPassword - Check if a password and email for an admin is valid
 func ValidateAdminPassword(email string, password string) error {
 	failedError := errors.New("Incorrect email or password")

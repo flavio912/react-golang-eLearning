@@ -1,0 +1,4 @@
+input AdminLogin {
+  email: String!
+  password: String!
+}

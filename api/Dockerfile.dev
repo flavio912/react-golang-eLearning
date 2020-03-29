@@ -3,6 +3,9 @@ FROM golang:1.14.1-alpine
 COPY . /app
 WORKDIR /app
 
-RUN ["go", "get"]
+RUN ["chmod", "+x", "dev_env/entrypoint.sh"]
+
+RUN ["go", "get", "github.com/cespare/reflex"]
 RUN ["go", "get", "github.com/pilu/fresh"]
-ENTRYPOINT [ "fresh" ]
+RUN ["go", "get", "-u", "github.com/jteeuwen/go-bindata/..."]
+ENTRYPOINT ["sh","./dev_env/entrypoint.sh"]

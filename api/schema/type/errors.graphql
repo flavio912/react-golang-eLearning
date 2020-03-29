@@ -1,0 +1,6 @@
+type Error {
+  helpText: String # User viewable error text
+  type: String!
+  title: String # User viewable error title
+  message: String # Error info for developer
+}

@@ -1,5 +1,7 @@
 package resolvers
 
-func (r *RootResolver) Info() (string, error) {
+type QueryResolver struct{}
+
+func (q *QueryResolver) Info() (string, error) {
 	return "This is the TTC server api", nil
 }

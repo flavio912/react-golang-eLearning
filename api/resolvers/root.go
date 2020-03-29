@@ -1,3 +1,6 @@
 package resolvers
 
-type RootResolver struct{}
+type RootResolver struct {
+	QueryResolver
+	MutationResolver
+}
