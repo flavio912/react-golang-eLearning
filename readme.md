@@ -44,6 +44,9 @@ Other services can be run separetely with:
 - `docker-compose start admin` (for the admin react)
 - `docker-compose start manager` (for the manager react)
 
+Its also much faster when you need to rebuild a particular service, just to run `docker-compose build <service>`
+rather than having to rebuild the entire thing.
+
 ### GraphQL API
 
 The graphQL api is run from `http://localhost:8080/graphql`, a simple example request

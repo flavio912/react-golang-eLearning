@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -59,9 +61,20 @@ func updateOrCreateDevAdmin() {
 	if err != nil {
 		glog.Error("Unable to create admin user")
 	}
+	glog.Info("Successfully created admin user")
+}
+
+func usage() {
+	flag.PrintDefaults()
+	os.Exit(2)
 }
 
 func main() {
+	flag.Usage = usage
+	flag.Set("logtostderr", "true")
+	flag.Set("stderrthreshold", "INFO")
+	flag.Parse()
+
 	// Load in the config.yaml file
 	if err := helpers.LoadConfig(); err != nil {
 		panic(err)
@@ -126,4 +139,5 @@ func main() {
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
+	glog.Flush()
 }
