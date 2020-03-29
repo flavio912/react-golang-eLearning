@@ -51,9 +51,12 @@ can be found here: https://documenter.getpostman.com/view/7917882/SzYW3ftG?versi
 
 ## Issues with docker + postgres
 
-Database migrations mixed in with chaning branches can cause your database to be in a weird state
-to sort this out just run `docker-compose up --force-recreate --renew-anon-volumes` to put your
+Database migrations mixed in with changing branches etc can cause your database to be in a weird state
+to sort this out just run `docker-compose up --force-recreate --renew-anon-volumes api_db` to put your
 database (and everything else) back to its initial state.
+
+> You will also need to run this when altering details about database columns, GORM won't add something
+> like a unique constraint if it has already created the column, so running this will sort that.
 
 ## Production
 When building into production the docker containers are all split into separate

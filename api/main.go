@@ -11,10 +11,10 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
-
+	"github.com/golang/glog"
 	graphql "github.com/graph-gophers/graphql-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/resolvers"
 )
@@ -39,13 +39,26 @@ func parseSchema(path string, resolver interface{}) *graphql.Schema {
 	return parsedSchema
 }
 
-func createDevAdmin() {
-	database.GormDB.Create(&models.Admin{
+// If admin exists with current email, update its fields, otherwise create a new one
+func updateOrCreateDevAdmin() {
+	adminUser := database.GormDB.Where("email = ?", helpers.Config.DevAdmin.Email).First(&models.Admin{})
+	newAdmin := &models.Admin{
 		Email:     helpers.Config.DevAdmin.Email,
 		Password:  helpers.Config.DevAdmin.Password,
 		FirstName: helpers.Config.DevAdmin.FirstName,
 		LastName:  helpers.Config.DevAdmin.LastName,
-	})
+	}
+	if !adminUser.RecordNotFound() {
+		// If found update with new values
+		adminUser.Update(newAdmin)
+
+		glog.Info("DevAdmin account found and updated")
+		return
+	}
+	err := database.GormDB.Create(newAdmin)
+	if err != nil {
+		glog.Error("Unable to create admin user")
+	}
 }
 
 func main() {
@@ -61,7 +74,7 @@ func main() {
 	migration.InitMigrations()
 
 	// Setup DevAdmin user
-	createDevAdmin()
+	updateOrCreateDevAdmin()
 
 	schema := parseSchema("./schema.graphql", &resolvers.RootResolver{})
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
