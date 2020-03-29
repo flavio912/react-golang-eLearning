@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
+
 	graphql "github.com/graph-gophers/graphql-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -45,6 +47,7 @@ func main() {
 	if errDb != nil {
 		panic(errDb)
 	}
+	migration.InitMigrations()
 
 	schema := parseSchema("./schema.graphql", &resolvers.RootResolver{})
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {

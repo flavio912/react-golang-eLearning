@@ -3,9 +3,8 @@ package models
 import (
 	"time"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
-
 	"github.com/jinzhu/gorm"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 )
 
 // User - The base model used for managers and delegates
@@ -21,7 +20,7 @@ type User struct {
 
 // BeforeSave - Hash the given password
 func (user *User) BeforeSave(scope *gorm.Scope) (err error) {
-	if pw, err := helpers.HashPassword(user.Password); err == nil {
+	if pw, err := auth.HashPassword(user.Password); err == nil {
 		scope.SetColumn("Password", pw)
 	}
 	return

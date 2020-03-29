@@ -10,7 +10,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 // GormDB The database object that can be used by middleware to get data
@@ -46,10 +45,6 @@ func SetupDatabase() error {
 	if errConnect != nil {
 		return errConnect
 	}
-
-	db.AutoMigrate(&models.Admin{})
-	db.AutoMigrate(&models.Manager{})
-	db.AutoMigrate(&models.Delegate{})
 
 	GormDB = db
 	return nil

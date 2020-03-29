@@ -1,10 +1,25 @@
 stages:
+  - test
   - build
   - deploy-staging
 
 variables:
   MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
   ADMIN_IMAGE_TAG: $CI_REGISTRY_IMAGE:admin
+
+test-api:
+  stage: test
+  image: golang:latest
+  script:
+    - cd api
+    - go test ./...
+
+test-api-coverage:
+  stage: test
+  image: golang:latest
+  script:
+    - cd api
+    - go test ./... -cover
 
 build-admin:
   stage: build

@@ -31,6 +31,6 @@ func (delegate *Delegate) GenerateToken(password string) (string, error) {
 		UUID: delegate.UUID,
 		Role: "delegate",
 	}
-	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.DelegateSecret)
+	token, err := auth.GenerateToken(claims, 24, helpers.Config.Jwt.DelegateSecret)
 	return token, err
 }
