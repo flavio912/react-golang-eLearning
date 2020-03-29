@@ -4,6 +4,11 @@ database:
   password: thd7sds3928dxxkjaKi8
   database: postgresdb
   port: 5432
+devAdmin:
+  firstName: Dev
+  lastName: Admin
+  email: admin@admin.com
+  password: iamasuperadmin
 jwt:
   delegateSecret: wKz%rR69b8vX24%RMJ&MpmYxNfR
   managerSecret: jHPKcfU@yXo#^9@Z9EHZ2eeDp9B

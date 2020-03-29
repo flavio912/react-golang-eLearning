@@ -13,9 +13,10 @@ import (
 // Admin - Model for admin users
 type Admin struct {
 	Base
-	Email    string
-	Password string
-	Name     string
+	Email     string `gorm:"unique"`
+	Password  string
+	FirstName string
+	LastName  string
 }
 
 // AdminClaims - JWT claims

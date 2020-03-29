@@ -9,6 +9,8 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 
 	graphql "github.com/graph-gophers/graphql-go"
@@ -37,6 +39,15 @@ func parseSchema(path string, resolver interface{}) *graphql.Schema {
 	return parsedSchema
 }
 
+func createDevAdmin() {
+	database.GormDB.Create(&models.Admin{
+		Email:     helpers.Config.DevAdmin.Email,
+		Password:  helpers.Config.DevAdmin.Password,
+		FirstName: helpers.Config.DevAdmin.FirstName,
+		LastName:  helpers.Config.DevAdmin.LastName,
+	})
+}
+
 func main() {
 	// Load in the config.yaml file
 	if err := helpers.LoadConfig(); err != nil {
@@ -48,6 +59,9 @@ func main() {
 		panic(errDb)
 	}
 	migration.InitMigrations()
+
+	// Setup DevAdmin user
+	createDevAdmin()
 
 	schema := parseSchema("./schema.graphql", &resolvers.RootResolver{})
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {

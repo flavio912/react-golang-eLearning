@@ -12,13 +12,6 @@ test-api:
   image: golang:latest
   script:
     - cd api
-    - go test ./...
-
-test-api-coverage:
-  stage: test
-  image: golang:latest
-  script:
-    - cd api
     - go test ./... -cover
 
 build-admin:

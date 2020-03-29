@@ -15,6 +15,12 @@ type yamlConfig struct {
 		DatabaseName string `yaml:"database"`
 		Port         string `yaml:"port"`
 	} `yaml:"database"`
+	DevAdmin struct {
+		Email     string `yaml:"email"`
+		FirstName string `yaml:"firstName"`
+		LastName  string `yaml:"lastName"`
+		Password  string `yaml:"password"`
+	} `yaml:"devAdmin"`
 	Jwt struct {
 		DelegateSecret string `yaml:"delegateSecret"`
 		ManagerSecret  string `yaml:"managerSecret"`
