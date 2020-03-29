@@ -11,6 +11,7 @@ import (
 
 	graphql "github.com/graph-gophers/graphql-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/resolvers"
 )
 
@@ -35,6 +36,11 @@ func parseSchema(path string, resolver interface{}) *graphql.Schema {
 }
 
 func main() {
+	// Load in the config.yaml file
+	if err := helpers.LoadConfig(); err != nil {
+		panic(err)
+	}
+
 	errDb := database.SetupDatabase()
 	if errDb != nil {
 		panic(errDb)

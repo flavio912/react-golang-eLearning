@@ -1,6 +1,0 @@
-database:
-  host: api_db
-  user: ttc-api
-  password: thd7sds3928dxxkjaKi8
-  database: postgresdb
-  port: 5432

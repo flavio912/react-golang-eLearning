@@ -3,11 +3,11 @@
 ## Project structure
 
 This repo is a monolith structure with loose coupling between each of the 3 react
-sites (thus they all have their own package.json etc). This is to make it easy to
-distibute the sites to different servers/EB environments if scaling requires it.
+sites (thus they all have their own package.json etc) and the api. This is to make
+it easy to distibute the sites to different servers/EB environments if scaling
+requires it.
 
-The monolith structure just saves us having to just back and forth between repos
-when working on the project
+The structure should save us having to jump back and forth between repos.
 
 ## Developing
 
@@ -19,7 +19,7 @@ run the first time, be patient.
 After you have run `docker-compose up --build` the first time, you can run it without
 the build flag `docker-compose up` and it should speed up significantly.
 
-By default, after successful start of the docker containers the services are hosted at:
+By default, after successful start of the docker containers the services are running at:
 
 port : service
 

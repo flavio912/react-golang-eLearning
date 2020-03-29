@@ -1,0 +1,10 @@
+database:
+  host: api_db
+  user: ttc-api
+  password: thd7sds3928dxxkjaKi8
+  database: postgresdb
+  port: 5432
+jwt:
+  delegateSecret: wKz%rR69b8vX24%RMJ&MpmYxNfR
+  managerSecret: jHPKcfU@yXo#^9@Z9EHZ2eeDp9B
+  adminSecret: 818!^Aq7oLTHj!@pjZZlTnbTG6!
