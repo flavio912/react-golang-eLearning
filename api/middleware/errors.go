@@ -10,6 +10,14 @@ func (e *SimpleError) Error() string {
 	return e.Message
 }
 
+// Extensions - Add resolver extensions to show error details on responses
+func (e *SimpleError) Extensions() map[string]interface{} {
+	return map[string]interface{}{
+		"type":    e.Type,
+		"message": e.Message,
+	}
+}
+
 // FullError - Detailed error message for use in resolvers
 type FullError struct {
 	Type     string // Error type
