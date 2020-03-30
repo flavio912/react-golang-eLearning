@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -36,43 +37,60 @@ func ValidatePassword(hash string, password string) error {
 	return nil
 }
 
-type Claims struct {
+// Role - A role type
+type Role string
+
+const (
+	// AdminRole - The admin role jwt mapping
+	AdminRole Role = "admin"
+	// ManagerRole - The manager role jwt mapping
+	ManagerRole Role = "manager"
+	// DelegateRole - The delegate role jwt mapping
+	DelegateRole Role = "delegate"
+)
+
+// UserClaims - Claims other than the default added to the JWT
+type UserClaims struct {
+	UUID string
+	Role Role
+}
+
+type trueClaims struct {
 	jwt.StandardClaims
-	Claims interface{} `json:"claims"`
+	Claims UserClaims `json:"claims"`
 }
 
 // ValidateToken - Checks the signature on a token and returns claims
-func ValidateToken(claims interface{}, token string, secret string) error {
-	newClaims := &Claims{
-		Claims: claims,
-	}
-	tkn, err := jwt.ParseWithClaims(token, newClaims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(secret), nil
+func ValidateToken(token string) (UserClaims, error) {
+
+	claims := &trueClaims{}
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(helpers.Config.Jwt.Secret), nil
 	})
+
 	if err != nil {
-		return err
+		return claims.Claims, err
 	}
 	if !tkn.Valid {
-		return errors.New("Token invalid")
+		return claims.Claims, errors.New("Token invalid")
 	}
 
-	claims = newClaims
-	return nil
+	return claims.Claims, nil
 }
 
 /*GenerateToken - TAKE CARE BEFORE USING DIRECTLY @temmerson
 Generates a jwt token given a secret and some claims
 */
-func GenerateToken(claims interface{}, expiresInHours float64, secret string) (string, error) {
-	finalClaims := &Claims{
+func GenerateToken(claims UserClaims, expiresInHours float64) (string, error) {
+	finalClaims := &trueClaims{
 		Claims: claims,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(expiresInHours) * time.Minute).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(expiresInHours) * time.Hour).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, finalClaims)
-	tokenString, errToken := token.SignedString([]byte(secret))
+	tokenString, errToken := token.SignedString([]byte(helpers.Config.Jwt.Secret))
 	if errToken != nil {
 		return "", errors.New("jwt error: " + errToken.Error())
 	}

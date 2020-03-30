@@ -1,5 +1,20 @@
-type AdminUser {
+type Admin {
+  uuid: String!
   email: String!
   firstName: String!
   lastName: String!
+}
+
+type AdminPage implements PaginatedQuery {
+  edges: [Admin]
+  pageInfo: PageInfo
+}
+
+input GetAdminInput {
+  uuid: String!
+}
+
+input AdminLogin {
+  email: String!
+  password: String!
 }

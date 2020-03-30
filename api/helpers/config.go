@@ -22,9 +22,8 @@ type yamlConfig struct {
 		Password  string `yaml:"password"`
 	} `yaml:"devAdmin"`
 	Jwt struct {
-		DelegateSecret string `yaml:"delegateSecret"`
-		ManagerSecret  string `yaml:"managerSecret"`
-		AdminSecret    string `yaml:"adminSecret"`
+		Secret               string  `yaml:"secret"`
+		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
 	} `yaml:"jwt"`
 }
 

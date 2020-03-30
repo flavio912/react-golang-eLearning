@@ -3,6 +3,8 @@ package auth
 import (
 	"encoding/json"
 	"testing"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
 func TestHashAndValidate(t *testing.T) {
@@ -38,25 +40,19 @@ func TestHashAndValidate(t *testing.T) {
 }
 
 func TestGenAndValidateToken(t *testing.T) {
-	secret := "thisisasupersecretpassword"
+	helpers.LoadConfig()
 
-	type Claims struct {
-		UUID    string `json:"uuid"`
-		HasCake string `json:"hasCake"`
+	claims := UserClaims{
+		UUID: "asdasd-asdadsad-asdad-asd",
+		Role: AdminRole,
 	}
 
-	claims := &Claims{
-		UUID:    "asdasd-asdadsad-asdad-asd",
-		HasCake: "true",
-	}
-
-	token, err := GenerateToken(claims, 3, secret)
+	token, err := GenerateToken(claims, 3)
 	if err != nil {
 		t.Error("Error generating token")
 	}
 
-	var returnedClaims Claims
-	validErr := ValidateToken(&returnedClaims, token, secret)
+	returnedClaims, validErr := ValidateToken(token)
 	if validErr != nil {
 		t.Error(validErr.Error())
 	}
@@ -67,7 +63,7 @@ func TestGenAndValidateToken(t *testing.T) {
 		t.Errorf("UUID claims do not match: returned > %s , given > %s", string(jsonRetClaims), string(jsonGivenClaims))
 	}
 
-	if returnedClaims.HasCake != claims.HasCake {
-		t.Errorf("hasCake claims do not match: returned > %s , given > %s", string(jsonRetClaims), string(jsonGivenClaims))
+	if returnedClaims.Role != claims.Role {
+		t.Errorf("Role claims do not match: returned > %s , given > %s", string(jsonRetClaims), string(jsonGivenClaims))
 	}
 }

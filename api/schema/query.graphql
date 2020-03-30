@@ -1,4 +1,17 @@
 # queries should not modify the db. executed simultaneously.
+type PageInfo {
+  pagesAfter: Int! # Number of pages after this one
+  offset: Int! # The offset of this page from the start
+  limit: Int! # The max shown per page
+  given: Int! # The number of items returned in the query
+}
+
+interface PaginatedQuery {
+  pageInfo: PageInfo
+}
+
 type Query {
   info: String!
+  admin(uuid: String): Admin!
+  admins(offset: Int, limit: Int): AdminPage!
 }

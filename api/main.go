@@ -74,7 +74,6 @@ func main() {
 	if err := helpers.LoadConfig(); err != nil {
 		panic(err)
 	}
-
 	errDb := database.SetupDatabase()
 	if errDb != nil {
 		panic(errDb)
@@ -103,6 +102,8 @@ func main() {
 
 		// todo: Pass JWT to resolvers for now; this should be moved to middleware
 		token := strings.ReplaceAll(r.Header.Get("Authorization"), "Bearer ", "")
+
+		// TODO: Should use context created with each request not background
 		ctx := context.WithValue(context.Background(), "token", token)
 
 		resp := _schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
