@@ -40,7 +40,7 @@ func TestHashAndValidate(t *testing.T) {
 }
 
 func TestGenAndValidateToken(t *testing.T) {
-	helpers.LoadConfig()
+	helpers.LoadConfig("../config.yml")
 
 	claims := UserClaims{
 		UUID: "asdasd-asdadsad-asdad-asd",

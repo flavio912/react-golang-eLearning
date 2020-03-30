@@ -71,7 +71,7 @@ func main() {
 	flag.Parse()
 
 	// Load in the config.yaml file
-	if err := helpers.LoadConfig(); err != nil {
+	if err := helpers.LoadConfig("config.yml"); err != nil {
 		panic(err)
 	}
 	errDb := database.SetupDatabase()

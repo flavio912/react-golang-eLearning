@@ -31,8 +31,8 @@ type yamlConfig struct {
 var Config yamlConfig
 
 // LoadConfig - Initialises the config by fetching it from the config file
-func LoadConfig() error {
-	filename, _ := filepath.Abs("config.yml")
+func LoadConfig(path string) error {
+	filename, _ := filepath.Abs(path)
 	yamlFile, err := ioutil.ReadFile(filename)
 	if err != nil {
 		panic(err)
