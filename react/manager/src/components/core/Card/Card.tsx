@@ -1,11 +1,12 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
 
-const useStyles = createUseStyles((theme: any) => ({
+const useStyles = createUseStyles((theme: Theme) => ({
   card: {
-    boxShadow: '0px 2px 10px #0000001f',
-    borderRadius: theme.borderRadius
+    boxShadow: theme.shadows.primary,
+    borderRadius: theme.primaryBorderRadius
   },
   smallPadding: {
     padding: '15px 20px'

@@ -2,8 +2,9 @@ import * as React from 'react';
 import Card from '../core/Card';
 import FancyInput from './FancyInput';
 import { createUseStyles, useTheme } from 'react-jss';
+import { Theme } from 'helpers/theme';
 
-const useStyles = createUseStyles((theme: any) => ({
+const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
@@ -11,10 +12,10 @@ const useStyles = createUseStyles((theme: any) => ({
   },
   heading: {
     fontWeight: 800,
-    color: theme.color.primaryBlack
+    color: theme.colors.primaryBlack
   },
   subheading: {
-    color: '#22233194',
+    color: theme.colors.secondaryGrey,
     fontWeight: 400,
     fontSize: 15,
     marginTop: 0,

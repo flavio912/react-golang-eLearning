@@ -2,8 +2,9 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import CoreInput, { InputTypes } from '../../core/CoreInput';
 import classnames from 'classnames';
+import { Theme } from 'helpers/theme';
 
-const useStyles = createUseStyles((theme: any) => ({
+const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     position: 'relative',
     display: 'flex',
