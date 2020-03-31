@@ -20,14 +20,18 @@ type adminInput struct {
 
 // Admins - Get a list of admins
 func (q *QueryResolver) Admins(ctx context.Context, args gentypes.PaginatedInput) (*AdminPageResolver, error) {
-	admins, err := middleware.GetAllAdmins(ctx.Value("token").(string))
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return &AdminPageResolver{}, err
+	}
+	admins, err := grant.GetAllAdmins()
 	if err != nil {
 		return nil, err
 	}
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
-			admin: &admin,
+			admin: admin,
 		})
 	}
 	return &AdminPageResolver{

@@ -2,6 +2,7 @@ package loader
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/graph-gophers/dataloader"
 )
@@ -28,4 +29,30 @@ func (m Map) Attach(ctx context.Context) context.Context {
 		ctx = context.WithValue(ctx, k, dataloader.NewBatchedLoader(batchFunc))
 	}
 	return ctx
+}
+
+func extract(ctx context.Context, k contextKey) (*dataloader.Loader, error) {
+	res, ok := ctx.Value(k).(*dataloader.Loader)
+	if !ok {
+		return nil, fmt.Errorf("cannot find a loader: %s", k)
+	}
+	return res, nil
+}
+
+func loadBatchError(err error, n int) []*dataloader.Result {
+	r := &dataloader.Result{Error: err}
+	res := make([]*dataloader.Result, 0, n)
+	for i := 0; i < n; i++ {
+		res = append(res, r)
+	}
+	return res
+}
+
+func indexByString(uuids []string, uuid string) int {
+	for i, v := range uuids {
+		if uuid == v {
+			return i
+		}
+	}
+	panic(fmt.Sprintf("could not find %s in %v", uuid, uuids))
 }

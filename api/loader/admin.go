@@ -14,18 +14,33 @@ import (
 type adminLoader struct {
 }
 
-func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
-	// Get batch from DB
-	jwt := ctx.Value("token").(string)
-
-	admins, err := middleware.GetAdminsByUUID(jwt, keys.Keys())
-	if err != nil {
-		return []*dataloader.Result{}
+func getKeyList(loadedItems []*gentypes.Admin) []string {
+	keys := make([]string, len(loadedItems))
+	for i, item := range loadedItems {
+		keys[i] = item.UUID
 	}
-	res := make([]*dataloader.Result, 0)
+	return keys
+}
+
+func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+	n := len(keys)
+
+	// Get batch from middleware
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return loadBatchError(err, n)
+	}
+
+	admins, err := grant.GetAdminsByUUID(keys.Keys())
+	if err != nil {
+		return loadBatchError(err, n)
+	}
+
+	res := make([]*dataloader.Result, n)
 	for _, admin := range admins {
 		// results must be in the same order as keys
-		res = append(res, &dataloader.Result{Data: &admin})
+		i := indexByString(getKeyList(admins), admin.Key())
+		res[i] = &dataloader.Result{Data: admin}
 	}
 	return res
 }
@@ -43,15 +58,8 @@ func LoadAdmin(ctx context.Context, uuid string) (*gentypes.Admin, error) {
 	}
 	res, ok := v.(*gentypes.Admin)
 	if !ok {
-		return nil, fmt.Errorf("wrong type: %T", v)
+		return nil, fmt.Errorf("Wrong type: %T", v)
 	}
-	return res, nil
-}
 
-func extract(ctx context.Context, k contextKey) (*dataloader.Loader, error) {
-	res, ok := ctx.Value(k).(*dataloader.Loader)
-	if !ok {
-		return nil, fmt.Errorf("cannot find a loader: %s", k)
-	}
 	return res, nil
 }

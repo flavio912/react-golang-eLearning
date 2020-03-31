@@ -1,4 +1,4 @@
-package middleware
+package errors
 
 // SimpleError - A less complex error
 type SimpleError struct {

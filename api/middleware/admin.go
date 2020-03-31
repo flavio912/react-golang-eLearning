@@ -1,37 +1,13 @@
 package middleware
 
 import (
-	"github.com/golang/glog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-// AdminErrors - All error responses from admin middleware
-var (
-	ErrUserNotFound = FullError{
-		Type:     "ErrUserNotFound",
-		Message:  "Could not find user",
-		Title:    "User not found",
-		HelpText: "Couldn't find a user with that email address",
-	}
-	ErrAuthFailed = FullError{
-		Type:     "ErrAuthFailed",
-		Message:  "Email or password incorrect",
-		Title:    "Email or password incorrect",
-		HelpText: "Please try again",
-	}
-	ErrUnauthorized = SimpleError{
-		Type:    "ErrUnauthorized",
-		Message: "User does not have permissions for request",
-	}
-	ErrTokenInvalid = SimpleError{
-		Type:    "ErrTokenInvalid",
-		Message: "Given token is broken or expired",
-	}
-)
-
+// Take in a model, retuns the gentype for it
 func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
 		UUID:      modAdmin.UUID.String(),
@@ -41,69 +17,53 @@ func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
 	}
 }
 
-func modelsToGentypes(admins []models.Admin) []gentypes.Admin {
-	var returnAdmins []gentypes.Admin
+func adminModelsToGentypes(admins []models.Admin) []*gentypes.Admin {
+	var returnAdmins []*gentypes.Admin
 	for _, admin := range admins {
 		newAdmin := adminModelToGentype(admin)
-		returnAdmins = append(returnAdmins, newAdmin)
+		returnAdmins = append(returnAdmins, &newAdmin)
 	}
 	return returnAdmins
 }
 
-// TODO create middleware function for validation of the tokens
-
-func GetAdminsByUUID(jwt string, uuids []string) ([]gentypes.Admin, error) {
-	claims, err := auth.ValidateToken(jwt)
-	if err != nil {
-		glog.Info(err.Error())
-		return []gentypes.Admin{}, &ErrTokenInvalid
-	}
-	if claims.Role == auth.AdminRole {
+// GetAdminsByUUID
+func (g *grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
+	if g.IsAdmin {
 		var admins []models.Admin
 		err := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins).Error
 		if err != nil {
-			return []gentypes.Admin{}, nil
+			return []*gentypes.Admin{}, &errors.ErrNotFound
 		}
-		return modelsToGentypes(admins), nil
+		return adminModelsToGentypes(admins), nil
 	}
-	return []gentypes.Admin{}, nil
+	return []*gentypes.Admin{}, nil
 }
 
-// GetAllAdmins - Get all of the admins
-func GetAllAdmins(jwt string) ([]gentypes.Admin, error) {
-	claims, err := auth.ValidateToken(jwt)
-	if err != nil {
-		glog.Info(err.Error())
-		return []gentypes.Admin{}, &ErrTokenInvalid
+// GetAllAdmins gets all of the admins in the db, or returns an error
+func (g *grant) GetAllAdmins() ([]*gentypes.Admin, error) {
+	if !g.IsAdmin {
+		return []*gentypes.Admin{}, &errors.ErrUnauthorized
 	}
-	if claims.Role == auth.AdminRole {
-		var admins []models.Admin
-		err := database.GormDB.Find(&admins).Error
-		if err != nil {
-			return []gentypes.Admin{}, err
-		}
 
-		var returnAdmins []gentypes.Admin
-		for _, admin := range admins {
-			newAdmin := adminModelToGentype(admin)
-			returnAdmins = append(returnAdmins, newAdmin)
-		}
-		return returnAdmins, nil
+	var admins []models.Admin
+	err := database.GormDB.Find(&admins).Error
+	if err != nil {
+		return []*gentypes.Admin{}, err
 	}
-	return []gentypes.Admin{}, &ErrUnauthorized
+	var returnAdmins []*gentypes.Admin
+	for _, admin := range admins {
+		newAdmin := adminModelToGentype(admin)
+		returnAdmins = append(returnAdmins, &newAdmin)
+	}
+	return returnAdmins, nil
 }
 
-// GetAdmin - Get an admin object from a jwt
-func GetAdmin(jwt string, uuid *string) (gentypes.Admin, error) {
-	claims, err := auth.ValidateToken(jwt)
-	if err != nil {
-		glog.Info(err.Error())
-		return gentypes.Admin{}, &ErrTokenInvalid
-	}
-	if claims.Role == auth.AdminRole {
+// GetAdmin gets an admin object from a jwt
+func (g *grant) GetAdmin(uuid *string) (gentypes.Admin, error) {
+	if g.IsAdmin {
 		// Get the admin user from the jwt
 		var admin models.Admin
-		err := database.GormDB.Where("uuid = ?", claims.UUID).First(&admin).Error
+		err := database.GormDB.Where("uuid = ?", g.Claims.UUID).First(&admin).Error
 		if err != nil {
 			return gentypes.Admin{}, err
 		}
@@ -117,5 +77,5 @@ func GetAdmin(jwt string, uuid *string) (gentypes.Admin, error) {
 		}, nil
 
 	}
-	return gentypes.Admin{}, &ErrUnauthorized
+	return gentypes.Admin{}, &errors.ErrUnauthorized
 }
