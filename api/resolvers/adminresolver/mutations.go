@@ -14,10 +14,10 @@ type AuthToken struct {
 }
 
 // AdminLogin - Resolver for getting an authToken
-func (m *MutationResolver) AdminLogin(args struct{ Input gentypes.AdminLoginInput }) (*AuthToken, error) {
-	token, err := middleware.GetAccessToken(args.Input.Email, args.Input.Password)
+func (m *MutationResolver) AdminLogin(args struct{ Input gentypes.AdminLoginInput }) (*gentypes.AuthToken, error) {
+	token, err := middleware.GetAdminAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
-	return &AuthToken{Token: token}, nil
+	return &gentypes.AuthToken{Token: token}, nil
 }

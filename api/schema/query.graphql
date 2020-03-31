@@ -12,6 +12,7 @@ interface PaginatedQuery {
 
 type Query {
   info: String!
-  admin(uuid: String): Admin!
+  admin(uuid: String): Admin
   admins(offset: Int, limit: Int): AdminPage!
+  # manager(uuid: String): CompanyManager
 }

@@ -1,4 +1,5 @@
 # mutations can modify the db. executed sequentially.
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
+  managerLogin(input: ManagerLogin!): AuthToken
 }

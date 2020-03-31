@@ -37,14 +37,14 @@ port : service
 
 ### Running only certain services
 
-If you only wish to run the services separately you can run `docker-compose start api_db` to
+If you only wish to run the services separately you can run `docker-compose up api_db` to
 just run the API database (which is available at port 5430, so as not to interfear with others).
 Other services can be run separetely with:
 
-- `docker-compose start api` (for the API, note this also starts the DB)
-- `docker-compose start api_db` (just for the database at port 5430)
-- `docker-compose start admin` (for the admin react)
-- `docker-compose start manager` (for the manager react)
+- `docker-compose up api` (for the API, note this also starts the DB)
+- `docker-compose up api_db` (just for the database at port 5430)
+- `docker-compose up admin` (for the admin react)
+- `docker-compose up manager` (for the manager react)
 
 Its also much faster when you need to rebuild a particular service, just to run `docker-compose build <service>`
 rather than having to rebuild the entire thing.

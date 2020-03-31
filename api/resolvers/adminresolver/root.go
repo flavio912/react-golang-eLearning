@@ -1,7 +1,7 @@
 package adminresolver
 
-// RootResolver - Resolves all admin spefic routes
-type RootResolver struct {
+// AdminRoot - Resolves all admin spefic querys and mutations
+type AdminRoot struct {
 	QueryResolver
 	MutationResolver
 }

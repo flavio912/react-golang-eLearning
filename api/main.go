@@ -10,6 +10,7 @@ import (
 	"os"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
 
@@ -78,12 +79,15 @@ func main() {
 	if errDb != nil {
 		panic(errDb)
 	}
+	defer database.GormDB.Close()
 	migration.InitMigrations()
 
+	loaders := loader.Init()
 	// Setup DevAdmin user
 	updateOrCreateDevAdmin()
 
 	_schema := parseSchema(schema.String(), &resolvers.RootResolver{})
+
 	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
@@ -105,7 +109,7 @@ func main() {
 
 		// TODO: Should use context created with each request not background
 		ctx := context.WithValue(context.Background(), "token", token)
-
+		ctx = loaders.Attach(ctx)
 		resp := _schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
 
 		if len(resp.Errors) > 0 {

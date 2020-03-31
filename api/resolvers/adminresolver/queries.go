@@ -3,6 +3,8 @@ package adminresolver
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -18,7 +20,7 @@ type adminInput struct {
 
 // Admins - Get a list of admins
 func (q *QueryResolver) Admins(ctx context.Context, args gentypes.PaginatedInput) (*AdminPageResolver, error) {
-	admins, err := middleware.GetAdmins(ctx.Value("token").(string))
+	admins, err := middleware.GetAllAdmins(ctx.Value("token").(string))
 	if err != nil {
 		return nil, err
 	}
@@ -43,9 +45,8 @@ func (q *QueryResolver) Admins(ctx context.Context, args gentypes.PaginatedInput
 
 // Admin -
 func (q *QueryResolver) Admin(ctx context.Context, args *adminInput) (*AdminResolver, error) {
-	jwt := ctx.Value("token").(string)
+	//jwt := ctx.Value("token").(string)
+	admin, err := loader.LoadAdmin(ctx, *args.UUID)
 
-	admin, err := middleware.GetAdmin(jwt, args.UUID)
-
-	return &AdminResolver{admin: &admin}, err
+	return &AdminResolver{admin: admin}, err
 }

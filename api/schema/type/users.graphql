@@ -1,0 +1,38 @@
+interface User {
+  uuid: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+}
+
+input ManagerLogin {
+  email: String!
+  password: String!
+}
+
+type CompanyManager implements User {
+  uuid: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+}
+
+# type Delegate implements User {
+#   uuid: UUID!
+#   email: String!
+#   firstName: String!
+#   lastName: String!
+#   telephone: String!
+#   lastLogin: Date
+#   jobTitle: String!
+#   courses(offset: Int, limit: Int, filter: DelegateCourseFilter): Courses
+#   countCourses(filter: DelegateCourseFilter): Int
+#   certificates(offset: Int, limit: Int): Certificates
+#   countCertificates(filter: DelegateCertificateFilter): Int
+# }

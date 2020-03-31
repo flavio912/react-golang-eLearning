@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/golang/glog"
-	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -33,24 +32,6 @@ var (
 	}
 )
 
-// GetAccessToken - Get an access token from the users email and password
-func GetAccessToken(email string, password string) (string, error) {
-	admin := &models.Admin{}
-
-	if err := database.GormDB.Where("email = ?", email).First(&admin).Error; gorm.IsRecordNotFoundError(err) {
-		glog.Infof("Login failed, user not found - Given: %s", email)
-		return "", &ErrUserNotFound
-	}
-
-	token, err := admin.GenerateToken(password)
-	if err != nil {
-		glog.Info(err.Error())
-		return "", &ErrAuthFailed
-	}
-
-	return token, nil
-}
-
 func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
 		UUID:      modAdmin.UUID.String(),
@@ -60,8 +41,36 @@ func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
 	}
 }
 
-// GetAdmins - Get all of the admins
-func GetAdmins(jwt string) ([]gentypes.Admin, error) {
+func modelsToGentypes(admins []models.Admin) []gentypes.Admin {
+	var returnAdmins []gentypes.Admin
+	for _, admin := range admins {
+		newAdmin := adminModelToGentype(admin)
+		returnAdmins = append(returnAdmins, newAdmin)
+	}
+	return returnAdmins
+}
+
+// TODO create middleware function for validation of the tokens
+
+func GetAdminsByUUID(jwt string, uuids []string) ([]gentypes.Admin, error) {
+	claims, err := auth.ValidateToken(jwt)
+	if err != nil {
+		glog.Info(err.Error())
+		return []gentypes.Admin{}, &ErrTokenInvalid
+	}
+	if claims.Role == auth.AdminRole {
+		var admins []models.Admin
+		err := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins).Error
+		if err != nil {
+			return []gentypes.Admin{}, nil
+		}
+		return modelsToGentypes(admins), nil
+	}
+	return []gentypes.Admin{}, nil
+}
+
+// GetAllAdmins - Get all of the admins
+func GetAllAdmins(jwt string) ([]gentypes.Admin, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
 		glog.Info(err.Error())
@@ -74,7 +83,6 @@ func GetAdmins(jwt string) ([]gentypes.Admin, error) {
 			return []gentypes.Admin{}, err
 		}
 
-		// Map admin model onto the gentype model
 		var returnAdmins []gentypes.Admin
 		for _, admin := range admins {
 			newAdmin := adminModelToGentype(admin)
@@ -100,6 +108,7 @@ func GetAdmin(jwt string, uuid *string) (gentypes.Admin, error) {
 			return gentypes.Admin{}, err
 		}
 
+		// An admin can get this info about any other admin
 		return gentypes.Admin{
 			UUID:      admin.UUID.String(),
 			Email:     admin.Email,

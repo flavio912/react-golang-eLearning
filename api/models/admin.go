@@ -31,8 +31,21 @@ func (admin *Admin) BeforeSave(scope *gorm.Scope) (err error) {
 	return
 }
 
-// ValidateAdminPassword - Check if a password and email for an admin is valid
-func ValidateAdminPassword(email string, password string) error {
+func (admin *Admin) getHash() string {
+	return admin.Password
+}
+
+// FindUser - Find the user by their email address
+func (*Admin) FindUser(email string) (IUser, error) {
+	var admin Admin
+	if err := database.GormDB.Where("email = ?", email).First(&admin).Error; err != nil {
+		return &admin, err
+	}
+	return &admin, nil
+}
+
+// ValidatePassword - Check if a password and email for an admin is valid
+func (*Admin) ValidatePassword(email string, password string) error {
 	failedError := errors.New("Incorrect email or password")
 
 	// Find the user
@@ -56,8 +69,8 @@ This function purposely takes in and verifies the password
 circumstances be given without the password - @temmerson
 */
 func (admin *Admin) GenerateToken(password string) (string, error) {
-	if err := ValidateAdminPassword(admin.Email, password); err != nil {
-		return "", errors.New("Invalid password given to generate token")
+	if err := admin.ValidatePassword(admin.Email, password); err != nil {
+		return "", ErrPasswordInvalid
 	}
 	claims := auth.UserClaims{
 		UUID: admin.UUID.String(),
