@@ -2,8 +2,10 @@ package middleware
 
 import (
 	"github.com/golang/glog"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 // grant is purposely not exported so that the Authenticate method cannot be bypassed
@@ -44,4 +46,16 @@ func Authenticate(jwt string) (*grant, error) {
 		IsManager:  isManager,
 		IsDelegate: isDelegate,
 	}, nil
+}
+
+func getPage(query *gorm.DB, page *gentypes.Page) *gorm.DB {
+	if page != nil {
+		if page.Limit != nil {
+			query = query.Limit(*page.Limit)
+		}
+		if page.Offset != nil {
+			query = query.Offset(*page.Offset)
+		}
+	}
+	return query
 }

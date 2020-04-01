@@ -8,8 +8,8 @@ type PageInfo struct {
 	Given      int32 // The number of items returned in the query
 }
 
-// PaginatedInput - Used for queries to specify how much data to return
-type PaginatedInput struct {
-	Offset *int
-	Limit  *int
+// Page is the PaginatedInput type used for queries to specify how much data to return
+type Page struct {
+	Offset *int32
+	Limit  *int32
 }

@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -26,56 +28,50 @@ func adminModelsToGentypes(admins []models.Admin) []*gentypes.Admin {
 	return returnAdmins
 }
 
-// GetAdminsByUUID
-func (g *grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
-	if g.IsAdmin {
-		var admins []models.Admin
-		err := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins).Error
-		if err != nil {
-			return []*gentypes.Admin{}, &errors.ErrNotFound
-		}
-		return adminModelsToGentypes(admins), nil
-	}
-	return []*gentypes.Admin{}, nil
+type AdminFilter struct {
+	Email string
+	Name  string
 }
 
-// GetAllAdmins gets all of the admins in the db, or returns an error
-func (g *grant) GetAllAdmins() ([]*gentypes.Admin, error) {
+// GetAdminsByUUID
+func (g *grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
 	if !g.IsAdmin {
 		return []*gentypes.Admin{}, &errors.ErrUnauthorized
 	}
 
 	var admins []models.Admin
-	err := database.GormDB.Find(&admins).Error
+	err := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins).Error
+	if err != nil {
+		return []*gentypes.Admin{}, &errors.ErrNotFound
+	}
+	return adminModelsToGentypes(admins), nil
+}
+
+// GetAdmins
+func (g *grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes.Admin, error) {
+	if !g.IsAdmin {
+		return []*gentypes.Admin{}, &errors.ErrUnauthorized
+	}
+
+	var admins []models.Admin
+
+	// TODO: LIKE querys should be replaced with elasticsearch
+	query := database.GormDB
+	if filter != nil {
+		if filter.Email != "" {
+			query = query.Where("email LIKE ?", fmt.Sprintf("%%%s%%", filter.Email))
+		}
+		if filter.Name != "" {
+			query = query.Where("firstname LIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
+			query = query.Where("lastname LIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
+		}
+	}
+
+	query = getPage(query, page)
+	err := query.Find(&admins).Error
 	if err != nil {
 		return []*gentypes.Admin{}, err
 	}
-	var returnAdmins []*gentypes.Admin
-	for _, admin := range admins {
-		newAdmin := adminModelToGentype(admin)
-		returnAdmins = append(returnAdmins, &newAdmin)
-	}
-	return returnAdmins, nil
-}
 
-// GetAdmin gets an admin object from a jwt
-func (g *grant) GetAdmin(uuid *string) (gentypes.Admin, error) {
-	if g.IsAdmin {
-		// Get the admin user from the jwt
-		var admin models.Admin
-		err := database.GormDB.Where("uuid = ?", g.Claims.UUID).First(&admin).Error
-		if err != nil {
-			return gentypes.Admin{}, err
-		}
-
-		// An admin can get this info about any other admin
-		return gentypes.Admin{
-			UUID:      admin.UUID.String(),
-			Email:     admin.Email,
-			FirstName: admin.FirstName,
-			LastName:  admin.LastName,
-		}, nil
-
-	}
-	return gentypes.Admin{}, &errors.ErrUnauthorized
+	return adminModelsToGentypes(admins), nil
 }

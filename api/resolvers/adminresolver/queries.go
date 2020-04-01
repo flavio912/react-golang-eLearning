@@ -19,12 +19,12 @@ type adminInput struct {
 }
 
 // Admins - Get a list of admins
-func (q *QueryResolver) Admins(ctx context.Context, args gentypes.PaginatedInput) (*AdminPageResolver, error) {
+func (q *QueryResolver) Admins(ctx context.Context, args gentypes.Page) (*AdminPageResolver, error) {
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &AdminPageResolver{}, err
 	}
-	admins, err := grant.GetAllAdmins()
+	admins, err := grant.GetAdmins(&args, nil)
 	if err != nil {
 		return nil, err
 	}
