@@ -1,4 +1,4 @@
-package managerresolver
+package resolvers
 
 import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
