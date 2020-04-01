@@ -109,6 +109,8 @@ func main() {
 
 		// TODO: Should use context created with each request not background
 		ctx := context.WithValue(context.Background(), "token", token)
+
+		// TODO: make sure loader context is not cached across requests
 		ctx = loaders.Attach(ctx)
 		resp := _schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
 

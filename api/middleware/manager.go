@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -23,8 +24,16 @@ func managerModelToGentype(manager models.Manager) gentypes.Manager {
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
 	if g.IsAdmin {
-		err := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers).Error
-		return managers, err
+		db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
+		if db.Error != nil {
+			if db.RecordNotFound() {
+				return managers, &errors.ErrNotFound
+			}
+			glog.Errorf("DB Error: %s", db.Error.Error())
+			return managers, &errors.ErrWhileHandling
+		}
+
+		return managers, nil
 	}
 
 	return managers, &errors.ErrUnauthorized

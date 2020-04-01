@@ -1,4 +1,4 @@
-# queries should not modify the db. executed simultaneously.
+# queries should not modify the db. executed in parrallel
 type PageInfo {
   pagesAfter: Int! # Number of pages after this one
   offset: Int! # The offset of this page from the start

@@ -30,4 +30,9 @@ var (
 		Type:    "ErrNotFound",
 		Message: "Unable to find the requested item[s]",
 	}
+	// ErrWhileHandling is used when an unknown error occured
+	ErrWhileHandling = SimpleError{
+		Type:    "ErrWhileHandling",
+		Message: "There was an error while handling the request",
+	}
 )

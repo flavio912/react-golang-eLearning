@@ -14,12 +14,26 @@ import (
 type managerLoader struct {
 }
 
-func getManagerKeyList(loadedItems []gentypes.Manager) []string {
-	keys := make([]string, len(loadedItems))
-	for i, item := range loadedItems {
-		keys[i] = item.UUID
+/*sortManagers is a reasonably efficient way to order managers,
+should be something a bit above O(2n)
+*/
+func sortManagers(managers []gentypes.Manager, keys dataloader.Keys) []gentypes.Manager {
+	var (
+		k          = keys.Keys()
+		managerMap = map[string]gentypes.Manager{}
+		sorted     = make([]gentypes.Manager, len(k))
+	)
+
+	// Put managers into map of their UUIDs
+	for _, manager := range managers {
+		managerMap[manager.UUID] = manager
 	}
-	return keys
+
+	// Link keys to the managers
+	for i, key := range keys {
+		sorted[i] = managerMap[key.String()]
+	}
+	return sorted
 }
 
 func (l *managerLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
@@ -36,10 +50,10 @@ func (l *managerLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*
 		return loadBatchError(err, n)
 	}
 
+	managers = sortManagers(managers, keys)
 	res := make([]*dataloader.Result, n)
-	for _, manager := range managers {
+	for i, manager := range managers {
 		// results must be in the same order as keys
-		i := indexByString(getManagerKeyList(managers), manager.UUID)
 		res[i] = &dataloader.Result{Data: manager}
 	}
 	return res
