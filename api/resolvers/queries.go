@@ -16,10 +16,6 @@ func (q *QueryResolver) Info() (string, error) {
 	return "This is the TTC server api", nil
 }
 
-type adminInput struct {
-	UUID *string
-}
-
 // Admins - Get a list of admins
 func (q *QueryResolver) Admins(ctx context.Context, args gentypes.Page) (*AdminPageResolver, error) {
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
@@ -33,7 +29,7 @@ func (q *QueryResolver) Admins(ctx context.Context, args gentypes.Page) (*AdminP
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
-			admin: admin,
+			admin: *admin,
 		})
 	}
 	return &AdminPageResolver{
@@ -49,10 +45,18 @@ func (q *QueryResolver) Admins(ctx context.Context, args gentypes.Page) (*AdminP
 	}, nil
 }
 
-// Admin -
-func (q *QueryResolver) Admin(ctx context.Context, args *adminInput) (*AdminResolver, error) {
-	//jwt := ctx.Value("token").(string)
-	admin, err := loader.LoadAdmin(ctx, *args.UUID)
+// Admin gets a single admin
+func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID string }) (*AdminResolver, error) {
+	admin, err := loader.LoadAdmin(ctx, args.UUID)
 
 	return &AdminResolver{admin: admin}, err
+}
+
+// Manager gets a single manager
+func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID string }) (*ManagerResolver, error) {
+	manager, err := loader.LoadManager(ctx, args.UUID)
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+	return &ManagerResolver{manager: manager}, nil
 }

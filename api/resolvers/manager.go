@@ -3,7 +3,7 @@ package resolvers
 import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 type ManagerResolver struct {
-	manager *gentypes.Manager
+	manager gentypes.Manager
 }
 
 func (m *ManagerResolver) UUID() string      { return m.manager.UUID }

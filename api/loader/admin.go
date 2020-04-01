@@ -46,20 +46,15 @@ func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*da
 }
 
 // LoadAdmin loads Admin via dataloader
-func LoadAdmin(ctx context.Context, uuid string) (*gentypes.Admin, error) {
-	ldr, err := extract(ctx, adminLoaderKey)
+func LoadAdmin(ctx context.Context, uuid string) (gentypes.Admin, error) {
+	var admin gentypes.Admin
+	data, err := extractAndLoad(ctx, adminLoaderKey, uuid)
 	if err != nil {
-		return nil, err
+		return admin, err
 	}
-
-	v, err := ldr.Load(ctx, dataloader.StringKey(uuid))()
-	if err != nil {
-		return nil, err
-	}
-	res, ok := v.(*gentypes.Admin)
+	admin, ok := data.(gentypes.Admin)
 	if !ok {
-		return nil, fmt.Errorf("Wrong type: %T", v)
+		return admin, fmt.Errorf("Wrong type: %T", data)
 	}
-
-	return res, nil
+	return admin, nil
 }

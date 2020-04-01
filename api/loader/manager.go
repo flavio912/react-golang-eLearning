@@ -14,7 +14,7 @@ import (
 type managerLoader struct {
 }
 
-func getManagerKeyList(loadedItems []*gentypes.Manager) []string {
+func getManagerKeyList(loadedItems []gentypes.Manager) []string {
 	keys := make([]string, len(loadedItems))
 	for i, item := range loadedItems {
 		keys[i] = item.UUID
@@ -45,21 +45,16 @@ func (l *managerLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*
 	return res
 }
 
-// LoadManager loads Admin via dataloader
-func LoadManager(ctx context.Context, uuid string) (*gentypes.Manager, error) {
-	ldr, err := extract(ctx, managerLoaderKey)
+// LoadManager loads Manager via dataloader
+func LoadManager(ctx context.Context, uuid string) (gentypes.Manager, error) {
+	var manager gentypes.Manager
+	data, err := extractAndLoad(ctx, managerLoaderKey, uuid)
 	if err != nil {
-		return nil, err
+		return manager, err
 	}
-
-	v, err := ldr.Load(ctx, dataloader.StringKey(uuid))()
-	if err != nil {
-		return nil, err
-	}
-	res, ok := v.(*gentypes.Manager)
+	manager, ok := data.(gentypes.Manager)
 	if !ok {
-		return nil, fmt.Errorf("Wrong type: %T", v)
+		return manager, fmt.Errorf("Wrong type: %T", data)
 	}
-
-	return res, nil
+	return manager, nil
 }

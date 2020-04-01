@@ -20,13 +20,42 @@ func managerModelToGentype(manager models.Manager) gentypes.Manager {
 	}
 }
 
-func (g *Grant) GetManagersByUUID(uuids []string) ([]*gentypes.Manager, error) {
-	var managers []*gentypes.Manager
+func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
+	var managers []gentypes.Manager
 	if g.IsAdmin {
 		err := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers).Error
 		return managers, err
 	}
+
 	return managers, &errors.ErrUnauthorized
+}
+
+func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
+	// Admins can get any manager data
+	// Managers can only get their own uuid
+	if g.IsAdmin || (g.IsManager && uuid == g.Claims.UUID) {
+		var manager models.Manager
+		err := database.GormDB.Where("uuid = ?", uuid).First(&manager).Error
+		if err != nil {
+			return gentypes.Manager{}, err
+		}
+
+		return managerModelToGentype(manager), nil
+	}
+	return gentypes.Manager{}, &errors.ErrUnauthorized
+}
+
+func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
+	if !g.IsManager {
+		return gentypes.Manager{}, &errors.ErrUnauthorized
+	}
+
+	manager, err := g.GetManagerByUUID(g.Claims.UUID)
+	if err != nil {
+		return gentypes.Manager{}, err
+	}
+
+	return manager, nil
 }
 
 func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Manager, error) {

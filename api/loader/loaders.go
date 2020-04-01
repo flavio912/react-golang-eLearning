@@ -41,6 +41,20 @@ func extract(ctx context.Context, k contextKey) (*dataloader.Loader, error) {
 	return res, nil
 }
 
+// extractAndLoad is a helper function to extract the loader from context and run the thunk
+func extractAndLoad(ctx context.Context, loaderKey contextKey, key string) (interface{}, error) {
+	ldr, err := extract(ctx, managerLoaderKey)
+	if err != nil {
+		return nil, err
+	}
+
+	v, err := ldr.Load(ctx, dataloader.StringKey(key))()
+	if err != nil {
+		return nil, err
+	}
+	return v, nil
+}
+
 func loadBatchError(err error, n int) []*dataloader.Result {
 	r := &dataloader.Result{Error: err}
 	res := make([]*dataloader.Result, 0, n)
