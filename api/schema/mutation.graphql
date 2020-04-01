@@ -2,4 +2,5 @@
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
+  addManager(input: AddManagerInput!): Manager
 }

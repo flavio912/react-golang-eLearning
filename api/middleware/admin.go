@@ -34,7 +34,7 @@ type AdminFilter struct {
 }
 
 // GetAdminsByUUID
-func (g *grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
+func (g *Grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
 	if !g.IsAdmin {
 		return []*gentypes.Admin{}, &errors.ErrUnauthorized
 	}
@@ -48,7 +48,7 @@ func (g *grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
 }
 
 // GetAdmins
-func (g *grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes.Admin, error) {
+func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes.Admin, error) {
 	if !g.IsAdmin {
 		return []*gentypes.Admin{}, &errors.ErrUnauthorized
 	}

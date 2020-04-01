@@ -13,7 +13,16 @@ input ManagerLogin {
   password: String!
 }
 
-type CompanyManager implements User {
+input AddManagerInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  jobTitle: String!
+  telephone: String!
+  password: String!
+}
+
+type Manager implements User {
   uuid: String!
   email: String!
   firstName: String!

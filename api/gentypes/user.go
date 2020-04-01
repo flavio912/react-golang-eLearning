@@ -1,9 +1,5 @@
 package gentypes
 
-import (
-	"time"
-)
-
 // User - User graphQL interface
 type User struct {
 	UUID      string
@@ -12,5 +8,5 @@ type User struct {
 	LastName  string
 	Telephone string
 	JobTitle  string
-	LastLogin time.Time
+	LastLogin string
 }

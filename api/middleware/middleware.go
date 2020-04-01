@@ -8,8 +8,8 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
-// grant is purposely not exported so that the Authenticate method cannot be bypassed
-type grant struct {
+// Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
+type Grant struct {
 	Claims auth.UserClaims
 	// Convenience functions for checking auth
 	IsAdmin    bool
@@ -18,11 +18,11 @@ type grant struct {
 }
 
 // Authenticate is used to verify and get access to middleware functions
-func Authenticate(jwt string) (*grant, error) {
+func Authenticate(jwt string) (*Grant, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
 		glog.Info(err.Error())
-		return &grant{}, &errors.ErrTokenInvalid
+		return &Grant{}, &errors.ErrTokenInvalid
 	}
 
 	var (
@@ -40,7 +40,7 @@ func Authenticate(jwt string) (*grant, error) {
 		isDelegate = true
 	}
 
-	return &grant{
+	return &Grant{
 		Claims:     claims,
 		IsAdmin:    isAdmin,
 		IsManager:  isManager,
