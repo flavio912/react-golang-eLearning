@@ -59,11 +59,11 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes
 	query := database.GormDB
 	if filter != nil {
 		if filter.Email != "" {
-			query = query.Where("email LIKE ?", fmt.Sprintf("%%%s%%", filter.Email))
+			query = query.Where("email ILIKE ?", fmt.Sprintf("%%%s%%", filter.Email))
 		}
 		if filter.Name != "" {
-			query = query.Where("firstname LIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
-			query = query.Where("lastname LIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
+			query = query.Where("first_name ILIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
+			query = query.Where("last_name ILIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
 		}
 	}
 

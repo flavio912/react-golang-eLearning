@@ -1,0 +1,4 @@
+type Company {
+  uuid: String
+  name: String
+}

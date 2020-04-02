@@ -32,6 +32,11 @@ type Manager implements User {
   jobTitle: String!
 }
 
+type ManagerPage implements PaginatedQuery {
+  edges: [Manager]
+  pageInfo: PageInfo
+}
+
 # type Delegate implements User {
 #   uuid: UUID!
 #   email: String!

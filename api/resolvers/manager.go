@@ -13,3 +13,11 @@ func (m *ManagerResolver) LastName() string  { return m.manager.LastName }
 func (m *ManagerResolver) Telephone() string { return m.manager.Telephone }
 func (m *ManagerResolver) JobTitle() string  { return m.manager.JobTitle }
 func (m *ManagerResolver) LastLogin() string { return m.manager.LastLogin }
+
+type ManagerPageResolver struct {
+	edges    *[]*ManagerResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *ManagerPageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *ManagerPageResolver) Edges() *[]*ManagerResolver  { return r.edges }
