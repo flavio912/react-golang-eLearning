@@ -64,9 +64,9 @@ func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
 	return gentypes.Manager{}, &errors.ErrUnauthorized
 }
 
-func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter) ([]gentypes.Manager, error) {
+func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter) ([]gentypes.Manager, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
-		return []gentypes.Manager{}, &errors.ErrUnauthorized
+		return []gentypes.Manager{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
 	var managers []models.Manager
@@ -88,13 +88,24 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 		}
 	}
 
-	query = getPage(query, page)
+	query, limit, offset := getPage(query, page)
 	err := query.Find(&managers).Error
 	if err != nil {
-		return []gentypes.Manager{}, err
+		return []gentypes.Manager{}, gentypes.PageInfo{}, err
 	}
 
-	return managersToGentype(managers), nil
+	// Count the data remaining
+	var count int32
+	countErr := database.GormDB.Model(&models.Manager{}).Count(&count).Error
+	if countErr != nil {
+		return []gentypes.Manager{}, gentypes.PageInfo{}, err
+	}
+	return managersToGentype(managers), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(managers)),
+	}, nil
 }
 
 func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {

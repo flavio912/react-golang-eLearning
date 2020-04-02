@@ -67,7 +67,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes
 		}
 	}
 
-	query = getPage(query, page)
+	query, _, _ = getPage(query, page)
 	err := query.Find(&admins).Error
 	if err != nil {
 		return []*gentypes.Admin{}, err

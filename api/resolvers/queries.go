@@ -36,10 +36,10 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 		edges: &adminResolvers,
 		pageInfo: &PageInfoResolver{
 			pageInfo: &gentypes.PageInfo{
-				PagesAfter: 0,
-				Offset:     0,
-				Limit:      0,
-				Given:      int32(len(admins)),
+				Total:  0,
+				Offset: 0,
+				Limit:  0,
+				Given:  int32(len(admins)),
 			},
 		},
 	}, nil
@@ -65,18 +65,20 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 	Page   *gentypes.Page
 	Filter *gentypes.ManagersFilter
 }) (*ManagerPageResolver, error) {
+
 	if args.Filter != nil {
 		err := (*args.Filter).Validate()
 		if err != nil {
 			return &ManagerPageResolver{}, err
 		}
 	}
+
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &ManagerPageResolver{}, err
 	}
 
-	managers, err := grant.GetManagers(args.Page, args.Filter)
+	managers, page, err := grant.GetManagers(args.Page, args.Filter)
 	var managerResolvers []*ManagerResolver
 	for _, manager := range managers {
 		managerResolvers = append(managerResolvers, &ManagerResolver{
@@ -87,12 +89,7 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 	return &ManagerPageResolver{
 		edges: &managerResolvers,
 		pageInfo: &PageInfoResolver{
-			&gentypes.PageInfo{
-				PagesAfter: 0,
-				Offset:     0,
-				Limit:      0,
-				Given:      int32(len(managers)),
-			},
+			&page,
 		},
 	}, err
 }

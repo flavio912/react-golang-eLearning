@@ -10,7 +10,7 @@ type Manager struct {
 }
 
 type ManagersFilter struct {
-	Email     *string `valid:"email"`
+	Email     *string `valid:"-"`
 	Name      *string `valid:"-"`
 	JobTitle  *string `valid:"-"`
 	Telephone *string `valid:"numeric"`
@@ -23,12 +23,17 @@ func (m *ManagersFilter) Validate() error {
 }
 
 type AddManagerInput struct {
-	FirstName string
-	LastName  string
-	Email     string
-	JobTitle  string
-	Telephone string
-	Password  string
+	FirstName string `valid:"required,alpha"`
+	LastName  string `valid:"required,alpha"`
+	Email     string `valid:"required,email"`
+	JobTitle  string `valid:"required"`
+	Telephone string `valid:"required,numeric"`
+	Password  string `valid:"required,stringlength(5|30)"`
+}
+
+func (m *AddManagerInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
 }
 
 // ManagerLoginInput - ManagerLogin graphQL input

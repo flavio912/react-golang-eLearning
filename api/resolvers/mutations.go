@@ -36,6 +36,11 @@ func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLogin
 
 // AddManager is for an admin to create new managers manually
 func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input gentypes.AddManagerInput }) (*ManagerResolver, error) {
+	// Validate the manager input
+	if err := args.Input.Validate(); err != nil {
+		return &ManagerResolver{}, err
+	}
+
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &ManagerResolver{}, err

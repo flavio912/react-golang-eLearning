@@ -1,9 +1,9 @@
 # queries should not modify the db. executed in parrallel
 type PageInfo {
-  pagesAfter: Int! # Number of pages after this one
+  total: Int! # Number of pages after this one
   offset: Int! # The offset of this page from the start
   limit: Int! # The max shown per page
-  given: Int! # The number of items returned in the query
+  given: Int! # Number of items given
 }
 
 input Page {
