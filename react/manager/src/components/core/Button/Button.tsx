@@ -13,10 +13,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     cursor: "pointer",
     height: 40,
-    transition: "border-color 0.1s ease",
+    transition: "0.1s ease",
+    transitionProperty: "border-colour, background-color",
+    outline: "none",
     // it would be nice to have a light blue hover state
     "&:focus": {
       borderColor: theme.colors.primaryBlue,
+    },
+    "&::-moz-focus-inner": {
+      border: 0,
     },
   },
   bold: {
@@ -49,6 +54,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: "white",
     borderColor: theme.colors.primaryBlue,
     backgroundColor: theme.colors.primaryBlue,
+    "&:focus": {
+      borderColor: "#0044db",
+      backgroundColor: "#0044db",
+    },
   },
   iconLeft: {
     // replace with real icon
