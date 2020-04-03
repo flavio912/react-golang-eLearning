@@ -9,7 +9,7 @@ export default {
 
 const archetypes: Archetypes[] = ["default", "grey", "submit"];
 
-export const plain = () => {
+export const flexible = () => {
   const archetypeTexts = {
     default: "Cancel",
     grey: "Add Delegate",
