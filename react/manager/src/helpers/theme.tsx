@@ -13,6 +13,8 @@ export type Theme = {
     primaryBlue: string;
     primaryGreen: string;
     secondaryGrey: string;
+    borderGrey: string;
+    backgroundGrey: string;
   };
   shadows: {
     primary: string;
@@ -27,6 +29,8 @@ const theme: Theme = {
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
     secondaryGrey: "#9ea2ad",
+    borderGrey: "#ededed",
+    backgroundGrey: "#f7f9fb",
   },
   shadows: {
     primary: "0px 2px 10px #0000001f",
