@@ -10,19 +10,17 @@ import (
 type contextKey string
 
 const (
-	adminLoaderKey        contextKey = "admin"
-	managerLoaderKey      contextKey = "manager"
-	companyLoaderKey      contextKey = "company"
-	managerGroupLoaderKey contextKey = "companyGroup"
+	adminLoaderKey   contextKey = "admin"
+	managerLoaderKey contextKey = "manager"
+	companyLoaderKey contextKey = "company"
 )
 
 // Init initializes and returns Map
 func Init() Map {
 	return Map{
-		adminLoaderKey:        (&adminLoader{}).loadBatch,
-		managerLoaderKey:      (&managerLoader{}).loadBatch,
-		companyLoaderKey:      (&companyLoader{}).loadBatch,
-		managerGroupLoaderKey: (&companyLoader{}).loadManagerBatch,
+		adminLoaderKey:   (&adminLoader{}).loadBatch,
+		managerLoaderKey: (&managerLoader{}).loadBatch,
+		companyLoaderKey: (&companyLoader{}).loadBatch,
 	}
 }
 

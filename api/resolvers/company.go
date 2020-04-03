@@ -3,6 +3,11 @@ package resolvers
 import (
 	"context"
 
+	"github.com/google/uuid"
+
+	"github.com/golang/glog"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -42,32 +47,77 @@ func NewCompanyResolver(ctx context.Context, args NewCompanyArgs) (*CompanyResol
 	}, nil
 }
 
+type NewCompanyPageArgs struct {
+	UUIDs     []string
+	Companies []gentypes.Company
+}
+
+func NewCompanyPageResolver(ctx context.Context, args NewCompanyPageArgs, _pageInfo gentypes.PageInfo) (*CompanyPageResolver, error) {
+	var resolvers []*CompanyResolver
+
+	if len(args.UUIDs) > 0 {
+		for _, uuid := range args.UUIDs {
+			resolver, err := NewCompanyResolver(ctx, NewCompanyArgs{
+				UUID: uuid,
+			})
+			if err != nil {
+				glog.Errorf("Unable to resolve: %s", uuid)
+				resolvers = append(resolvers, &CompanyResolver{})
+			}
+			resolvers = append(resolvers, resolver)
+		}
+	} else {
+		for _, comp := range args.Companies {
+			resolver, err := NewCompanyResolver(ctx, NewCompanyArgs{
+				Company: comp,
+			})
+			if err != nil {
+				glog.Errorf("Unable to resolve: %s", comp.UUID.String())
+				resolvers = append(resolvers, &CompanyResolver{})
+			}
+			resolvers = append(resolvers, resolver)
+		}
+	}
+
+	return &CompanyPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &_pageInfo,
+		},
+	}, nil
+}
+
+func uuidsToStrings(uuids []uuid.UUID) []string {
+	var strings = make([]string, len(uuids))
+	for i, uuid := range uuids {
+		strings[i] = uuid.String()
+	}
+	return strings
+}
+
 func (r *CompanyResolver) Name() string { return r.company.Name }
 func (r *CompanyResolver) UUID() string { return r.company.UUID.String() }
 func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	Page   *gentypes.Page
 	Filter *gentypes.ManagersFilter
 }) (*ManagerPageResolver, error) {
-	managers, err := loader.LoadManagersFromCompany(ctx, r.company.UUID.String())
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
-		return &ManagerPageResolver{}, err
+		return &ManagerPageResolver{}, &errors.ErrUnauthorized
 	}
-	var res = make([]*ManagerResolver, len(managers))
-	for i, manager := range managers {
-		res[i] = &ManagerResolver{
-			manager: manager,
-		}
+
+	managers, pageInfo, err := grant.GetManagerIDsByCompany(r.company.UUID.String(), args.Page, args.Filter)
+
+	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
+	if err != nil {
+		glog.Info("Unable to resolve a manager: ")
+		return &ManagerPageResolver{}, err
 	}
 
 	return &ManagerPageResolver{
-		edges: &res,
+		edges: resolver,
 		pageInfo: &PageInfoResolver{
-			pageInfo: &gentypes.PageInfo{
-				Total:  0,
-				Offset: 0,
-				Limit:  0,
-				Given:  0,
-			},
+			pageInfo: &pageInfo,
 		},
 	}, nil
 }

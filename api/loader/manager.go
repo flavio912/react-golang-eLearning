@@ -72,3 +72,35 @@ func LoadManager(ctx context.Context, uuid string) (gentypes.Manager, error) {
 	}
 	return manager, nil
 }
+
+type ManagerResult struct {
+	Manager gentypes.Manager
+	Error   error
+}
+
+func LoadManagers(ctx context.Context, uuids []string) ([]ManagerResult, error) {
+	ldr, err := extract(ctx, managerLoaderKey)
+	if err != nil {
+		return nil, err
+	}
+
+	data, errs := ldr.LoadMany(ctx, dataloader.NewKeysFromStrings(uuids))()
+
+	results := make([]ManagerResult, 0, len(uuids))
+
+	for i, d := range data {
+		var e error
+		if errs != nil {
+			e = errs[i]
+		}
+
+		manager, ok := d.(gentypes.Manager)
+		if !ok && e == nil {
+			e = fmt.Errorf("Wrong type: %T", manager)
+		}
+
+		results = append(results, ManagerResult{Manager: manager, Error: e})
+	}
+
+	return results, nil
+}

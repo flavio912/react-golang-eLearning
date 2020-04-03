@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -70,29 +72,72 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 	return companyToGentypes(company), nil
 }
 
-type CompanyToManagers map[string][]gentypes.Manager
+// GetManagerIDsByCompany returns the uuids for the managers of a company
+func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, filter *gentypes.ManagersFilter) ([]uuid.UUID, gentypes.PageInfo, error) {
+	if !g.ManagesCompany(companyUUID) {
+		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
 
-func (g *Grant) GetManagersByCompany(uuids []string) (CompanyToManagers, error) {
 	var (
-		authorizedUUIDs []string
-		managers        []models.Manager
-		compToMan       = CompanyToManagers{}
+		managerUUIDs []uuid.UUID
+		managers     []models.Manager
 	)
 
-	for _, uuid := range uuids {
-		if g.ManagesCompany(uuid) {
-			authorizedUUIDs = append(authorizedUUIDs, uuid)
-		}
-	}
-
-	query := database.GormDB.Where("company_id IN (?)", authorizedUUIDs).Find(&managers)
+	query := database.GormDB.Select("uuid").Where("company_id = ?", companyUUID)
+	query, limit, offset := getPage(query, page)
+	query.Find(&managers)
 	if query.Error != nil {
-		return compToMan, getDBErrorType(query)
+		return []uuid.UUID{}, gentypes.PageInfo{}, getDBErrorType(query)
 	}
 
-	// Sort managers into correct pairings
 	for _, manager := range managers {
-		compToMan[manager.CompanyID.String()] = append(compToMan[manager.CompanyID.String()], managerToGentype(manager))
+		managerUUIDs = append(managerUUIDs, manager.UUID)
 	}
-	return compToMan, nil
+
+	var count int32
+	err := query.Model(&models.Manager{}).Count(&count)
+	if err.Error != nil {
+		glog.Errorf("DB Error %s", err.Error.Error())
+		glog.Errorf("Unable to count records for %s", companyUUID)
+		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return managerUUIDs, gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(managerUUIDs)),
+	}, nil
+}
+
+func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter) ([]string, gentypes.PageInfo, error) {
+	if !g.IsAdmin {
+		return []string{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	var companies []models.Company
+
+	query := database.GormDB.Select("uuid").Model(&models.Company{})
+	query, limit, offset := getPage(query, page)
+
+	query.Find(&companies)
+
+	var count int32
+	query = query.Model(&models.Manager{}).Count(&count)
+	if query.Error != nil {
+		glog.Errorf("DB Error %s", query.Error.Error())
+		return []string{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	var uuids = make([]string, len(companies))
+	for i, comp := range companies {
+		uuids[i] = comp.UUID.String()
+	}
+	return uuids, gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(companies)),
+	}, nil
+
 }

@@ -8,3 +8,8 @@ type Company struct {
 	UUID uuid.UUID
 	Name string
 }
+
+type CompanyFilter struct {
+	UUID *string
+	Name *string
+}

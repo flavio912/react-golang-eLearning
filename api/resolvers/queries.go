@@ -93,3 +93,19 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 		},
 	}, err
 }
+
+func (q *QueryResolver) Companies(ctx context.Context, args struct {
+	Page   *gentypes.Page
+	Filter *gentypes.CompanyFilter
+}) (*CompanyPageResolver, error) {
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return &CompanyPageResolver{}, err
+	}
+
+	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter)
+	
+	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
+		UUIDs: companies,
+	}, page)
+}

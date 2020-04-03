@@ -3,3 +3,8 @@ type Company {
   name: String!
   managers(page: Page, filter: ManagerFilter): ManagerPage!
 }
+
+type CompanyPage implements PaginatedQuery {
+  edges: [Company]
+  pageInfo: PageInfo
+}

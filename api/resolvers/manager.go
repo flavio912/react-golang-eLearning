@@ -3,11 +3,68 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 )
 
 type ManagerResolver struct {
 	manager gentypes.Manager
+}
+
+type NewManagerArgs struct {
+	UUID    string
+	Manager gentypes.Manager
+}
+
+type NewManagersArgs struct {
+	UUIDs []string
+}
+
+func NewManagerResolver(ctx context.Context, args NewManagerArgs) (*ManagerResolver, error) {
+	var (
+		manager gentypes.Manager
+		err     error
+	)
+
+	switch {
+	case args.UUID != "":
+		manager, err = loader.LoadManager(ctx, args.UUID)
+	case args.Manager.UUID.String() != "":
+		manager = args.Manager
+	default:
+		err = &errors.ErrUnableToResolve
+	}
+
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	return &ManagerResolver{
+		manager: manager,
+	}, nil
+}
+
+func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*ManagerResolver, error) {
+	results, err := loader.LoadManagers(ctx, args.UUIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	var (
+		managers  = results
+		resolvers = make([]*ManagerResolver, 0, len(managers))
+	)
+
+	for _, manager := range managers {
+		resolver, err := NewManagerResolver(ctx, NewManagerArgs{Manager: manager.Manager})
+		if err != nil {
+			//errs = append(errs, errors.WithIndex(err, i))
+		}
+
+		resolvers = append(resolvers, resolver)
+	}
+	return &resolvers, nil
 }
 
 func (m *ManagerResolver) UUID() string      { return m.manager.UUID.String() }
