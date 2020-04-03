@@ -13,12 +13,26 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     cursor: "pointer",
     height: 40,
+    transition: "border-color 0.1s ease",
+    // it would be nice to have a light blue hover state
+    "&:focus": {
+      borderColor: theme.colors.primaryBlue,
+    },
   },
   bold: {
     fontWeight: "bold",
   },
-  smallPadding: {
+  small: {
     padding: theme.spacing(1),
+    "& $iconLeft": {
+      // replace with real icon
+      margin: [0, theme.spacing(0), 0, 0],
+      colour: "red",
+    },
+    "& $iconRight": {
+      // replace with real icon
+      margin: [0, 0, 0, theme.spacing(0)],
+    },
   },
   default: {
     color: theme.colors.primaryBlack,
@@ -38,11 +52,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   iconLeft: {
     // replace with real icon
-    margin: [0, theme.spacing(0), 0, 0],
+    margin: [0, theme.spacing(2), 0, 0],
   },
   iconRight: {
     // replace with real icon
-    margin: [0, 0, 0, theme.spacing(0)],
+    margin: [0, 0, 0, theme.spacing(2)],
   },
 }));
 
@@ -53,6 +67,7 @@ interface Props {
   iconLeft?: boolean;
   iconRight?: boolean;
   bold?: boolean;
+  small?: boolean;
 }
 
 function Button({
@@ -60,6 +75,7 @@ function Button({
   iconLeft,
   iconRight,
   bold,
+  small,
   children,
   ...props
 }: Props & React.ButtonHTMLAttributes<HTMLButtonElement>) {
@@ -72,7 +88,7 @@ function Button({
         classes.button,
         classes[archetype || "default"],
         bold && classes.bold,
-        (iconLeft || iconRight) && classes.smallPadding
+        small && classes.small
       )}
       {...props}
     >
