@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="8px" height="14px" viewBox="0 0 8 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Arrow Right Copy</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="pagination" transform="translate(-430.000000, -14.000000)" fill="#0E63E8" fill-rule="nonzero">
+            <g id="Group-3" transform="translate(0.000000, 1.000000)">
+                <g id="Arrow-Right-Copy" transform="translate(430.000000, 13.000000)">
+                    <g id="Arrow-Right" transform="translate(4.500000, 7.000000) rotate(-90.000000) translate(-4.500000, -7.000000) translate(-2.500000, 2.500000)">
+                        <rect id="Rectangle" transform="translate(4.000000, 4.000000) rotate(45.000000) translate(-4.000000, -4.000000) " x="-0.800000012" y="3.20000005" width="9.60000014" height="1.60000002" rx="0.800000012"></rect>
+                        <path d="M5.79233203,3.28611023 L14.0360957,3.28705072 C14.4779383,3.28710113 14.8360958,3.64529943 14.8360958,4.08714201 C14.8360958,4.52891942 14.4779644,4.88705074 14.036187,4.88705074 C14.0361566,4.88705074 14.0361261,4.88705074 14.0360957,4.88705074 L5.79233203,4.88611026 C5.35048946,4.88605986 4.99233201,4.52786154 4.99233201,4.08601897 C4.99233201,3.64424158 5.35046338,3.28611023 5.79224079,3.28611023 C5.79227119,3.28611023 5.79230163,3.28611023 5.79233203,3.28611023 Z" id="Rectangle" transform="translate(9.914214, 4.086580) scale(-1, 1) rotate(45.000000) translate(-9.914214, -4.086580) "></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

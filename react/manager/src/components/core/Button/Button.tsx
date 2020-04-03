@@ -2,11 +2,12 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
+import Icon, { IconNames } from "../Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   button: {
     borderRadius: theme.primaryBorderRadius,
-    padding: [theme.spacing(1), theme.spacing(2)],
+    padding: [0, theme.spacing(2)],
     border: "1px solid",
     display: "flex",
     flexDirection: "row",
@@ -28,16 +29,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: "bold",
   },
   small: {
-    padding: theme.spacing(1),
-    "& $iconLeft": {
-      // replace with real icon
-      margin: [0, theme.spacing(0), 0, 0],
-      colour: "red",
-    },
-    "& $iconRight": {
-      // replace with real icon
-      margin: [0, 0, 0, theme.spacing(0)],
-    },
+    padding: [0, theme.spacing(1)],
   },
   default: {
     color: theme.colors.primaryBlack,
@@ -59,22 +51,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
       backgroundColor: "#0044db",
     },
   },
-  iconLeft: {
-    // replace with real icon
-    margin: [0, theme.spacing(2), 0, 0],
-  },
-  iconRight: {
-    // replace with real icon
-    margin: [0, 0, 0, theme.spacing(2)],
-  },
 }));
 
 export type Archetypes = "default" | "grey" | "submit";
 
 interface Props {
   archetype?: Archetypes;
-  iconLeft?: boolean;
-  iconRight?: boolean;
+  iconLeft?: IconNames;
+  iconRight?: IconNames;
   bold?: boolean;
   small?: boolean;
 }
@@ -103,9 +87,21 @@ function Button({
     >
       {/* replace with actual icon */}
       {/* prop should also be a string (icon name) */}
-      {iconLeft && <p className={classNames(classes.iconLeft)}>+</p>}
+      {iconLeft && (
+        <Icon
+          style={{ marginRight: small ? 5 : 10 }}
+          name={iconLeft}
+          size={small ? 12 : 15}
+        />
+      )}
       {children}
-      {iconRight && <p className={classNames(classes.iconRight)}>></p>}
+      {iconRight && (
+        <Icon
+          style={{ marginLeft: small ? 5 : 10 }}
+          name={iconRight}
+          size={small ? 12 : 15}
+        />
+      )}
     </button>
   );
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>StatusCompleted</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <linearGradient x1="100%" y1="-87.9591162%" x2="0%" y2="185.634428%" id="linearGradient-1">
+            <stop stop-color="#16C225" offset="0%"></stop>
+            <stop stop-color="#0D57FF" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="StatusCompleted" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Tick-in-Sir" transform="translate(1.000000, 1.000000)">
+            <circle id="Oval" stroke="url(#linearGradient-1)" stroke-width="1.42222222" cx="7.82222222" cy="7.82222222" r="7.82222222"></circle>
+            <path d="M11.1148655,5.48060929 C11.3925717,5.75831545 11.3925717,6.2085661 11.1148655,6.48627226 L7.59504509,10.0060927 C7.31733892,10.2837988 6.86708827,10.2837988 6.58938211,10.0060927 C6.31167595,9.72838652 6.31167595,9.27813587 6.58938211,9.00042971 L10.1092025,5.48060929 C10.3869087,5.20290312 10.8371593,5.20290312 11.1148655,5.48060929 Z" id="Rectangle" fill="#15C324" fill-rule="nonzero"></path>
+            <path d="M4.77475936,7.94015306 C5.0518681,7.66304431 5.50115015,7.66304431 5.7782589,7.94015306 L7.21359073,9.38167817 C7.49087281,9.66015713 7.49038785,10.1105417 7.21250668,10.3884229 C6.93539795,10.6655316 6.48611591,10.6655316 6.20900716,10.3884229 C6.20864698,10.3880627 6.20828715,10.3877021 6.20792775,10.3873411 L4.7736753,8.94689778 C4.49639323,8.66841882 4.49687821,8.21803421 4.77475936,7.94015306 Z" id="Rectangle" fill="#15C324" fill-rule="nonzero"></path>
+        </g>
+    </g>
+</svg>
