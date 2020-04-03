@@ -11,7 +11,7 @@ import (
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
 type Grant struct {
 	Claims auth.UserClaims
-	// Convenience functions for checking auth
+	// Convenience fields for checking auth
 	IsAdmin    bool
 	IsManager  bool
 	IsDelegate bool
@@ -68,4 +68,14 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 		}
 	}
 	return query, limit, offset
+}
+
+func getDBErrorType(query *gorm.DB) error {
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return &errors.ErrNotFound
+		}
+		return &errors.ErrWhileHandling
+	}
+	return nil
 }

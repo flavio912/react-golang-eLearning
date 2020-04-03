@@ -35,4 +35,16 @@ var (
 		Type:    "ErrWhileHandling",
 		Message: "There was an error while handling the request",
 	}
+	// ErrUUIDInvalid used when a given uuid is not valid (not for when its not found)
+	ErrUUIDInvalid = SimpleError{
+		Type:    "ErrUUIDInvalid",
+		Message: "Given UUID was invalid",
+	}
+	// ErrCompanyNotFound when a company cannot be found from uuid or otherwise
+	ErrCompanyNotFound = FullError{
+		Type:     "ErrCompanyNotFound",
+		Message:  "Cound not find the specified company",
+		Title:    "Company not found",
+		HelpText: "Sorry, we couldn't find the company you were looking for",
+	}
 )

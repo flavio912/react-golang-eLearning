@@ -4,6 +4,8 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
+
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 )
@@ -18,6 +20,7 @@ type User struct {
 	LastLogin time.Time
 	Password  string
 	Email     string `gorm:"unique"`
+	CompanyID uuid.UUID
 }
 
 var (

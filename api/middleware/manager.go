@@ -1,9 +1,8 @@
 package middleware
 
 import (
-	"fmt"
-
 	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -13,12 +12,13 @@ import (
 func managerToGentype(manager models.Manager) gentypes.Manager {
 	return gentypes.Manager{
 		User: gentypes.User{
-			UUID:      manager.UUID.String(),
+			UUID:      manager.UUID,
 			Email:     manager.Email,
 			FirstName: manager.FirstName,
 			LastName:  manager.LastName,
 			JobTitle:  manager.JobTitle,
 			Telephone: manager.Telephone,
+			CompanyID: manager.CompanyID,
 		},
 	}
 }
@@ -75,7 +75,7 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 	query := database.GormDB
 	if filter != nil {
 		if filter.Email != nil && *filter.Email != "" {
-			query = query.Where("email ILIKE ?", fmt.Sprintf("%%%s%%", *filter.Email))
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
 		}
 		if filter.Name != nil && *filter.Name != "" {
 			query = query.Where("first_name ILIKE ?", "%%"+*filter.Name+"%%").Or("last_name ILIKE ?", "%%"+*filter.Name+"%%")
@@ -96,7 +96,7 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 
 	// Count the data remaining
 	var count int32
-	countErr := database.GormDB.Model(&models.Manager{}).Count(&count).Error
+	countErr := query.Model(&models.Manager{}).Count(&count).Error
 	if countErr != nil {
 		return []gentypes.Manager{}, gentypes.PageInfo{}, err
 	}
@@ -126,9 +126,25 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
+	_uuid, err := uuid.Parse(managerDetails.CompanyUUID)
+	if err != nil {
+		return gentypes.Manager{}, &errors.ErrUUIDInvalid
+	}
+
+	// Check if company exists
+	var company models.Company
+	existsErr := database.GormDB.Where("uuid = ?", _uuid).First(&company)
+	if existsErr.Error != nil {
+		if existsErr.RecordNotFound() {
+			return gentypes.Manager{}, &errors.ErrCompanyNotFound
+		}
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
 	// TODO: Validate input better and return useful details
 	manager := models.Manager{
 		User: models.User{
+			CompanyID: _uuid,
 			FirstName: managerDetails.FirstName,
 			LastName:  managerDetails.LastName,
 			Email:     managerDetails.Email,
@@ -137,8 +153,8 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 			Password:  managerDetails.Password,
 		},
 	}
-	err := database.GormDB.Create(&manager).Error
-	if err != nil {
+	createErr := database.GormDB.Create(&manager).Error
+	if createErr != nil {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 

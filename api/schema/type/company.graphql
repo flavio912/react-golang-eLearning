@@ -1,4 +1,5 @@
 type Company {
-  uuid: String
-  name: String
+  uuid: String!
+  name: String!
+  managers(page: Page, filter: ManagerFilter): ManagerPage!
 }

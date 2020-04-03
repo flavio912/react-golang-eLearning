@@ -14,6 +14,7 @@ input ManagerLogin {
 }
 
 input AddManagerInput {
+  companyUUID: String!
   firstName: String!
   lastName: String!
   email: String!
@@ -30,6 +31,7 @@ type Manager implements User {
   telephone: String!
   lastLogin: String!
   jobTitle: String!
+  company: Company!
 }
 
 type ManagerPage implements PaginatedQuery {

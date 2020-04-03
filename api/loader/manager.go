@@ -26,7 +26,7 @@ func sortManagers(managers []gentypes.Manager, keys dataloader.Keys) []gentypes.
 
 	// Put managers into map of their UUIDs
 	for _, manager := range managers {
-		managerMap[manager.UUID] = manager
+		managerMap[manager.UUID.String()] = manager
 	}
 
 	// Link keys to the managers

@@ -1,6 +1,5 @@
 package gentypes
 
-// Admin - The admin graphQL type
 type Admin struct {
 	UUID      string
 	Email     string

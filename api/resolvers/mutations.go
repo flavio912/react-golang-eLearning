@@ -51,7 +51,7 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 		return &ManagerResolver{}, err
 	}
 
-	loadedManager, loadErr := loader.LoadManager(ctx, manager.UUID)
+	loadedManager, loadErr := loader.LoadManager(ctx, manager.UUID.String())
 
 	return &ManagerResolver{
 		manager: loadedManager,

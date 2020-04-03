@@ -10,7 +10,7 @@ import (
 )
 
 // Take in a model, retuns the gentype for it
-func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
+func adminToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
 		UUID:      modAdmin.UUID.String(),
 		Email:     modAdmin.Email,
@@ -19,10 +19,10 @@ func adminModelToGentype(modAdmin models.Admin) gentypes.Admin {
 	}
 }
 
-func adminModelsToGentypes(admins []models.Admin) []*gentypes.Admin {
+func adminsToGentypes(admins []models.Admin) []*gentypes.Admin {
 	var returnAdmins []*gentypes.Admin
 	for _, admin := range admins {
-		newAdmin := adminModelToGentype(admin)
+		newAdmin := adminToGentype(admin)
 		returnAdmins = append(returnAdmins, &newAdmin)
 	}
 	return returnAdmins
@@ -44,7 +44,7 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]*gentypes.Admin, error) {
 	if err != nil {
 		return []*gentypes.Admin{}, &errors.ErrNotFound
 	}
-	return adminModelsToGentypes(admins), nil
+	return adminsToGentypes(admins), nil
 }
 
 // GetAdmins
@@ -73,5 +73,5 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes
 		return []*gentypes.Admin{}, err
 	}
 
-	return adminModelsToGentypes(admins), nil
+	return adminsToGentypes(admins), nil
 }
