@@ -6,7 +6,7 @@ import Icon, { IconNames } from "../Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   button: {
-    borderRadius: theme.primaryBorderRadius,
+    borderRadius: theme.buttonBorderRadius,
     padding: [0, theme.spacing(2)],
     border: "1px solid",
     display: "flex",
@@ -14,6 +14,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     cursor: "pointer",
     height: 40,
+    fontSize: theme.fontSizes.default,
     transition: "0.1s ease",
     transitionProperty: "border-colour, background-color",
     outline: "none",
@@ -26,7 +27,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
   },
   bold: {
-    fontWeight: "bold",
+    fontWeight: "bold !important",
   },
   small: {
     padding: [0, theme.spacing(1)],
@@ -35,9 +36,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
     backgroundColor: "white",
+    fontWeight: 200,
+    borderRadius: 4,
   },
   grey: {
-    borderWidth: 2,
+    borderWidth: 1,
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
     backgroundColor: theme.colors.backgroundGrey,
