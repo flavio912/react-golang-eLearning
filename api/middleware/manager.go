@@ -71,7 +71,6 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 
 	var managers []models.Manager
 
-	// TODO: Like calls should be replaced with elasticsearch querys
 	query := database.GormDB
 	if filter != nil {
 		if filter.Email != nil && *filter.Email != "" {
@@ -88,18 +87,21 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 		}
 	}
 
+	// Count the total filtered dataset
+	var count int32
+	countErr := query.Model(&models.Manager{}).Limit(MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		glog.Errorf("Count query failed: %s", countErr.Error())
+		return []gentypes.Manager{}, gentypes.PageInfo{}, countErr
+	}
+
+	query = query.Order("created_at DESC")
 	query, limit, offset := getPage(query, page)
 	err := query.Find(&managers).Error
 	if err != nil {
 		return []gentypes.Manager{}, gentypes.PageInfo{}, err
 	}
 
-	// Count the data remaining
-	var count int32
-	countErr := query.Model(&models.Manager{}).Count(&count).Error
-	if countErr != nil {
-		return []gentypes.Manager{}, gentypes.PageInfo{}, err
-	}
 	return managersToGentype(managers), gentypes.PageInfo{
 		Total:  count,
 		Offset: offset,

@@ -104,8 +104,14 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 	}
 
 	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter)
-	
+
 	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
 		UUIDs: companies,
 	}, page)
+}
+
+func (q *QueryResolver) Company(ctx context.Context, args struct{ UUID string }) (*CompanyResolver, error) {
+	return NewCompanyResolver(ctx, NewCompanyArgs{
+		UUID: args.UUID,
+	})
 }

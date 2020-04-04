@@ -58,13 +58,13 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	)
 	query.Limit(MaxPageLimit)
 	if page != nil {
-		if page.Limit != nil && *page.Limit <= MaxPageLimit {
-			limit = *page.Limit
-			query = query.Limit(limit)
-		}
 		if page.Offset != nil {
 			offset = *page.Offset
 			query = query.Offset(offset)
+		}
+		if page.Limit != nil && *page.Limit <= MaxPageLimit {
+			limit = *page.Limit
+			query = query.Limit(limit)
 		}
 	}
 	return query, limit, offset

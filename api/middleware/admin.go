@@ -55,7 +55,6 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]*gentypes
 
 	var admins []models.Admin
 
-	// TODO: LIKE querys should be replaced with elasticsearch
 	query := database.GormDB
 	if filter != nil {
 		if filter.Email != "" {
