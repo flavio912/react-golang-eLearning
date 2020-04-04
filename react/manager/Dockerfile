@@ -1,4 +1,4 @@
-FROM 10.16-buster-slim
+FROM node:10.16-buster-slim
 
 ENV HOME /app
 
