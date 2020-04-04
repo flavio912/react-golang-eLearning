@@ -6,6 +6,7 @@ import (
 
 // User - User graphQL interface
 type User struct {
+	CreatedAt *string
 	UUID      uuid.UUID
 	Email     string
 	FirstName string

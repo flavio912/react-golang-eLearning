@@ -1,5 +1,6 @@
 interface User {
   uuid: String!
+  createdAt: String
   email: String!
   firstName: String!
   lastName: String!
@@ -25,6 +26,7 @@ input AddManagerInput {
 
 type Manager implements User {
   uuid: String!
+  createdAt: String
   email: String!
   firstName: String!
   lastName: String!

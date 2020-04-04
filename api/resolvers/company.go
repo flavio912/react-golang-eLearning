@@ -99,15 +99,16 @@ func (r *CompanyResolver) Name() string       { return r.company.Name }
 func (r *CompanyResolver) CreatedAt() *string { return r.company.CreatedAt }
 func (r *CompanyResolver) UUID() string       { return r.company.UUID.String() }
 func (r *CompanyResolver) Managers(ctx context.Context, args struct {
-	Page   *gentypes.Page
-	Filter *gentypes.ManagersFilter
+	Page    *gentypes.Page
+	Filter  *gentypes.ManagersFilter
+	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &ManagerPageResolver{}, &errors.ErrUnauthorized
 	}
 
-	managers, pageInfo, err := grant.GetManagerIDsByCompany(r.company.UUID.String(), args.Page, args.Filter)
+	managers, pageInfo, err := grant.GetManagerIDsByCompany(r.company.UUID.String(), args.Page, args.Filter, args.OrderBy)
 	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
 	if err != nil {
 		glog.Info("Unable to resolve a manager: ")

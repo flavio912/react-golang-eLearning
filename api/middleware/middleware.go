@@ -99,6 +99,7 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 		return query, nil
 	}
 
+	glog.Infof("Ordering unauthorized: %s", orderBy.Field)
 	return query, &errors.ErrUnauthorized
 }
 

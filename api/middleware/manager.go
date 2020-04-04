@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/golang/glog"
 	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -9,24 +11,43 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func managerToGentype(manager models.Manager) gentypes.Manager {
-	return gentypes.Manager{
-		User: gentypes.User{
-			UUID:      manager.UUID,
-			Email:     manager.Email,
-			FirstName: manager.FirstName,
-			LastName:  manager.LastName,
-			JobTitle:  manager.JobTitle,
-			Telephone: manager.Telephone,
-			CompanyID: manager.CompanyID,
-		},
+func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
+	// Admins and managers themselves can get all info
+	if g.IsAdmin || g.Claims.UUID == manager.UUID.String() {
+		createdAt := manager.CreatedAt.Format(time.RFC3339)
+		return gentypes.Manager{
+			User: gentypes.User{
+				CreatedAt: &createdAt,
+				UUID:      manager.UUID,
+				Email:     manager.Email,
+				FirstName: manager.FirstName,
+				LastName:  manager.LastName,
+				JobTitle:  manager.JobTitle,
+				Telephone: manager.Telephone,
+				CompanyID: manager.CompanyID,
+			},
+		}
 	}
+
+	// Delegates can only get a subset of their manager info
+	if g.IsCompanyDelegate(manager.CompanyID.String()) {
+		return gentypes.Manager{
+			User: gentypes.User{
+				Email:     manager.Email,
+				FirstName: manager.FirstName,
+				LastName:  manager.LastName,
+				JobTitle:  manager.JobTitle,
+			},
+		}
+	}
+
+	return gentypes.Manager{}
 }
 
-func managersToGentype(managers []models.Manager) []gentypes.Manager {
+func (g *Grant) managersToGentype(managers []models.Manager) []gentypes.Manager {
 	var genManagers []gentypes.Manager
 	for _, manager := range managers {
-		genManagers = append(genManagers, managerToGentype(manager))
+		genManagers = append(genManagers, g.managerToGentype(manager))
 	}
 	return genManagers
 }
@@ -59,7 +80,7 @@ func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
 			return gentypes.Manager{}, err
 		}
 
-		return managerToGentype(manager), nil
+		return g.managerToGentype(manager), nil
 	}
 	return gentypes.Manager{}, &errors.ErrUnauthorized
 }
@@ -102,7 +123,7 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 		return []gentypes.Manager{}, gentypes.PageInfo{}, err
 	}
 
-	return managersToGentype(managers), gentypes.PageInfo{
+	return g.managersToGentype(managers), gentypes.PageInfo{
 		Total:  count,
 		Offset: offset,
 		Limit:  limit,
@@ -160,5 +181,5 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
-	return managerToGentype(manager), nil
+	return g.managerToGentype(manager), nil
 }

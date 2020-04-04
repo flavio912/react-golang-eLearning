@@ -96,7 +96,7 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company
-func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, filter *gentypes.ManagersFilter) ([]uuid.UUID, gentypes.PageInfo, error) {
+func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, filter *gentypes.ManagersFilter, orderBy *gentypes.OrderBy) ([]uuid.UUID, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
 		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
@@ -114,6 +114,11 @@ func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, 
 		glog.Errorf("DB Error %s", err.Error.Error())
 		glog.Errorf("Unable to count records for %s", companyUUID)
 		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "first_name", "last_name"})
+	if orderErr != nil {
+		return []uuid.UUID{}, gentypes.PageInfo{}, orderErr
 	}
 
 	query, limit, offset := getPage(query, page)
@@ -150,7 +155,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		return []string{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	query, err := getOrdering(query, orderBy, []string{"created_at"})
+	query, err := getOrdering(query, orderBy, []string{"created_at", "name"})
 	if err != nil {
 		return []string{}, gentypes.PageInfo{}, err
 	}
