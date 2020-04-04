@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/golang/glog"
 	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -10,20 +12,41 @@ import (
 )
 
 //companyToGentypes converts a company model to gentype.
-func companyToGentypes(company models.Company) gentypes.Company {
-
-	return gentypes.Company{
-		UUID: company.UUID,
-		Name: company.Name,
+func (g *Grant) companyToGentypes(company models.Company) gentypes.Company {
+	if g.ManagesCompany(company.UUID.String()) {
+		createdAt := company.CreatedAt.Format(time.RFC3339)
+		return gentypes.Company{
+			CreatedAt: &createdAt,
+			UUID:      company.UUID,
+			Name:      company.Name,
+		}
 	}
+
+	if g.IsCompanyDelegate(company.UUID.String()) {
+		return gentypes.Company{
+			UUID: company.UUID,
+			Name: company.Name,
+		}
+	}
+
+	return gentypes.Company{}
 }
 
-func companiesToGentype(companies []models.Company) []gentypes.Company {
+func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Company {
 	var genCompanies []gentypes.Company
 	for _, comp := range companies {
-		genCompanies = append(genCompanies, companyToGentypes(comp))
+		genCompanies = append(genCompanies, g.companyToGentypes(comp))
 	}
 	return genCompanies
+}
+
+func (g *Grant) IsCompanyDelegate(uuid string) bool {
+	if g.IsDelegate {
+		if uuid != "" && g.Claims.Company == uuid {
+			return true
+		}
+	}
+	return false
 }
 
 // ManagesCompany is an access-control helper to work out if the current grant
@@ -55,7 +78,7 @@ func (g *Grant) GetCompaniesByUUID(uuids []string) ([]gentypes.Company, error) {
 		return []gentypes.Company{}, getDBErrorType(query)
 	}
 
-	return companiesToGentype(companies), nil
+	return g.companiesToGentype(companies), nil
 }
 
 func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
@@ -69,12 +92,12 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 		return gentypes.Company{}, getDBErrorType(query)
 	}
 
-	return companyToGentypes(company), nil
+	return g.companyToGentypes(company), nil
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company
 func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, filter *gentypes.ManagersFilter) ([]uuid.UUID, gentypes.PageInfo, error) {
-	if !g.ManagesCompany(companyUUID) {
+	if !g.IsAdmin {
 		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
@@ -84,6 +107,15 @@ func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, 
 	)
 
 	query := database.GormDB.Select("uuid").Where("company_id = ?", companyUUID)
+
+	var count int32
+	err := query.Model(&models.Manager{}).Count(&count)
+	if err.Error != nil {
+		glog.Errorf("DB Error %s", err.Error.Error())
+		glog.Errorf("Unable to count records for %s", companyUUID)
+		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
 	query, limit, offset := getPage(query, page)
 	query.Find(&managers)
 	if query.Error != nil {
@@ -94,14 +126,6 @@ func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, 
 		managerUUIDs = append(managerUUIDs, manager.UUID)
 	}
 
-	var count int32
-	err := query.Model(&models.Manager{}).Count(&count)
-	if err.Error != nil {
-		glog.Errorf("DB Error %s", err.Error.Error())
-		glog.Errorf("Unable to count records for %s", companyUUID)
-		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
-	}
-
 	return managerUUIDs, gentypes.PageInfo{
 		Total:  count,
 		Offset: offset,
@@ -110,7 +134,7 @@ func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, 
 	}, nil
 }
 
-func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter) ([]string, gentypes.PageInfo, error) {
+func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]string, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
 		return []string{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
@@ -118,9 +142,6 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 	var companies []models.Company
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
-	query, limit, offset := getPage(query, page)
-
-	query.Find(&companies)
 
 	var count int32
 	query = query.Model(&models.Manager{}).Count(&count)
@@ -128,6 +149,15 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		glog.Errorf("DB Error %s", query.Error.Error())
 		return []string{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
+
+	query, err := getOrdering(query, orderBy, []string{"created_at"})
+	if err != nil {
+		return []string{}, gentypes.PageInfo{}, err
+	}
+
+	query, limit, offset := getPage(query, page)
+
+	query.Find(&companies)
 
 	var uuids = make([]string, len(companies))
 	for i, comp := range companies {

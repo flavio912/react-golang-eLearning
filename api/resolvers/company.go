@@ -95,8 +95,9 @@ func uuidsToStrings(uuids []uuid.UUID) []string {
 	return strings
 }
 
-func (r *CompanyResolver) Name() string { return r.company.Name }
-func (r *CompanyResolver) UUID() string { return r.company.UUID.String() }
+func (r *CompanyResolver) Name() string       { return r.company.Name }
+func (r *CompanyResolver) CreatedAt() *string { return r.company.CreatedAt }
+func (r *CompanyResolver) UUID() string       { return r.company.UUID.String() }
 func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	Page   *gentypes.Page
 	Filter *gentypes.ManagersFilter
@@ -107,7 +108,6 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	}
 
 	managers, pageInfo, err := grant.GetManagerIDsByCompany(r.company.UUID.String(), args.Page, args.Filter)
-
 	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
 	if err != nil {
 		glog.Info("Unable to resolve a manager: ")

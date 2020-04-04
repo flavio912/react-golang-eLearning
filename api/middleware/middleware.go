@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -51,6 +53,7 @@ func Authenticate(jwt string) (*Grant, error) {
 // MaxPageLimit is the maximum amount of returned datapoints
 const MaxPageLimit = int32(400)
 
+// getPage adds limit and offset to a query
 func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	var (
 		limit  = MaxPageLimit
@@ -68,6 +71,35 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 		}
 	}
 	return query, limit, offset
+}
+
+/* getOrdering adds orderBy to a query,
+
+In no circumstances is "allowedFields" to be given by the user
+*/
+func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string) (*gorm.DB, error) {
+	if orderBy == nil {
+		return query, nil
+	}
+
+	var allowed bool
+	for _, field := range allowedFields {
+		if orderBy.Field == field {
+			allowed = true
+		}
+	}
+
+	if allowed {
+		ordering := "DESC"
+		if orderBy.Ascending != nil && *orderBy.Ascending {
+			ordering = "ASC"
+		}
+		// fmt.Sprintf is fine here as fields are checked against allowed ones.
+		query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
+		return query, nil
+	}
+
+	return query, &errors.ErrUnauthorized
 }
 
 func getDBErrorType(query *gorm.DB) error {

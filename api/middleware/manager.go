@@ -33,20 +33,20 @@ func managersToGentype(managers []models.Manager) []gentypes.Manager {
 
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
-	if g.IsAdmin {
-		db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
-		if db.Error != nil {
-			if db.RecordNotFound() {
-				return managers, &errors.ErrNotFound
-			}
-			glog.Errorf("DB Error: %s", db.Error.Error())
-			return managers, &errors.ErrWhileHandling
-		}
-
-		return managers, nil
+	if !g.IsAdmin {
+		return managers, &errors.ErrUnauthorized
 	}
 
-	return managers, &errors.ErrUnauthorized
+	db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
+	if db.Error != nil {
+		if db.RecordNotFound() {
+			return managers, &errors.ErrNotFound
+		}
+		glog.Errorf("DB Error: %s", db.Error.Error())
+		return managers, &errors.ErrWhileHandling
+	}
+
+	return managers, nil
 }
 
 func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {

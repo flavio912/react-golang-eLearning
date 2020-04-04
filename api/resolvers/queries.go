@@ -95,15 +95,16 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 }
 
 func (q *QueryResolver) Companies(ctx context.Context, args struct {
-	Page   *gentypes.Page
-	Filter *gentypes.CompanyFilter
+	Page    *gentypes.Page
+	Filter  *gentypes.CompanyFilter
+	OrderBy *gentypes.OrderBy
 }) (*CompanyPageResolver, error) {
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &CompanyPageResolver{}, err
 	}
 
-	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter)
+	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
 
 	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
 		UUIDs: companies,

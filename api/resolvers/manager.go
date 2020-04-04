@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"github.com/golang/glog"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -57,9 +59,14 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 	)
 
 	for _, manager := range managers {
+		if manager.Error != nil {
+			glog.Errorf("Manager resolver error : %s", manager.Error.Error())
+			//errs = append(errs, errors.WithIndex(err, i))
+		}
+
 		resolver, err := NewManagerResolver(ctx, NewManagerArgs{Manager: manager.Manager})
 		if err != nil {
-			//errs = append(errs, errors.WithIndex(err, i))
+			glog.Error("Unable to create resolver")
 		}
 
 		resolvers = append(resolvers, resolver)

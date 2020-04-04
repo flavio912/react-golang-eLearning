@@ -49,7 +49,6 @@ func (l *managerLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*
 	if err != nil {
 		return loadBatchError(err, n)
 	}
-
 	managers = sortManagers(managers, keys)
 	res := make([]*dataloader.Result, n)
 	for i, manager := range managers {

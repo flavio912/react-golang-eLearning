@@ -28,6 +28,11 @@ interface PaginatedQuery {
   pageInfo: PageInfo
 }
 
+input OrderBy {
+  ascending: Boolean
+  field: String!
+}
+
 type Query {
   info: String!
   admin(uuid: String!): Admin
@@ -35,5 +40,5 @@ type Query {
   manager(uuid: String!): Manager
   managers(page: Page, filter: ManagerFilter): ManagerPage
   company(uuid: String!): Company
-  companies(page: Page, filter: CompanyFilter): CompanyPage
+  companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
 }
