@@ -57,3 +57,17 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 		manager: loadedManager,
 	}, loadErr
 }
+
+func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input gentypes.DeleteManagerInput }) (bool, error) {
+	if err := args.Input.Validate(); err != nil {
+		return false, err
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return false, err
+	}
+
+	success, err := grant.DeleteManager(args.Input.UUID)
+	return success, err
+}

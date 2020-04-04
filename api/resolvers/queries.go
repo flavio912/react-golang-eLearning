@@ -62,8 +62,9 @@ func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID string })
 }
 
 func (q *QueryResolver) Managers(ctx context.Context, args struct {
-	Page   *gentypes.Page
-	Filter *gentypes.ManagersFilter
+	Page    *gentypes.Page
+	Filter  *gentypes.ManagersFilter
+	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
 
 	if args.Filter != nil {
@@ -78,7 +79,7 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 		return &ManagerPageResolver{}, err
 	}
 
-	managers, page, err := grant.GetManagers(args.Page, args.Filter)
+	managers, page, err := grant.GetManagers(args.Page, args.Filter, args.OrderBy)
 	var managerResolvers []*ManagerResolver
 	for _, manager := range managers {
 		managerResolvers = append(managerResolvers, &ManagerResolver{

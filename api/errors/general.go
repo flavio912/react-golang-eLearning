@@ -47,4 +47,11 @@ var (
 		Title:    "Company not found",
 		HelpText: "Sorry, we couldn't find the company you were looking for",
 	}
+	//ErrDeleteFailed is used for failed deletion where we know the resource was not deleted
+	ErrDeleteFailed = FullError{
+		Type:     "ErrDeleteFailed",
+		Message:  "Could not delete the requested item",
+		Title:    "Unable to delete",
+		HelpText: "Sorry, we we're able to delete the item. Please try again.",
+	}
 )

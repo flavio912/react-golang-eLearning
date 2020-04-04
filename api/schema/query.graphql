@@ -38,7 +38,7 @@ type Query {
   admin(uuid: String!): Admin
   admins(page: Page): AdminPage!
   manager(uuid: String!): Manager
-  managers(page: Page, filter: ManagerFilter): ManagerPage
+  managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
   company(uuid: String!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
 }

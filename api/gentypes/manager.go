@@ -37,6 +37,15 @@ func (m *AddManagerInput) Validate() error {
 	return err
 }
 
+type DeleteManagerInput struct {
+	UUID string `valid:"uuidv4"`
+}
+
+func (m *DeleteManagerInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
 // ManagerLoginInput - ManagerLogin graphQL input
 type ManagerLoginInput struct {
 	Email    string

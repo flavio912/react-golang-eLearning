@@ -24,6 +24,10 @@ input AddManagerInput {
   password: String!
 }
 
+input DeleteManagerInput {
+  uuid: String!
+}
+
 type Manager implements User {
   uuid: String!
   createdAt: String

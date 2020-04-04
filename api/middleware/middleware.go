@@ -51,7 +51,7 @@ func Authenticate(jwt string) (*Grant, error) {
 }
 
 // MaxPageLimit is the maximum amount of returned datapoints
-const MaxPageLimit = int32(400)
+const MaxPageLimit = int32(100)
 
 // getPage adds limit and offset to a query
 func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {

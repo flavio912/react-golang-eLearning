@@ -85,7 +85,7 @@ func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
 	return gentypes.Manager{}, &errors.ErrUnauthorized
 }
 
-func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter) ([]gentypes.Manager, gentypes.PageInfo, error) {
+func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter, orderBy *gentypes.OrderBy) ([]gentypes.Manager, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
 		return []gentypes.Manager{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
@@ -117,6 +117,11 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 	}
 
 	query = query.Order("created_at DESC")
+	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"})
+	if orderErr != nil {
+		return []gentypes.Manager{}, gentypes.PageInfo{}, orderErr
+	}
+
 	query, limit, offset := getPage(query, page)
 	err := query.Find(&managers).Error
 	if err != nil {
@@ -182,4 +187,19 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 	}
 
 	return g.managerToGentype(manager), nil
+}
+
+func (g *Grant) DeleteManager(uuid string) (bool, error) {
+	// Only managers themselves or an admin can delete managers
+	if g.Claims.UUID != uuid || g.IsAdmin {
+		query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Manager{})
+		if query.Error != nil {
+			glog.Errorf("Unable to delete manager: %s", query.Error.Error())
+			return false, &errors.ErrDeleteFailed
+		}
+
+		return true, nil
+	}
+
+	return false, &errors.ErrUnauthorized
 }
