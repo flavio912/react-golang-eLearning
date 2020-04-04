@@ -8,5 +8,4 @@ WORKDIR /app
 COPY ./bin/run_dev.sh /scripts/run_dev.sh
 RUN ["chmod", "+x", "/scripts/run_dev.sh"]
 
-RUN ["yarn"]
 ENTRYPOINT ["/scripts/run_dev.sh"]
