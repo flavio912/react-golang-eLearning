@@ -56,9 +56,14 @@ export type ResultItem = {
 type Props = {
   companyName: string;
   searchFunction: (query: string) => Promise<ResultItem[]>;
+  debounceTime?: number;
 };
 
-function UserSearch({ companyName, searchFunction }: Props) {
+function UserSearch({
+  companyName,
+  searchFunction,
+  debounceTime = 600,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -70,6 +75,7 @@ function UserSearch({ companyName, searchFunction }: Props) {
   const [focus, setFocus]: [boolean, any] = React.useState(false);
   const [results, setResults]: [ResultItem[], any] = React.useState([]);
   const [input, setInput]: [string, any] = React.useState("");
+  const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
 
   const onFocus = () => {
     setFocus(true);
@@ -84,14 +90,19 @@ function UserSearch({ companyName, searchFunction }: Props) {
   const onBlur = () => {
     setFocus(false);
   };
-  const onChange = async (text: string) => {
-    if (text.length === 0 && results.length > 0) {
-      return;
-    }
+  const onChange = (text: string) => {
     setLoading(true);
-    const res = await searchFunction(text);
-    setLoading(false);
-    setResults(res);
+    clearTimeout(debouncer);
+    const timeout = setTimeout(async () => {
+      console.log("CALLED");
+      if (text.length === 0 && results.length > 0) {
+        return;
+      }
+      const res = await searchFunction(text);
+      setLoading(false);
+      setResults(res);
+    }, debounceTime);
+    setDebouncer(timeout);
   };
   const onSelect = (result: ResultItem) => {
     setFocus(false);

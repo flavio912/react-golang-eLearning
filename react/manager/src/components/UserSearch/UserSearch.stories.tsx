@@ -1,6 +1,6 @@
 import * as React from "react";
 import UserSearch, { ResultItem } from "./UserSearch";
-import { withKnobs, text } from "@storybook/addon-knobs";
+import { withKnobs, text, number } from "@storybook/addon-knobs";
 
 export default {
   title: "Search/UserSearch",
@@ -10,15 +10,15 @@ export default {
 const items: ResultItem[] = [
   {
     key: "Jim Smith",
-    value: "uuid",
+    value: "uuid-1",
   },
   {
     key: "Bruce Willis",
-    value: "uuid",
+    value: "uuid-2",
   },
   {
     key: "Tony Stark",
-    value: "uuid",
+    value: "uuid-3",
   },
 ];
 const searchFunc = async (query: string) => {
@@ -31,6 +31,7 @@ export const plain = () => {
     <UserSearch
       companyName={text("Company name", "Fedex")}
       searchFunction={searchFunc}
+      debounceTime={number("Debounce time (ms)", 500)}
     />
   );
 };

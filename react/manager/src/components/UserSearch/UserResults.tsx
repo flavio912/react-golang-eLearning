@@ -31,7 +31,7 @@ function UserResults({ results, loading, onSelect }: Props) {
       {!loading && (
         <div>
           {results.map((result) => (
-            <UserResult result={result} onClick={onSelect} />
+            <UserResult result={result} onClick={onSelect} key={result.key} />
           ))}
         </div>
       )}
