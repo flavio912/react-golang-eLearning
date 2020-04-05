@@ -94,8 +94,8 @@ function UserSearch({
     setLoading(true);
     clearTimeout(debouncer);
     const timeout = setTimeout(async () => {
-      console.log("CALLED");
       if (text.length === 0 && results.length > 0) {
+        setLoading(false);
         return;
       }
       const res = await searchFunction(text);
