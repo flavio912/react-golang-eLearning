@@ -54,8 +54,9 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 		return "", ErrPasswordInvalid
 	}
 	claims := auth.UserClaims{
-		UUID: manager.UUID.String(),
-		Role: auth.ManagerRole,
+		UUID:    manager.UUID.String(),
+		Role:    auth.ManagerRole,
+		Company: manager.CompanyID.String(),
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err

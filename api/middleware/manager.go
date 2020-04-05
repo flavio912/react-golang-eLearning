@@ -1,42 +1,73 @@
 package middleware
 
 import (
+	"time"
+
 	"github.com/golang/glog"
+	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func managerModelToGentype(manager models.Manager) gentypes.Manager {
-	return gentypes.Manager{
-		User: gentypes.User{
-			UUID:      manager.UUID.String(),
-			Email:     manager.Email,
-			FirstName: manager.FirstName,
-			LastName:  manager.LastName,
-			JobTitle:  manager.JobTitle,
-			Telephone: manager.Telephone,
-		},
+func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
+	// Admins and managers themselves can get all info
+	if g.IsAdmin || g.Claims.UUID == manager.UUID.String() {
+		createdAt := manager.CreatedAt.Format(time.RFC3339)
+		return gentypes.Manager{
+			User: gentypes.User{
+				CreatedAt: &createdAt,
+				UUID:      manager.UUID,
+				Email:     manager.Email,
+				FirstName: manager.FirstName,
+				LastName:  manager.LastName,
+				JobTitle:  manager.JobTitle,
+				Telephone: manager.Telephone,
+				CompanyID: manager.CompanyID,
+			},
+		}
 	}
+
+	// Delegates can only get a subset of their manager info
+	if g.IsCompanyDelegate(manager.CompanyID.String()) {
+		return gentypes.Manager{
+			User: gentypes.User{
+				Email:     manager.Email,
+				FirstName: manager.FirstName,
+				LastName:  manager.LastName,
+				JobTitle:  manager.JobTitle,
+			},
+		}
+	}
+
+	return gentypes.Manager{}
+}
+
+func (g *Grant) managersToGentype(managers []models.Manager) []gentypes.Manager {
+	var genManagers []gentypes.Manager
+	for _, manager := range managers {
+		genManagers = append(genManagers, g.managerToGentype(manager))
+	}
+	return genManagers
 }
 
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
-	if g.IsAdmin {
-		db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
-		if db.Error != nil {
-			if db.RecordNotFound() {
-				return managers, &errors.ErrNotFound
-			}
-			glog.Errorf("DB Error: %s", db.Error.Error())
-			return managers, &errors.ErrWhileHandling
-		}
-
-		return managers, nil
+	if !g.IsAdmin {
+		return managers, &errors.ErrUnauthorized
 	}
 
-	return managers, &errors.ErrUnauthorized
+	db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
+	if db.Error != nil {
+		if db.RecordNotFound() {
+			return managers, &errors.ErrNotFound
+		}
+		glog.Errorf("DB Error: %s", db.Error.Error())
+		return managers, &errors.ErrWhileHandling
+	}
+
+	return managers, nil
 }
 
 func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
@@ -49,9 +80,60 @@ func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
 			return gentypes.Manager{}, err
 		}
 
-		return managerModelToGentype(manager), nil
+		return g.managerToGentype(manager), nil
 	}
 	return gentypes.Manager{}, &errors.ErrUnauthorized
+}
+
+func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter, orderBy *gentypes.OrderBy) ([]gentypes.Manager, gentypes.PageInfo, error) {
+	if !g.IsAdmin {
+		return []gentypes.Manager{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	var managers []models.Manager
+
+	query := database.GormDB
+	if filter != nil {
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
+		}
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("first_name ILIKE ?", "%%"+*filter.Name+"%%").Or("last_name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.JobTitle != nil && *filter.JobTitle != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
+		}
+	}
+
+	// Count the total filtered dataset
+	var count int32
+	countErr := query.Model(&models.Manager{}).Limit(MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		glog.Errorf("Count query failed: %s", countErr.Error())
+		return []gentypes.Manager{}, gentypes.PageInfo{}, countErr
+	}
+
+	query = query.Order("created_at DESC")
+	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"})
+	if orderErr != nil {
+		return []gentypes.Manager{}, gentypes.PageInfo{}, orderErr
+	}
+
+	query, limit, offset := getPage(query, page)
+	err := query.Find(&managers).Error
+	if err != nil {
+		return []gentypes.Manager{}, gentypes.PageInfo{}, err
+	}
+
+	return g.managersToGentype(managers), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(managers)),
+	}, nil
 }
 
 func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
@@ -72,9 +154,25 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
+	_uuid, err := uuid.Parse(managerDetails.CompanyUUID)
+	if err != nil {
+		return gentypes.Manager{}, &errors.ErrUUIDInvalid
+	}
+
+	// Check if company exists
+	var company models.Company
+	existsErr := database.GormDB.Where("uuid = ?", _uuid).First(&company)
+	if existsErr.Error != nil {
+		if existsErr.RecordNotFound() {
+			return gentypes.Manager{}, &errors.ErrCompanyNotFound
+		}
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
 	// TODO: Validate input better and return useful details
 	manager := models.Manager{
 		User: models.User{
+			CompanyID: _uuid,
 			FirstName: managerDetails.FirstName,
 			LastName:  managerDetails.LastName,
 			Email:     managerDetails.Email,
@@ -83,10 +181,25 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 			Password:  managerDetails.Password,
 		},
 	}
-	err := database.GormDB.Create(&manager).Error
-	if err != nil {
+	createErr := database.GormDB.Create(&manager).Error
+	if createErr != nil {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
-	return managerModelToGentype(manager), nil
+	return g.managerToGentype(manager), nil
+}
+
+func (g *Grant) DeleteManager(uuid string) (bool, error) {
+	// Only managers themselves or an admin can delete managers
+	if g.Claims.UUID != uuid || g.IsAdmin {
+		query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Manager{})
+		if query.Error != nil {
+			glog.Errorf("Unable to delete manager: %s", query.Error.Error())
+			return false, &errors.ErrDeleteFailed
+		}
+
+		return true, nil
+	}
+
+	return false, &errors.ErrUnauthorized
 }

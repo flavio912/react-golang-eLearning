@@ -51,8 +51,9 @@ const (
 
 // UserClaims - Claims other than the default added to the JWT
 type UserClaims struct {
-	UUID string
-	Role Role
+	UUID    string
+	Company string
+	Role    Role
 }
 
 type trueClaims struct {

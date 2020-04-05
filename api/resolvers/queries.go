@@ -17,29 +17,29 @@ func (q *QueryResolver) Info() (string, error) {
 }
 
 // Admins - Get a list of admins
-func (q *QueryResolver) Admins(ctx context.Context, args gentypes.Page) (*AdminPageResolver, error) {
+func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.Page }) (*AdminPageResolver, error) {
 	grant, err := middleware.Authenticate(ctx.Value("token").(string))
 	if err != nil {
 		return &AdminPageResolver{}, err
 	}
-	admins, err := grant.GetAdmins(&args, nil)
+	admins, err := grant.GetAdmins(args.Page, nil)
 	if err != nil {
 		return nil, err
 	}
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
-			admin: *admin,
+			admin: admin,
 		})
 	}
 	return &AdminPageResolver{
 		edges: &adminResolvers,
 		pageInfo: &PageInfoResolver{
 			pageInfo: &gentypes.PageInfo{
-				PagesAfter: 0,
-				Offset:     0,
-				Limit:      0,
-				Given:      int32(len(admins)),
+				Total:  0,
+				Offset: 0,
+				Limit:  0,
+				Given:  int32(len(admins)),
 			},
 		},
 	}, nil
@@ -59,4 +59,61 @@ func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID string })
 		return &ManagerResolver{}, err
 	}
 	return &ManagerResolver{manager: manager}, nil
+}
+
+func (q *QueryResolver) Managers(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.ManagersFilter
+	OrderBy *gentypes.OrderBy
+}) (*ManagerPageResolver, error) {
+
+	if args.Filter != nil {
+		err := (*args.Filter).Validate()
+		if err != nil {
+			return &ManagerPageResolver{}, err
+		}
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return &ManagerPageResolver{}, err
+	}
+
+	managers, page, err := grant.GetManagers(args.Page, args.Filter, args.OrderBy)
+	var managerResolvers []*ManagerResolver
+	for _, manager := range managers {
+		managerResolvers = append(managerResolvers, &ManagerResolver{
+			manager: manager,
+		})
+	}
+
+	return &ManagerPageResolver{
+		edges: &managerResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Companies(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.CompanyFilter
+	OrderBy *gentypes.OrderBy
+}) (*CompanyPageResolver, error) {
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return &CompanyPageResolver{}, err
+	}
+
+	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
+
+	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
+		UUIDs: companies,
+	}, page)
+}
+
+func (q *QueryResolver) Company(ctx context.Context, args struct{ UUID string }) (*CompanyResolver, error) {
+	return NewCompanyResolver(ctx, NewCompanyArgs{
+		UUID: args.UUID,
+	})
 }

@@ -12,6 +12,7 @@ type contextKey string
 const (
 	adminLoaderKey   contextKey = "admin"
 	managerLoaderKey contextKey = "manager"
+	companyLoaderKey contextKey = "company"
 )
 
 // Init initializes and returns Map
@@ -19,6 +20,7 @@ func Init() Map {
 	return Map{
 		adminLoaderKey:   (&adminLoader{}).loadBatch,
 		managerLoaderKey: (&managerLoader{}).loadBatch,
+		companyLoaderKey: (&companyLoader{}).loadBatch,
 	}
 }
 
@@ -43,7 +45,7 @@ func extract(ctx context.Context, k contextKey) (*dataloader.Loader, error) {
 
 // extractAndLoad is a helper function to extract the loader from context and run the thunk
 func extractAndLoad(ctx context.Context, loaderKey contextKey, key string) (interface{}, error) {
-	ldr, err := extract(ctx, managerLoaderKey)
+	ldr, err := extract(ctx, loaderKey)
 	if err != nil {
 		return nil, err
 	}

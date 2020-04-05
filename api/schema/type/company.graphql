@@ -1,0 +1,11 @@
+type Company {
+  uuid: String!
+  createdAt: String
+  name: String!
+  managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
+}
+
+type CompanyPage implements PaginatedQuery {
+  edges: [Company]
+  pageInfo: PageInfo
+}
