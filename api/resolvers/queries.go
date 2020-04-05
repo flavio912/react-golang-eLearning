@@ -29,7 +29,7 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
-			admin: *admin,
+			admin: admin,
 		})
 	}
 	return &AdminPageResolver{

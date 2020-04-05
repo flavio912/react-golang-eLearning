@@ -5,4 +5,5 @@ type Mutation {
   addManager(input: AddManagerInput!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
   addAdmin(input: AddAdminInput!): Admin
+  deleteAdmin(input: DeleteAdminInput!): Boolean!
 }

@@ -8,6 +8,20 @@ var (
 		Title:    "User not found",
 		HelpText: "Couldn't find a user with that email address",
 	}
+	// ErrUserExists usually for when someone tries to create a user that already exists
+	ErrUserExists = FullError{
+		Type:     "ErrUserExists",
+		Message:  "User with that email/identifier already exists",
+		Title:    "User already exists",
+		HelpText: "Oh no, a user with that email/identifier already exists",
+	}
+	//ErrAdminNotFound given when something like a uuid meant to be an admin is invalid
+	ErrAdminNotFound = FullError{
+		Type:     "ErrAdminNotFound",
+		Message:  "There is no user matching the information given",
+		Title:    "Could not find the specified admin user",
+		HelpText: "Oops, no admin with those details exists. Please check the details and try again",
+	}
 	// ErrAuthFailed given when password or email is not correct
 	ErrAuthFailed = FullError{
 		Type:     "ErrAuthFailed",

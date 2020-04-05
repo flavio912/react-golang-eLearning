@@ -33,7 +33,16 @@ type AddAdminInput struct {
 	Password  string `valid:"stringlength(8|30),required"`
 }
 
-func (m *AddManagerInput) Validate() error {
+func (m *AddAdminInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
+type RemoveAdminInput struct {
+	UUID string `valid:"uuidv4,required"`
+}
+
+func (m *RemoveAdminInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }

@@ -23,7 +23,7 @@ type Grant struct {
 func Authenticate(jwt string) (*Grant, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
-		glog.Info(err.Error())
+		glog.Infof("Authentication failed: %s", err.Error())
 		return &Grant{}, &errors.ErrTokenInvalid
 	}
 

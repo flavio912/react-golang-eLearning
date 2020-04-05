@@ -71,3 +71,39 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 	success, err := grant.DeleteManager(args.Input.UUID)
 	return success, err
 }
+
+func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gentypes.AddAdminInput }) (*AdminResolver, error) {
+	if err := args.Input.Validate(); err != nil {
+		return nil, err
+	}
+
+	// TODO: make middleware function that extracts JWT itself, like middleware.Authenticate(ctx)
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	admin, addErr := grant.AddAdmin(args.Input)
+	if addErr != nil {
+		return nil, addErr
+	}
+
+	return &AdminResolver{
+		admin: admin,
+	}, nil
+}
+
+func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.RemoveAdminInput }) (bool, error) {
+	// TODO: Move grant + validate boilerplate stuff further up the request
+	if err := args.Input.Validate(); err != nil {
+		return false, err
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return false, err
+	}
+
+	success, err := grant.DeleteAdmin(args.Input.UUID)
+	return success, err
+}
