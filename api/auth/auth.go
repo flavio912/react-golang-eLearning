@@ -72,10 +72,10 @@ func ValidateToken(token string) (UserClaims, error) {
 	})
 
 	if err != nil {
-		return claims.Claims, err
+		return UserClaims{}, err
 	}
 	if !tkn.Valid {
-		return claims.Claims, errors.New("Token invalid")
+		return UserClaims{}, errors.New("Token invalid")
 	}
 
 	return claims.Claims, nil

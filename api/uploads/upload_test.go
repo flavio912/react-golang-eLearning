@@ -1,4 +1,4 @@
-package s3
+package uploads
 
 import (
 	"fmt"

@@ -13,14 +13,15 @@ import (
 // User - The base model used for managers and delegates
 type User struct {
 	Base
-	FirstName string
-	LastName  string
-	JobTitle  string
-	Telephone string
-	LastLogin time.Time
-	Password  string
-	Email     string `gorm:"unique"`
-	CompanyID uuid.UUID
+	FirstName  string
+	LastName   string
+	JobTitle   string
+	Telephone  string
+	LastLogin  time.Time
+	Password   string
+	Email      string `gorm:"unique"`
+	CompanyID  uuid.UUID
+	ProfileKey string
 }
 
 var (
@@ -36,8 +37,8 @@ type IUser interface {
 	getHash() string
 }
 
-// BeforeSave - Hash the given password
-func (user *User) BeforeSave(scope *gorm.Scope) (err error) {
+// BeforeCreate - Hash the given password
+func (user *User) BeforeCreate(scope *gorm.Scope) (err error) {
 	if pw, err := auth.HashPassword(user.Password); err == nil {
 		scope.SetColumn("Password", pw)
 	}

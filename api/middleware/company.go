@@ -40,9 +40,10 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 	return genCompanies
 }
 
-func (g *Grant) IsCompanyDelegate(uuid string) bool {
+//IsCompanyDelegate returns true if the grant user is a delegate of the given company uuid
+func (g *Grant) IsCompanyDelegate(companyUUID string) bool {
 	if g.IsDelegate {
-		if uuid != "" && g.Claims.Company == uuid {
+		if companyUUID != "" && g.Claims.Company == companyUUID {
 			return true
 		}
 	}

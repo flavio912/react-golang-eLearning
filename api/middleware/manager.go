@@ -3,6 +3,8 @@ package middleware
 import (
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
+
 	"github.com/golang/glog"
 	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -54,11 +56,18 @@ func (g *Grant) managersToGentype(managers []models.Manager) []gentypes.Manager 
 
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
-	if !g.IsAdmin {
+
+	var allowedUUIDs []string
+	for _, uuid := range uuids {
+		if g.Claims.UUID == uuid {
+			allowedUUIDs = append(allowedUUIDs, uuid)
+		}
+	}
+	if !g.IsAdmin && !g.IsManager {
 		return managers, &errors.ErrUnauthorized
 	}
 
-	db := database.GormDB.Where("uuid IN (?)", uuids).Find(&managers)
+	db := database.GormDB.Where("uuid IN (?)", allowedUUIDs).Find(&managers)
 	if db.Error != nil {
 		if db.RecordNotFound() {
 			return managers, &errors.ErrNotFound
@@ -192,6 +201,7 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 func (g *Grant) DeleteManager(uuid string) (bool, error) {
 	// Only managers themselves or an admin can delete managers
 	if g.Claims.UUID != uuid || g.IsAdmin {
+		// TODO: delete profile image from S3
 		query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Manager{})
 		if query.Error != nil {
 			glog.Errorf("Unable to delete manager: %s", query.Error.Error())
@@ -202,4 +212,41 @@ func (g *Grant) DeleteManager(uuid string) (bool, error) {
 	}
 
 	return false, &errors.ErrUnauthorized
+}
+
+// ManagerProfileUploadRequest generates a link that lets users upload a profile image to S3 directly
+func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !g.IsManager && !g.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      //  The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"profile",               // Save files in the "profile" s3 directory
+		"managerProfile",        // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
+}
+
+// ManagerProfileUploadSuccess checks the successToken and sets the profile image of the current manager
+func (g *Grant) ManagerProfileUploadSuccess(token string) error {
+	if !g.IsManager {
+		return &errors.ErrUnauthorized
+	}
+
+	s3Key, err := uploads.VerifyUploadSuccess(token, "managerProfile")
+	if err != nil {
+		return err
+	}
+
+	query := database.GormDB.Model(&models.Manager{}).Where("uuid = ?", g.Claims.UUID).Update("profile_key", s3Key)
+	if query.Error != nil {
+		return getDBErrorType(query)
+	}
+
+	return nil
 }

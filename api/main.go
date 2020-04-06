@@ -13,6 +13,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 
 	"github.com/golang/glog"
 	graphql "github.com/graph-gophers/graphql-go"
@@ -81,7 +82,7 @@ func main() {
 	}
 	defer database.GormDB.Close()
 	migration.InitMigrations()
-
+	uploads.Initialize()
 	loaders := loader.Init()
 	// Setup DevAdmin user
 	updateOrCreateDevAdmin()
