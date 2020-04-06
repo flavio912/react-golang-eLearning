@@ -40,7 +40,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 4,
   },
   grey: {
-    borderWidth: 1,
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
     backgroundColor: theme.colors.backgroundGrey,
@@ -60,16 +59,16 @@ export type Archetypes = "default" | "grey" | "submit";
 
 interface Props {
   archetype?: Archetypes;
-  iconLeft?: IconNames;
-  iconRight?: IconNames;
+  icon?: { left?: IconNames; right?: IconNames };
+  iconSize?: number;
   bold?: boolean;
   small?: boolean;
 }
 
 function Button({
   archetype,
-  iconLeft,
-  iconRight,
+  icon,
+  iconSize,
   bold,
   small,
   children,
@@ -90,19 +89,19 @@ function Button({
     >
       {/* replace with actual icon */}
       {/* prop should also be a string (icon name) */}
-      {iconLeft && (
+      {icon && icon.left && (
         <Icon
           style={{ marginRight: small ? 5 : 10 }}
-          name={iconLeft}
-          size={small ? 12 : 15}
+          name={icon.left}
+          size={iconSize ? iconSize : small ? 12 : 15}
         />
       )}
       {children}
-      {iconRight && (
+      {icon && icon.right && (
         <Icon
           style={{ marginLeft: small ? 5 : 10 }}
-          name={iconRight}
-          size={small ? 12 : 15}
+          name={icon.right}
+          size={iconSize ? iconSize : small ? 12 : 15}
         />
       )}
     </button>
