@@ -1,6 +1,6 @@
 import * as React from "react";
 import Button, { Archetypes } from "./Button";
-import { withKnobs, select, text, boolean } from "@storybook/addon-knobs";
+import { withKnobs, select, text, boolean, number } from "@storybook/addon-knobs";
 import { IconNames } from "../Icon";
 
 export default {
@@ -10,7 +10,7 @@ export default {
 
 const archetypes: Archetypes[] = ["default", "grey", "submit"];
 
-const iconNames: (IconNames|"None")[] = [
+const iconNames: (IconNames | "None")[] = [
   "None",
   "AddDelegateRepeater",
   "ArrowLeft",
@@ -55,14 +55,18 @@ export const flexible = () => {
   const btnText: string = text("Text", "");
   const bold: boolean = boolean("Bold", false);
   const small: boolean = boolean("Small", false);
-  const iconLeft: (IconNames|"None") = select("Left Icon", iconNames, "None");
-  const iconRight: (IconNames|"None") = select("Right Icon", iconNames, "None");
+  const iconLeft: IconNames | "None" = select("Left Icon", iconNames, "None");
+  const iconRight: IconNames | "None" = select("Right Icon", iconNames, "None");
+  const iconSize: number = number("Icon Size", NaN);
 
   return (
     <Button
       archetype={archetype}
-      iconLeft={iconLeft !== "None" ? iconLeft : undefined}
-      iconRight={iconRight !== "None" ? iconRight : undefined}
+      icon={{
+        left: iconLeft !== "None" ? iconLeft : undefined,
+        right: iconRight !== "None" ? iconRight : undefined,
+      }}
+      iconSize={iconSize}
       bold={bold}
       small={small}
     >

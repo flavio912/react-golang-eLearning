@@ -19,28 +19,28 @@ const useStyles = createUseStyles((theme: Theme) => ({
     outline: "none",
     // it would be nice to have a light blue hover state
     "&:focus": {
-      borderColor: theme.colors.primaryBlue,
+      borderColor: theme.colors.primaryBlue
     },
     "&::-moz-focus-inner": {
-      border: 0,
-    },
+      border: 0
+    }
   },
   bold: {
-    fontWeight: "bold",
+    fontWeight: "bold"
   },
   small: {
-    padding: [0, theme.spacing(1)],
+    padding: [0, theme.spacing(1)]
   },
   default: {
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
   grey: {
     borderWidth: 2,
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
-    backgroundColor: theme.colors.backgroundGrey,
+    backgroundColor: theme.colors.backgroundGrey
   },
   submit: {
     color: "white",
@@ -48,25 +48,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryBlue,
     "&:focus": {
       borderColor: "#0044db",
-      backgroundColor: "#0044db",
-    },
-  },
+      backgroundColor: "#0044db"
+    }
+  }
 }));
 
 export type Archetypes = "default" | "grey" | "submit";
 
 interface Props {
   archetype?: Archetypes;
-  iconLeft?: IconNames;
-  iconRight?: IconNames;
+  icon?: { left?: IconNames; right?: IconNames };
+  iconSize?: number;
   bold?: boolean;
   small?: boolean;
 }
 
 function Button({
   archetype,
-  iconLeft,
-  iconRight,
+  icon,
+  iconSize,
   bold,
   small,
   children,
@@ -87,19 +87,19 @@ function Button({
     >
       {/* replace with actual icon */}
       {/* prop should also be a string (icon name) */}
-      {iconLeft && (
+      {icon && icon.left && (
         <Icon
           style={{ marginRight: small ? 5 : 10 }}
-          name={iconLeft}
-          size={small ? 12 : 15}
+          name={icon.left}
+          size={iconSize ? iconSize : small ? 12 : 15}
         />
       )}
       {children}
-      {iconRight && (
+      {icon && icon.right && (
         <Icon
           style={{ marginLeft: small ? 5 : 10 }}
-          name={iconRight}
-          size={small ? 12 : 15}
+          name={icon.right}
+          size={iconSize ? iconSize : small ? 12 : 15}
         />
       )}
     </button>
