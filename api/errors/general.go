@@ -68,4 +68,22 @@ var (
 		Title:    "Unable to delete",
 		HelpText: "Sorry, we we're able to delete the item. Please try again.",
 	}
+	ErrFileTooLarge = FullError{
+		Type:     "ErrFileTooLarge",
+		Message:  "The specified file is too large, must be < 20MB",
+		Title:    "File is too large",
+		HelpText: "The specified file is too large, must be < 20MB",
+	}
+	ErrUploadTokenInvalid = SimpleError{
+		Type:    "ErrUploadTokenInvalid",
+		Message: "The given upload token was not valid, please check it and try again",
+	}
+	ErrGeneratingToken = SimpleError{
+		Type:    "ErrGeneratingToken",
+		Message: "Unable to generate the requested token",
+	}
+	ErrNotUploaded = SimpleError{
+		Type:    "ErrNotUploaded",
+		Message: "The item meant to be uploaded is not present",
+	}
 )

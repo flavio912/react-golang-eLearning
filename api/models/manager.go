@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -53,6 +54,11 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 	if err := manager.ValidatePassword(manager.Email, password); err != nil {
 		return "", ErrPasswordInvalid
 	}
+
+	// Update last login time
+	manager.LastLogin = time.Now()
+	database.GormDB.Save(manager)
+
 	claims := auth.UserClaims{
 		UUID:    manager.UUID.String(),
 		Role:    auth.ManagerRole,

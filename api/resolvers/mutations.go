@@ -107,3 +107,44 @@ func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input g
 	success, err := grant.DeleteAdmin(args.Input.UUID)
 	return success, err
 }
+
+func (m *MutationResolver) ManagerProfileUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	url, successToken, err := grant.ManagerProfileUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
+func (m *MutationResolver) ManagerProfileUploadSuccess(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileSuccess },
+) (*ManagerResolver, error) {
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	err = grant.ManagerProfileUploadSuccess(args.Input.SuccessToken)
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	res, err := NewManagerResolver(ctx, NewManagerArgs{
+		UUID: grant.Claims.UUID,
+	})
+
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	return res, nil
+}

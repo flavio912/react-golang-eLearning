@@ -1,8 +1,25 @@
 # mutations can modify the db. executed sequentially.
+
+input UploadFileMeta {
+  fileType: String!
+  contentLength: Int!
+}
+
+type UploadFileResp {
+  url: String!
+  successToken: String!
+}
+
+input UploadFileSuccess {
+  successToken: String!
+}
+
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
   addManager(input: AddManagerInput!): Manager
+  managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp
+  managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
   addAdmin(input: AddAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!

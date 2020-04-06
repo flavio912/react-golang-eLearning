@@ -4,6 +4,8 @@ Package auth deals with generating and checking JWTs
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/base64"
 	"errors"
 	"log"
 	"time"
@@ -70,10 +72,10 @@ func ValidateToken(token string) (UserClaims, error) {
 	})
 
 	if err != nil {
-		return claims.Claims, err
+		return UserClaims{}, err
 	}
 	if !tkn.Valid {
-		return claims.Claims, errors.New("Token invalid")
+		return UserClaims{}, errors.New("Token invalid")
 	}
 
 	return claims.Claims, nil
@@ -97,4 +99,19 @@ func GenerateToken(claims UserClaims, expiresInHours float64) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+func GenerateRandomBytes(n int) ([]byte, error) {
+	b := make([]byte, n)
+	_, err := rand.Read(b)
+	if err != nil {
+		return nil, err
+	}
+
+	return b, nil
+}
+
+func GenerateRandomString(s int) (string, error) {
+	b, err := GenerateRandomBytes(s)
+	return base64.URLEncoding.EncodeToString(b), err
 }

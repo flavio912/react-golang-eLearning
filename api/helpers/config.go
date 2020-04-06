@@ -23,8 +23,12 @@ type yamlConfig struct {
 	} `yaml:"devAdmin"`
 	Jwt struct {
 		Secret               string  `yaml:"secret"`
+		UploadsSecret        string  `yaml:"uploadsSecret"`
 		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
 	} `yaml:"jwt"`
+	AWS struct {
+		UploadsBucket string `yaml:"uploadsBucket"`
+	} `yaml:"aws"`
 }
 
 // Config - The config variable can be used by other packages to get config data
@@ -42,6 +46,10 @@ func LoadConfig(path string) error {
 	err = yaml.Unmarshal(yamlFile, &config)
 	if err != nil {
 		panic(err)
+	}
+
+	if config.Jwt.Secret == config.Jwt.UploadsSecret {
+		panic("Image and User token secrets should be different")
 	}
 
 	Config = config
