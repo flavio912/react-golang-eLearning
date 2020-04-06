@@ -1,8 +1,18 @@
 # mutations can modify the db. executed sequentially.
+
+input UploadImageType {
+  imageType: string
+}
+
+type UploadImageResp {
+  url: string!
+}
+
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
   addManager(input: AddManagerInput!): Manager
+  getManagerUploadLink(input: UploadImageType): UploadImageResp
   deleteManager(input: DeleteManagerInput!): Boolean!
   addAdmin(input: AddAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!

@@ -25,6 +25,9 @@ type yamlConfig struct {
 		Secret               string  `yaml:"secret"`
 		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
 	} `yaml:"jwt"`
+	AWS struct {
+		UploadsBucket string `yaml:"uploadsBucket"`
+	} `yaml:"aws"`
 }
 
 // Config - The config variable can be used by other packages to get config data

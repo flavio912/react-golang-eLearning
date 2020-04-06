@@ -68,4 +68,10 @@ var (
 		Title:    "Unable to delete",
 		HelpText: "Sorry, we we're able to delete the item. Please try again.",
 	}
+	ErrFileTooLarge = FullError{
+		Type:     "ErrFileTooLarge",
+		Message:  "The specified file is too large, must be < 20MB",
+		Title:    "File is too large",
+		HelpText: "The specified file is too large, must be < 20MB",
+	}
 )

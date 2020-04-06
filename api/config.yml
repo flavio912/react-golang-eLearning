@@ -12,3 +12,5 @@ devAdmin:
 jwt:
   secret: wKz%rR69b8vX24%RMJ&MpmYxNfRjHPKcfU@yXo#^9@Z9EHZ2eeDp9B818!^Aq7oLTHj!@pjZZlTnbTG6!
   adminExpirationHours: 3 # How many hours until the admin auth token expires
+aws:
+  uploadsBucket: ttc-platform-uploads

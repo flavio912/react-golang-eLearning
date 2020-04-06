@@ -30,3 +30,5 @@ func GetManagerAccessToken(email string, password string) (string, error) {
 	}
 	return token, nil
 }
+
+
