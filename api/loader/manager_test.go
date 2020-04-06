@@ -11,18 +11,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
-type key struct {
-	Key string
-}
-
-func (k *key) Raw() interface{} {
-	return k.Key
-}
-
-func (k *key) String() string {
-	return k.Key
-}
-
 func TestSortManagers(t *testing.T) {
 	var (
 		managers []gentypes.Manager
@@ -32,8 +20,8 @@ func TestSortManagers(t *testing.T) {
 	numToTest := 1000
 
 	for i := 0; i < numToTest; i++ {
-		ident := uuid.New().String()
-		keys = append(keys, dataloader.StringKey(ident))
+		ident := uuid.New()
+		keys = append(keys, dataloader.StringKey(ident.String()))
 		managers = append(managers, gentypes.Manager{
 			User: gentypes.User{
 				UUID:      ident,
@@ -56,7 +44,8 @@ func TestSortManagers(t *testing.T) {
 	// elapsed := time.Since(start)
 	correct := 0
 	for i, manager := range managers {
-		if manager.UUID == keys[i].String() {
+		uid, _ := uuid.Parse(keys[i].String())
+		if manager.UUID == uid {
 			correct = correct + 1
 		}
 	}
