@@ -20,17 +20,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     outline: "none",
     // it would be nice to have a light blue hover state
     "&:focus": {
-      borderColor: theme.colors.primaryBlue
+      borderColor: theme.colors.primaryBlue,
     },
     "&::-moz-focus-inner": {
-      border: 0
-    }
+      border: 0,
+    },
   },
   bold: {
     fontWeight: "bold !important",
   },
   small: {
-    padding: [0, theme.spacing(1)]
+    padding: [0, theme.spacing(1)],
   },
   default: {
     color: theme.colors.primaryBlack,
@@ -40,10 +40,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 4,
   },
   grey: {
-    borderWidth: 1,
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
-    backgroundColor: theme.colors.backgroundGrey
+    backgroundColor: theme.colors.backgroundGrey,
   },
   submit: {
     color: "white",
@@ -51,9 +50,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryBlue,
     "&:focus": {
       borderColor: "#0044db",
-      backgroundColor: "#0044db"
-    }
-  }
+      backgroundColor: "#0044db",
+    },
+  },
 }));
 
 export type Archetypes = "default" | "grey" | "submit";

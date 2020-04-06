@@ -1,6 +1,12 @@
 import * as React from "react";
 import Button, { Archetypes } from "./Button";
-import { withKnobs, select, text, boolean, number } from "@storybook/addon-knobs";
+import {
+  withKnobs,
+  select,
+  text,
+  boolean,
+  number,
+} from "@storybook/addon-knobs";
 import { IconNames } from "../Icon";
 
 export default {
