@@ -18,3 +18,14 @@ input AdminLogin {
   email: String!
   password: String!
 }
+
+input AddAdminInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  password: String!
+}
+
+input DeleteAdminInput {
+  uuid: String!
+}

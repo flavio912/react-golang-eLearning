@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -11,7 +13,7 @@ import (
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
 type Grant struct {
 	Claims auth.UserClaims
-	// Convenience functions for checking auth
+	// Convenience fields for checking auth
 	IsAdmin    bool
 	IsManager  bool
 	IsDelegate bool
@@ -21,7 +23,7 @@ type Grant struct {
 func Authenticate(jwt string) (*Grant, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
-		glog.Info(err.Error())
+		glog.Infof("Authentication failed: %s", err.Error())
 		return &Grant{}, &errors.ErrTokenInvalid
 	}
 
@@ -48,14 +50,65 @@ func Authenticate(jwt string) (*Grant, error) {
 	}, nil
 }
 
-func getPage(query *gorm.DB, page *gentypes.Page) *gorm.DB {
+// MaxPageLimit is the maximum amount of returned datapoints
+const MaxPageLimit = int32(100)
+
+// getPage adds limit and offset to a query
+func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
+	var (
+		limit  = MaxPageLimit
+		offset int32
+	)
+	query.Limit(MaxPageLimit)
 	if page != nil {
-		if page.Limit != nil {
-			query = query.Limit(*page.Limit)
-		}
 		if page.Offset != nil {
-			query = query.Offset(*page.Offset)
+			offset = *page.Offset
+			query = query.Offset(offset)
+		}
+		if page.Limit != nil && *page.Limit <= MaxPageLimit {
+			limit = *page.Limit
+			query = query.Limit(limit)
 		}
 	}
-	return query
+	return query, limit, offset
+}
+
+/* getOrdering adds orderBy to a query,
+
+In no circumstances is "allowedFields" to be given by the user
+*/
+func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string) (*gorm.DB, error) {
+	if orderBy == nil {
+		return query, nil
+	}
+
+	var allowed bool
+	for _, field := range allowedFields {
+		if orderBy.Field == field {
+			allowed = true
+		}
+	}
+
+	if allowed {
+		ordering := "DESC"
+		if orderBy.Ascending != nil && *orderBy.Ascending {
+			ordering = "ASC"
+		}
+		// fmt.Sprintf is fine here as fields are checked against allowed ones.
+		query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
+		return query, nil
+	}
+
+	glog.Infof("Ordering unauthorized: %s", orderBy.Field)
+	return query, &errors.ErrUnauthorized
+}
+
+func getDBErrorType(query *gorm.DB) error {
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return &errors.ErrNotFound
+		}
+		return &errors.ErrWhileHandling
+	}
+	return nil
 }

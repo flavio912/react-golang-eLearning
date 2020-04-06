@@ -1,6 +1,7 @@
 package gentypes
 
-// Admin - The admin graphQL type
+import "github.com/asaskevich/govalidator"
+
 type Admin struct {
 	UUID      string
 	Email     string
@@ -23,4 +24,25 @@ type AdminPage struct {
 type AdminLoginInput struct {
 	Email    string
 	Password string
+}
+
+type AddAdminInput struct {
+	FirstName string `valid:"alpha,required"`
+	LastName  string `valid:"alpha,required"`
+	Email     string `valid:"email,required"`
+	Password  string `valid:"stringlength(8|30),required"`
+}
+
+func (m *AddAdminInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
+type RemoveAdminInput struct {
+	UUID string `valid:"uuidv4,required"`
+}
+
+func (m *RemoveAdminInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
 }

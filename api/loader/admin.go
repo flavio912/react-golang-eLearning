@@ -14,7 +14,7 @@ import (
 type adminLoader struct {
 }
 
-func getKeyList(loadedItems []*gentypes.Admin) []string {
+func getKeyList(loadedItems []gentypes.Admin) []string {
 	keys := make([]string, len(loadedItems))
 	for i, item := range loadedItems {
 		keys[i] = item.UUID
