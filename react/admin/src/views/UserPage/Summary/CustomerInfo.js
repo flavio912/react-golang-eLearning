@@ -48,7 +48,7 @@ function CustomerInfo({ customer, className, ...rest }) {
   };
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="User info" />
+      <CardHeader title="Delegate info" />
       <Divider />
       <CardContent className={classes.content}>
         <Table>
@@ -60,10 +60,6 @@ function CustomerInfo({ customer, className, ...rest }) {
             <TableRow selected>
               <TableCell>Username</TableCell>
               <TableCell>{customer.username}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Roles</TableCell>
-              <TableCell>{customer.phone}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Email</TableCell>
