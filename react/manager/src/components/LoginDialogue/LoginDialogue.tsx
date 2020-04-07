@@ -3,6 +3,7 @@ import Card from "../core/Card";
 import FancyInput from "./FancyInput";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
+import FancyButton from "./FancyButton";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -36,6 +37,7 @@ function LoginDialogue(props: Props) {
       </p>
       <FancyInput label="Email" labelColor={"#5CC301"} type={"email"} />
       <FancyInput label="Password" labelColor={"#5CC301"} type={"password"} />
+      <FancyButton text="Login to TTC" />
     </Card>
   );
 }
