@@ -26,6 +26,7 @@ export type Theme = {
   };
   fontSizes: {
     default: number;
+    small: number;
   };
 };
 
@@ -50,6 +51,7 @@ const theme: Theme = {
   },
   fontSizes: {
     default: 14,
+    small: 12,
   },
 };
 
