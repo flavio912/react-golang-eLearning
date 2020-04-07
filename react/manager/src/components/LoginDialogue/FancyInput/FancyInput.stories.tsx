@@ -3,11 +3,11 @@ import FancyInput from './FancyInput';
 import { withKnobs, text, color } from '@storybook/addon-knobs';
 
 export default {
-  title: 'Login/Fancy Input',
+  title: 'Login/Fancy',
   decorators: [withKnobs]
 }
 
-export const normal = () => {
+export const input = () => {
   return (
     <FancyInput
       label={text('Label', 'Email')}
