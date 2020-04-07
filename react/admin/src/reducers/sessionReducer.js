@@ -3,11 +3,11 @@ import * as actionTypes from 'src/actions';
 const initialState = {
   loggedIn: true,
   user: {
-    first_name: 'Shen',
-    last_name: 'Zhi',
-    email: 'demo@devias.io',
+    first_name: 'Michelle',
+    last_name: 'Waddilove',
+    email: 'demo@admin.com',
     avatar: '/images/avatars/avatar_11.png',
-    bio: 'Brain Director',
+    bio: 'Director',
     role: 'ADMIN' // ['GUEST', 'USER', 'ADMIN']
   }
 };

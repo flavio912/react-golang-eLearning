@@ -19,7 +19,7 @@ import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import ChatIcon from '@material-ui/icons/ChatOutlined';
 import MoreIcon from '@material-ui/icons/MoreVert';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   cover: {
     position: 'relative',
@@ -34,7 +34,8 @@ const useStyles = makeStyles((theme) => ({
       left: 0,
       height: '100%',
       width: '100%',
-      backgroundImage: 'linear-gradient(-180deg, rgba(0,0,0,0.00) 58%, rgba(0,0,0,0.32) 100%)'
+      backgroundImage:
+        'linear-gradient(-180deg, rgba(0,0,0,0.00) 58%, rgba(0,0,0,0.32) 100%)'
     },
     '&:hover': {
       '& $changeButton': {
@@ -107,8 +108,8 @@ const useStyles = makeStyles((theme) => ({
 function Header({ className, ...rest }) {
   const classes = useStyles();
   const user = {
-    name: 'Shen Zhi',
-    bio: 'Web Developer',
+    name: 'Michelle Waddilove',
+    bio: 'Director',
     avatar: '/images/avatars/avatar_11.png',
     cover: '/images/covers/cover_2.jpg',
     connectedStatus: 'not_connected'
@@ -117,7 +118,9 @@ function Header({ className, ...rest }) {
   const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const handleConnectToggle = () => {
-    setConnectedStatus((prevConnectedStatus) => (prevConnectedStatus === 'not_connected' ? 'pending' : 'not_connected'));
+    setConnectedStatus(prevConnectedStatus =>
+      prevConnectedStatus === 'not_connected' ? 'pending' : 'not_connected'
+    );
   };
 
   const handleSnackbarClose = () => {
@@ -131,43 +134,23 @@ function Header({ className, ...rest }) {
   }, [connectedStatus]);
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <div
         className={classes.cover}
         style={{ backgroundImage: `url(${user.cover})` }}
       >
-        <Button
-          className={classes.changeButton}
-          variant="contained"
-        >
+        <Button className={classes.changeButton} variant="contained">
           <AddPhotoIcon className={classes.addPhotoIcon} />
           Change Cover
         </Button>
       </div>
-      <Container
-        maxWidth="lg"
-        className={classes.container}
-      >
-        <Avatar
-          alt="Person"
-          className={classes.avatar}
-          src={user.avatar}
-        />
+      <Container maxWidth="lg" className={classes.container}>
+        <Avatar alt="Person" className={classes.avatar} src={user.avatar} />
         <div className={classes.details}>
-          <Typography
-            component="h2"
-            gutterBottom
-            variant="overline"
-          >
+          <Typography component="h2" gutterBottom variant="overline">
             {user.bio}
           </Typography>
-          <Typography
-            component="h1"
-            variant="h4"
-          >
+          <Typography component="h1" variant="h4">
             {user.name}
           </Typography>
         </div>
@@ -216,14 +199,11 @@ function Header({ className, ...rest }) {
           horizontal: 'left'
         }}
         autoHideDuration={6000}
-        message={(
-          <Typography
-            color="inherit"
-            variant="h6"
-          >
+        message={
+          <Typography color="inherit" variant="h6">
             Sent connection request
           </Typography>
-        )}
+        }
         onClose={handleSnackbarClose}
         open={openSnackbar}
       />

@@ -330,7 +330,7 @@ mock.onGet('/api/dashboard/latest-projects').reply(200, {
       price: '12,500',
       currency: '$',
       author: {
-        name: 'Shen Zhi',
+        name: 'Michelle Waddilove',
         avatar: '/images/avatars/avatar_11.png'
       },
       tags: [

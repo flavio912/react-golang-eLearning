@@ -37,7 +37,9 @@ import ChatBar from './ChatBar';
 
 const useStyles = makeStyles(theme => ({
   root: {
-    boxShadow: 'none'
+    boxShadow: 'none',
+    background:
+      'linear-gradient(90deg, rgba(22,194,37,1) 0%, rgba(13,87,255,1) 100%)'
   },
   flexGrow: {
     flexGrow: 1
@@ -97,6 +99,9 @@ const useStyles = makeStyles(theme => ({
   },
   logoutIcon: {
     marginRight: theme.spacing(1)
+  },
+  logo: {
+    height: 25
   }
 }));
 
@@ -197,7 +202,11 @@ function TopBar({ onOpenNavBarMobile, className, ...rest }) {
           </IconButton>
         </Hidden>
         <RouterLink to="/">
-          <img alt="Logo" src="/images/logos/logo--white.svg" />
+          <img
+            alt="Logo"
+            src="/images/logos/logo--white.png"
+            className={classes.logo}
+          />
         </RouterLink>
         <div className={classes.flexGrow} />
         <Hidden smDown>

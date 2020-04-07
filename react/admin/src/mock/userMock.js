@@ -12,7 +12,7 @@ mock.onGet('/api/users/1/posts').reply(200, {
     {
       id: uuid(),
       author: {
-        name: 'Shen Zhi',
+        name: 'Michelle Waddilove',
         avatar: '/images/avatars/avatar_11.png'
       },
       message: 'Just made this home screen for a project, what-cha thinkin?',
@@ -175,7 +175,7 @@ mock.onGet('/api/users/1/reviews').reply(200, {
       hours: 76,
       currency: '$',
       message:
-        'Being the savage\'s bowsman, that is, the person who pulled the bow-oar in his boat (the second one from forward), it was my cheerful duty to attend upon him while taking that hard-scrabble scramble upon the dead whale\'s back. You have seen Italian organ-boys holding a dancing-ape by a long cord. Just so, from the ship\'s steep side, did I hold Queequeg down there in the sea, by what is technically called in the fishery a monkey-rope, attached to a strong strip of canvas belted round his waist.',
+        "Being the savage's bowsman, that is, the person who pulled the bow-oar in his boat (the second one from forward), it was my cheerful duty to attend upon him while taking that hard-scrabble scramble upon the dead whale's back. You have seen Italian organ-boys holding a dancing-ape by a long cord. Just so, from the ship's steep side, did I hold Queequeg down there in the sea, by what is technically called in the fishery a monkey-rope, attached to a strong strip of canvas belted round his waist.",
       created_at: moment().subtract(8, 'days')
     }
   ]
