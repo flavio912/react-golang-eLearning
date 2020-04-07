@@ -22,8 +22,6 @@ import {
   TableRow
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
-import Label from 'src/components/Label';
-import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import AddUser from './AddUser';
 
 const useStyles = makeStyles(theme => ({
@@ -76,7 +74,6 @@ const useStyles = makeStyles(theme => ({
 function Delegates({ className, company, ...rest }) {
   const classes = useStyles();
 
-  const [toggle, setToggle] = useState('all');
   const [page, setPage] = useState(0);
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
