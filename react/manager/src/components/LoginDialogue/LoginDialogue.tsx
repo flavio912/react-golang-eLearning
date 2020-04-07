@@ -1,9 +1,9 @@
 import * as React from "react";
 import Card from "../core/Card";
 import FancyInput from "./FancyInput";
+import FancyButton from "./FancyButton";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
-import FancyButton from "./FancyButton";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
