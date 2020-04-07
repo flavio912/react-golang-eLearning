@@ -50,7 +50,7 @@ function CustomerInfo({ customer, className, ...rest }) {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Customer info" />
+      <CardHeader title="Company info" />
       <Divider />
       <CardContent className={classes.content}>
         <Table>
@@ -77,20 +77,20 @@ function CustomerInfo({ customer, className, ...rest }) {
               <TableCell>{customer.phone}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>State/Region</TableCell>
-              <TableCell>{customer.state}</TableCell>
-            </TableRow>
-            <TableRow selected>
               <TableCell>Country</TableCell>
               <TableCell>{customer.country}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow selected>
               <TableCell>Address 1</TableCell>
               <TableCell>{customer.address1}</TableCell>
             </TableRow>
-            <TableRow selected>
+            <TableRow>
               <TableCell>Address 2</TableCell>
               <TableCell>{customer.address2}</TableCell>
+            </TableRow>
+            <TableRow selected>
+              <TableCell>Post Code</TableCell>
+              <TableCell></TableCell>
             </TableRow>
           </TableBody>
         </Table>

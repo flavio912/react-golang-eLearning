@@ -8,7 +8,8 @@ import Page from 'src/components/Page';
 import Header from './Header';
 import Summary from './Summary';
 import Invoices from './Invoices';
-import Users from './Users';
+import Managers from './Managers';
+import Delegates from './Delegates';
 import Logs from './Logs';
 
 const useStyles = makeStyles(theme => ({
@@ -33,7 +34,8 @@ function CompanyManagementDetails({ match, history }) {
   const tabs = [
     { value: 'summary', label: 'Summary' },
     { value: 'Courses', label: 'Courses' },
-    { value: 'users', label: 'Users' },
+    { value: 'managers', label: 'Managers' },
+    { value: 'delegates', label: 'Delegates' },
     { value: 'invoices', label: 'Invoices' },
     { value: 'logs', label: 'Logs' }
   ];
@@ -79,7 +81,8 @@ function CompanyManagementDetails({ match, history }) {
         <div className={classes.content}>
           {currentTab === 'summary' && <Summary />}
           {currentTab === 'invoices' && <Invoices />}
-          {currentTab === 'users' && <Users company={company} />}
+          {currentTab === 'managers' && <Managers company={company} />}
+          {currentTab === 'delegates' && <Delegates company={company} />}
           {currentTab === 'logs' && <Logs />}
         </div>
       </Container>

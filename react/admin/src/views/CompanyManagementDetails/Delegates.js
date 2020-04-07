@@ -73,7 +73,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Users({ className, company, ...rest }) {
+function Delegates({ className, company, ...rest }) {
   const classes = useStyles();
 
   const [toggle, setToggle] = useState('all');
@@ -86,6 +86,54 @@ function Users({ className, company, ...rest }) {
       fullName: 'Tom Emmerson',
       userId: 'tom_emmerson',
       roles: ['Manager'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    },
+    {
+      fullName: 'John Doe',
+      userId: 'john_doe2',
+      roles: ['Manager', 'Delegate'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    },
+    {
+      fullName: 'John Doe',
+      userId: 'john_doe2',
+      roles: ['Manager', 'Delegate'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    },
+    {
+      fullName: 'John Doe',
+      userId: 'john_doe2',
+      roles: ['Manager', 'Delegate'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    },
+    {
+      fullName: 'John Doe',
+      userId: 'john_doe2',
+      roles: ['Manager', 'Delegate'],
       email: 'tom@tom.com',
       noValidCerts: 4,
       noExpiringCerts: 2,
@@ -132,7 +180,7 @@ function Users({ className, company, ...rest }) {
         </Button>
       </div>
       <Card {...rest} className={clsx(classes.root, className)}>
-        <CardHeader title="Managers and Delegates" />
+        <CardHeader title="Delegates" />
         <Divider />
         <div className={classes.searchRow}>
           <div className={classes.search}>
@@ -140,26 +188,15 @@ function Users({ className, company, ...rest }) {
             <Input
               className={classes.searchInput}
               disableUnderline
-              placeholder="Search users"
+              placeholder="Search delegates"
             />
           </div>
-          <ToggleButtonGroup
-            exclusive
-            value={toggle}
-            onChange={(_, value) => {
-              setToggle(value);
-            }}
-          >
-            <ToggleButton value="all">Show All</ToggleButton>
-            <ToggleButton value="manager">Managers Only</ToggleButton>
-          </ToggleButtonGroup>
         </div>
         <Divider />
         <Table>
           <TableHead>
             <TableRow>
               <TableCell>User</TableCell>
-              <TableCell>Roles</TableCell>
               <TableCell>Valid Certificates</TableCell>
               <TableCell>Expiring Certificates</TableCell>
               <TableCell>Last Login</TableCell>
@@ -186,13 +223,6 @@ function Users({ className, company, ...rest }) {
                       <div>{user.email}</div>
                     </div>
                   </div>
-                </TableCell>
-                <TableCell>
-                  {user.roles.map((role, index) => (
-                    <Label style={{ marginRight: 5 }} key={index}>
-                      {role}
-                    </Label>
-                  ))}
                 </TableCell>
                 <TableCell>{user.noValidCerts}</TableCell>
                 <TableCell>{user.noExpiringCerts}</TableCell>
@@ -225,8 +255,8 @@ function Users({ className, company, ...rest }) {
   );
 }
 
-Users.propTypes = {
+Delegates.propTypes = {
   className: PropTypes.string
 };
 
-export default Users;
+export default Delegates;

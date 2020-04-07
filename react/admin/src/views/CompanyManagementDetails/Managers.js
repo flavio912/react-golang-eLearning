@@ -1,116 +1,214 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import PerfectScrollbar from 'react-perfect-scrollbar';
 import { makeStyles } from '@material-ui/styles';
+import getInitials from 'src/utils/getInitials';
 import {
-  Button,
   Card,
   CardHeader,
-  CardContent,
+  CardActions,
   Divider,
   Table,
   TableBody,
+  Link,
+  Button,
   TableCell,
+  Avatar,
+  TablePagination,
+  Input,
   TableHead,
-  TableRow,
-  colors
+  TableRow
 } from '@material-ui/core';
-import axios from 'src/utils/axios';
+import SearchIcon from '@material-ui/icons/Search';
 import Label from 'src/components/Label';
-import GenericMoreButton from 'src/components/GenericMoreButton';
+import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
+import AddUser from './AddUser';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   content: {
     padding: 0
   },
   inner: {
     minWidth: 1150
+  },
+  search: {
+    display: 'flex',
+    alignItems: 'center',
+    flexGrow: 1
+  },
+  searchRow: {
+    padding: theme.spacing(2, 3),
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between'
+  },
+  searchIcon: {
+    color: theme.palette.text.secondary
+  },
+  searchInput: {
+    marginLeft: theme.spacing(1),
+    color: theme.palette.text.secondary,
+    fontSize: '14px'
+  },
+  nameCell: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+  actions: {
+    padding: theme.spacing(1),
+    justifyContent: 'flex-end'
+  },
+  avatar: {
+    height: 42,
+    width: 42,
+    marginRight: theme.spacing(2)
+  },
+  options: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    marginBottom: theme.spacing(2)
   }
 }));
 
-function Invoices({ className, ...rest }) {
+function Managers({ className, company, ...rest }) {
   const classes = useStyles();
-  const [invoices, setInvoices] = useState([]);
 
-  useEffect(() => {
-    let mounted = true;
+  const [toggle, setToggle] = useState('all');
+  const [page, setPage] = useState(0);
+  const [addUserModalOpen, setAddUserModalOpen] = useState(false);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const fetchInvoices = () => {
-      axios.get('/api/management/customers/1/invoices').then(response => {
-        if (mounted) {
-          setInvoices(response.data.invoices);
-        }
-      });
-    };
+  const exampleUsers = [
+    {
+      fullName: 'Tom Emmerson',
+      userId: 'tom_emmerson',
+      roles: ['Manager'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    },
+    {
+      fullName: 'John Doe',
+      userId: 'john_doe2',
+      roles: ['Manager', 'Delegate'],
+      email: 'tom@tom.com',
+      noValidCerts: 4,
+      noExpiringCerts: 2,
+      lastLogin: {
+        date: '02/01/2020'
+      },
+      createdAt: '05/01/2020'
+    }
+  ];
 
-    fetchInvoices();
+  const handleChangePage = (event, page) => {
+    setPage(page);
+  };
 
-    return () => {
-      mounted = false;
-    };
-  }, []);
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(event.target.value);
+  };
 
-  const statusColors = {
-    pending: colors.orange[600],
-    paid: colors.green[600],
-    rejected: colors.red[600]
+  const onAddUserModalClose = () => {
+    setAddUserModalOpen(false);
+  };
+
+  const openAddUserModal = () => {
+    setAddUserModalOpen(true);
   };
 
   return (
-    <div {...rest} className={clsx(classes.root, className)}>
-      <Card>
-        <CardHeader action={<GenericMoreButton />} title="Company Managers" />
+    <div>
+      <div className={classes.options}>
+        <Button variant="contained" color="primary" onClick={openAddUserModal}>
+          Add User
+        </Button>
+      </div>
+      <Card {...rest} className={clsx(classes.root, className)}>
+        <CardHeader title="Managers" />
         <Divider />
-        <CardContent className={classes.content}>
-          <PerfectScrollbar>
-            <div className={classes.inner}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Job Title</TableCell>
-                    <TableCell>Telephone</TableCell>
-                    <TableCell>Last Login</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {managers.map(manager => (
-                    <TableRow key={manager.id}>
-                      <TableCell>{`${manager.firstName} ${manager.lastName}`}</TableCell>
-                      <TableCell>
-                        {moment(manager.lastLogin).format('DD/MM/YYYY | HH:MM')}
-                      </TableCell>
-
-                      <TableCell align="right">
-                        <Button
-                          color="primary"
-                          component={RouterLink}
-                          size="small"
-                          to={'/management/invoices/1'}
-                          variant="outlined"
-                        >
-                          View
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </PerfectScrollbar>
-        </CardContent>
+        <div className={classes.searchRow}>
+          <div className={classes.search}>
+            <SearchIcon className={classes.searchIcon} color="inherit" />
+            <Input
+              className={classes.searchInput}
+              disableUnderline
+              placeholder="Search managers"
+            />
+          </div>
+        </div>
+        <Divider />
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>User</TableCell>
+              <TableCell>Valid Certificates</TableCell>
+              <TableCell>Expiring Certificates</TableCell>
+              <TableCell>Last Login</TableCell>
+              <TableCell>Created At</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {exampleUsers.map(user => (
+              <TableRow key={user.userId}>
+                <TableCell>
+                  <div className={classes.nameCell}>
+                    <Avatar className={classes.avatar} src={user.logo}>
+                      {getInitials(user.fullName)}
+                    </Avatar>
+                    <div>
+                      <Link
+                        color="inherit"
+                        component={RouterLink}
+                        to="/users/1"
+                        variant="h6"
+                      >
+                        {user.fullName}
+                      </Link>
+                      <div>{user.email}</div>
+                    </div>
+                  </div>
+                </TableCell>
+                <TableCell>{user.noValidCerts}</TableCell>
+                <TableCell>{user.noExpiringCerts}</TableCell>
+                <TableCell>
+                  {moment(user.lastLogin.date).format('LLL')}
+                </TableCell>
+                <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <CardActions className={classes.actions}>
+          <TablePagination
+            component="div"
+            count={exampleUsers.length}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </CardActions>
       </Card>
+      <AddUser
+        open={addUserModalOpen}
+        onClose={onAddUserModalClose}
+        company={company}
+      />
     </div>
   );
 }
 
-Invoices.propTypes = {
+Managers.propTypes = {
   className: PropTypes.string
 };
 
-export default Invoices;
+export default Managers;
