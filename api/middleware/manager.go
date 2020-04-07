@@ -14,6 +14,8 @@ import (
 )
 
 func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
+	profileURL := uploads.GetImgixURL(manager.ProfileKey)
+	glog.Info(manager.CompanyID.String())
 	// Admins and managers themselves can get all info
 	if g.IsAdmin || g.Claims.UUID == manager.UUID.String() {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
@@ -26,12 +28,13 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 				Telephone: manager.Telephone,
-				CompanyID: manager.CompanyID,
 			},
+			CompanyID:       manager.CompanyID,
+			ProfileImageURL: &profileURL,
 		}
 	}
 
-	// Delegates can only get a subset of their manager info
+	// Delegates can only get a subset of their manager's info
 	if g.IsCompanyDelegate(manager.CompanyID.String()) {
 		return gentypes.Manager{
 			User: gentypes.User{
@@ -40,6 +43,8 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 			},
+			CompanyID:       manager.CompanyID,
+			ProfileImageURL: &profileURL,
 		}
 	}
 
@@ -58,11 +63,21 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
 
 	var allowedUUIDs []string
-	for _, uuid := range uuids {
-		if g.Claims.UUID == uuid {
-			allowedUUIDs = append(allowedUUIDs, uuid)
+
+	// Managers can only get their own info
+	if g.IsManager {
+		for _, uuid := range uuids {
+			if g.Claims.UUID == uuid {
+				allowedUUIDs = append(allowedUUIDs, uuid)
+			}
 		}
 	}
+
+	// Admin can get any manager info
+	if g.IsAdmin {
+		allowedUUIDs = uuids
+	}
+
 	if !g.IsAdmin && !g.IsManager {
 		return managers, &errors.ErrUnauthorized
 	}
@@ -181,7 +196,6 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 	// TODO: Validate input better and return useful details
 	manager := models.Manager{
 		User: models.User{
-			CompanyID: _uuid,
 			FirstName: managerDetails.FirstName,
 			LastName:  managerDetails.LastName,
 			Email:     managerDetails.Email,
@@ -189,6 +203,7 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
+		CompanyID: _uuid,
 	}
 	createErr := database.GormDB.Create(&manager).Error
 	if createErr != nil {

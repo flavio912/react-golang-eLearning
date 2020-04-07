@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 )
@@ -11,6 +12,8 @@ import (
 // Manager - DB model for managers
 type Manager struct {
 	User
+	CompanyID  uuid.UUID
+	ProfileKey string
 }
 
 func (manager *Manager) getHash() string {

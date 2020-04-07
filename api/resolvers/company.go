@@ -44,7 +44,7 @@ func NewCompanyResolver(ctx context.Context, args NewCompanyArgs) (*CompanyResol
 
 	return &CompanyResolver{
 		company: company,
-	}, nil
+	}, err
 }
 
 type NewCompanyPageArgs struct {

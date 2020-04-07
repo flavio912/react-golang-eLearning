@@ -58,10 +58,11 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 		resolvers = make([]*ManagerResolver, 0, len(managers))
 	)
 
+	// var errs []error
 	for _, manager := range managers {
 		if manager.Error != nil {
 			glog.Errorf("Manager resolver error : %s", manager.Error.Error())
-			//errs = append(errs, errors.WithIndex(err, i))
+			// errs = append(errs, errors.WithIndex(err, i))
 		}
 
 		resolver, err := NewManagerResolver(ctx, NewManagerArgs{Manager: manager.Manager})
@@ -74,14 +75,15 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 	return &resolvers, nil
 }
 
-func (m *ManagerResolver) UUID() string       { return m.manager.UUID.String() }
-func (m *ManagerResolver) CreatedAt() *string { return m.manager.CreatedAt }
-func (m *ManagerResolver) Email() string      { return m.manager.Email }
-func (m *ManagerResolver) FirstName() string  { return m.manager.FirstName }
-func (m *ManagerResolver) LastName() string   { return m.manager.LastName }
-func (m *ManagerResolver) Telephone() string  { return m.manager.Telephone }
-func (m *ManagerResolver) JobTitle() string   { return m.manager.JobTitle }
-func (m *ManagerResolver) LastLogin() string  { return m.manager.LastLogin }
+func (m *ManagerResolver) UUID() string             { return m.manager.UUID.String() }
+func (m *ManagerResolver) CreatedAt() *string       { return m.manager.CreatedAt }
+func (m *ManagerResolver) Email() string            { return m.manager.Email }
+func (m *ManagerResolver) FirstName() string        { return m.manager.FirstName }
+func (m *ManagerResolver) LastName() string         { return m.manager.LastName }
+func (m *ManagerResolver) Telephone() string        { return m.manager.Telephone }
+func (m *ManagerResolver) JobTitle() string         { return m.manager.JobTitle }
+func (m *ManagerResolver) LastLogin() string        { return m.manager.LastLogin }
+func (m *ManagerResolver) ProfileImageURL() *string { return m.manager.ProfileImageURL }
 func (m *ManagerResolver) Company(ctx context.Context) (*CompanyResolver, error) {
 	return NewCompanyResolver(ctx, NewCompanyArgs{
 		UUID: m.manager.CompanyID.String(),
