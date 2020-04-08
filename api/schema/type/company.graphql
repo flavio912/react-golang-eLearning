@@ -3,9 +3,27 @@ type Company {
   createdAt: String
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
+  address: Address!
+}
+
+type Address {
+  addressLine1: String!
+  addressLine2: String!
+  county: String!
+  postCode: String!
+  country: String!
 }
 
 type CompanyPage implements PaginatedQuery {
   edges: [Company]
   pageInfo: PageInfo
+}
+
+input CreateCompanyInput {
+  companyName: String!
+  addressLine1: String!
+  addressLine2: String!
+  county: String!
+  postCode: String!
+  country: String!
 }

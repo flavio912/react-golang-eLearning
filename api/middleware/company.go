@@ -11,14 +11,15 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-//companyToGentypes converts a company model to gentype.
-func (g *Grant) companyToGentypes(company models.Company) gentypes.Company {
+//companyToGentype converts a company model to gentype.
+func (g *Grant) companyToGentype(company models.Company) gentypes.Company {
 	if g.ManagesCompany(company.UUID.String()) {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
 			CreatedAt: &createdAt,
 			UUID:      company.UUID,
 			Name:      company.Name,
+			AddressID: company.AddressID,
 		}
 	}
 
@@ -35,7 +36,7 @@ func (g *Grant) companyToGentypes(company models.Company) gentypes.Company {
 func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Company {
 	var genCompanies []gentypes.Company
 	for _, comp := range companies {
-		genCompanies = append(genCompanies, g.companyToGentypes(comp))
+		genCompanies = append(genCompanies, g.companyToGentype(comp))
 	}
 	return genCompanies
 }
@@ -93,7 +94,7 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 		return gentypes.Company{}, getDBErrorType(query)
 	}
 
-	return g.companyToGentypes(company), nil
+	return g.companyToGentype(company), nil
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company
@@ -176,4 +177,35 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		Given:  int32(len(companies)),
 	}, nil
 
+}
+
+// CreateCompany is an admin function for creating companys directly
+func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Company, error) {
+	if !g.IsAdmin {
+		return gentypes.Company{}, &errors.ErrUnauthorized
+	}
+
+	// Validate input
+	if err := company.Validate(); err != nil {
+		return gentypes.Company{}, err
+	}
+
+	compModel := models.Company{
+		Name: company.CompanyName,
+		Address: models.Address{
+			AddressLine1: company.AddressLine1,
+			AddressLine2: company.AddressLine2,
+			County:       company.County,
+			PostCode:     company.PostCode,
+			Country:      company.Country,
+		},
+	}
+
+	query := database.GormDB.Create(&compModel)
+	if query.Error != nil {
+		glog.Errorf("Unable to create company: %s", query.Error.Error())
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	return g.companyToGentype(compModel), nil
 }
