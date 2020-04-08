@@ -15,6 +15,7 @@ export type Theme = {
     primaryBlue: string;
     primaryGreen: string;
     secondaryGrey: string;
+    primaryWhite: string;
     borderGrey: string;
     backgroundGrey: string;
     textBlue: string;
@@ -25,6 +26,8 @@ export type Theme = {
     primary: string;
   };
   fontSizes: {
+    heading: number;
+    large: number;
     default: number;
     small: number;
   };
@@ -40,6 +43,7 @@ const theme: Theme = {
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
     secondaryGrey: "#9ea2ad",
+    primaryWhite: "#FFFFFF",
     borderGrey: "#ededed",
     backgroundGrey: "#f7f9fb",
     searchHoverGrey: "#F5FAFC",
@@ -50,6 +54,8 @@ const theme: Theme = {
     primary: "0px 2px 10px #0000001f",
   },
   fontSizes: {
+    heading: 26,
+    large: 16,
     default: 14,
     small: 12,
   },
