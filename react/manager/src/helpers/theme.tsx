@@ -57,7 +57,7 @@ const theme: Theme = {
     heading: 26,
     large: 16,
     default: 14,
-    small: 12,
+    small: 13,
   },
 };
 
