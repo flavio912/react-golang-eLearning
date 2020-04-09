@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
-import { animated, useSpring } from "react-spring";
+import { animated, useSpring, config } from "react-spring";
 import { Theme } from "helpers/theme";
 import Icon from "../Icon";
 
@@ -28,9 +28,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     top: 0,
     display: "flex",
     flexDirection: "column",
+    alignItems: "stretch",
   },
   header: {
-    width: `calc(100% - ${2 * 40})`,
     height: 76,
     background: theme.primaryGradient,
     display: "flex",
@@ -38,33 +38,31 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     justifyContent: "space-between",
     padding: [0, 40],
+  },
+  title: {
     color: "white",
     fontWeight: "bold",
-    fontSize: theme.fontSizes.veryLarge,
+    fontSize: theme.fontSizes.extraLarge,
   },
   body: {
     backgroundColor: "white",
     flexGrow: 1,
-    width: "100%",
-  },
-  footer: {
-    width: "100%",
-    height: 120,
-    backgroundColor: theme.colors.backgroundGrey,
-    borderTop: `2px solid ${theme.colors.borderGrey}`,
   },
 }));
 
 type Props = {
+  title: string;
   isOpen: boolean;
-  closeModal: () => void;
+  closeModal(): void;
+  children?: React.ReactChildren;
 };
 
-function SideModal({ isOpen, closeModal, children }: Props) {
+function SideModal({ title, isOpen, closeModal, children }: Props) {
   const classes = useStyles();
   const { right, opacity } = useSpring({
     right: isOpen ? 0 : -700,
     opacity: isOpen ? 1 : 0,
+    config: config.default,
   });
 
   return (
@@ -72,15 +70,14 @@ function SideModal({ isOpen, closeModal, children }: Props) {
       <animated.div className={classes.background} style={{ opacity }} />
       <animated.div className={classes.modal} style={{ right }}>
         <div className={classes.header}>
-          <h2>Course Management</h2>
+          <h2 className={classes.title}>{title}</h2>
           <Icon
             name="CloseCourseManagementTray_X"
             onClick={closeModal}
             pointer
           />
         </div>
-        <div className={classes.body}>{/* Children go here */}</div>
-        <div className={classes.footer}></div>
+        <div className={classes.body}>{children}</div>
       </animated.div>
     </div>
   );

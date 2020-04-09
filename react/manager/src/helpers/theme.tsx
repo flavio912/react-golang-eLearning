@@ -27,7 +27,7 @@ export type Theme = {
   };
   fontSizes: {
     heading: number;
-    veryLarge: number,
+    extraLarge: number;
     large: number;
     default: number;
     small: number;
@@ -56,7 +56,7 @@ const theme: Theme = {
   },
   fontSizes: {
     heading: 26,
-    veryLarge: 24,
+    extraLarge: 24,
     large: 16,
     default: 14,
     small: 13,

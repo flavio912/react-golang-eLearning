@@ -1,6 +1,6 @@
 import * as React from "react";
 import SideModal from "./SideModal";
-import { withKnobs, boolean } from "@storybook/addon-knobs";
+import { withKnobs, boolean, text } from "@storybook/addon-knobs";
 
 export default {
   title: "Core/Side Modal",
@@ -8,10 +8,10 @@ export default {
 };
 
 export const normal = () => {
-  const isOpen = boolean("Open", true);
   return (
     <SideModal
-      isOpen={isOpen}
+      isOpen={boolean("Open", true)}
+      title={text("Title", "Course Management")}
       closeModal={() => {
         /* close the modal here */
       }}
