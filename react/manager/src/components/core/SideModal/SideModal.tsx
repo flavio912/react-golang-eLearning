@@ -57,6 +57,8 @@ type Props = {
   children?: React.ReactChildren;
 };
 
+// isOpen and closeModal should be provided from a useState hook in a parent component
+
 function SideModal({ title, isOpen, closeModal, children }: Props) {
   const classes = useStyles();
   const { right, opacity } = useSpring({
