@@ -36,12 +36,15 @@ type Props = {
   text: string;
 };
 
-function FancyButton({ text }: Props) {
+function FancyButton({
+  text,
+  ...props
+}: Props & React.InputHTMLAttributes<HTMLInputElement>) {
   const classes = useStyles();
 
   return (
     <div className={classes.container}>
-      <input type="submit" value={text} className={classes.submit} />
+      <input {...props} type="submit" value={text} className={classes.submit} />
     </div>
   );
 }
