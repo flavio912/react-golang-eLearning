@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: "white",
     fontSize: 20,
     fontWeight: 800,
-    background: `linear-gradient(to right, ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    background: theme.primaryGradient,
     transition: "margin 0.1s ease",
     "&::-moz-focus-inner": {
       border: 0,

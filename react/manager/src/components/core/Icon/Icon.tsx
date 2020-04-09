@@ -69,6 +69,7 @@ const iconNameMap = {
 
 type Props = {
   name: IconNames;
+  pointer?: boolean;
   style?: React.CSSProperties;
   size?: number;
 };
@@ -77,11 +78,18 @@ function Icon({
   name,
   size = 20,
   style,
+  pointer,
   ...props
 }: Props & React.ImgHTMLAttributes<HTMLImageElement>) {
+  const cursor = pointer ? "pointer" : "auto";
   return (
     <img
-      style={{ height: size, width: size, ...style }}
+      style={{
+        height: size,
+        width: size,
+        cursor,
+        ...style,
+      }}
       src={iconNameMap[name]}
       alt={`${name} icon`}
       {...props}

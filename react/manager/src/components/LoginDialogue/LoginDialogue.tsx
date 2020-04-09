@@ -44,7 +44,7 @@ function LoginDialogue(props: Props) {
       <FancyInput label="Email" labelColor={"#5CC301"} type={"email"} />
       <FancyInput label="Password" labelColor={"#5CC301"} type={"password"} />
       <FancyButton text="Login to TTC" />
-      <a className={classes.link} href="">
+      <a className={classes.link} href="https://example.com">
         I don't have a TTC Hub account
       </a>
     </Card>
