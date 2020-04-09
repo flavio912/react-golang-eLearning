@@ -27,3 +27,11 @@ input CreateCompanyInput {
   postCode: String!
   country: String!
 }
+
+input CreateCompanyRequestManager {
+  firstName: String!
+  lastName: String!
+  jobTitle: String!
+  telephone: String!
+  email: String!
+}

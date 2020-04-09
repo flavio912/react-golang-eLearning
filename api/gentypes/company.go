@@ -35,3 +35,16 @@ func (c *CreateCompanyInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }
+
+type CreateCompanyRequestManager struct {
+	FirstName string `valid:"required"`
+	LastName  string `valid:"required"`
+	JobTitle  string `valid:"required"`
+	Telephone string `valid:"required,numeric"`
+	Email     string `valid:"required,email"`
+}
+
+func (c *CreateCompanyRequestManager) Validate() error {
+	_, err := govalidator.ValidateStruct(c)
+	return err
+}
