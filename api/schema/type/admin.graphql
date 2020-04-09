@@ -26,6 +26,13 @@ input AddAdminInput {
   password: String!
 }
 
+input UpdateAdminInput {
+  uuid: String!
+  firstName: String
+  lastName: String
+  email: String
+}
+
 input DeleteAdminInput {
   uuid: String!
 }

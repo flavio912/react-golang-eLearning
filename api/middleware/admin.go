@@ -134,6 +134,51 @@ func (g *Grant) AddAdmin(input gentypes.AddAdminInput) (gentypes.Admin, error) {
 	return adminToGentype(admin), nil
 }
 
+func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, error) {
+	if !g.IsAdmin {
+		return gentypes.Admin{}, &errors.ErrUnauthorized
+	}
+
+	var admin models.Admin
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&admin)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Admin{}, &errors.ErrAdminNotFound
+		}
+
+		glog.Errorf("Unable to find admin to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		return gentypes.Admin{}, &errors.ErrAdminNotFound
+	}
+
+	changed := false
+	if input.Email != nil && *input.Email != admin.Email {
+		changed = true
+		admin.Email = *input.Email
+	}
+
+	if input.FirstName != nil && *input.FirstName != admin.FirstName {
+		changed = true
+		admin.FirstName = *input.FirstName
+	}
+
+	if input.LastName != nil && *input.LastName != admin.LastName {
+		changed = true
+		admin.LastName = *input.LastName
+	}
+
+	if !changed {
+		return adminToGentype(admin), nil
+	}
+
+	save := database.GormDB.Save(admin)
+	if save.Error != nil {
+		glog.Errorf("Error updating Admin with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		return gentypes.Admin{}, &errors.ErrUnableToResolve
+	}
+
+	return adminToGentype(admin), nil
+}
+
 // DeleteAdmin allows admins to delete other admins
 func (g *Grant) DeleteAdmin(uuid string) (bool, error) {
 	if !g.IsAdmin {
