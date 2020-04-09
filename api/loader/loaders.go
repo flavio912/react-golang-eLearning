@@ -13,6 +13,7 @@ const (
 	adminLoaderKey   contextKey = "admin"
 	managerLoaderKey contextKey = "manager"
 	companyLoaderKey contextKey = "company"
+	addressLoaderKey contextKey = "address"
 )
 
 // Init initializes and returns Map
@@ -20,7 +21,8 @@ func Init() Map {
 	return Map{
 		adminLoaderKey:   (&adminLoader{}).loadBatch,
 		managerLoaderKey: (&managerLoader{}).loadBatch,
-		companyLoaderKey: (&companyLoader{}).loadBatch,
+		companyLoaderKey: (&companyLoader{}).loadCompanyBatch,
+		addressLoaderKey: (&addressLoader{}).loadBatch,
 	}
 }
 

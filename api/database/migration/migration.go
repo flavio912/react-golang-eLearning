@@ -10,5 +10,6 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Admin{})
 	database.GormDB.AutoMigrate(&models.Manager{})
 	database.GormDB.AutoMigrate(&models.Company{})
+	database.GormDB.AutoMigrate(&models.Address{})
 	database.GormDB.AutoMigrate(&models.Delegate{})
 }

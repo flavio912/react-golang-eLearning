@@ -14,5 +14,4 @@ type User struct {
 	Telephone string
 	JobTitle  string
 	LastLogin string
-	CompanyID uuid.UUID
 }

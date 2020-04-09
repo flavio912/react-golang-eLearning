@@ -23,4 +23,5 @@ type Mutation {
   deleteManager(input: DeleteManagerInput!): Boolean!
   addAdmin(input: AddAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
+  createCompany(input: CreateCompanyInput!): Company
 }

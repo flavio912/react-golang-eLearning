@@ -38,6 +38,7 @@ type Manager implements User {
   lastLogin: String!
   jobTitle: String!
   company: Company!
+  profileImageUrl: String
 }
 
 type ManagerPage implements PaginatedQuery {

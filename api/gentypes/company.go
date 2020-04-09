@@ -1,6 +1,7 @@
 package gentypes
 
 import (
+	"github.com/asaskevich/govalidator"
 	"github.com/google/uuid"
 )
 
@@ -8,6 +9,7 @@ type Company struct {
 	CreatedAt *string `valid:"rfc3339"`
 	UUID      uuid.UUID
 	Name      string
+	AddressID uint
 }
 
 type CompanyFilter struct {
@@ -18,4 +20,18 @@ type CompanyFilter struct {
 type OrderBy struct {
 	Ascending *bool //defaults to false, thus decending
 	Field     string
+}
+
+type CreateCompanyInput struct {
+	CompanyName  string `valid:"required"`
+	AddressLine1 string `valid:"required"`
+	AddressLine2 string `valid:"required"`
+	County       string `valid:"required"`
+	PostCode     string `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
+	Country      string `valid:"required"`
+}
+
+func (c *CreateCompanyInput) Validate() error {
+	_, err := govalidator.ValidateStruct(c)
+	return err
 }

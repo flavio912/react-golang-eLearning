@@ -120,3 +120,10 @@ func VerifyUploadSuccess(token string, uploadIdent string) (string, error) {
 
 	return claims.Key, nil
 }
+
+// GetImgixURL takes the s3 key and adds the imgix url to get a full URL
+func GetImgixURL(key string) string {
+	//TODO: Add checks on the key so we
+	// always get a valid URL (or at least so we can log errors)
+	return helpers.Config.Imgix.BaseURL + key
+}

@@ -36,7 +36,7 @@ func sortCompanies(companies []gentypes.Company, keys dataloader.Keys) []gentype
 	return sorted
 }
 
-func (l *companyLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
+func (l *companyLoader) loadCompanyBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 	n := len(keys)
 
 	// Get batch from middleware

@@ -13,3 +13,12 @@ type UploadFileResp struct {
 type UploadFileSuccess struct {
 	SuccessToken string
 }
+
+type Address struct {
+	ID           uint
+	AddressLine1 string
+	AddressLine2 string
+	County       string
+	PostCode     string
+	Country      string
+}

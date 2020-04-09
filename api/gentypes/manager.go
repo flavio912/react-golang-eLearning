@@ -2,11 +2,14 @@ package gentypes
 
 import (
 	"github.com/asaskevich/govalidator"
+	"github.com/google/uuid"
 )
 
 // Manager - CompanyManager graphQL type
 type Manager struct {
 	User
+	ProfileImageURL *string
+	CompanyID       uuid.UUID
 }
 
 type ManagersFilter struct {

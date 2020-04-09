@@ -148,3 +148,21 @@ func (m *MutationResolver) ManagerProfileUploadSuccess(
 
 	return res, nil
 }
+
+func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input gentypes.CreateCompanyInput }) (*CompanyResolver, error) {
+	if err := args.Input.Validate(); err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	company, err := grant.CreateCompany(args.Input)
+	if err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	return NewCompanyResolver(ctx, NewCompanyArgs{Company: company})
+}

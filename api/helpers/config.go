@@ -29,6 +29,9 @@ type yamlConfig struct {
 	AWS struct {
 		UploadsBucket string `yaml:"uploadsBucket"`
 	} `yaml:"aws"`
+	Imgix struct {
+		BaseURL string `yaml:"baseUrl"`
+	} `yaml:"imgix"`
 }
 
 // Config - The config variable can be used by other packages to get config data

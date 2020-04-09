@@ -4,8 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/google/uuid"
-
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 )
@@ -13,15 +11,13 @@ import (
 // User - The base model used for managers and delegates
 type User struct {
 	Base
-	FirstName  string
-	LastName   string
-	JobTitle   string
-	Telephone  string
-	LastLogin  time.Time
-	Password   string
-	Email      string `gorm:"unique"`
-	CompanyID  uuid.UUID
-	ProfileKey string
+	FirstName string
+	LastName  string
+	JobTitle  string
+	Telephone string
+	LastLogin time.Time
+	Password  string
+	Email     string `gorm:"unique"`
 }
 
 var (
