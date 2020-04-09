@@ -1,4 +1,5 @@
 type Company {
+  approved: Boolean
   uuid: String!
   createdAt: String
   name: String!
@@ -26,12 +27,4 @@ input CreateCompanyInput {
   county: String!
   postCode: String!
   country: String!
-}
-
-input CreateCompanyRequestManager {
-  firstName: String!
-  lastName: String!
-  jobTitle: String!
-  telephone: String!
-  email: String!
 }

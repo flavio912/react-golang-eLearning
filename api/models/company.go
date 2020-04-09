@@ -7,4 +7,5 @@ type Company struct {
 	Managers  []Manager
 	Address   Address `gorm:"foreignkey:AddressID"`
 	AddressID uint
+	Approved  bool
 }

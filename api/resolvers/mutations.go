@@ -169,22 +169,12 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 
 type companyRequestInput struct {
 	Company   gentypes.CreateCompanyInput
-	Manager   gentypes.CreateCompanyRequestManager
+	Manager   gentypes.AddManagerInput
 	Recaptcha string
 }
 
 // CreateCompanyRequest is used to request that an admin allows you to create company
 func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args companyRequestInput) (bool, error) {
-	// Validate Company
-	if err := args.Company.Validate(); err != nil {
-		return false, err
-	}
-
-	// Validate Manager
-	if err := args.Manager.Validate(); err != nil {
-		return false, err
-	}
-
 	// TODO: Check recaptcha token
 
 	err := middleware.CreateCompanyRequest(args.Company, args.Manager)

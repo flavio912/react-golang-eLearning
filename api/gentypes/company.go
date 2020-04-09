@@ -7,14 +7,16 @@ import (
 
 type Company struct {
 	CreatedAt *string `valid:"rfc3339"`
+	Approved  *bool
 	UUID      uuid.UUID
 	Name      string
 	AddressID uint
 }
 
 type CompanyFilter struct {
-	UUID *string
-	Name *string
+	UUID     *string
+	Name     *string
+	Approved *bool
 }
 
 type OrderBy struct {
