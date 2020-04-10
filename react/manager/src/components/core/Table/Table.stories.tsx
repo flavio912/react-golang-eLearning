@@ -26,8 +26,8 @@ export const normal = () => {
               sort: "Dave",
             },
             {
-              component: "5/10",
-              sort: 5 / 10,
+              component: "7/10",
+              sort: 7 / 10,
             },
             {
               component: () => <Icon name="Card_SecondaryActon_Dots" />,

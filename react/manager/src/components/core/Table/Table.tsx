@@ -83,18 +83,22 @@ function Table({ header, rows, sort }: Props) {
         a = t;
       }
 
-      const aCell = a[column];
-      const bCell = b[column];
+      const aCell = a.cells[column];
+      const bCell = b.cells[column];
+
+      console.log(a, b)
 
       if (!(aCell && bCell && aCell.sort && bCell.sort)) {
         console.warn(`Table column ${sort.by} is not able to be sorted`);
       } else {
+        console.log("got here")
         if (aCell.sort < bCell.sort) return 1;
         if (aCell.sort > bCell.sort) return -1;
       }
     } else {
       console.warn(`Table column ${sort.by} is not present in the table`);
     }
+    console.log('No comparison')
     return 0;
   };
 
