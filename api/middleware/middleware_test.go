@@ -21,7 +21,7 @@ func TestMain(m *testing.M) {
 	defer db.Close()
 	migration.InitMigrations()
 
-	m.Run()
+	exitVal := m.Run()
 
-	os.Exit(0)
+	os.Exit(exitVal)
 }
