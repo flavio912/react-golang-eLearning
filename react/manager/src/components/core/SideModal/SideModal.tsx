@@ -18,7 +18,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: "100%",
     height: "100%",
     backgroundColor: "rgba(7,67,121,0.75)",
-    filter: "blur(2px)",
   },
   modal: {
     zIndex: 55,
