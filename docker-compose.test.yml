@@ -1,0 +1,24 @@
+version: "3.7"
+services:
+  test_api:
+    build:
+      context: api
+      dockerfile: "Dockerfile.test"
+    environment:
+      - AWS_ACCESS_KEY_ID=AKIASI6VSGJU23DT7ME4
+      - AWS_SECRET_ACCESS_KEY=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
+    volumes:
+      - ./api:/app
+    ports:
+      - "8080:8080"
+    depends_on:
+      - test_db
+  test_db:
+    image: postgres
+    environment:
+      POSTGRES_USER: test
+      POSTGRES_PASSWORD: test
+      POSTGRES_DB: testdb
+    restart: on-failure
+    volumes:
+      - ./api/dev_env/init.sql:/docker-entrypoint-initdb.d/init.sql

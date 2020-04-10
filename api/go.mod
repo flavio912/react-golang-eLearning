@@ -6,7 +6,9 @@ require (
 	github.com/asaskevich/govalidator v0.0.0-20200108200545-475eaeb16496
 	github.com/aws/aws-sdk-go v1.30.4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
+	github.com/friendsofgo/graphiql v0.2.2
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
+	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1
 	github.com/graph-gophers/dataloader v5.0.0+incompatible
 	github.com/graph-gophers/graphql-go v0.0.0-20200309224638-dae41bde9ef9
