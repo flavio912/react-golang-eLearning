@@ -26,13 +26,13 @@ func (m *ManagersFilter) Validate() error {
 }
 
 type AddManagerInput struct {
-	CompanyUUID string `valid:"required,uuidv4"`
-	FirstName   string `valid:"required,alpha"`
-	LastName    string `valid:"required,alpha"`
-	Email       string `valid:"required,email"`
-	JobTitle    string `valid:"required"`
-	Telephone   string `valid:"required,numeric"`
-	Password    string `valid:"required,stringlength(5|30)"`
+	CompanyUUID *string `valid:"uuidv4"`
+	FirstName   string  `valid:"required,alpha"`
+	LastName    string  `valid:"required,alpha"`
+	Email       string  `valid:"required,email"`
+	JobTitle    string  `valid:"required"`
+	Telephone   string  `valid:"required,numeric"`
+	Password    string  `valid:"required,stringlength(5|30)"`
 }
 
 func (m *AddManagerInput) Validate() error {
