@@ -1,15 +1,12 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
 	"flag"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
@@ -81,64 +78,22 @@ func main() {
 		panic(errDb)
 	}
 	defer database.GormDB.Close()
+
 	migration.InitMigrations()
 	uploads.Initialize()
+
 	loaders := loader.Init()
+
 	// Setup DevAdmin user
 	updateOrCreateDevAdmin()
 
 	_schema := parseSchema(schema.String(), &resolvers.RootResolver{})
 
-	http.HandleFunc("/graphql", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-Type", "application/json")
-
-		type Payload struct {
-			Query         string
-			OperationName string
-			Variables     map[string]interface{}
-		}
-		var payload Payload
-
-		errParse := json.NewDecoder(r.Body).Decode(&payload)
-		if errParse != nil {
-			http.Error(w, errParse.Error(), http.StatusBadRequest)
-			return
-		}
-
-		// todo: Pass JWT to resolvers for now; this should be moved to middleware
-		token := strings.ReplaceAll(r.Header.Get("Authorization"), "Bearer ", "")
-
-		// TODO: Should use context created with each request not background
-		ctx := context.WithValue(context.Background(), "token", token)
-
-		// TODO: make sure loader context is not cached across requests
-		ctx = loaders.Attach(ctx)
-		resp := _schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
-
-		if len(resp.Errors) > 0 {
-			type ErrorResponse struct {
-				Data   interface{} `json:"data"`
-				Errors interface{} `json:"errors"`
-			}
-
-			errResp := ErrorResponse{
-				Data:   resp.Data,
-				Errors: resp.Errors,
-			}
-
-			w.WriteHeader(http.StatusInternalServerError)
-			json.NewEncoder(w).Encode(errResp)
-			return
-		}
-		json, err := json.MarshalIndent(resp, "", "\t")
-		if err != nil {
-			// todo: does this need to be handled
-			log.Printf("json.MarshalIndent: %s", err)
-			return
-		}
-
-		fmt.Fprint(w, string(json))
-	})
+	handle := handler.GraphQL{
+		Schema:  _schema,
+		Loaders: loaders,
+	}
+	http.Handle("/graphql", handler.AuthHandler(handle.Serve()))
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
