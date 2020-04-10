@@ -106,7 +106,10 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 	var company models.Company
 	query := database.GormDB.Where("uuid = ?", uuid).First(&company)
 	if query.Error != nil {
-		return gentypes.Company{}, getDBErrorType(query)
+		if query.RecordNotFound() {
+			return gentypes.Company{}, &errors.ErrCompanyNotFound
+		}
+		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
 	return g.companyToGentype(company), nil
