@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 
 	"github.com/golang/glog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 
@@ -99,10 +99,11 @@ func (r *CompanyResolver) Name() string       { return r.company.Name }
 func (r *CompanyResolver) CreatedAt() *string { return r.company.CreatedAt }
 func (r *CompanyResolver) UUID() string       { return r.company.UUID.String() }
 func (r *CompanyResolver) Approved(ctx context.Context) *bool {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
 		return nil
 	}
+
 	// TODO: Add a key onto the grant 'CanGetApproved' to check if user can see if approved (or something similar)
 	if grant.IsAdmin {
 		return r.company.Approved
@@ -117,8 +118,8 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	Filter  *gentypes.ManagersFilter
 	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
 		return &ManagerPageResolver{}, &errors.ErrUnauthorized
 	}
 

@@ -3,24 +3,29 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+
+	"github.com/golang/glog"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
 // QueryResolver -
 type QueryResolver struct{}
 
 // Info -
-func (q *QueryResolver) Info() (string, error) {
+func (q *QueryResolver) Info(ctx context.Context) (string, error) {
+	glog.Info(auth.GrantFromContext(ctx))
 	return "This is the TTC server api", nil
 }
 
 // Admins - Get a list of admins
 func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.Page }) (*AdminPageResolver, error) {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return &AdminPageResolver{}, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &AdminPageResolver{}, &errors.ErrUnauthorized
 	}
 	admins, err := grant.GetAdmins(args.Page, nil)
 	if err != nil {
@@ -74,9 +79,9 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 		}
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return &ManagerPageResolver{}, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerPageResolver{}, &errors.ErrUnauthorized
 	}
 
 	managers, page, err := grant.GetManagers(args.Page, args.Filter, args.OrderBy)
@@ -100,13 +105,15 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 	Filter  *gentypes.CompanyFilter
 	OrderBy *gentypes.OrderBy
 }) (*CompanyPageResolver, error) {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return &CompanyPageResolver{}, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CompanyPageResolver{}, &errors.ErrUnauthorized
 	}
 
 	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
-
+	if err != nil {
+		return &CompanyPageResolver{}, err
+	}
 	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
 		UUIDs: companies,
 	}, page)

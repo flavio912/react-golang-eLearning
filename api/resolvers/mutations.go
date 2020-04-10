@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -44,9 +45,9 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 		return &ManagerResolver{}, err
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return &ManagerResolver{}, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
 	manager, err := grant.AddManager(args.Input)
@@ -66,9 +67,9 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 		return false, err
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return false, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
 	}
 
 	success, err := grant.DeleteManager(args.Input.UUID)
@@ -80,10 +81,9 @@ func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gent
 		return nil, err
 	}
 
-	// TODO: make middleware function that extracts JWT itself, like middleware.Authenticate(ctx)
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &AdminResolver{}, &errors.ErrUnauthorized
 	}
 
 	admin, addErr := grant.AddAdmin(args.Input)
@@ -102,9 +102,9 @@ func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input g
 		return false, err
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return false, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
 	}
 
 	success, err := grant.DeleteAdmin(args.Input.UUID)
@@ -115,9 +115,9 @@ func (m *MutationResolver) ManagerProfileUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
 ) (*gentypes.UploadFileResp, error) {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
 	}
 
 	url, successToken, err := grant.ManagerProfileUploadRequest(args.Input)
@@ -131,12 +131,12 @@ func (m *MutationResolver) ManagerProfileUploadSuccess(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileSuccess },
 ) (*ManagerResolver, error) {
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	err = grant.ManagerProfileUploadSuccess(args.Input.SuccessToken)
+	err := grant.ManagerProfileUploadSuccess(args.Input.SuccessToken)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -157,9 +157,9 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 		return &CompanyResolver{}, err
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
 	company, err := grant.CreateCompany(args.Input)
@@ -193,9 +193,9 @@ func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID
 		return &CompanyResolver{}, &errors.ErrUUIDInvalid
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
 	company, err := grant.ApproveCompany(args.UUID)

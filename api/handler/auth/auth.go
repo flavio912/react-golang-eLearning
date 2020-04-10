@@ -1,4 +1,4 @@
-package handler
+package auth
 
 import (
 	"context"
@@ -8,6 +8,8 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
+type contextKey string
+
 var (
 	// AuthKey is the contextKey for the JWT Auth token
 	AuthKey = contextKey("token")
@@ -15,8 +17,8 @@ var (
 	GrantKey = contextKey("grant")
 )
 
-// AuthHandler handles creating a grant for authenticated users
-func AuthHandler(h http.Handler) http.Handler {
+// Handler handles creating a grant for authenticated users
+func Handler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		// todo: Pass JWT to resolvers for now; this should be moved to middleware
@@ -32,4 +34,16 @@ func AuthHandler(h http.Handler) http.Handler {
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// GrantFromContext returns a grant if the context has one (i.e the user is authenticated)
+// otherwise returns nil
+func GrantFromContext(ctx context.Context) *middleware.Grant {
+	val := ctx.Value(GrantKey)
+	if val == nil {
+		return nil
+	}
+
+	v := val.(*middleware.Grant)
+	return v
 }

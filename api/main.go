@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
@@ -93,7 +94,7 @@ func main() {
 		Schema:  _schema,
 		Loaders: loaders,
 	}
-	http.Handle("/graphql", handler.AuthHandler(handle.Serve()))
+	http.Handle("/graphql", auth.Handler(handle.Serve()))
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
