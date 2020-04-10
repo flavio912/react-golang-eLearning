@@ -29,4 +29,5 @@ type Mutation {
     manager: AddManagerInput!
     recaptcha: String!
   ): Boolean!
+  approveCompany(uuid: String!): Company
 }

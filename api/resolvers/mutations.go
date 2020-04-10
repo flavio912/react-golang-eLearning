@@ -3,6 +3,9 @@ package resolvers
 import (
 	"context"
 
+	"github.com/asaskevich/govalidator"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -183,4 +186,24 @@ func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args compan
 	}
 
 	return true, nil
+}
+
+func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID string }) (*CompanyResolver, error) {
+	if !govalidator.IsUUIDv4(args.UUID) {
+		return &CompanyResolver{}, &errors.ErrUUIDInvalid
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	company, err := grant.ApproveCompany(args.UUID)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewCompanyResolver(ctx, NewCompanyArgs{
+		Company: company,
+	})
 }

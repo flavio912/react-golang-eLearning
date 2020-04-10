@@ -268,3 +268,28 @@ func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.
 
 	return nil
 }
+
+// ApproveCompany sets a company's status to approved so they can access the manager
+// dashboard etc
+func (g *Grant) ApproveCompany(companyUUID string) (gentypes.Company, error) {
+	if !g.IsAdmin {
+		return gentypes.Company{}, &errors.ErrUnauthorized
+	}
+
+	uid, err := uuid.Parse(companyUUID)
+	if err != nil {
+		return gentypes.Company{}, &errors.ErrUUIDInvalid
+	}
+
+	if !g.CompanyExists(uid) {
+		return gentypes.Company{}, &errors.ErrCompanyNotFound
+	}
+
+	query := database.GormDB.Model(&models.Company{}).Where("uuid = ?", uid).Update("approved", true)
+	if query.Error != nil {
+		glog.Errorf("Unable to approve company: %s", query.Error.Error())
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	return g.GetCompanyByUUID(companyUUID)
+}
