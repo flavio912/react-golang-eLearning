@@ -30,6 +30,7 @@ export type Theme = {
     large: number;
     default: number;
     small: number;
+    extraSmall: number;
   };
 };
 
@@ -58,6 +59,7 @@ const theme: Theme = {
     large: 16,
     default: 14,
     small: 13,
+    extraSmall: 11,
   },
 };
 
