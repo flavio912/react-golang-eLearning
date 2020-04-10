@@ -20,8 +20,9 @@
     "body": [
       "import * as React from \"react\";",
       "import { createUseStyles } from \"react-jss\";",
+      "import { Theme } from \"helpers/theme\";",
       "",
-      "const useStyles = createUseStyles({});",
+      "const useStyles = createUseStyles((theme: Theme) => ({}));",
       "",
       "type Props = {};",
       "",

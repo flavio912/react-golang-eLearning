@@ -27,6 +27,7 @@ export type Theme = {
   };
   fontSizes: {
     heading: number;
+    extraLarge: number;
     large: number;
     default: number;
     small: number;
@@ -37,7 +38,7 @@ const theme: Theme = {
   spacing: (amount: 0 | 1 | 2 | 3) => spacing[amount],
   primaryBorderRadius: 5,
   buttonBorderRadius: 4,
-  primaryGradient: "linear-gradient(to right, #0b57ff 0%,#10b73b 100%)",
+  primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#10b73b 100%)",
   colors: {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
@@ -55,6 +56,7 @@ const theme: Theme = {
   },
   fontSizes: {
     heading: 26,
+    extraLarge: 24,
     large: 16,
     default: 14,
     small: 13,
