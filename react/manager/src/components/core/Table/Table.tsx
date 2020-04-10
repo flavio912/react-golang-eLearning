@@ -5,15 +5,12 @@ import { Theme } from "helpers/theme";
 const useStyles = createUseStyles((theme: Theme) => ({
   table: {
     width: "100%",
-    borderCollapse: "collapse",
-  },
-  blankRow: {
-    height: 10,
+    borderCollapse: "separate",
+    borderSpacing: 0,
   },
   row: {
     background: "white",
-    border: `1px solid ${theme.colors.borderGrey}`,
-    padding: [10, 0],
+    height: 70,
     transition: "box-shadow 0.1s ease",
     "&:hover": {
       boxShadow: theme.shadows.primary,
@@ -23,16 +20,26 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.textGrey,
     textTransform: "uppercase",
     fontSize: theme.fontSizes.extraSmall,
-    padding: [0, 10],
+    padding: [5, 10],
+    textAlign: "left",
   },
   cell: {
-    padding: [0, 10],
+    padding: [5, 10],
+    borderTop: `1px solid ${theme.colors.borderGrey}`,
+    borderRight: '0',
+    borderBottom: `1px solid ${theme.colors.borderGrey}`,
+    borderLeft: '0',
     "&:first-child": {
       borderRadius: [5, 0, 0, 5],
+      borderLeft: `1px solid ${theme.colors.borderGrey}`,
     },
     "&:last-child": {
       borderRadius: [0, 5, 5, 0],
+      borderRight: `1px solid ${theme.colors.borderGrey}`,
     },
+  },
+  defaultCell: {
+    fontSize: theme.fontSizes.default,
   },
 }));
 
@@ -96,20 +103,19 @@ function Table({ header, rows, sort }: Props) {
       <tbody>
         {rows.sort(sorter).map(({ key, cells }) => {
           return (
-            <>
-              <tr className={classes.blankRow} />
-              <tr key={key} className={classes.row}>
-                {cells.map(({ component: Cell, sort }) => (
-                  <td className={classes.cell}>
-                    {typeof Cell === "string" ? (
-                      <p key={`${key}-${sort}`}>{Cell}</p>
-                    ) : (
-                      <Cell key={`${key}-${sort}`} />
-                    )}
-                  </td>
-                ))}
-              </tr>
-            </>
+            <tr key={key} className={classes.row}>
+              {cells.map(({ component: Cell, sort }) => (
+                <td className={classes.cell}>
+                  {typeof Cell === "string" ? (
+                    <p className={classes.defaultCell} key={`${key}-${sort}`}>
+                      {Cell}
+                    </p>
+                  ) : (
+                    <Cell key={`${key}-${sort}`} />
+                  )}
+                </td>
+              ))}
+            </tr>
           );
         })}
       </tbody>
