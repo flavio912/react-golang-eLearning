@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { Theme } from "helpers/theme";
+// @ts-ignore
 import useDimensions from "react-use-dimensions";
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -30,32 +31,44 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-export type TabContent = [
-  {
-    key: string;
-    component: typeof React.Component;
-  }
-];
-
-type Props = {
-  children: TabContent;
+export type ComponentProps = {
+  state: any;
+  setState: (newState: any) => void;
+  setTab: (tab: string) => void;
 };
 
-function Tabs({ children }: Props) {
+export type TabContent = {
+  key: string;
+  component: ({ state, setState, setTab }: ComponentProps) => JSX.Element;
+};
+
+type Props = {
+  content: TabContent[];
+};
+
+function Tabs({ content }: Props) {
   const classes = useStyles();
+  const [state, setState] = React.useState<any>();
+  const [active, setActive] = React.useState<string>(content[0].key || "");
   const [ref, { width }] = useDimensions();
 
   return (
     <div className={classes.container}>
       <div className={classes.heading}>
-        {children.map(({ key }) => (
-          <p key={key}>{key}</p>
+        {content.map(({ key }) => (
+          <p key={key} style={key === active ? { color: "green" } : undefined}>
+            {key}
+          </p>
         ))}
       </div>
       <div className={classes.body} ref={ref}>
-        {children.map(({ key, component: Content }) => (
+        {content.map(({ key, component: Page }) => (
           <div key={key} className={classes.content} style={{ width }}>
-            <Content />
+            <Page
+              state={state}
+              setState={setState}
+              setTab={(tab: string) => setActive(tab)}
+            />
           </div>
         ))}
       </div>

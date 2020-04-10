@@ -73,7 +73,7 @@ function Button({
   small,
   children,
   ...props
-}: Props & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: Props & React.PropsWithoutRef<JSX.IntrinsicElements["button"]>) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
