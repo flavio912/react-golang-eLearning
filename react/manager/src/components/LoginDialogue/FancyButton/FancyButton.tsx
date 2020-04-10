@@ -39,7 +39,7 @@ type Props = {
 function FancyButton({
   text,
   ...props
-}: Props & React.InputHTMLAttributes<HTMLInputElement>) {
+}: Props & React.PropsWithoutRef<JSX.IntrinsicElements["input"]>) {
   const classes = useStyles();
 
   return (

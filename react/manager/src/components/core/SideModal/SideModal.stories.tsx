@@ -3,7 +3,7 @@ import SideModal from "./SideModal";
 import { withKnobs, boolean, text } from "@storybook/addon-knobs";
 import FancyButton from "components/LoginDialogue/FancyButton";
 import FancyInput from "components/LoginDialogue/FancyInput";
-import Tabs, { TabContent, ComponentProps } from "./Tabs";
+import Tabs, { TabContent } from "./Tabs";
 
 export default {
   title: "Core/Side Modal",
@@ -25,16 +25,20 @@ export const empty = () => {
 const tabs: TabContent[] = [
   {
     key: "First",
-    component: ({ setState, setTab }: ComponentProps) => (
-      <>
+    component: ({ setState, setTab }) => (
+      <div style={{ padding: 15 }}>
         <FancyInput label="State" onChange={(v) => setState(v)} />
         <FancyButton text="Next tab" onClick={() => setTab("Second")} />
-      </>
+      </div>
     ),
   },
   {
     key: "Second",
-    component: ({ state }: ComponentProps) => <p>State is: {state}</p>,
+    component: ({ state }) => (
+      <div style={{ padding: 15 }}>
+        <p>State is: {state}</p>
+      </div>
+    ),
   },
 ];
 

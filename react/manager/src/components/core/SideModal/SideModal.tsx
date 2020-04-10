@@ -18,6 +18,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: "100%",
     height: "100%",
     backgroundColor: "rgba(7,67,121,0.75)",
+    filter: "blur(2px)",
   },
   modal: {
     zIndex: 55,
@@ -54,21 +55,22 @@ type Props = {
   title: string;
   isOpen: boolean;
   closeModal(): void;
-  children?: React.ReactChildren;
+  children?: React.ReactNode;
 };
 
 // isOpen and closeModal should be provided from a useState hook in a parent component
 
 function SideModal({ title, isOpen, closeModal, children }: Props) {
   const classes = useStyles();
-  const { right, opacity } = useSpring({
+  const { right, opacity, pointerEvents } = useSpring({
     right: isOpen ? 0 : -700,
     opacity: isOpen ? 1 : 0,
+    pointerEvents: isOpen ? "auto" : "none",
     config: config.default,
   });
 
   return (
-    <div className={classes.container}>
+    <animated.div className={classes.container} style={{ pointerEvents }}>
       <animated.div className={classes.background} style={{ opacity }} />
       <animated.div className={classes.modal} style={{ right }}>
         <div className={classes.header}>
@@ -81,7 +83,7 @@ function SideModal({ title, isOpen, closeModal, children }: Props) {
         </div>
         <div className={classes.body}>{children}</div>
       </animated.div>
-    </div>
+    </animated.div>
   );
 }
 
