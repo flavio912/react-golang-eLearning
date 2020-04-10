@@ -38,7 +38,7 @@ const theme: Theme = {
   spacing: (amount: 0 | 1 | 2 | 3) => spacing[amount],
   primaryBorderRadius: 5,
   buttonBorderRadius: 4,
-  primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#10b73b 100%)",
+  primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#16C225 100%)",
   colors: {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
