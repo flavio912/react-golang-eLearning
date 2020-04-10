@@ -1,5 +1,6 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
+import classNames from "classnames";
 import { ReactComponent as SpinnerSVG } from "../../../assets/Loading_Screen_Donut.svg";
 import { Theme } from "helpers/theme";
 
@@ -9,17 +10,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
     to: { transform: "rotate(360deg)" },
   },
   spinner: {
+    animation: "$spin 2s infinite linear",
     width: 100,
     height: 100,
-    animation: "$spin 2s infinite linear",
   },
 }));
 
-type Props = {};
+type Props = {
+  size?: number;
+};
 
-function Spinner(props: Props) {
-  const classes = useStyles();
-  return <SpinnerSVG className={classes.spinner} />;
+function Spinner({ size }: Props) {
+  const { spinner } = useStyles();
+  return (
+    <SpinnerSVG
+      className={spinner}
+      style={size ? { width: size, height: size } : undefined}
+    />
+  );
 }
 
 export default Spinner;

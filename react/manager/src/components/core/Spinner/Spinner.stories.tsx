@@ -1,6 +1,6 @@
 import * as React from "react";
 import Spinner from "./Spinner";
-import { withKnobs } from "@storybook/addon-knobs";
+import { withKnobs, number } from "@storybook/addon-knobs";
 
 export default {
   title: "Core/Spinner",
@@ -8,5 +8,5 @@ export default {
 };
 
 export const normal = () => {
-  return <Spinner />;
+  return <Spinner size={number("Size", NaN)} />;
 };
