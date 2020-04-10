@@ -6,7 +6,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   table: {
     width: "100%",
     borderCollapse: "separate",
-    borderSpacing: 0,
+    borderSpacing: '0 10px',
   },
   row: {
     background: "white",
@@ -14,21 +14,28 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: "box-shadow 0.1s ease",
     "&:hover": {
       boxShadow: theme.shadows.primary,
+      "& $cell": {"&:first-child": {
+        borderRadius: 0,
+      },
+      "&:last-child": {
+        borderRadius: 0,
+      },}
     },
   },
   headerCell: {
     color: theme.colors.textGrey,
     textTransform: "uppercase",
     fontSize: theme.fontSizes.extraSmall,
-    padding: [5, 10],
+    padding: [0, 10],
     textAlign: "left",
   },
   cell: {
-    padding: [5, 10],
+    padding: [0, 10],
     borderTop: `1px solid ${theme.colors.borderGrey}`,
     borderRight: '0',
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
     borderLeft: '0',
+    transition: "border-radius 0.1s ease",
     "&:first-child": {
       borderRadius: [5, 0, 0, 5],
       borderLeft: `1px solid ${theme.colors.borderGrey}`,
