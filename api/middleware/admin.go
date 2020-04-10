@@ -147,7 +147,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 		}
 
 		glog.Errorf("Unable to find admin to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
-		return gentypes.Admin{}, &errors.ErrAdminNotFound
+		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
 	changed := false
