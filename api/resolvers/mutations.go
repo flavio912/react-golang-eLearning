@@ -96,6 +96,26 @@ func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gent
 	}, nil
 }
 
+func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input gentypes.UpdateAdminInput }) (*AdminResolver, error) {
+	if err := args.Input.Validate(); err != nil {
+		return nil, err
+	}
+
+	grant, err := middleware.Authenticate(ctx.Value("token").(string))
+	if err != nil {
+		return nil, err
+	}
+
+	admin, err := grant.UpdateAdmin(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	return &AdminResolver{
+		admin: admin,
+	}, nil
+}
+
 func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.RemoveAdminInput }) (bool, error) {
 	// TODO: Move grant + validate boilerplate stuff further up the request
 	if err := args.Input.Validate(); err != nil {

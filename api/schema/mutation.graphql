@@ -22,6 +22,7 @@ type Mutation {
   managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
   addAdmin(input: AddAdminInput!): Admin
+  updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
   createCompany(input: CreateCompanyInput!): Company
   createCompanyRequest(

@@ -3,16 +3,26 @@ stages:
   - build
   - deploy-staging
 
+services:
+  - docker:dind
+
 variables:
   MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
   ADMIN_IMAGE_TAG: $CI_REGISTRY_IMAGE:admin
 
 test-api:
   stage: test
-  image: golang:latest
+  image: docker/compose:latest
+  only:
+    changes:
+      - api/**/*
+  before_script:
+    - export DOCKER_HOST="tcp://localhost:2375"
+    - docker info
+    - docker-compose --version
+    - apk add --no-cache git bash
   script:
-    - cd api
-    - go test ./... -cover
+    - api/dev_env/run_test.sh
 
 build-admin:
   stage: build

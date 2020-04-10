@@ -1,0 +1,9 @@
+FROM golang:1.14.1-alpine
+
+WORKDIR /app
+COPY go.mod .
+COPY go.sum . 
+
+RUN go mod download
+
+CMD CGO_ENABLED=0 go test -v -coverprofile .testCoverage ./... && go tool cover -func=.testCoverage

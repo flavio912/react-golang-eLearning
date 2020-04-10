@@ -38,6 +38,18 @@ func (m *AddAdminInput) Validate() error {
 	return err
 }
 
+type UpdateAdminInput struct {
+	UUID      string  `valid:"uuidv4,required"`
+	FirstName *string `valid:"alpha"`
+	LastName  *string `valid:"alpha"`
+	Email     *string `valid:"email"`
+}
+
+func (m *UpdateAdminInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
 type RemoveAdminInput struct {
 	UUID string `valid:"uuidv4,required"`
 }
