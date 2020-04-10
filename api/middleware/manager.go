@@ -174,23 +174,34 @@ func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
 }
 
 func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Manager, error) {
-	if !g.IsAdmin {
+	var inputUUID string
+	// Auth
+	if !g.IsAdmin && !g.IsManager {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
-	_uuid, err := uuid.Parse(managerDetails.CompanyUUID)
+	// If you're an admin you need to provide the company UUID
+	if g.IsAdmin {
+		if managerDetails.CompanyUUID != nil {
+			inputUUID = *managerDetails.CompanyUUID
+		} else {
+			return gentypes.Manager{}, &errors.ErrCompanyNotFound
+		}
+	}
+
+	// If you're a manager the company UUID will be selected from the one in your JWT claims
+	if g.IsManager {
+		inputUUID = g.Claims.Company
+	}
+
+	_uuid, err := uuid.Parse(inputUUID)
 	if err != nil {
 		return gentypes.Manager{}, &errors.ErrUUIDInvalid
 	}
 
 	// Check if company exists
-	var company models.Company
-	existsErr := database.GormDB.Where("uuid = ?", _uuid).First(&company)
-	if existsErr.Error != nil {
-		if existsErr.RecordNotFound() {
-			return gentypes.Manager{}, &errors.ErrCompanyNotFound
-		}
-		return gentypes.Manager{}, &errors.ErrWhileHandling
+	if !g.CompanyExists(_uuid) {
+		return gentypes.Manager{}, &errors.ErrCompanyNotFound
 	}
 
 	// TODO: Validate input better and return useful details
@@ -236,7 +247,7 @@ func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (
 	}
 
 	url, successToken, err := uploads.GenerateUploadURL(
-		imageMeta.FileType,      //  The actual file type
+		imageMeta.FileType,      // The actual file type
 		imageMeta.ContentLength, // The actual file content length
 		[]string{"jpg", "png"},  // Allowed file types
 		int32(20000000),         // Max file size = 20MB

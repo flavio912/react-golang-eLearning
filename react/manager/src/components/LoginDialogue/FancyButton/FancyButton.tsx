@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: "white",
     fontSize: 20,
     fontWeight: 800,
-    background: `linear-gradient(to right, ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    background: theme.primaryGradient,
     transition: "margin 0.1s ease",
     "&::-moz-focus-inner": {
       border: 0,
@@ -36,12 +36,15 @@ type Props = {
   text: string;
 };
 
-function FancyButton({ text }: Props) {
+function FancyButton({
+  text,
+  ...props
+}: Props & React.PropsWithoutRef<JSX.IntrinsicElements["input"]>) {
   const classes = useStyles();
 
   return (
     <div className={classes.container}>
-      <input type="submit" value={text} className={classes.submit} />
+      <input {...props} type="submit" value={text} className={classes.submit} />
     </div>
   );
 }

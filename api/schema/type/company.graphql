@@ -1,4 +1,5 @@
 type Company {
+  approved: Boolean
   uuid: String!
   createdAt: String
   name: String!

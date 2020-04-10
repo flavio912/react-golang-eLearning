@@ -4,12 +4,19 @@ import FancyInput from "./FancyInput";
 import FancyButton from "./FancyButton";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
+import { ReactComponent as Logo } from "../../assets/logo/ttc-logo.svg";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
     width: 340,
+  },
+  logoContainer: {
+    padding: [30, 0, 20],
+  },
+  logo: {
+    height: 70,
   },
   heading: {
     fontWeight: 800,
@@ -37,6 +44,9 @@ function LoginDialogue(props: Props) {
   const classes = useStyles({ theme });
   return (
     <Card padding="medium" className={classes.root}>
+      <div className={classes.logoContainer}>
+        <Logo className={classes.logo} />
+      </div>
       <h1 className={classes.heading}>Login to TTC Hub</h1>
       <p className={classes.subheading}>
         Glad to have you back, please enter your login details to proceed
@@ -44,7 +54,7 @@ function LoginDialogue(props: Props) {
       <FancyInput label="Email" labelColor={"#5CC301"} type={"email"} />
       <FancyInput label="Password" labelColor={"#5CC301"} type={"password"} />
       <FancyButton text="Login to TTC" />
-      <a className={classes.link} href="">
+      <a className={classes.link} href="https://example.com">
         I don't have a TTC Hub account
       </a>
     </Card>

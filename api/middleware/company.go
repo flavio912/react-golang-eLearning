@@ -17,6 +17,7 @@ func (g *Grant) companyToGentype(company models.Company) gentypes.Company {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
 			CreatedAt: &createdAt,
+			Approved:  &company.Approved,
 			UUID:      company.UUID,
 			Name:      company.Name,
 			AddressID: company.AddressID,
@@ -39,6 +40,20 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 		genCompanies = append(genCompanies, g.companyToGentype(comp))
 	}
 	return genCompanies
+}
+
+// CompanyExists checks is a companyUUID exists in the DB
+func (g *Grant) CompanyExists(companyUUID uuid.UUID) bool {
+	var company models.Company
+	existsErr := database.GormDB.Where("uuid = ?", companyUUID).First(&company)
+	if existsErr.Error != nil {
+		if existsErr.RecordNotFound() {
+			return false
+		}
+		glog.Errorf("Error while finding company: %s", existsErr.Error.Error())
+		return false
+	}
+	return true
 }
 
 //IsCompanyDelegate returns true if the grant user is a delegate of the given company uuid
@@ -162,6 +177,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		return []string{}, gentypes.PageInfo{}, err
 	}
 
+	// TODO: Add filtering
 	query, limit, offset := getPage(query, page)
 
 	query.Find(&companies)
@@ -199,6 +215,7 @@ func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Com
 			PostCode:     company.PostCode,
 			Country:      company.Country,
 		},
+		Approved: true,
 	}
 
 	query := database.GormDB.Create(&compModel)
@@ -208,4 +225,71 @@ func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Com
 	}
 
 	return g.companyToGentype(compModel), nil
+}
+
+// CreateCompanyRequest creates a company and sets it to unapproved, for an admin to approve later
+func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.AddManagerInput) error {
+	// Validate input
+	if err := company.Validate(); err != nil {
+		return err
+	}
+	if err := manager.Validate(); err != nil {
+		return err
+	}
+
+	compModel := models.Company{
+		Name: company.CompanyName,
+		Address: models.Address{
+			AddressLine1: company.AddressLine1,
+			AddressLine2: company.AddressLine2,
+			County:       company.County,
+			PostCode:     company.PostCode,
+			Country:      company.Country,
+		},
+		Approved: false,
+		Managers: []models.Manager{
+			models.Manager{
+				User: models.User{
+					FirstName: manager.FirstName,
+					LastName:  manager.LastName,
+					JobTitle:  manager.JobTitle,
+					Telephone: manager.Telephone,
+					Email:     manager.Email,
+					Password:  manager.Password,
+					LastLogin: time.Now(),
+				},
+			}},
+	}
+	query := database.GormDB.Create(&compModel)
+	if query.Error != nil {
+		glog.Errorf("Unable to create company request: %s", query.Error.Error())
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}
+
+// ApproveCompany sets a company's status to approved so they can access the manager
+// dashboard etc
+func (g *Grant) ApproveCompany(companyUUID string) (gentypes.Company, error) {
+	if !g.IsAdmin {
+		return gentypes.Company{}, &errors.ErrUnauthorized
+	}
+
+	uid, err := uuid.Parse(companyUUID)
+	if err != nil {
+		return gentypes.Company{}, &errors.ErrUUIDInvalid
+	}
+
+	if !g.CompanyExists(uid) {
+		return gentypes.Company{}, &errors.ErrCompanyNotFound
+	}
+
+	query := database.GormDB.Model(&models.Company{}).Where("uuid = ?", uid).Update("approved", true)
+	if query.Error != nil {
+		glog.Errorf("Unable to approve company: %s", query.Error.Error())
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	return g.GetCompanyByUUID(companyUUID)
 }

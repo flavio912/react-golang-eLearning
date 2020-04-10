@@ -7,14 +7,16 @@ import (
 
 type Company struct {
 	CreatedAt *string `valid:"rfc3339"`
+	Approved  *bool
 	UUID      uuid.UUID
 	Name      string
 	AddressID uint
 }
 
 type CompanyFilter struct {
-	UUID *string
-	Name *string
+	UUID     *string
+	Name     *string
+	Approved *bool
 }
 
 type OrderBy struct {
@@ -32,6 +34,19 @@ type CreateCompanyInput struct {
 }
 
 func (c *CreateCompanyInput) Validate() error {
+	_, err := govalidator.ValidateStruct(c)
+	return err
+}
+
+type CreateCompanyRequestManager struct {
+	FirstName string `valid:"required"`
+	LastName  string `valid:"required"`
+	JobTitle  string `valid:"required"`
+	Telephone string `valid:"required,numeric"`
+	Email     string `valid:"required,email"`
+}
+
+func (c *CreateCompanyRequestManager) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }

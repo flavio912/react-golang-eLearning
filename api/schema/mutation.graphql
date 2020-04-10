@@ -24,4 +24,10 @@ type Mutation {
   addAdmin(input: AddAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
   createCompany(input: CreateCompanyInput!): Company
+  createCompanyRequest(
+    company: CreateCompanyInput!
+    manager: AddManagerInput!
+    recaptcha: String!
+  ): Boolean!
+  approveCompany(uuid: String!): Company
 }
