@@ -7,6 +7,7 @@ require (
 	github.com/aws/aws-sdk-go v1.30.4
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/friendsofgo/graphiql v0.2.2
+	github.com/go-testfixtures/testfixtures/v3 v3.1.1
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1

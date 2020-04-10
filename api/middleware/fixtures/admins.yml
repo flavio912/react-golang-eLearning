@@ -1,0 +1,7 @@
+- uuid: 00000000-0000-0000-0000-000000000001
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  email: test123@test.com
+  password: hashedpassword
+  first_name: Jim
+  last_name: User

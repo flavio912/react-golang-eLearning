@@ -4,39 +4,14 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func TestCreateAdminUser(t *testing.T) {
-	newAdmin := &models.Admin{
-		Email:     "test@test.com",
-		Password:  "test",
-		FirstName: "FName",
-		LastName:  "LName",
-	}
-	err := database.GormDB.Create(newAdmin)
-	if err.Error != nil {
-		t.Fatal(err.GetErrors())
-	}
-
-	admin := &models.Admin{}
-	q := database.GormDB.Where("email = ?", "test@test.com").First(admin)
-	if q.Error != nil {
-		if q.RecordNotFound() {
-			t.Error("GORM didn't create a user")
-		}
-
-		t.Errorf("GORM Errored:\n%#v", q.GetErrors())
-	}
-}
-
 func TestAddAdmin(t *testing.T) {
+	prepareTestDatabase()
 	// fake grant
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
@@ -75,10 +50,12 @@ func TestAddAdmin(t *testing.T) {
 }
 
 func TestUpdateAdmin(t *testing.T) {
+	prepareTestDatabase()
+
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	updateAdmin := gentypes.UpdateAdminInput{
-		UUID: "00000000-0000-0000-0000-000000000000",
+		UUID: "00000000-0000-0000-0000-000000001999",
 	}
 
 	t.Run("Must be admin to update", func(t *testing.T) {
@@ -92,25 +69,15 @@ func TestUpdateAdmin(t *testing.T) {
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
-	// TODO refactor out test fixtures
-	newAdmin := gentypes.AddAdminInput{
-		Email:     "admin@admin.com",
-		Password:  "aderrmin123",
-		FirstName: "Admin",
-		LastName:  "Man",
-	}
-	admin, err := grant.AddAdmin(newAdmin)
-	require.Nil(t, err, "Failed to add admin user")
-	updateAdmin.UUID = admin.UUID
-
 	t.Run("Check it updates admin record", func(t *testing.T) {
 		testAdmin := gentypes.Admin{
-			UUID:      updateAdmin.UUID,
+			UUID:      "00000000-0000-0000-0000-000000000001",
 			FirstName: "NAME",
 			LastName:  "LASTNAME",
 			Email:     "email@email.com",
 		}
 
+		updateAdmin.UUID = testAdmin.UUID
 		updateAdmin.FirstName = &testAdmin.FirstName
 		updateAdmin.LastName = &testAdmin.LastName
 		updateAdmin.Email = &testAdmin.Email
@@ -122,35 +89,28 @@ func TestUpdateAdmin(t *testing.T) {
 }
 
 func TestDeleteAdmin(t *testing.T) {
+	prepareTestDatabase()
+
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	t.Run("Must be admin to delete", func(t *testing.T) {
 		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
-		_, err := nonAdminGrant.DeleteAdmin("00000000-0000-0000-0000-000000000000")
+		_, err := nonAdminGrant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := grant.DeleteAdmin("00000000-0000-0000-0000-000000000000")
+		_, err := grant.DeleteAdmin("00000000-0000-0000-0000-000000000999")
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
-	// TODO refactor out test fixtures
-	newAdmin := gentypes.AddAdminInput{
-		Email:     "admin@admin.com",
-		Password:  "aderrmin123",
-		FirstName: "Admin",
-		LastName:  "Man",
-	}
-	admin, err := grant.AddAdmin(newAdmin)
-	require.Nil(t, err, "Failed to add admin user")
-
 	t.Run("Check it deletes the admin", func(t *testing.T) {
-		out, err := grant.DeleteAdmin(admin.UUID)
+		out, err := grant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
 		assert.Nil(t, err)
 		assert.True(t, out)
+
 		// trying to delete again then causes not found
-		_, err = grant.DeleteAdmin(admin.UUID)
+		_, err = grant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 }
