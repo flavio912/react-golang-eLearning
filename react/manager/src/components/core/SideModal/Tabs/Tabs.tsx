@@ -15,14 +15,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: "column",
   },
   heading: {
-    width: "calc(100% - 20px)",
+    width: "calc(100% - 30px)",
     height: 70,
     borderBottom: `2px solid ${theme.colors.borderGrey}`,
     display: "flex",
     flexDirection: "row",
     justifyContent: "flex-start",
     alignItems: "flex-end",
-    paddingLeft: 20,
+    paddingLeft: 30,
   },
   tabName: {
     margin: [0, 0, 0, 10],
