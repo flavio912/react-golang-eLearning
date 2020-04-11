@@ -1,0 +1,4 @@
+- uuid: 00000000-0000-0000-0000-000000000001
+  name: TestCompany
+  approved: true
+  address_id: 0

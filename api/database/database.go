@@ -16,7 +16,7 @@ import (
 var GormDB *gorm.DB
 
 //SetupDatabase - Connects the database
-func SetupDatabase() error {
+func SetupDatabase(logMode bool) error {
 	config := helpers.Config
 
 	// Configure database rds or local test
@@ -47,7 +47,7 @@ func SetupDatabase() error {
 	}
 
 	// TODO: Create debug config option
-	db.LogMode(true)
+	db.LogMode(logMode)
 	GormDB = db
 	return nil
 }

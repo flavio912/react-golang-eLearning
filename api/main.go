@@ -74,7 +74,7 @@ func main() {
 	if err := helpers.LoadConfig("config.yml"); err != nil {
 		panic(err)
 	}
-	errDb := database.SetupDatabase()
+	errDb := database.SetupDatabase(true)
 	if errDb != nil {
 		panic(errDb)
 	}
