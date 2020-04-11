@@ -8,6 +8,7 @@ import (
 
 	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/stretchr/testify/assert"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -19,6 +20,11 @@ var (
 	db       *sql.DB
 	fixtures *testfixtures.Loader
 )
+
+var adminGrant = middleware.Grant{auth.UserClaims{}, true, false, false}
+var managerGrant = middleware.Grant{auth.UserClaims{}, false, true, false}
+var userGrant = middleware.Grant{auth.UserClaims{}, false, false, true}
+var uuidZero = "00000000-0000-0000-0000-000000000000"
 
 func TestMain(m *testing.M) {
 	var err error
