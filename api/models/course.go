@@ -7,7 +7,7 @@ import (
 )
 
 type CourseInfo struct {
-	ID              uint //PRIM uint as no need to go clientside
+	ID              uint // PRIM, is uint as no need to ever go clientside
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	Name            string
@@ -18,7 +18,8 @@ type CourseInfo struct {
 	AccessType      int    // Restricted or Open Access
 	Image           string // Course banner image
 	BackgroundCheck bool
-	SpecificTerms   string `sql:"json"`
+	SpecificTerms   string     `sql:"json"`
+	Participants    []Delegate // The delegates that have/are done/doing the course
 }
 
 type CourseTagLink struct {
@@ -27,24 +28,27 @@ type CourseTagLink struct {
 }
 
 type Tag struct {
-	UUID  uuid.UUID //PRIM
-	Name  string
-	Color string // A hex color for the tag
+	UUID  uuid.UUID // PRIM
+	Name  string    // UNIQUE
+	Color string    // A hex color for the tag
 }
 
 type OnlineCourse struct {
-	UUID       uuid.UUID //PRIM
-	CourseInfo CourseInfo
-	Structure  []CourseStructure
+	UUID         uuid.UUID // PRIM
+	CourseInfo   CourseInfo
+	CourseInfoID uint
+	Structure    []CourseStructure
 }
 
 type ClassroomCourse struct {
-	UUID          uuid.UUID //PRIM
-	CourseInfo    CourseInfo
-	Tutor         Tutor // The tutor user running this course
-	StartDate     time.Time
-	EndDate       time.Time
-	Location      string
+	UUID       uuid.UUID // PRIM
+	CourseInfo CourseInfo
+	Tutor      Tutor // The tutor user running this course
+	StartDate  time.Time
+	EndDate    time.Time
+	Location   string
+
+	// Classroom courses can require you to take some online courses first
 	OnlineCourses []OnlineCourse `gorm:"many2many:online_classroom_link;"`
 }
 
@@ -59,7 +63,7 @@ type Test struct {
 }
 
 type ModuleStructure struct {
-	ModuleID *uint
+	ModuleID uint
 	LessonID *uint
 	TestID   *uint
 	Rank     string
