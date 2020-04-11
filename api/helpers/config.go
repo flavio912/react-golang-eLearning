@@ -32,6 +32,9 @@ type yamlConfig struct {
 	Imgix struct {
 		BaseURL string `yaml:"baseUrl"`
 	} `yaml:"imgix"`
+	Sentry struct {
+		DSN string `yaml:"dsn"`
+	} `yaml:"sentry"`
 }
 
 // Config - The config variable can be used by other packages to get config data

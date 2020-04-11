@@ -13,6 +13,8 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 
+	"github.com/getsentry/sentry-go"
+	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/golang/glog"
 	graphql "github.com/graph-gophers/graphql-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -64,23 +66,43 @@ func usage() {
 	os.Exit(2)
 }
 
+func setupConfig() {
+	// Load in the config.yaml file
+	if err := helpers.LoadConfig("config.yml"); err != nil {
+		panic(err)
+	}
+}
+
+func setupDatabase() {
+	errDb := database.SetupDatabase(true)
+	if errDb != nil {
+		panic(errDb)
+	}
+	migration.InitMigrations()
+}
+
+func setupSentry() *sentryhttp.Handler {
+	err := sentry.Init(sentry.ClientOptions{
+		Dsn: helpers.Config.Sentry.DSN,
+	})
+	if err != nil {
+		glog.Fatalf("sentry.Init: %s", err)
+	}
+	sentryHandler := sentryhttp.New(sentryhttp.Options{})
+	return sentryHandler
+}
+
 func main() {
+	setupConfig()
 	flag.Usage = usage
 	flag.Set("logtostderr", "true")
 	flag.Set("stderrthreshold", "INFO")
 	flag.Parse()
 
-	// Load in the config.yaml file
-	if err := helpers.LoadConfig("config.yml"); err != nil {
-		panic(err)
-	}
-	errDb := database.SetupDatabase(true)
-	if errDb != nil {
-		panic(errDb)
-	}
-	defer database.GormDB.Close()
+	sentryHandler := setupSentry()
 
-	migration.InitMigrations()
+	setupDatabase()
+
 	uploads.Initialize()
 
 	loaders := loader.Init()
@@ -94,7 +116,7 @@ func main() {
 		Schema:  _schema,
 		Loaders: loaders,
 	}
-	http.Handle("/graphql", auth.Handler(handle.Serve()))
+	http.Handle("/graphql", sentryHandler.Handle(auth.Handler(handle.Serve())))
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))
