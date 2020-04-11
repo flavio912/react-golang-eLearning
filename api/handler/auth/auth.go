@@ -42,13 +42,11 @@ func Handler(h http.Handler) http.Handler {
 func addSentryContext(r *http.Request, grant *middleware.Grant) {
 	// Add sentry context
 	if hub := sentry.GetHubFromContext(r.Context()); hub != nil {
-		hub.WithScope(func(scope *sentry.Scope) {
-			scope.SetUser(sentry.User{
-				ID: grant.Claims.UUID,
-			})
-			scope.SetTag("role", string(grant.Claims.Role))
-			scope.SetTag("company", grant.Claims.Company)
+		hub.Scope().SetUser(sentry.User{
+			ID: grant.Claims.UUID,
 		})
+		hub.Scope().SetTag("role", string(grant.Claims.Role))
+		hub.Scope().SetTag("company", grant.Claims.Company)
 	}
 }
 

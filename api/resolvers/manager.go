@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/sentrylog"
+
 	"github.com/golang/glog"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -61,7 +63,9 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 	// var errs []error
 	for _, manager := range managers {
 		if manager.Error != nil {
+			sentrylog.CaptureException(ctx, manager.Error)
 			glog.Errorf("Manager resolver error : %s", manager.Error.Error())
+			// TODO: Add errors to each item correctly
 			// errs = append(errs, errors.WithIndex(err, i))
 		}
 

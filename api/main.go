@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -82,8 +83,12 @@ func setupDatabase() {
 }
 
 func setupSentry() *sentryhttp.Handler {
+	if helpers.Config.Sentry.DSN == "" {
+		fmt.Print("\n\nSentry not configured\n\n")
+	}
 	err := sentry.Init(sentry.ClientOptions{
-		Dsn: helpers.Config.Sentry.DSN,
+		Dsn:         helpers.Config.Sentry.DSN,
+		Environment: helpers.Config.Sentry.Environment,
 	})
 	if err != nil {
 		glog.Fatalf("sentry.Init: %s", err)

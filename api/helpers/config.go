@@ -33,7 +33,8 @@ type yamlConfig struct {
 		BaseURL string `yaml:"baseUrl"`
 	} `yaml:"imgix"`
 	Sentry struct {
-		DSN string `yaml:"dsn"`
+		DSN         string `yaml:"dsn"`
+		Environment string `yaml:"environment"`
 	} `yaml:"sentry"`
 }
 
