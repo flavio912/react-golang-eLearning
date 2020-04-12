@@ -22,8 +22,12 @@ var (
 )
 
 var adminGrant = middleware.Grant{auth.UserClaims{}, true, false, false}
-var managerGrant = middleware.Grant{auth.UserClaims{}, false, true, false}
-var userGrant = middleware.Grant{auth.UserClaims{}, false, false, true}
+var managerGrant = middleware.Grant{auth.UserClaims{
+	UUID:    "00000000-0000-0000-0000-000000000001",
+	Company: "00000000-0000-0000-0000-000000000001",
+	Role:    auth.ManagerRole,
+}, false, true, false}
+var delegateGrant = middleware.Grant{auth.UserClaims{}, false, false, true}
 var uuidZero = "00000000-0000-0000-0000-000000000000"
 
 func TestMain(m *testing.M) {

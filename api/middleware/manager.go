@@ -3,6 +3,8 @@ package middleware
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 
 	"github.com/golang/glog"
@@ -15,9 +17,8 @@ import (
 
 func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	profileURL := uploads.GetImgixURL(manager.ProfileKey)
-	glog.Info(manager.CompanyID.String())
 	// Admins and managers themselves can get all info
-	if g.IsAdmin || g.Claims.UUID == manager.UUID.String() {
+	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyID.String()) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
 			User: gentypes.User{
@@ -94,13 +95,21 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	return managers, nil
 }
 
-func (g *Grant) GetManagerByUUID(uuid string) (gentypes.Manager, error) {
+func (g *Grant) GetManagerByUUID(UUID string) (gentypes.Manager, error) {
 	// Admins can get any manager data
 	// Managers can only get their own uuid
-	if g.IsAdmin || (g.IsManager && uuid == g.Claims.UUID) {
+	if g.IsAdmin || (g.IsManager && UUID == g.Claims.UUID) {
+		if _, err := uuid.Parse(UUID); err != nil {
+			return gentypes.Manager{}, &errors.ErrUUIDInvalid
+		}
+
 		var manager models.Manager
-		err := database.GormDB.Where("uuid = ?", uuid).First(&manager).Error
+		err := database.GormDB.Where("uuid = ?", UUID).First(&manager).Error
 		if err != nil {
+			if gorm.IsRecordNotFoundError(err) {
+				return gentypes.Manager{}, &errors.ErrNotFound
+			}
+
 			return gentypes.Manager{}, err
 		}
 
@@ -225,8 +234,9 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 }
 
 func (g *Grant) DeleteManager(uuid string) (bool, error) {
-	// Only managers themselves or an admin can delete managers
-	if g.Claims.UUID != uuid || g.IsAdmin {
+	// managers can delete themselves
+	// admins can delete any manager
+	if (g.IsManager && g.Claims.UUID == uuid) || g.IsAdmin {
 		// TODO: delete profile image from S3
 		query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Manager{})
 		if query.Error != nil {

@@ -39,7 +39,6 @@ func TestGetManagerAccessToken(t *testing.T) {
 	t.Run("Correct info", func(t *testing.T) {
 		token, err := middleware.GetManagerAccessToken("man@managers.com", "iamamanager")
 		assert.Nil(t, err)
-		t.Logf("Token: %s\n", token)
 
 		// should return a valid token
 		grant, err := middleware.Authenticate(token)

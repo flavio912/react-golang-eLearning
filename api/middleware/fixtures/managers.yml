@@ -6,3 +6,11 @@
   first_name: Manager
   last_name: Man
   company_id: 00000000-0000-0000-0000-000000000001
+- uuid: 00000000-0000-0000-0000-000000000002
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  email: man2@managers.com
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: Manager2
+  last_name: Man2
+  company_id: 00000000-0000-0000-0000-000000000001
