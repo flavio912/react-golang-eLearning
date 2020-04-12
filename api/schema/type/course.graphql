@@ -1,0 +1,97 @@
+enum AccessType {
+  RESTRICTED
+  OPEN
+}
+
+interface Course {
+  name: String
+}
+
+type OnlineCourse implements Course {
+  name: String
+}
+
+type ClassroomCourse implements Course {
+  name: String
+}
+
+interface CourseInput {
+  name: String
+  categoryUUID: String # UUID of the category
+  excerpt: String # QUILL JSON for the excerpt
+  introduction: String # QUILL JSON for the introduction
+  backgroundCheck: Boolean # If a background check is required
+  accessType: AccessType # restricted or open
+  price: Float # Cost of the course
+  color: String # HEX color
+  tags: [String] # List of tag uuid's
+  specificTerms: String # QUILL JSON for specific terms
+  bannerImageSuccess: String # JSON Upload Success Token
+}
+
+input SaveClassroomCourseInput implements CourseInput {
+  name: String
+  categoryUUID: String 
+  excerpt: String 
+  introduction: String 
+  backgroundCheck: Boolean 
+  accessType: AccessType 
+  price: Float 
+  color: String
+  tags: [String] 
+  specificTerms: String
+  bannerImageSuccess: String
+  tutorUUID: String # UUID of the Tutor (classroom course only)
+}
+
+input SaveOnlineCourseInput implements CourseInput {
+  name: String
+  type: CourseType 
+  categoryUUID: String
+  excerpt: String 
+  introduction: String 
+  backgroundCheck: Boolean 
+  accessType: AccessType 
+  price: Float
+  color: String 
+  tags: [String] 
+  specificTerms: String
+  bannerImageSuccess: String
+  structure: [CourseItem] # Only for online courses
+}
+
+union CourseItem = ModuleInput | LessonInput | TestInput
+union ModuleItem = LessonInput | TestInput
+
+type ModuleInput {
+  uuid: String!
+  items: [ModuleItem]
+}
+
+type LessonInput {
+  uuid: String!
+}
+
+type TestInput {
+  uuid: String!
+}
+
+# [ EXAMPLE COURSE STRUCTURE
+#   {type: "module", uuid: "34343-34343-34343-434343"},
+#   { type: "module",
+#     uuid: "1231231-12312312-123123-12313",
+#     items: [
+#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
+#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
+#     ]
+#   },
+#   { type: "module",
+#     uuid: "1231231-12312312-123123-12313", # if is template make a copy
+#     items: [
+#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
+#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
+#     ]
+#   },
+#   {type: "lesson", uuid: "3343434-34343434-55454545-54545"},
+#   {type: "test", uuid: "89898989-5656565-56656565-56565"},
+# ]
