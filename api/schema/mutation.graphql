@@ -31,6 +31,6 @@ type Mutation {
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: String!): Company
-  saveOnlineCourse(input: SaveOnlineCourseInput): OnlineCourse
-  saveClassroomCourse(input: SaveClassroomCourseInput): ClassroomCourse
+  saveOnlineCourse(input: SaveOnlineCourseInput!): String
+  saveClassroomCourse(input: SaveClassroomCourseInput!): String
 }

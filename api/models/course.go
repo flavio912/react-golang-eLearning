@@ -31,7 +31,7 @@ type Category struct {
 
 type Tag struct {
 	UUID  uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name  string    // UNIQUE
+	Name  string    `gorm:"unique"`
 	Color string    // A hex color for the tag
 }
 

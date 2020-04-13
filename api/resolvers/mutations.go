@@ -227,3 +227,17 @@ func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID
 		Company: company,
 	})
 }
+
+func (m *MutationResolver) SaveOnlineCourse(
+	ctx context.Context,
+	args struct {
+		Input gentypes.SaveOnlineCourseInput
+	}) (*string, error) {
+	return nil, nil
+}
+
+func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
+	Input gentypes.SaveClassroomCourseInput
+}) (*string, error) {
+	return nil, nil
+}
