@@ -41,6 +41,7 @@ function HeaderOptions({ selected, options, onClick, className }: Props) {
     <span className={classNames(classes.root, className)}>
       {options.map((option, index) => (
         <span
+          key={option}
           onClick={() => onClick(option)}
           className={classNames(
             classes.option,

@@ -7,10 +7,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    opacity: 0.5
   },
   initials: {
-    color: `${theme.colors.primaryBlack}50`,
+    color: theme.colors.primaryBlack,
     fontWeight: 900,
     fontSize: theme.fontSizes.tiny
   }
@@ -92,7 +93,7 @@ function ProfileIcon({ name, size = 30, className }: Props) {
   return (
     <div
       className={classNames(classes.root, className)}
-      style={{ backgroundColor: `${colour}50`, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
+      style={{ backgroundColor: colour, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
     >
       <div className={classNames(classes.initials)}>{initials}</div>
     </div>

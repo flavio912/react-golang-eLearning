@@ -100,11 +100,12 @@ type Props = {
   course: Course;
   color: string;
   size?: SizeOptions;
+  onClick: Function,
   padding?: PaddingOptions;
   className?: string;
 };
 
-function CourseCard({ course, color, size = 'small', className }: Props) {
+function CourseCard({ course, color, onClick, size = 'small', className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -140,7 +141,7 @@ function CourseCard({ course, color, size = 'small', className }: Props) {
         </div>
         {size === 'large' && (
           <div className={classNames(classes.button)}>
-            <Button archetype="submit">
+            <Button archetype="submit" onClick={() => onClick()}>
                 Book Now
             </Button>
           </div>

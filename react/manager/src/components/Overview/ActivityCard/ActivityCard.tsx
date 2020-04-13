@@ -140,8 +140,9 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates.slice(0,7).map((update) => (
+        {updates.slice(0,7).map((update, i) => (
           <UserUpdate
+            key={i}
             name={update.name}
             course={update.course}
             time={update.time}
