@@ -40,7 +40,6 @@ func SetupDatabase(logMode bool) error {
 		username,
 		dbName,
 		password)
-	fmt.Print(connectionString)
 	db, errConnect := gorm.Open("postgres", connectionString)
 	if errConnect != nil {
 		return errConnect

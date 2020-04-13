@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -28,12 +29,25 @@ func Handler(h http.Handler) http.Handler {
 		grant, err := middleware.Authenticate(token)
 		if err == nil {
 			ctx = context.WithValue(ctx, GrantKey, grant)
+
+			addSentryContext(r, grant)
 		}
 
 		ctx = context.WithValue(ctx, AuthKey, token)
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func addSentryContext(r *http.Request, grant *middleware.Grant) {
+	// Add sentry context
+	if hub := sentry.GetHubFromContext(r.Context()); hub != nil {
+		hub.Scope().SetUser(sentry.User{
+			ID: grant.Claims.UUID,
+		})
+		hub.Scope().SetTag("role", string(grant.Claims.Role))
+		hub.Scope().SetTag("company", grant.Claims.Company)
+	}
 }
 
 // GrantFromContext returns a grant if the context has one (i.e the user is authenticated)
