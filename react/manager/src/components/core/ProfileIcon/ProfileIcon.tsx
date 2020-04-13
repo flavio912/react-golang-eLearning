@@ -10,6 +10,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center'
   },
   initials: {
+    color: `${theme.colors.primaryBlack}50`,
+    fontWeight: 900,
     fontSize: theme.fontSizes.tiny
   }
 }));
@@ -49,6 +51,10 @@ const colourMap = {
   26:'#1ad10a',
 }
 
+/**
+ * Converts a name into two letters
+ * @param name The name to convert
+ */
 function toInitials(name: string) {
   if (name.length > 2) {
     let initials: RegExpMatchArray = name.match(/\b\w/g) || [];
@@ -57,9 +63,23 @@ function toInitials(name: string) {
   return name.toUpperCase();
 }
 
+/**
+ * Given a pair of initals it will return a unique
+ * colour. It will also catch 1 letter initials and
+ * defaults to a colour when no string is given
+ * @param initials The intitals to use as the hash
+ */
 function initialToColour(initials: string) {
-  const hash = initials.charCodeAt(0) - 64;
-  return colourMap[hash];
+  if (initials.length > 1) {
+    const first = initials.charCodeAt(0) - 64;
+    const second = initials.charCodeAt(1) - 64;
+    const hash = Math.ceil((first + second) / 2);
+    return colourMap[hash];
+  } else if (initials.length == 1) {
+    const hash = initials.charCodeAt(0) - 64;
+    return colourMap[hash];
+  }
+  return colourMap[0];
 }
 
 function ProfileIcon({ name, size = 30, className }: Props) {
@@ -72,7 +92,7 @@ function ProfileIcon({ name, size = 30, className }: Props) {
   return (
     <div
       className={classNames(classes.root, className)}
-      style={{ backgroundColor: colour, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
+      style={{ backgroundColor: `${colour}50`, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
     >
       <div className={classNames(classes.initials)}>{initials}</div>
     </div>
