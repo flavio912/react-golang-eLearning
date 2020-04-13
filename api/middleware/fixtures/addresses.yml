@@ -6,3 +6,11 @@
   county: York
   post_code: IP24RF
   country: UK
+- id: 1
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  address_line1: Address line one 2
+  address_line2: Address line two 2
+  county: York2
+  post_code: IP24RF2
+  country: UK2
