@@ -21,13 +21,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.textGrey,
   },
   smallPadding: {
-    padding: '15px 20px'
+    padding: '15px 0px'
   },
   mediumPadding: {
-    padding: '20px 25px'
+    padding: '20px 0px'
   },
   largePadding: {
-    padding: '30px 35px'
+    padding: '30px 0px'
   }
 }));
 
