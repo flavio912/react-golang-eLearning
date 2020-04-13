@@ -10,7 +10,7 @@ import FooterIcon from './FooterIcon';
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column',
+    flexDirection: 'column'
   },
   noBorder: {
     borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`,
@@ -27,11 +27,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   heading: {
     alignSelf: 'flex-start',
-    fontSize: theme.fontSizes.default,
+    fontSize: theme.fontSizes.small,
     fontWeight: '700',
     color: theme.colors.primaryWhite,
-    borderRadius: `0 0 ${theme.primaryBorderRadius}px 0`,
-    padding: '10px 30px'
+    borderRadius: `0 0 ${theme.secondaryBorderRadius}px 0`,
+    padding: '10px 20px'
   },
   icon: {
     alignSelf: 'flex-start',
@@ -40,12 +40,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   price: {
     color: theme.colors.primaryWhite,
     fontSize:  theme.fontSizes.large,
-    margin: '30px 30px 10px 30px',
+    margin: '20px 20px 5px 20px',
     fontWeight: '800'
   },
   title: {
     color: theme.colors.primaryWhite,
-    margin: '0 30px 50px 30px',
+    margin: '0 20px 30px 20px',
     fontSize:  theme.fontSizes.heading,
     fontWeight: '900'
   },
@@ -56,7 +56,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     overflow: 'hidden',
     fontWeight: '300',
     fontSize:  theme.fontSizes.small,
-    margin: '30px 20px 30px 20px'
+    margin: '20px'
   },
   button: {
     flex: 1,
@@ -65,7 +65,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center'
   },
   footer: {
-    padding: '0 15px',
+    padding: '0 20px',
     backgroundColor: theme.colors.backgroundGrey,
     border: `1px solid ${theme.colors.borderGrey}`,
     borderWidth: '1px 0 0 0',
@@ -75,11 +75,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flex: 0.5
   },
   small: {
-    width: 340,
+    width: '298px',
     cursor: 'pointer'
   },
   large: {
-    width: 680
+    width: '610px'
   }
 }));
 
@@ -149,14 +149,14 @@ function CourseCard({ course, color, size = 'small', className }: Props) {
 
     {size === 'small' ? (
       <div className={classNames(classes.row, classes.footer)}>
-          <FooterIcon name="LeftNav_Icon_Delegates" size={30} value={course.assigned} />
-          <FooterIcon name="CourseExpiringSoon" size={25} value={course.expiring} />
+          <FooterIcon name="LeftNav_Icon_Delegates" size={25} value={course.assigned} />
+          <FooterIcon name="CourseExpiringSoon" size={20} value={course.expiring} />
           <div className={classNames(classes.filler)} />
       </div>
       ) : (
         <div className={classNames(classes.row, classes.footer)}>
-          <FooterIcon name="Course_Calendar" size={25} text={course.date} />
-          <FooterIcon name="Location_Pin" size={25} text={course.location} />
+          <FooterIcon name="Course_Calendar" size={20} text={course.date} />
+          <FooterIcon name="Location_Pin" size={20} text={course.location} />
           <div className={classNames(classes.filler)} />
       </div>
       )}

@@ -8,12 +8,14 @@ const spacing = {
 export type Theme = {
   spacing: (amount: number) => number;
   primaryBorderRadius: number;
+  secondaryBorderRadius: number;
   buttonBorderRadius: number;
   primaryGradient: string;
   colors: {
     primaryBlack: string;
     primaryBlue: string;
     primaryGreen: string;
+    primaryRed: string;
     secondaryGrey: string;
     primaryWhite: string;
     borderGrey: string;
@@ -27,22 +29,26 @@ export type Theme = {
   };
   fontSizes: {
     heading: number;
+    smallHeading: number;
     extraLarge: number;
     large: number;
     default: number;
     small: number;
+    tiny: number;
   };
 };
 
 const theme: Theme = {
   spacing: (amount: 0 | 1 | 2 | 3) => spacing[amount],
   primaryBorderRadius: 5,
+  secondaryBorderRadius: 10,
   buttonBorderRadius: 4,
   primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#16C225 100%)",
   colors: {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
+    primaryRed: '#CB463A',
     secondaryGrey: "#9ea2ad",
     primaryWhite: "#FFFFFF",
     borderGrey: "#ededed",
@@ -55,11 +61,13 @@ const theme: Theme = {
     primary: "0px 2px 10px #0000001f",
   },
   fontSizes: {
-    heading: 26,
-    extraLarge: 24,
+    heading: 25,
+    smallHeading: 24,
+    extraLarge: 18,
     large: 16,
     default: 14,
     small: 13,
+    tiny: 11,
   },
 };
 
