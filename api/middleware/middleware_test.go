@@ -54,6 +54,7 @@ func TestMain(m *testing.M) {
 		testfixtures.Dialect("postgres"),
 		testfixtures.Directory("fixtures"), // the directory containing the YAML files
 	)
+
 	if err != nil {
 		fmt.Printf("Unable get fixtures: %s", err.Error())
 		return

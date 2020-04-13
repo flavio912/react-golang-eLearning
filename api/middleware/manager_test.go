@@ -13,6 +13,7 @@ import (
 
 func TestAddManager(t *testing.T) {
 	prepareTestDatabase()
+
 	fakeUUID := "this is not a uuid"
 
 	tests := []struct {

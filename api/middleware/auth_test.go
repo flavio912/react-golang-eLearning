@@ -9,6 +9,8 @@ import (
 )
 
 func TestGetAdminAccessToken(t *testing.T) {
+	prepareTestDatabase()
+
 	t.Run("Correct info", func(t *testing.T) {
 		token, err := middleware.GetAdminAccessToken("rodger@van.com", "iamasuperadmin")
 		assert.Nil(t, err)
@@ -36,6 +38,8 @@ func TestGetAdminAccessToken(t *testing.T) {
 }
 
 func TestGetManagerAccessToken(t *testing.T) {
+	prepareTestDatabase()
+
 	t.Run("Correct info", func(t *testing.T) {
 		token, err := middleware.GetManagerAccessToken("man@managers.com", "iamamanager")
 		assert.Nil(t, err)
