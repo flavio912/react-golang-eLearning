@@ -63,6 +63,7 @@ type Props = {
   options: Array<string>;
   updates: Array<Update>;
   data: Array<Statistic>;
+  onClick: Function,
   padding?: PaddingOptions;
   className?: string;
 };
@@ -73,6 +74,7 @@ function ActvityCard({
   options,
   updates,
   data,
+  onClick,
   padding = "none",
   className,
 }: Props) {
@@ -127,7 +129,7 @@ function ActvityCard({
         </div>
 
         <div className={classNames(classes.button)}>
-          <Button archetype="submit">View all Delegates</Button>
+          <Button archetype="submit" onClick={() => onClick()}>View all Delegates</Button>
         </div>
       </div>
       <div className={classes.dividerHolder}>
@@ -138,8 +140,9 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates.slice(0,7).map((update) => (
+        {updates.slice(0,7).map((update, i) => (
           <UserUpdate
+            key={i}
             name={update.name}
             course={update.course}
             time={update.time}

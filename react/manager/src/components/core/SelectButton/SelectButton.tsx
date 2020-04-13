@@ -14,14 +14,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     border: "1px solid",
     borderColor: theme.colors.borderGrey,
     borderRadius: theme.buttonBorderRadius,
-    backgroundColor: `${theme.colors.backgroundGrey}48`,
+    backgroundColor: theme.colors.backgroundGrey
   },
   option: {
     cursor: "pointer",
     width: '50%',
     padding: '5px 0',
     color: theme.colors.textGrey,
-    backgroundColor: `${theme.colors.backgroundGrey}48`,
+    backgroundColor: theme.colors.backgroundGrey,
+    opacity: 0.7,
     fontWeight: 600,
     border: "0px solid",
     borderRadius: theme.buttonBorderRadius,
@@ -32,7 +33,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite,
     border: "1px solid",
     borderColor: theme.colors.borderGrey,
-    boxShadow: '0 1px 3px 0 rgba(0,0,0,0.11)'
+    boxShadow: '0 1px 3px 0 rgba(0,0,0,0.11)',
+    opacity: 1
   },
 }));
 
