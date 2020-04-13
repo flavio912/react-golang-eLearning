@@ -55,7 +55,7 @@ const theme: Theme = {
     backgroundGrey: "#f7f9fb",
     searchHoverGrey: "#F5FAFC",
     textBlue: "#1B759E",
-    textGrey: "#616575",
+    textGrey: "#34373A",
   },
   shadows: {
     primary: "0px 2px 10px #0000001f",
