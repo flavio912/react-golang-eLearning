@@ -44,6 +44,7 @@ export const plain = () => {
       options={optionsValues || ["This Month", "All Time"]}
       updates={updateData}
       data={dataValues}
+      onClick={() => console.log('Pressed')}
       padding={padding}
     />
   );
