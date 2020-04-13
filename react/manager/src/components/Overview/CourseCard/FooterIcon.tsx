@@ -19,7 +19,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   iconValue: {
     display: 'flex',
     fontSize:  theme.fontSizes.large,
-    fontWeight: '800'
+    fontWeight: '900'
   },
 }));
 

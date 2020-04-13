@@ -27,6 +27,7 @@
     "prettier-eslint": "^9.0.1",
     "react": "^16.9.0",
     "react-app-polyfill": "^1.0.3",
+    "react-circular-progressbar": "^2.0.3",
     "react-dev-utils": "^9.0.4",
     "react-dom": "^16.9.0",
     "react-jss": "^10.1.1",

@@ -3,13 +3,14 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/sentrylog"
+	"github.com/getsentry/sentry-go"
 
 	"github.com/golang/glog"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 )
 
 type ManagerResolver struct {
@@ -63,8 +64,7 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 	// var errs []error
 	for _, manager := range managers {
 		if manager.Error != nil {
-			sentrylog.CaptureException(ctx, manager.Error)
-			glog.Errorf("Manager resolver error : %s", manager.Error.Error())
+			logging.Log(ctx, sentry.LevelWarning, "Manager resolver error", manager.Error)
 			// TODO: Add errors to each item correctly
 			// errs = append(errs, errors.WithIndex(err, i))
 		}

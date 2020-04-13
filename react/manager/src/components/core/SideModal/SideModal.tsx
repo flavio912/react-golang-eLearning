@@ -42,7 +42,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   title: {
     color: "white",
     fontWeight: "bold",
-    fontSize: theme.fontSizes.extraLarge,
+    fontSize: theme.fontSizes.smallHeading,
   },
   body: {
     backgroundColor: "white",
