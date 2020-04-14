@@ -140,6 +140,63 @@ func TestGetManagerByUUID(t *testing.T) {
 	}
 }
 
+func TestGetManagersByUUID(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name    string
+		grant   middleware.Grant
+		uuids   []string
+		wantErr interface{}
+		wantLen int
+	}{
+		{
+			"Delegates cannot get managers",
+			delegateGrant,
+			[]string{"00000000-0000-0000-0000-000000000001"},
+			&errors.ErrUnauthorized,
+			0,
+		},
+		{
+			"Managers cannot see other managers",
+			managerGrant,
+			[]string{"00000000-0000-0000-0000-000000000002"},
+			nil,
+			0,
+		},
+		{
+			"Managers can see their own info",
+			managerGrant,
+			[]string{managerGrant.Claims.UUID, "00000000-0000-0000-0000-000000000002"},
+			nil,
+			1,
+		},
+		{
+			"Admins can see all managers",
+			adminGrant,
+			[]string{"00000000-0000-0000-0000-000000000001", "00000000-0000-0000-0000-000000000002"},
+			nil,
+			2,
+		},
+		{
+			"UUIDs must be valid",
+			adminGrant,
+			[]string{"00000000-0000-0000-0000-000000000001", "this is not a uuid"},
+			&errors.ErrWhileHandling, // we don't check all of the uuids
+			0,
+		},
+	}
+
+	// these only check the uuid returned is correct
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			m, err := test.grant.GetManagersByUUID(test.uuids)
+			assert.Equal(t, test.wantErr, err)
+			assert.Len(t, m, test.wantLen)
+		})
+	}
+}
+
 func TestGetManagerSelf(t *testing.T) {
 	prepareTestDatabase()
 
