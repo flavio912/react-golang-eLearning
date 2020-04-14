@@ -131,7 +131,7 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
 		}
 		if filter.Name != nil && *filter.Name != "" {
-			query = query.Where("first_name ILIKE ?", "%%"+*filter.Name+"%%").Or("last_name ILIKE ?", "%%"+*filter.Name+"%%")
+			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
 		}
 		if filter.UUID != nil && *filter.UUID != "" {
 			query = query.Where("uuid = ?", *filter.UUID)

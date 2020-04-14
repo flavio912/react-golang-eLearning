@@ -1,10 +1,12 @@
 package middleware_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -227,4 +229,88 @@ func TestDeleteManager(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestGetManagers(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
+		_, _, err := nonAdminGrant.GetManagers(nil, nil, nil)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+	})
+
+	t.Run("Should return all managers", func(t *testing.T) {
+		managers, _, err := adminGrant.GetManagers(nil, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, managers, 4)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(2)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		managers, pageInfo, err := adminGrant.GetManagers(&page, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, managers, 2)
+		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit})
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		asc := true
+		order := gentypes.OrderBy{Field: "first_name", Ascending: &asc}
+
+		managers, _, err := adminGrant.GetManagers(nil, nil, &order)
+		assert.Nil(t, err)
+		assert.Len(t, managers, 4)
+		assert.Equal(t, "Jimothy", managers[0].FirstName)
+	})
+
+	t.Run("Should filter", func(t *testing.T) {
+		manager := gentypes.Manager{
+			User: gentypes.User{
+				UUID:      uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				Email:     "man@managers.com",
+				FirstName: "Manager",
+				LastName:  "Man",
+				Telephone: "7912938287",
+				JobTitle:  "In Charge",
+			},
+			CompanyID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+		}
+
+		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
+		uuidString := manager.UUID.String()
+
+		filterTests := []struct {
+			name   string
+			filter gentypes.ManagersFilter
+		}{
+			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
+			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
+			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
+			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
+			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
+			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
+			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+		}
+
+		for _, test := range filterTests {
+			t.Run(test.name, func(t *testing.T) {
+				managers, _, err := adminGrant.GetManagers(nil, &test.filter, nil)
+				assert.Nil(t, err)
+				require.Len(t, managers, 1)
+				manager.CreatedAt = managers[0].CreatedAt
+				manager.ProfileImageURL = managers[0].ProfileImageURL
+				assert.Equal(t, manager, managers[0])
+			})
+		}
+
+		t.Run("return mutiple", func(t *testing.T) {
+			email := ".com"
+			filter := gentypes.ManagersFilter{Email: &email}
+			managers, _, err := adminGrant.GetManagers(nil, &filter, nil)
+			assert.Nil(t, err)
+			require.Len(t, managers, 4)
+		})
+	})
 }
