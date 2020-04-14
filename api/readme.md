@@ -18,13 +18,15 @@ Send queries to localhost:8080/graphql
 
 ## Testing
 
-To run the tests locally run:
+To run the tests locally the shell script `api/dev_env/run_test.sh`.
 
-```bash
-# starts up the test database c ontainer
-make test-up
-# runs the test contianer
-make test
+```
+Useage:
+  ./run_test.sh --cover --module=*
+
+Opts:
+  --cover     Display a coverage report
+  --module=*  Test a specific module
 ```
 
-Or you can use the shell script `api/dev_env/run_test.sh`, this is what's run in by the ci runner. See `api/middleware/*_test.go` for database intergation test examples. Fixtures are stored in `api/middleware/fixtures`. When you call `prepareDatabase()` the db is cleaned out and the fixtures inserted so you start with a fresh db for every test.
+See `api/middleware/*_test.go` for database intergation test examples. Fixtures are stored in `api/middleware/fixtures`. When you call `prepareDatabase()` the db is cleaned out and the fixtures inserted so you start with a fresh db for every test.

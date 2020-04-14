@@ -1,18 +1,46 @@
 #!/usr/bin/env bash
-set -x
+
+COVER=0
+MODULE="..."
+
+for arg in "$@"
+do
+  case $arg in
+    -c|--cover)
+    COVER=1
+    shift
+    ;;        
+    -m=*|--module=*)
+    MODULE="${arg#*=}"
+    shift
+    ;;
+  esac
+done
 
 # Make the container names unique
 export COMPOSE_PROJECT_NAME=$(git rev-parse --short HEAD)
-docker_compose_cmd="docker-compose -f docker-compose.test.yml"
-${docker_compose_cmd} build
+dc_cmd="docker-compose -f docker-compose.test.yml"
 
-${docker_compose_cmd} up -d --no-deps test_db
+${dc_cmd} build
+
+# start testdb if it's not running
+#DOWN=0
+#if [ -z `${dc_cmd} ps -q test_db` ] || [ -z `docker ps -q --no-trunc | grep $(${dc_cmd} ps -q test_db)` ]; then
+#  DOWN=1
+  ${dc_cmd} up -d --no-deps test_db
+#fi
+
 
 # Run the tests
-${docker_compose_cmd} run --rm test_api
+${dc_cmd} run --rm test_api go test -v -coverprofile .testCoverage ./${MODULE}
 exit_code=$?
+if (($exit_code == 0 && $COVER == 1)); then
+  ${dc_cmd} run --rm test_api go tool cover -func=.testCoverage
+fi
 
-# Clean up
-${docker_compose_cmd} down --volumes
+# if it wasn't running stop the db
+#if (($DOWN == 1)); then
+  ${dc_cmd} down --volumes
+#fi
 
 exit ${exit_code}
