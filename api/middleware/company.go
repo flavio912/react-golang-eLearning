@@ -116,7 +116,12 @@ func (g *Grant) GetCompanyByUUID(uuid string) (gentypes.Company, error) {
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company
-func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, filter *gentypes.ManagersFilter, orderBy *gentypes.OrderBy) ([]uuid.UUID, gentypes.PageInfo, error) {
+func (g *Grant) GetManagerIDsByCompany(
+	companyUUID string,
+	page *gentypes.Page,
+	filter *gentypes.ManagersFilter,
+	orderBy *gentypes.OrderBy,
+) ([]uuid.UUID, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
 		return []uuid.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
@@ -127,6 +132,7 @@ func (g *Grant) GetManagerIDsByCompany(companyUUID string, page *gentypes.Page, 
 	)
 
 	query := database.GormDB.Select("uuid").Where("company_id = ?", companyUUID)
+	query = filterManager(query, filter)
 
 	var count int32
 	err := query.Model(&models.Manager{}).Count(&count)
@@ -180,7 +186,18 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		return []string{}, gentypes.PageInfo{}, err
 	}
 
-	// TODO: Add filtering
+	if filter != nil {
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.Approved != nil {
+			query = query.Where("approved = ?", *filter.Approved)
+		}
+	}
+
 	query, limit, offset := getPage(query, page)
 
 	query.Find(&companies)

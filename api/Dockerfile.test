@@ -4,6 +4,8 @@ WORKDIR /app
 COPY go.mod .
 COPY go.sum . 
 
+ENV CGO_ENABLED=0
+
 RUN go mod download
 
-CMD CGO_ENABLED=0 go test -v -coverprofile .testCoverage ./... && go tool cover -func=.testCoverage
+# CMD CGO_ENABLED=0 go test -v -coverprofile .testCoverage ./... && go tool cover -func=.testCoverage

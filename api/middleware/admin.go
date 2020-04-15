@@ -42,8 +42,11 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 	}
 
 	var admins []models.Admin
-	err := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins).Error
-	if err != nil {
+	q := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins)
+	if q.Error != nil {
+		return []gentypes.Admin{}, &errors.ErrWhileHandling
+	}
+	if len(admins) == 0 {
 		return []gentypes.Admin{}, &errors.ErrNotFound
 	}
 	return adminsToGentypes(admins), nil
@@ -92,8 +95,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 			query = query.Where("email ILIKE ?", fmt.Sprintf("%%%s%%", filter.Email))
 		}
 		if filter.Name != "" {
-			query = query.Where("first_name ILIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
-			query = query.Where("last_name ILIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
+			query = query.Where("first_name || ' ' || last_name ILIKE ?", fmt.Sprintf("%%%s%%", filter.Name))
 		}
 	}
 

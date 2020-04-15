@@ -22,7 +22,7 @@ test-api:
     - docker-compose --version
     - apk add --no-cache git bash
   script:
-    - api/dev_env/run_test.sh
+    - api/dev_env/run_test.sh --cover
 
 build-admin:
   stage: build
@@ -118,7 +118,7 @@ deploy-manager-staging:
       - react/manager/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-manager'
+    EB_ENV: "react-manager"
   script:
     - pip install awscli
     - apt-get update
@@ -139,7 +139,7 @@ deploy-admin-staging:
     changes:
       - react/admin/**/*
   variables:
-    EB_ENV: 'react-admin'
+    EB_ENV: "react-admin"
   script:
     - pip install awscli
     - apt-get update
