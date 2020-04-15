@@ -5,20 +5,20 @@ import (
 )
 
 type Module struct {
-	UUID       uuid.UUID
+	UUID       uuid.UUID //PRIM
 	Structure  []ModuleStructure
 	Template   bool       // Is the module a template or custom module
 	TemplateID *uuid.UUID // The ID of the template used to create this FKEY
 }
 
 type ModuleStructure struct {
-	Module   Module
-	ModuleID uuid.UUID
-	Lesson   Lesson
-	LessonID *uuid.UUID
-	Test     Test
-	TestID   *uuid.UUID
-	Rank     string
+	Module     Module
+	ModuleUUID uuid.UUID
+	Lesson     Lesson
+	LessonUUID *uuid.UUID
+	Test       Test
+	TestUUID   *uuid.UUID
+	Rank       string
 }
 
 type Lesson struct {

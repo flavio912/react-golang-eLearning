@@ -51,3 +51,16 @@ type ModuleItem struct {
 	Type StructureElement
 	UUID string
 }
+
+type Course struct {
+	UUID         string
+	CourseInfoID uint
+}
+
+type OnlineCourse struct {
+	Course
+}
+
+type ClassroomCourse struct {
+	Course
+}

@@ -51,6 +51,20 @@ const (
 	DelegateRole Role = "delegate"
 )
 
+// RoleToString gets the string representation of a role
+func RoleToString(role Role) string {
+	switch role {
+	case AdminRole:
+		return "admin"
+	case ManagerRole:
+		return "manager"
+	case DelegateRole:
+		return "delegate"
+	default:
+		return ""
+	}
+}
+
 // UserClaims - Claims other than the default added to the JWT
 type UserClaims struct {
 	UUID    string

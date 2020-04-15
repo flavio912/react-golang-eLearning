@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
+
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
@@ -45,7 +47,7 @@ func addSentryContext(r *http.Request, grant *middleware.Grant) {
 		hub.Scope().SetUser(sentry.User{
 			ID: grant.Claims.UUID,
 		})
-		hub.Scope().SetTag("role", string(grant.Claims.Role))
+		hub.Scope().SetTag("role", auth.RoleToString(grant.Claims.Role))
 		hub.Scope().SetTag("company", grant.Claims.Company)
 	}
 }

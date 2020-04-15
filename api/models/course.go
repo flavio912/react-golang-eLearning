@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+
 	"github.com/google/uuid"
 )
 
@@ -10,18 +12,18 @@ type CourseInfo struct {
 	ID              uint // PRIM, is uint as no need to ever go clientside
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Name            string    // The course name/title
-	Price           float64   // 0.00 if free course
-	Color           string    // The primary color for the course
-	Category        Category  // The category that the course belongs to
-	CategoryID      uuid.UUID // FKEY
-	Tags            []Tag     `gorm:"many2many:course_tags_link;"`
-	Excerpt         string    `sql:"json"` // Excert quill json
-	Introduction    string    `sql:"json"` // Introduction quill json
-	AccessType      int       // Restricted or Open Access
-	ImageKey        string    // S3 Key for the course image
-	BackgroundCheck bool      // Is a background check required
-	SpecificTerms   string    `sql:"json"` // Terms specific to this course in qull json
+	Name            string              // The course name/title
+	Price           float64             // 0.00 if free course
+	Color           string              // The primary color for the course
+	Category        Category            // The category that the course belongs to
+	CategoryUUID    *uuid.UUID          // FKEY
+	Tags            []Tag               `gorm:"many2many:course_tags_link;"`
+	Excerpt         string              `sql:"json"` // Excert quill json
+	Introduction    string              `sql:"json"` // Introduction quill json
+	AccessType      gentypes.AccessType // Restricted or Open Access
+	ImageKey        *string             // S3 Key for the course image
+	BackgroundCheck bool                // Is a background check required
+	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
 }
 
 type Category struct {
@@ -43,11 +45,11 @@ type OnlineCourse struct {
 }
 
 type CourseStructure struct {
-	OnlineCourseID uuid.UUID
-	ModuleID       *uuid.UUID
-	LessonID       *uuid.UUID
-	TestID         *uuid.UUID
-	Rank           string
+	OnlineCourseUUID uuid.UUID
+	ModuleUUID       *uuid.UUID
+	LessonUUID       *uuid.UUID
+	TestUUID         *uuid.UUID
+	Rank             string
 }
 
 type ClassroomCourse struct {

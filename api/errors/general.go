@@ -86,4 +86,8 @@ var (
 		Type:    "ErrNotUploaded",
 		Message: "The item meant to be uploaded is not present",
 	}
+	ErrDuplicationFailure = SimpleError{
+		Type:    "ErrDuplicationFailure",
+		Message: "Unable to duplicate the requested item",
+	}
 )
