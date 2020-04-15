@@ -4,8 +4,8 @@ package models
 type Company struct {
 	Base
 	Name      string
-	Managers  []Manager
-	Address   Address `gorm:"foreignkey:AddressID"`
+	Managers  []Manager `gorm:"foreignkey:CompanyID"`
+	Address   Address   `gorm:"foreignkey:AddressID"`
 	AddressID uint
 	Approved  bool
 }

@@ -256,3 +256,117 @@ func TestGetCompanyUUIDs(t *testing.T) {
 		}
 	})
 }
+
+var newCompInput = gentypes.CreateCompanyInput{
+	CompanyName:  "Big Cat House",
+	AddressLine1: "64 Zoo Lane",
+	AddressLine2: "",
+	County:       "York",
+	PostCode:     "YO108JD",
+	Country:      "UK",
+}
+
+func TestCreateCompany(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
+		_, err := nonAdminGrant.CreateCompany(gentypes.CreateCompanyInput{})
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+	})
+
+	// TODO
+	// t.Run("Must validate input",  {
+	// })
+
+	approved := true
+
+	t.Run("Check company and address are created", func(t *testing.T) {
+		company, err := adminGrant.CreateCompany(newCompInput)
+		assert.Nil(t, err)
+		assert.Equal(t, gentypes.Company{
+			UUID:      company.UUID,
+			CreatedAt: company.CreatedAt,
+			Name:      newCompInput.CompanyName,
+			Approved:  &approved,
+			AddressID: company.AddressID,
+		}, company)
+
+		// check address
+		addresses, err := adminGrant.GetAddressesByIDs([]uint{company.AddressID})
+		assert.Nil(t, err)
+		require.Len(t, addresses, 1)
+		assert.Equal(t, gentypes.Address{
+			ID:           company.AddressID,
+			AddressLine1: newCompInput.AddressLine1,
+			AddressLine2: newCompInput.AddressLine2,
+			County:       newCompInput.County,
+			PostCode:     newCompInput.PostCode,
+			Country:      newCompInput.Country,
+		}, addresses[0])
+	})
+}
+
+func TestCreateCompanyRequest(t *testing.T) {
+	prepareTestDatabase()
+
+	managerInput := gentypes.AddManagerInput{
+		FirstName: "Test",
+		LastName:  "Test",
+		Email:     "uinqad@tes.asd",
+		JobTitle:  "Big Man",
+		Telephone: "79865563351",
+		Password:  "bigpass",
+	}
+
+	t.Run("Should create company, address, and manager", func(t *testing.T) {
+		err := middleware.CreateCompanyRequest(newCompInput, managerInput)
+		assert.Nil(t, err)
+
+		// get the latest company
+		ids, _, _ := adminGrant.GetCompanyUUIDs(nil, nil, nil)
+		company, _ := adminGrant.GetCompanyByUUID(ids[len(ids)-1])
+		approved := false
+		assert.Equal(t, gentypes.Company{
+			UUID:      company.UUID,
+			CreatedAt: company.CreatedAt,
+			Name:      newCompInput.CompanyName,
+			Approved:  &approved,
+			AddressID: company.AddressID,
+		}, company)
+
+		// check address
+		addresses, err := adminGrant.GetAddressesByIDs([]uint{company.AddressID})
+		assert.Nil(t, err)
+		require.Len(t, addresses, 1, "Should have created an address")
+		assert.Equal(t, gentypes.Address{
+			ID:           company.AddressID,
+			AddressLine1: newCompInput.AddressLine1,
+			AddressLine2: newCompInput.AddressLine2,
+			County:       newCompInput.County,
+			PostCode:     newCompInput.PostCode,
+			Country:      newCompInput.Country,
+		}, addresses[0])
+
+		// check it created a manager
+		managers, _, err := adminGrant.GetManagerIDsByCompany(company.UUID.String(), nil, nil, nil)
+		require.Nil(t, err)
+		require.Len(t, managers, 1, "Should return the new manager")
+		manager, err := adminGrant.GetManagerByUUID(managers[0].String())
+		assert.Nil(t, err)
+		assert.Equal(t, gentypes.Manager{
+			User: gentypes.User{
+				CreatedAt: manager.CreatedAt,
+				UUID:      manager.UUID,
+				Email:     managerInput.Email,
+				FirstName: managerInput.FirstName,
+				LastName:  managerInput.LastName,
+				Telephone: managerInput.Telephone,
+				JobTitle:  managerInput.JobTitle,
+				LastLogin: manager.LastLogin,
+			},
+			ProfileImageURL: manager.ProfileImageURL,
+			CompanyID:       company.UUID,
+		}, manager)
+	})
+}
