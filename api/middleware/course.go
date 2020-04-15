@@ -10,23 +10,10 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
-
-func nilStringToEmpty(item *string) string {
-	if item == nil {
-		return ""
-	}
-	return *item
-}
-
-func nilFloatToZero(item *float64) float64 {
-	if item == nil {
-		return 0
-	}
-	return *item
-}
 
 func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (models.CourseInfo, error) {
 	var info models.CourseInfo
@@ -43,7 +30,7 @@ func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (models.CourseInfo, error
 
 func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	return gentypes.OnlineCourse{
-		gentypes.Course{
+		Course: gentypes.Course{
 			UUID:         course.UUID.String(),
 			CourseInfoID: course.CourseInfoID,
 		},
@@ -63,13 +50,13 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 
 	newCourse := models.OnlineCourse{
 		CourseInfo: models.CourseInfo{
-			Name:  nilStringToEmpty(courseInfo.Name),
-			Price: nilFloatToZero(courseInfo.Price),
-			Color: nilStringToEmpty(courseInfo.Color),
+			Name:  helpers.NilStringToEmpty(courseInfo.Name),
+			Price: helpers.NilFloatToZero(courseInfo.Price),
+			Color: helpers.NilStringToEmpty(courseInfo.Color),
 			//TAGS
-			Excerpt:       nilStringToEmpty(courseInfo.Excerpt),
-			Introduction:  nilStringToEmpty(courseInfo.Introduction),
-			SpecificTerms: nilStringToEmpty(courseInfo.SpecificTerms),
+			Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
+			Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
+			SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
 		},
 	}
 
@@ -94,7 +81,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 		return gentypes.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
-	err := g.saveOnlineCourseStructure(newCourse.UUID, courseInfo.Structure)
+	err = g.saveOnlineCourseStructure(newCourse.UUID, courseInfo.Structure)
 	if err != nil {
 		return gentypes.OnlineCourse{}, err
 	}
@@ -102,6 +89,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 	return onlineCourseToGentype(newCourse), nil
 }
 
+// SaveOnlineCourse updates or create a new onlineCourse dependant on the existance of a UUID key in the courseInfo input
 func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
 	if !g.IsAdmin {
 		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
@@ -115,7 +103,7 @@ func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gen
 	// If courseUUID given, update
 	if courseInfo.UUID != nil {
 		// Update CourseInfo
-		onlineCourse, err := g.updateOnlineCourse(courseInfo)
+		onlineCourse, err := g.UpdateOnlineCourse(courseInfo)
 		return onlineCourseToGentype(onlineCourse), err
 	}
 
@@ -295,7 +283,7 @@ type SaveCourseInfoInput struct {
 	AccessType        *gentypes.AccessType
 	ImageSuccessToken *string
 	BackgroundCheck   *bool
-	SpecificTerms     *string
+	SpecificTerms     *string `valid:"json"`
 }
 
 // SaveCourseInfo is not exported as it returns a model
@@ -304,9 +292,15 @@ func (g *Grant) SaveCourseInfo(courseInfoID uint, infoChanges SaveCourseInfoInpu
 		return &errors.ErrUnauthorized
 	}
 
+	// Validate input
+	_, err := govalidator.ValidateStruct(infoChanges)
+	if err != nil {
+		return err
+	}
+
 	var courseInfo models.CourseInfo
 	courseInfo.ID = courseInfoID
-	if infoChanges.ImageSuccessToken != nil {
+	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
 		if err != nil {
 			return err
@@ -323,7 +317,7 @@ func (g *Grant) SaveCourseInfo(courseInfoID uint, infoChanges SaveCourseInfoInpu
 		courseInfo.Price = *infoChanges.Price
 	}
 	if infoChanges.Color != nil {
-		courseInfo.Color = *infoChanges.Name
+		courseInfo.Color = *infoChanges.Color
 	}
 	if infoChanges.CategoryUUID != nil {
 		courseInfo.CategoryUUID = infoChanges.CategoryUUID
@@ -354,7 +348,7 @@ func (g *Grant) SaveCourseInfo(courseInfoID uint, infoChanges SaveCourseInfoInpu
 	return nil
 }
 
-func (g *Grant) updateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.OnlineCourse, error) {
+func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.OnlineCourse, error) {
 	if !g.IsAdmin {
 		return models.OnlineCourse{}, &errors.ErrUnauthorized
 	}
