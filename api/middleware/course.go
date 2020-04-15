@@ -6,7 +6,6 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/golang/glog"
 	"github.com/google/uuid"
-	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -14,19 +13,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
-
-func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (models.CourseInfo, error) {
-	var info models.CourseInfo
-	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return info, &errors.ErrNotFound
-		}
-		glog.Warningf("Unable to get course info: %s", query.Error.Error())
-		return info, &errors.ErrWhileHandling
-	}
-	return info, nil
-}
 
 func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	return gentypes.OnlineCourse{
@@ -37,257 +23,8 @@ func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	}
 }
 
-func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
-	if !g.IsAdmin {
-		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
-	}
-
-	// Validate
-	_, err := govalidator.ValidateStruct(courseInfo)
-	if err != nil {
-		return gentypes.OnlineCourse{}, err
-	}
-
-	newCourse := models.OnlineCourse{
-		CourseInfo: models.CourseInfo{
-			Name:  helpers.NilStringToEmpty(courseInfo.Name),
-			Price: helpers.NilFloatToZero(courseInfo.Price),
-			Color: helpers.NilStringToEmpty(courseInfo.Color),
-			//TAGS
-			Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
-			Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
-			SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
-		},
-	}
-
-	if courseInfo.CategoryUUID != nil {
-		catUUID, err := uuid.Parse(*courseInfo.CategoryUUID)
-		if err != nil {
-			glog.Info("category uuid is invalid")
-			return gentypes.OnlineCourse{}, &errors.ErrUUIDInvalid
-		}
-		newCourse.CourseInfo.CategoryUUID = &catUUID
-	}
-	if courseInfo.AccessType != nil {
-		newCourse.CourseInfo.AccessType = *courseInfo.AccessType
-	}
-	if courseInfo.BackgroundCheck != nil {
-		newCourse.CourseInfo.BackgroundCheck = *courseInfo.BackgroundCheck
-	}
-
-	query := database.GormDB.Create(&newCourse)
-	if query.Error != nil {
-		glog.Errorf("Unable to create course: %s", query.Error.Error())
-		return gentypes.OnlineCourse{}, &errors.ErrWhileHandling
-	}
-
-	err = g.saveOnlineCourseStructure(newCourse.UUID, courseInfo.Structure)
-	if err != nil {
-		return gentypes.OnlineCourse{}, err
-	}
-
-	return onlineCourseToGentype(newCourse), nil
-}
-
-// SaveOnlineCourse updates or create a new onlineCourse dependant on the existance of a UUID key in the courseInfo input
-func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
-	if !g.IsAdmin {
-		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
-	}
-
-	_, err := govalidator.ValidateStruct(courseInfo)
-	if err != nil {
-		return gentypes.OnlineCourse{}, err
-	}
-
-	// If courseUUID given, update
-	if courseInfo.UUID != nil {
-		// Update CourseInfo
-		onlineCourse, err := g.UpdateOnlineCourse(courseInfo)
-		return onlineCourseToGentype(onlineCourse), err
-	}
-
-	return g.CreateOnlineCourse(courseInfo)
-
-}
-
-// duplicateModule copys a module and its stucture
-// TODO: This really isn't nice, make more efficient
-func duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
-	// Duplicate module
-	newModule := models.Module{
-		Template:   template,
-		TemplateID: module.TemplateID,
-	}
-
-	query := tx.Save(&newModule)
-	if query.Error != nil {
-		glog.Error("Unable to save duplicated module")
-		return models.Module{}, &errors.ErrWhileHandling
-	}
-
-	if !duplicateStructure {
-		return newModule, nil
-	}
-
-	for _, item := range module.Structure {
-		structure := models.ModuleStructure{
-			ModuleUUID: newModule.UUID,
-			LessonUUID: item.LessonUUID,
-			TestUUID:   item.TestUUID,
-			Rank:       item.Rank,
-		}
-		query := tx.Save(&structure)
-		if query.Error != nil {
-			glog.Error("Unable to save module structure while duplicating")
-			return models.Module{}, &errors.ErrWhileHandling
-		}
-	}
-
-	return newModule, nil
-}
-
-func ReorderModule(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) error {
-	var moduleModel models.Module
-	query := tx.Where("uuid = ?", moduleItem.UUID).First(&moduleModel)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			glog.Infof("Could not find uuid: %s", moduleItem.UUID)
-			return &errors.ErrNotFound
-		}
-		glog.Errorf("Unable to get module: %s", moduleItem.UUID)
-		return &errors.ErrWhileHandling
-	}
-
-	// Module templates should be duplicated
-	if duplicateTemplates && moduleModel.Template {
-		moduleModel, err := duplicateModule(tx, moduleModel, false, false)
-		if err != nil {
-			return err
-		}
-		moduleItem.UUID = moduleModel.UUID.String()
-	} else {
-		query = tx.Where("module_uuid = ?", moduleItem.UUID).Delete(models.ModuleStructure{})
-		if query.Error != nil {
-			return &errors.ErrWhileHandling
-		}
-	}
-
-	// ModuleUUID to real uuid
-	modUUID, err := uuid.Parse(moduleItem.UUID)
-	if err != nil {
-		glog.Errorf("ModuleUUID is invalid: %s", err.Error())
-	}
-
-	for _, item := range moduleItem.Items {
-		itemUUID, err := uuid.Parse(item.UUID)
-		if err != nil {
-			glog.Errorf("ItemUUID is invalid: %s", err.Error())
-		}
-
-		// TODO check if lessons + tests exist
-		structureItem := models.ModuleStructure{
-			ModuleUUID: modUUID,
-		}
-		if item.Type == gentypes.LessonType {
-			structureItem.LessonUUID = &itemUUID
-		}
-		if item.Type == gentypes.TestType {
-			structureItem.TestUUID = &itemUUID
-		}
-
-		if err := tx.Save(&structureItem).Error; err != nil {
-			glog.Errorf("Unable to save structure item: %s", err)
-			return &errors.ErrWhileHandling
-		}
-	}
-
-	return nil
-}
-
-func (g *Grant) saveOnlineCourseStructure(courseUUID uuid.UUID, structure *[]gentypes.CourseItem) error {
-	if !g.IsAdmin {
-		return &errors.ErrWhileHandling
-	}
-
-	if structure == nil {
-		glog.Info("No structure to update")
-		return nil
-	}
-
-	tx := database.GormDB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			tx.Rollback()
-		}
-	}()
-
-	if err := tx.Error; err != nil {
-		return err
-	}
-
-	// Naive Implementation of ordering, just delete and re-add everything
-	// Should use JIRA method
-	query := tx.Where("online_course_id = ?", courseUUID).Delete(models.CourseStructure{})
-	if query.Error != nil {
-		tx.Rollback()
-		return &errors.ErrWhileHandling
-	}
-
-	for i, courseItem := range *structure {
-		structureItem := models.CourseStructure{
-			OnlineCourseUUID: courseUUID,
-			Rank:             strconv.Itoa(i),
-		}
-
-		// String UUID to uuid.UUID
-		itemUUID, err := uuid.Parse(courseItem.UUID)
-		if err != nil {
-			tx.Rollback()
-			glog.Infof("Invalid Course Item UUID, %s", err.Error())
-			return &errors.ErrUUIDInvalid
-		}
-
-		// TODO: Check if these items exist
-		switch courseItem.Type {
-		case gentypes.ModuleType:
-			if err := ReorderModule(tx, courseItem, true); err != nil {
-				tx.Rollback()
-				return err
-			}
-			structureItem.ModuleUUID = &itemUUID
-		case gentypes.LessonType:
-			structureItem.LessonUUID = &itemUUID
-		case gentypes.TestType:
-			structureItem.TestUUID = &itemUUID
-		}
-
-		query := tx.Create(&structureItem)
-		if query.Error != nil {
-			tx.Rollback()
-			return &errors.ErrWhileHandling
-		}
-	}
-
-	return nil
-}
-
-type SaveCourseInfoInput struct {
-	Name              *string
-	Price             *float64
-	Color             *string `valid:"hexcolor"`
-	CategoryUUID      *uuid.UUID
-	Tags              *[]string
-	Excerpt           *string `valid:"json"`
-	Introduction      *string `valid:"json"`
-	AccessType        *gentypes.AccessType
-	ImageSuccessToken *string
-	BackgroundCheck   *bool
-	SpecificTerms     *string `valid:"json"`
-}
-
-// SaveCourseInfo is not exported as it returns a model
-func (g *Grant) SaveCourseInfo(courseInfoID uint, infoChanges SaveCourseInfoInput) error {
+// UpdateCourseInfo updates the courseInfo for a given courseInfoID
+func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfoInput) error {
 	if !g.IsAdmin {
 		return &errors.ErrUnauthorized
 	}
@@ -348,6 +85,73 @@ func (g *Grant) SaveCourseInfo(courseInfoID uint, infoChanges SaveCourseInfoInpu
 	return nil
 }
 
+func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (models.CourseInfo, error) {
+	var info models.CourseInfo
+	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return info, &errors.ErrNotFound
+		}
+		glog.Warningf("Unable to get course info: %s", query.Error.Error())
+		return info, &errors.ErrWhileHandling
+	}
+	return info, nil
+}
+
+// CreateOnlineCourse creates a new online course
+func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
+	if !g.IsAdmin {
+		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
+	}
+
+	// Validate
+	_, err := govalidator.ValidateStruct(courseInfo)
+	if err != nil {
+		return gentypes.OnlineCourse{}, err
+	}
+
+	newCourse := models.OnlineCourse{
+		CourseInfo: models.CourseInfo{
+			Name:  helpers.NilStringToEmpty(courseInfo.Name),
+			Price: helpers.NilFloatToZero(courseInfo.Price),
+			Color: helpers.NilStringToEmpty(courseInfo.Color),
+			//TAGS
+			Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
+			Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
+			SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
+		},
+	}
+
+	if courseInfo.CategoryUUID != nil {
+		catUUID, err := uuid.Parse(*courseInfo.CategoryUUID)
+		if err != nil {
+			glog.Info("category uuid is invalid")
+			return gentypes.OnlineCourse{}, &errors.ErrUUIDInvalid
+		}
+		newCourse.CourseInfo.CategoryUUID = &catUUID
+	}
+	if courseInfo.AccessType != nil {
+		newCourse.CourseInfo.AccessType = *courseInfo.AccessType
+	}
+	if courseInfo.BackgroundCheck != nil {
+		newCourse.CourseInfo.BackgroundCheck = *courseInfo.BackgroundCheck
+	}
+
+	query := database.GormDB.Create(&newCourse)
+	if query.Error != nil {
+		glog.Errorf("Unable to create course: %s", query.Error.Error())
+		return gentypes.OnlineCourse{}, &errors.ErrWhileHandling
+	}
+
+	err = g.saveOnlineCourseStructure(newCourse.UUID, courseInfo.Structure)
+	if err != nil {
+		return gentypes.OnlineCourse{}, err
+	}
+
+	return onlineCourseToGentype(newCourse), nil
+}
+
+// UpdateOnlineCourse updates an existing online course
 func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.OnlineCourse, error) {
 	if !g.IsAdmin {
 		return models.OnlineCourse{}, &errors.ErrUnauthorized
@@ -375,7 +179,7 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 	}
 
 	// TODO: think about putting these two in a transaction
-	err = g.SaveCourseInfo(onlineCourse.CourseInfoID, SaveCourseInfoInput{
+	err = g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
@@ -399,4 +203,108 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 	}
 
 	return onlineCourse, nil
+}
+
+// SaveOnlineCourse updates or create a new onlineCourse dependant on the existance of a UUID key in the courseInfo input
+func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
+	if !g.IsAdmin {
+		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
+	}
+
+	_, err := govalidator.ValidateStruct(courseInfo)
+	if err != nil {
+		return gentypes.OnlineCourse{}, err
+	}
+
+	// If courseUUID given, update
+	if courseInfo.UUID != nil {
+		// Update CourseInfo
+		onlineCourse, err := g.UpdateOnlineCourse(courseInfo)
+		return onlineCourseToGentype(onlineCourse), err
+	}
+
+	return g.CreateOnlineCourse(courseInfo)
+
+}
+
+func (g *Grant) saveOnlineCourseStructure(courseUUID uuid.UUID, structure *[]gentypes.CourseItem) error {
+	if !g.IsAdmin {
+		return &errors.ErrWhileHandling
+	}
+
+	if structure == nil {
+		glog.Info("No structure to update")
+		return nil
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Error; err != nil {
+		return err
+	}
+
+	// Naive Implementation of ordering, just delete and re-add everything
+	// Should use JIRA method
+	query := tx.Where("online_course_id = ?", courseUUID).Delete(models.CourseStructure{})
+	if query.Error != nil {
+		tx.Rollback()
+		return &errors.ErrWhileHandling
+	}
+
+	for i, courseItem := range *structure {
+		structureItem := models.CourseStructure{
+			OnlineCourseUUID: courseUUID,
+			Rank:             strconv.Itoa(i),
+		}
+
+		// String UUID to uuid.UUID
+		itemUUID, err := uuid.Parse(courseItem.UUID)
+		if err != nil {
+			tx.Rollback()
+			glog.Infof("Invalid Course Item UUID, %s", err.Error())
+			return &errors.ErrUUIDInvalid
+		}
+
+		// TODO: Check if these items exist
+		switch courseItem.Type {
+		case gentypes.ModuleType:
+			_, err := g.UpdateModuleStructure(tx, courseItem, true)
+			if err != nil {
+				tx.Rollback()
+				return err
+			}
+			structureItem.ModuleUUID = &itemUUID
+		case gentypes.LessonType:
+			structureItem.LessonUUID = &itemUUID
+		case gentypes.TestType:
+			structureItem.TestUUID = &itemUUID
+		}
+
+		query := tx.Create(&structureItem)
+		if query.Error != nil {
+			tx.Rollback()
+			return &errors.ErrWhileHandling
+		}
+	}
+
+	return nil
+}
+
+type UpdateCourseInfoInput struct {
+	Name              *string
+	Price             *float64
+	Color             *string `valid:"hexcolor"`
+	CategoryUUID      *uuid.UUID
+	Tags              *[]string
+	Excerpt           *string `valid:"json"`
+	Introduction      *string `valid:"json"`
+	AccessType        *gentypes.AccessType
+	ImageSuccessToken *string
+	BackgroundCheck   *bool
+	SpecificTerms     *string `valid:"json"`
 }

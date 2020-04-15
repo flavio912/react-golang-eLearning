@@ -57,7 +57,6 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		fmt.Printf("Unable get fixtures: %s", err.Error())
 		panic("Cannot get test fixtures")
-		return
 	}
 
 	os.Exit(m.Run())

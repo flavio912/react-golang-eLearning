@@ -5,7 +5,7 @@ import (
 )
 
 type Module struct {
-	UUID       uuid.UUID //PRIM
+	UUID       uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Structure  []ModuleStructure
 	Template   bool       // Is the module a template or custom module
 	TemplateID *uuid.UUID // The ID of the template used to create this FKEY
@@ -22,9 +22,9 @@ type ModuleStructure struct {
 }
 
 type Lesson struct {
-	UUID uuid.UUID
+	UUID uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 }
 
 type Test struct {
-	UUID uuid.UUID
+	UUID uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 }

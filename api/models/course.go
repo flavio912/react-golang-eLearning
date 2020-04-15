@@ -9,7 +9,7 @@ import (
 )
 
 type CourseInfo struct {
-	ID              uint // PRIM, is uint as no need to ever go clientside
+	ID              uint
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
 	Name            string              // The course name/title

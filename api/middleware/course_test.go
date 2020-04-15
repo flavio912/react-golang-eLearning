@@ -99,14 +99,14 @@ func TestCreateOnlineCourse(t *testing.T) {
 
 }
 
-func TestSaveCourseInfo(t *testing.T) {
+func TestUpdateCourseInfo(t *testing.T) {
 	prepareTestDatabase()
 
 	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Updates existing course", func(t *testing.T) {
 
 		open := gentypes.Open
-		inp := middleware.SaveCourseInfoInput{
+		inp := middleware.UpdateCourseInfoInput{
 			Name:            stringPointer("UpdatedCourse"),
 			Price:           floatPointer(43.4),
 			Color:           stringPointer("#ffffff"),
@@ -116,7 +116,7 @@ func TestSaveCourseInfo(t *testing.T) {
 			BackgroundCheck: boolPointer(false),
 			SpecificTerms:   stringPointer("{}"),
 		}
-		err := grant.SaveCourseInfo(1, inp)
+		err := grant.UpdateCourseInfo(1, inp)
 		assert.Nil(t, err)
 
 		info, err := grant.GetCourseInfoFromID(1)
@@ -135,21 +135,21 @@ func TestSaveCourseInfo(t *testing.T) {
 		// Manager should fail
 		grant := &middleware.Grant{auth.UserClaims{}, false, true, false}
 
-		inp := middleware.SaveCourseInfoInput{
+		inp := middleware.UpdateCourseInfoInput{
 			Name: stringPointer("New Course name"),
 		}
 
-		err := grant.SaveCourseInfo(1, inp)
+		err := grant.UpdateCourseInfo(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 
 		// Delegate should fail
 		grant = &middleware.Grant{auth.UserClaims{}, false, false, true}
 
-		inp = middleware.SaveCourseInfoInput{
+		inp = middleware.UpdateCourseInfoInput{
 			Name: stringPointer("New Course name"),
 		}
 
-		err = grant.SaveCourseInfo(1, inp)
+		err = grant.UpdateCourseInfo(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
