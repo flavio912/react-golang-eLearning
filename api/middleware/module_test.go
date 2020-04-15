@@ -20,6 +20,7 @@ func TestUpdateModule(t *testing.T) {
 	prepareTestDatabase()
 
 	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
+
 	t.Run("Duplicates + updates template correctly", func(t *testing.T) {
 		// Get module to check for changes after
 		mod, err := grant.GetModuleByUUID(templateModuleUUID)
@@ -64,7 +65,35 @@ func TestUpdateModule(t *testing.T) {
 		assert.Equal(t, mod, templateMod) // The template model shouldn't have changed
 	})
 
-	t.Run("Updates template in place", func(t *testing.T) {
+	t.Run("Update template in place", func(t *testing.T) {
+		modItem := gentypes.CourseItem{
+			Type: gentypes.ModuleType,
+			UUID: templateModuleUUID,
+			Items: []gentypes.ModuleItem{
+				gentypes.ModuleItem{
+					Type: gentypes.LessonType,
+					UUID: "00000000-0000-0000-0000-000000000001",
+				},
+				gentypes.ModuleItem{
+					Type: gentypes.LessonType,
+					UUID: "00000000-0000-0000-0000-000000000002",
+				},
+				gentypes.ModuleItem{
+					Type: gentypes.TestType,
+					UUID: "00000000-0000-0000-0000-000000000001",
+				},
+			},
+		}
+		module, err := grant.UpdateModuleStructure(database.GormDB, modItem, false)
+		assert.Nil(t, err)
+		assert.Equal(t, module.UUID.String(), templateModuleUUID)
 
+		structure, err := grant.GetModuleStructure(module.UUID.String())
+		assert.Nil(t, err)
+		assert.Equal(t, len(modItem.Items), len(structure.Items))
+		for i, item := range modItem.Items {
+			assert.Equal(t, item.Type, structure.Items[i].Type)
+			assert.Equal(t, item.UUID, structure.Items[i].UUID)
+		}
 	})
 }
