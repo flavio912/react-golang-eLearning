@@ -370,3 +370,55 @@ func TestCreateCompanyRequest(t *testing.T) {
 		}, manager)
 	})
 }
+
+func TestApproveCompany(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name    string
+		grant   middleware.Grant
+		uuid    string
+		want    bool
+		wantErr interface{}
+	}{
+		{
+			"Must be admin",
+			middleware.Grant{auth.UserClaims{}, false, true, true},
+			"",
+			false,
+			&errors.ErrUnauthorized,
+		},
+		{
+			"UUID must be valid",
+			adminGrant,
+			"asdf",
+			false,
+			&errors.ErrUUIDInvalid,
+		},
+		{
+			"company must exist",
+			adminGrant,
+			"00000000-0000-0000-0000-000000000000",
+			false,
+			&errors.ErrCompanyNotFound,
+		},
+		{
+			"Should set approved to true",
+			adminGrant,
+			"00000000-0000-0000-0000-000000000004",
+			true,
+			nil,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			comp, err := test.grant.ApproveCompany(test.uuid)
+			assert.Equal(t, test.wantErr, err)
+			if err == nil {
+				assert.Equal(t, uuid.MustParse(test.uuid), comp.UUID)
+				assert.Equal(t, &test.want, comp.Approved)
+			}
+		})
+	}
+}
