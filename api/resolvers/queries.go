@@ -40,7 +40,7 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 	return &AdminPageResolver{
 		edges: &adminResolvers,
 		pageInfo: &PageInfoResolver{
-			pageInfo: &gentypes.PageInfo{
+			pageInfo: &gentypes.PageInfo{ // TODO Get proper page
 				Total:  0,
 				Offset: 0,
 				Limit:  0,
@@ -51,8 +51,8 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 }
 
 // Admin gets a single admin
-func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID string }) (*AdminResolver, error) {
-	admin, err := loader.LoadAdmin(ctx, args.UUID)
+func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UUID }) (*AdminResolver, error) {
+	admin, err := loader.LoadAdmin(ctx, args.UUID.String())
 
 	return &AdminResolver{admin: admin}, err
 }

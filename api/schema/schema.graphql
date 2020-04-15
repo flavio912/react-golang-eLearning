@@ -1,3 +1,5 @@
+scalar UUID
+
 schema {
   query: Query
   mutation: Mutation
