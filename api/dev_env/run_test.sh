@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
 COVER=0
+BUILD=0
+KEEPALIVE=0
 MODULE="..."
 
 for arg in "$@"
@@ -14,6 +16,14 @@ do
     MODULE="${arg#*=}"
     shift
     ;;
+    -k|--keep-alive)
+    KEEPALIVE=1
+    shift
+    ;;
+    -b|--build)
+    BUILD=1
+    shift
+    ;;
   esac
 done
 
@@ -21,7 +31,10 @@ done
 export COMPOSE_PROJECT_NAME=$(git rev-parse --short HEAD)
 dc_cmd="docker-compose -f docker-compose.test.yml"
 
-${dc_cmd} build
+# you should only need to rebuild if new modules are added
+if (($KEEPALIVE == 0)); then
+  ${dc_cmd} build
+fi
 
 # start testdb if it's not running
 #DOWN=0
@@ -32,15 +45,14 @@ ${dc_cmd} build
 
 
 # Run the tests
-${dc_cmd} run --rm test_api go test -v -coverprofile .testCoverage ./${MODULE}
+${dc_cmd} run --rm --no-deps test_api go test -v -coverprofile .testCoverage ./${MODULE}
 exit_code=$?
 if (($exit_code == 0 && $COVER == 1)); then
   ${dc_cmd} run --rm test_api go tool cover -func=.testCoverage
 fi
 
-# if it wasn't running stop the db
-#if (($DOWN == 1)); then
+if (($KEEPALIVE == 0)); then
   ${dc_cmd} down --volumes
-#fi
+fi
 
 exit ${exit_code}
