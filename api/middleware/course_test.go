@@ -85,6 +85,18 @@ func TestCreateOnlineCourse(t *testing.T) {
 		assert.Equal(t, info.Excerpt, excerpt)
 	})
 
+	t.Run("Access Control Tests", func(t *testing.T) {
+		// Manager should fail
+		grant := &middleware.Grant{auth.UserClaims{}, false, true, false}
+		_, err := grant.CreateOnlineCourse(inp)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+
+		// Delegate should fail
+		grant = &middleware.Grant{auth.UserClaims{}, false, false, true}
+		_, err = grant.CreateOnlineCourse(inp)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+	})
+
 }
 
 func TestSaveCourseInfo(t *testing.T) {
