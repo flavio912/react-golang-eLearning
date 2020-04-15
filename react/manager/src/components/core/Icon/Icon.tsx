@@ -23,6 +23,7 @@ export type IconNames =
   | "FormCheckbox_Checked"
   | "FormCheckbox_states"
   | "FormCheckbox_Unchecked"
+  | "Icon_Delegates"
   | "LeftNav_Icon_Courses"
   | "LeftNav_Icon_Dashboard"
   | "LeftNav_Icon_Delegates"
@@ -56,6 +57,7 @@ const iconNameMap = {
   FormCheckbox_Checked: require("../../../assets/FormCheckbox_Checked.svg"),
   FormCheckbox_states: require("../../../assets/FormCheckbox_states.png"),
   FormCheckbox_Unchecked: require("../../../assets/FormCheckbox_Unchecked.svg"),
+  Icon_Delegates: require("../../../assets/Icon_Delegates.svg"),
   LeftNav_Icon_Courses: require("../../../assets/LeftNav_Icon_Courses.svg"),
   LeftNav_Icon_Dashboard: require("../../../assets/LeftNav_Icon_Dashboard.svg"),
   LeftNav_Icon_Delegates: require("../../../assets/LeftNav_Icon_Delegates.svg"),

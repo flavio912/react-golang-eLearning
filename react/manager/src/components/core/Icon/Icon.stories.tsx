@@ -30,6 +30,7 @@ const iconNames: IconNames[] = [
   "FormCheckbox_Checked",
   "FormCheckbox_states",
   "FormCheckbox_Unchecked",
+  "Icon_Delegates",
   "LeftNav_Icon_Courses",
   "LeftNav_Icon_Dashboard",
   "LeftNav_Icon_Delegates",

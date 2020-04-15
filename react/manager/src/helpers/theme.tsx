@@ -15,6 +15,8 @@ export type Theme = {
     primaryBlack: string;
     primaryBlue: string;
     primaryGreen: string;
+    secondaryGreen: string;
+    hoverGreen: string;
     primaryRed: string;
     secondaryGrey: string;
     primaryWhite: string;
@@ -48,7 +50,9 @@ const theme: Theme = {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
-    primaryRed: '#CB463A',
+    secondaryGreen: "#15C324",
+    hoverGreen: "#E7F8E6",
+    primaryRed: "#CB463A",
     secondaryGrey: "#9ea2ad",
     primaryWhite: "#FFFFFF",
     borderGrey: "#ededed",

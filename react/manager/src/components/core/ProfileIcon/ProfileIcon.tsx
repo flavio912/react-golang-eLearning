@@ -8,6 +8,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover',
     opacity: 0.5
   },
   initials: {
@@ -18,7 +20,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  name: string;
+  name?: string;
+  url?: string;
   size?: number;
   className?: string;
 };
@@ -76,14 +79,14 @@ function initialToColour(initials: string) {
     const second = initials.charCodeAt(1) - 64;
     const hash = Math.ceil((first + second) / 2);
     return colourMap[hash];
-  } else if (initials.length == 1) {
+  } else if (initials.length === 1) {
     const hash = initials.charCodeAt(0) - 64;
     return colourMap[hash];
   }
   return colourMap[0];
 }
 
-function ProfileIcon({ name, size = 30, className }: Props) {
+function ProfileIcon({ name = "", url, size = 30, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -93,7 +96,7 @@ function ProfileIcon({ name, size = 30, className }: Props) {
   return (
     <div
       className={classNames(classes.root, className)}
-      style={{ backgroundColor: colour, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
+      style={{ backgroundColor: colour, backgroundImage: `url(${url})`, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
     >
       <div className={classNames(classes.initials)}>{initials}</div>
     </div>
