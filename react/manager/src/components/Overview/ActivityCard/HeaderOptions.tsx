@@ -11,7 +11,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
   },
   option: {
-    fontSize: theme.fontSizes.default,
+    fontSize: theme.fontSizes.small,
     fontWeight: 300,
     cursor: "pointer",
     color: theme.colors.primaryBlack,
@@ -39,7 +39,7 @@ function HeaderOptions({ selected, options, onClick, className }: Props) {
 
   return (
     <span className={classNames(classes.root, className)}>
-      {options.map((option, index) => (
+      {options && options.map((option, index) => (
         <span
           key={option}
           onClick={() => onClick(option)}

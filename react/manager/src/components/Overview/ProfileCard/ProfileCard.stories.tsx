@@ -17,5 +17,12 @@ export const plain = () => {
   const padding: PaddingOptions = select("Padding", paddingOptions, "medium");
   const headingText: string = text("Heading", "");
   const fieldsData: Field[] = object("Data", [ ...defaultInfo ]);
-  return <ProfileCard heading={headingText || "Profile"} fields={fieldsData} padding={padding} />
+  return (
+    <ProfileCard
+      heading={headingText || "Profile"}
+      fields={fieldsData}
+      padding={padding}
+      onClick={() => console.log('Pressed')}
+    />
+  )
 }

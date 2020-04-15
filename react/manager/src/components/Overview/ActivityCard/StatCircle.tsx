@@ -65,15 +65,9 @@ function StatCircle({ heading, value, border = 'none', color = 'green', classNam
     right: classes.borderRight,
   };
 
-  const colourLink = {
-    green: classes.green,
-    red: classes.red,
-    grey: classes.grey,
-  };
-
   return (
     <div className={classNames(classes.root, borderLink[border], className)}>
-        <div className={classNames(classes.circle, colourLink[color])}/>
+        <div className={classNames(classes.circle, classes[color])}/>
         <div>
             <div className={classNames(classes.heading)}>{heading}</div>
             <div className={classNames(classes.statValue)}>{value}</div>
