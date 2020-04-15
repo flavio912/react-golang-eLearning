@@ -35,7 +35,7 @@ input OrderBy {
 
 type Query {
   info: String!
-  admin(uuid: String!): Admin
+  admin(uuid: UUID!): Admin
   admins(page: Page): AdminPage!
   manager(uuid: String!): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage

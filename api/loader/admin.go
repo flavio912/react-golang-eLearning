@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
-
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
+	"github.com/golang/glog"
 	"github.com/graph-gophers/dataloader"
 )
 
@@ -24,18 +25,17 @@ func getKeyList(loadedItems []gentypes.Admin) []string {
 
 func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 	n := len(keys)
-
 	// Get batch from middleware
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return loadBatchError(err, n)
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
 	admins, err := grant.GetAdminsByUUID(keys.Keys())
 	if err != nil {
+		glog.Infof("error getting admins: %s", err.Error())
 		return loadBatchError(err, n)
 	}
-
 	res := make([]*dataloader.Result, n)
 	for _, admin := range admins {
 		// results must be in the same order as keys
