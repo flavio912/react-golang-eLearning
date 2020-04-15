@@ -21,7 +21,7 @@ Send queries to localhost:8080/graphql
 To run the tests locally the shell script `api/dev_env/run_test.sh`.
 
 ```
-Useage:
+Usage:
   ./run_test.sh
 
 Opts:
