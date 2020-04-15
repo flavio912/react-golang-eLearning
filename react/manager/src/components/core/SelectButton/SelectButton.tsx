@@ -51,7 +51,7 @@ function SelectButton({ selected, options, onClick, className }: Props) {
 
   return (
     <div className={classNames(classes.root, className)}>
-    {options.map(option => (
+      {options && options.map(option => (
         <button
           key={option}
           onClick={() => onClick(option)}

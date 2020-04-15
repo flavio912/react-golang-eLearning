@@ -12,12 +12,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   fieldName: {
     flex: 1,
-    fontSize: 12,
+    fontSize: theme.fontSizes.small,
     color: theme.colors.textBlue
   },
   value: {
     flex: 2,
-    fontSize: 13,
+    fontSize: theme.fontSizes.large,
     color: theme.colors.textGrey,
   },
   smallPadding: {

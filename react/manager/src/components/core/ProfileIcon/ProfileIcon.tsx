@@ -9,8 +9,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover',
-    opacity: 0.5
+    backgroundSize: 'cover'
   },
   initials: {
     color: theme.colors.primaryBlack,
@@ -23,6 +22,7 @@ type Props = {
   name?: string;
   url?: string;
   size?: number;
+  fontSize?: number;
   className?: string;
 };
 
@@ -86,7 +86,7 @@ function initialToColour(initials: string) {
   return colourMap[0];
 }
 
-function ProfileIcon({ name = "", url, size = 30, className }: Props) {
+function ProfileIcon({ name = "", url, size = 30, fontSize, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -95,10 +95,16 @@ function ProfileIcon({ name = "", url, size = 30, className }: Props) {
 
   return (
     <div
+      style={{ opacity: url ? 0.8 : 0.5, backgroundColor: colour, backgroundImage: `url(${url})`,
+        width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
       className={classNames(classes.root, className)}
-      style={{ backgroundColor: colour, backgroundImage: `url(${url})`, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
     >
-      <div className={classNames(classes.initials)}>{initials}</div>
+      <div
+        className={classNames(classes.initials)}
+        style={{ fontSize }}
+      >
+        {!url && initials}
+      </div>
     </div>
   );
 }

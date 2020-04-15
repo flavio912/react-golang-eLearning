@@ -28,6 +28,7 @@ export type Theme = {
   };
   shadows: {
     primary: string;
+    body: string;
   };
   fontSizes: {
     heading: number;
@@ -58,11 +59,12 @@ const theme: Theme = {
     borderGrey: "#ededed",
     backgroundGrey: "#f7f9fb",
     searchHoverGrey: "#F5FAFC",
-    textBlue: "#1B759E",
-    textGrey: "#34373A",
+    textBlue: "#1081AA",
+    textGrey: "#737988",
   },
   shadows: {
     primary: "0px 2px 10px #0000001f",
+    body: "inset 0px -2px 10px 0px #0000001f",
   },
   fontSizes: {
     heading: 25,

@@ -40,6 +40,7 @@ const iconNames: IconNames[] = [
   "RemoveSelectedCourse_X",
   "SampleImage_ClassroomCoursesDetail_Feat",
   "SearchGlass",
+  "TTC_Logo_Icon",
 ];
 
 export const plain = () => {
