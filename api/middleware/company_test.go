@@ -1,12 +1,14 @@
 package middleware_test
 
 import (
+	"fmt"
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -28,6 +30,136 @@ func TestCompanyExists(t *testing.T) {
 	t.Run("Company should not exist", func(t *testing.T) {
 		id, _ := uuid.Parse(fakeCompany)
 		assert.False(t, grant.CompanyExists(id))
+	})
+}
+
+func TestIsCompanyDelegate(t *testing.T) {
+	assert.True(t, delegateGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000001"))
+	assert.False(t, delegateGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000002"))
+	// should only happen for delegates
+	assert.False(t, managerGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000001"))
+	assert.False(t, adminGrant.IsCompanyDelegate(""))
+}
+
+func TestManagesCompany(t *testing.T) {
+	tests := []struct {
+		name  string
+		grant middleware.Grant
+		uuid  string
+		want  bool
+	}{
+		{
+			"Admin always true",
+			adminGrant,
+			"",
+			true,
+		},
+		{
+			"Delegate always false",
+			delegateGrant,
+			"",
+			false,
+		},
+		{
+			"Manager must be part of company",
+			managerGrant,
+			"00000000-0000-0000-0000-000000000001",
+			true,
+		},
+		{
+			"Should fail if not managers company",
+			managerGrant,
+			"00000000-0000-0000-0000-000000000002",
+			false,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ret := test.grant.ManagesCompany(test.uuid)
+			assert.Equal(t, test.want, ret)
+		})
+	}
+}
+
+func TestGetManagerIDsByCompany(t *testing.T) {
+	company1 := "00000000-0000-0000-0000-000000000001"
+	t.Run("Must be admin", func(t *testing.T) {
+		grant := middleware.Grant{auth.UserClaims{}, false, true, true}
+		ids, _, err := grant.GetManagerIDsByCompany("", nil, nil, nil)
+		assert.Len(t, ids, 0)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+	})
+
+	t.Run("Should return all managers", func(t *testing.T) {
+		ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, ids, 2)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(1)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		ids, pageInfo, err := adminGrant.GetManagerIDsByCompany(company1, &page, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, ids, 1)
+		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 2, Given: 1, Limit: limit})
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		order := gentypes.OrderBy{Field: "first_name"}
+
+		ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, nil, &order)
+		assert.Nil(t, err)
+		assert.Len(t, ids, 2)
+		assert.Equal(t, "00000000-0000-0000-0000-000000000002", ids[0].String())
+	})
+
+	t.Run("Should filter", func(t *testing.T) {
+		manager := gentypes.Manager{
+			User: gentypes.User{
+				UUID:      uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				Email:     "man@managers.com",
+				FirstName: "Manager",
+				LastName:  "Man",
+				Telephone: "7912938287",
+				JobTitle:  "In Charge",
+			},
+			CompanyID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+		}
+
+		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
+		uuidString := manager.UUID.String()
+
+		filterTests := []struct {
+			name   string
+			filter gentypes.ManagersFilter
+		}{
+			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
+			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
+			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
+			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
+			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
+			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
+			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+		}
+
+		for _, test := range filterTests {
+			t.Run(test.name, func(t *testing.T) {
+				ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &test.filter, nil)
+				assert.Nil(t, err)
+				require.Len(t, ids, 1)
+				assert.Equal(t, manager.UUID, ids[0])
+			})
+		}
+
+		t.Run("return mutiple", func(t *testing.T) {
+			email := ".com"
+			filter := gentypes.ManagersFilter{Email: &email}
+			managers, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &filter, nil)
+			assert.Nil(t, err)
+			require.Len(t, managers, 2)
+		})
 	})
 }
 

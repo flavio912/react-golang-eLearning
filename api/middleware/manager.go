@@ -95,6 +95,25 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	return managers, nil
 }
 
+func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
+	if filter != nil {
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
+		}
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.JobTitle != nil && *filter.JobTitle != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
+		}
+	}
+
+	return query
+}
+
 func (g *Grant) GetManagerByUUID(UUID string) (gentypes.Manager, error) {
 	// Admins can get any manager data
 	// Managers can only get their own uuid
@@ -125,24 +144,9 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 
 	var managers []models.Manager
 
-	query := database.GormDB
-	if filter != nil {
-		if filter.Email != nil && *filter.Email != "" {
-			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
-		}
-		if filter.Name != nil && *filter.Name != "" {
-			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
-		}
-		if filter.UUID != nil && *filter.UUID != "" {
-			query = query.Where("uuid = ?", *filter.UUID)
-		}
-		if filter.JobTitle != nil && *filter.JobTitle != "" {
-			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
-		}
-	}
-
 	// Count the total filtered dataset
 	var count int32
+	query := filterManager(database.GormDB, filter)
 	countErr := query.Model(&models.Manager{}).Limit(MaxPageLimit).Offset(0).Count(&count).Error
 	if countErr != nil {
 		glog.Errorf("Count query failed: %s", countErr.Error())
