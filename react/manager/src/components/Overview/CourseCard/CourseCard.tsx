@@ -150,7 +150,7 @@ function CourseCard({ course, color, onClick, size = 'small', className }: Props
 
     {size === 'small' ? (
       <div className={classNames(classes.row, classes.footer)}>
-          <FooterIcon name="LeftNav_Icon_Delegates" size={25} value={course.assigned} />
+          <FooterIcon name="Icon_Delegates" size={20} value={course.assigned} />
           <FooterIcon name="CourseExpiringSoon" size={20} value={course.expiring} />
           <div className={classNames(classes.filler)} />
       </div>

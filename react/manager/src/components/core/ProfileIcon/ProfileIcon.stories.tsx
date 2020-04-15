@@ -8,7 +8,8 @@ export default {
 };
 
 export const plain = () => {
-  const name: string = text('Name', "")
+  const name: string = text('Name', "Fred Ecceleston")
   const size: number = number("Size", 30)
-  return <ProfileIcon name={name || 'Fred Ecceleston'} size={size} />;
+  const url: string = text("URL", require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"))
+  return <ProfileIcon name={name} url={url} size={size} />;
 };

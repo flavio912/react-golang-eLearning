@@ -1,12 +1,6 @@
 import * as React from "react";
 import SelectButton from "./SelectButton";
-import {
-  withKnobs,
-  select,
-  text,
-  array,
-  number,
-} from "@storybook/addon-knobs";
+import { withKnobs, array } from "@storybook/addon-knobs";
 
 export default {
   title: "Core/SelectButton",
