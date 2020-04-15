@@ -118,6 +118,7 @@ func TestDeleteAdmin(t *testing.T) {
 
 func TestGetAdmins(t *testing.T) {
 	prepareTestDatabase()
+
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	t.Run("Must be admin", func(t *testing.T) {
@@ -179,6 +180,7 @@ func TestGetAdmins(t *testing.T) {
 
 func TestGetAdminsByUUID(t *testing.T) {
 	prepareTestDatabase()
+
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	t.Run("Must be admin", func(t *testing.T) {

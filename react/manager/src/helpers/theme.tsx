@@ -15,6 +15,8 @@ export type Theme = {
     primaryBlack: string;
     primaryBlue: string;
     primaryGreen: string;
+    secondaryGreen: string;
+    hoverGreen: string;
     primaryRed: string;
     secondaryGrey: string;
     primaryWhite: string;
@@ -26,6 +28,7 @@ export type Theme = {
   };
   shadows: {
     primary: string;
+    body: string;
   };
   fontSizes: {
     heading: number;
@@ -48,17 +51,20 @@ const theme: Theme = {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
-    primaryRed: '#CB463A',
+    secondaryGreen: "#15C324",
+    hoverGreen: "#E7F8E6",
+    primaryRed: "#CB463A",
     secondaryGrey: "#9ea2ad",
     primaryWhite: "#FFFFFF",
     borderGrey: "#ededed",
     backgroundGrey: "#f7f9fb",
     searchHoverGrey: "#F5FAFC",
-    textBlue: "#1B759E",
-    textGrey: "#616575",
+    textBlue: "#1081AA",
+    textGrey: "#737988",
   },
   shadows: {
     primary: "0px 2px 10px #0000001f",
+    body: "inset 0px -2px 10px 0px #0000001f",
   },
   fontSizes: {
     heading: 25,

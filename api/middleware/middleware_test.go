@@ -27,7 +27,9 @@ var managerGrant = middleware.Grant{auth.UserClaims{
 	Company: "00000000-0000-0000-0000-000000000001",
 	Role:    auth.ManagerRole,
 }, false, true, false}
-var delegateGrant = middleware.Grant{auth.UserClaims{}, false, false, true}
+var delegateGrant = middleware.Grant{auth.UserClaims{
+	Company: "00000000-0000-0000-0000-000000000001",
+}, false, false, true}
 var uuidZero = "00000000-0000-0000-0000-000000000000"
 
 func TestMain(m *testing.M) {
@@ -54,6 +56,7 @@ func TestMain(m *testing.M) {
 		testfixtures.Dialect("postgres"),
 		testfixtures.Directory("fixtures"), // the directory containing the YAML files
 	)
+
 	if err != nil {
 		fmt.Printf("Unable get fixtures: %s", err.Error())
 		panic("Cannot get test fixtures")

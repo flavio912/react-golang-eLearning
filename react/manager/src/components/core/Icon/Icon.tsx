@@ -23,6 +23,7 @@ export type IconNames =
   | "FormCheckbox_Checked"
   | "FormCheckbox_states"
   | "FormCheckbox_Unchecked"
+  | "Icon_Delegates"
   | "LeftNav_Icon_Courses"
   | "LeftNav_Icon_Dashboard"
   | "LeftNav_Icon_Delegates"
@@ -31,7 +32,8 @@ export type IconNames =
   | "PDF_Icon"
   | "RemoveSelectedCourse_X"
   | "SampleImage_ClassroomCoursesDetail_Feat"
-  | "SearchGlass";
+  | "SearchGlass"
+  | "TTC_Logo_Icon";
 
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
@@ -56,6 +58,7 @@ const iconNameMap = {
   FormCheckbox_Checked: require("../../../assets/FormCheckbox_Checked.svg"),
   FormCheckbox_states: require("../../../assets/FormCheckbox_states.png"),
   FormCheckbox_Unchecked: require("../../../assets/FormCheckbox_Unchecked.svg"),
+  Icon_Delegates: require("../../../assets/Icon_Delegates.svg"),
   LeftNav_Icon_Courses: require("../../../assets/LeftNav_Icon_Courses.svg"),
   LeftNav_Icon_Dashboard: require("../../../assets/LeftNav_Icon_Dashboard.svg"),
   LeftNav_Icon_Delegates: require("../../../assets/LeftNav_Icon_Delegates.svg"),
@@ -65,6 +68,7 @@ const iconNameMap = {
   RemoveSelectedCourse_X: require("../../../assets/RemoveSelectedCourse_X.svg"),
   SampleImage_ClassroomCoursesDetail_Feat: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   SearchGlass: require("../../../assets/SearchGlass.svg"),
+  TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
 };
 
 type Props = {

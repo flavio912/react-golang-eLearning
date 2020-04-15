@@ -19,7 +19,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   iconValue: {
     display: 'flex',
     fontSize:  theme.fontSizes.large,
-    fontWeight: '900'
+    fontWeight: 900
   },
 }));
 
@@ -38,9 +38,7 @@ function FooterIcon({ name, size, text, value, date, className }: Props) {
 
   return (
     <div className={classNames(classes.root, className)}>
-        <div className={classNames(classes.icon)}>
-            <Icon name={name} size={size} />
-        </div>
+        <Icon className={classNames(classes.icon)} name={name} size={size} />
         <div className={classNames(classes.iconValue)}>
             {text && text}
             {value && value}

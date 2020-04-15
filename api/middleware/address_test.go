@@ -10,6 +10,8 @@ import (
 )
 
 func TestGetAddressesByIDs(t *testing.T) {
+	prepareTestDatabase()
+
 	t.Run("Check only admin can access", func(t *testing.T) {
 		nonAdminGrant := middleware.Grant{auth.UserClaims{}, false, true, true}
 		addresses, err := nonAdminGrant.GetAddressesByIDs([]uint{})

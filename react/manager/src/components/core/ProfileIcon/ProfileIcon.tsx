@@ -7,16 +7,22 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundRepeat: 'no-repeat',
+    backgroundSize: 'cover'
   },
   initials: {
+    color: '#00000080',
+    fontWeight: 900,
     fontSize: theme.fontSizes.tiny
   }
 }));
 
 type Props = {
-  name: string;
+  name?: string;
+  url?: string;
   size?: number;
+  fontSize?: number;
   className?: string;
 };
 
@@ -49,6 +55,10 @@ const colourMap = {
   26:'#1ad10a',
 }
 
+/**
+ * Converts a name into two letters
+ * @param name The name to convert
+ */
 function toInitials(name: string) {
   if (name.length > 2) {
     let initials: RegExpMatchArray = name.match(/\b\w/g) || [];
@@ -57,24 +67,44 @@ function toInitials(name: string) {
   return name.toUpperCase();
 }
 
+/**
+ * Given a pair of initals it will return a unique
+ * colour. It will also catch 1 letter initials and
+ * defaults to a colour when no string is given
+ * @param initials The intitals to use as the hash
+ */
 function initialToColour(initials: string) {
-  const hash = initials.charCodeAt(0) - 64;
-  return colourMap[hash];
+  if (initials.length > 1) {
+    const first = initials.charCodeAt(0) - 64;
+    const second = initials.charCodeAt(1) - 64;
+    const hash = Math.ceil((first + second) / 2);
+    return colourMap[hash];
+  } else if (initials.length === 1) {
+    const hash = initials.charCodeAt(0) - 64;
+    return colourMap[hash];
+  }
+  return colourMap[0];
 }
 
-function ProfileIcon({ name, size = 30, className }: Props) {
+function ProfileIcon({ name = "", url, size = 30, fontSize, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   const initials: string = toInitials(name);
-  const colour: string = initialToColour(initials);
+  const colour: string = initialToColour(initials) + '60';
 
   return (
     <div
+      style={{ backgroundColor: colour, backgroundImage: `url(${url})`,
+        width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
       className={classNames(classes.root, className)}
-      style={{ backgroundColor: colour, width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
     >
-      <div className={classNames(classes.initials)}>{initials}</div>
+      <div
+        className={classNames(classes.initials)}
+        style={{ fontSize }}
+      >
+        {!url && initials}
+      </div>
     </div>
   );
 }

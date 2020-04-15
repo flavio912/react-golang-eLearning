@@ -11,7 +11,7 @@ export default {
 
 const paddingOptions: PaddingOptions[] = ["none", "small", "medium", "large"];
 
-const defaultInfo = [
+const defaultInfo: Update[] = [
   { name: "James Green", course: "Cargo Aircraft Piloting", time: new Date() },
   { name: "Bryony Turner", course: "Aviation Security", time: new Date() },
   { name: "Robert Johnson", course: "Cargo Management", time: new Date() },
@@ -44,6 +44,7 @@ export const plain = () => {
       options={optionsValues || ["This Month", "All Time"]}
       updates={updateData}
       data={dataValues}
+      onClick={() => console.log('Pressed')}
       padding={padding}
     />
   );

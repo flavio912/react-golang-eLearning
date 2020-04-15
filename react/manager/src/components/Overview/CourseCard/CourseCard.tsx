@@ -100,38 +100,31 @@ type Props = {
   course: Course;
   color: string;
   size?: SizeOptions;
+  onClick: Function,
   padding?: PaddingOptions;
   className?: string;
 };
 
-function CourseCard({ course, color, size = 'small', className }: Props) {
+function CourseCard({ course, color, onClick, size = 'small', className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
-  const sizeLink = {
-    small: classes.small,
-    large: classes.large,
-  };
 
   const backgroundColor = { backgroundColor: color };
   const backgroundImage = { backgroundImage: `linear-gradient(${color}4D, ${color}4D), url(${course.url})` };
 
   return (
-    <Card className={classNames(classes.root, classes.noBorder, sizeLink[size], className)}>
+    <Card className={classNames(classes.root, classes.noBorder, classes[size], className)}>
       <div className={classNames(classes.mainContainer)} style={backgroundImage}>
 
         <div className={classNames(classes.row)}>
           <div className={classNames(classes.heading)} style={backgroundColor}>
             {course.type}
           </div>
-          <div className={classNames(classes.icon)}>
-            <Icon name="Card_SecondaryActon_Dots" size={18} />
-          </div>
+          <Icon className={classNames(classes.icon)} name="Card_SecondaryActon_Dots" size={18} />
         </div>
 
       <div className={classNames(classes.price)}>£{course.price.toFixed(2)}</div>
       <div className={classNames(classes.title)}>{course.title}</div>
-
     </ div>
 
       <div className={classNames(classes.row)}>
@@ -140,7 +133,7 @@ function CourseCard({ course, color, size = 'small', className }: Props) {
         </div>
         {size === 'large' && (
           <div className={classNames(classes.button)}>
-            <Button archetype="submit">
+            <Button archetype="submit" onClick={() => onClick()}>
                 Book Now
             </Button>
           </div>
@@ -149,7 +142,7 @@ function CourseCard({ course, color, size = 'small', className }: Props) {
 
     {size === 'small' ? (
       <div className={classNames(classes.row, classes.footer)}>
-          <FooterIcon name="LeftNav_Icon_Delegates" size={25} value={course.assigned} />
+          <FooterIcon name="Icon_Delegates" size={20} value={course.assigned} />
           <FooterIcon name="CourseExpiringSoon" size={20} value={course.expiring} />
           <div className={classNames(classes.filler)} />
       </div>

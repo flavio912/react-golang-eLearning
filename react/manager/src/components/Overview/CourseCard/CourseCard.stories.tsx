@@ -27,5 +27,5 @@ export const plain = () => {
   const size: SizeOptions = select("Size", sizeOptions, "small");
   const colourHex: string = text("Colour", defaultColor);
   const courseData: Course = object("Data", defaultCourse);
-  return <CourseCard course={courseData} color={colourHex} size={size} />
+  return <CourseCard course={courseData} color={colourHex} onClick={() => console.log('Pressed')} size={size} />
 }

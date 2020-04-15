@@ -34,6 +34,10 @@ var (
 		Type:    "ErrUnauthorized",
 		Message: "User does not have permissions for request",
 	}
+	ErrOrderUnauthorized = SimpleError{
+		Type:    "ErrOrderUnauthorized",
+		Message: "Model isn't allowed to be ordered by this field",
+	}
 	// ErrTokenInvalid is given when the JWT is not valid or expired
 	ErrTokenInvalid = SimpleError{
 		Type:    "ErrTokenInvalid",

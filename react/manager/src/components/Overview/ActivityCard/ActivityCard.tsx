@@ -13,15 +13,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     display: "grid",
     gridTemplateColumns: "1fr 50px 1fr",
-    width: '778px',
-    fontSize: theme.fontSizes.default,
+    width: '778px'
   },
   root: {
     display: "flex",
     flexDirection: "column",
   },
   heading: {
-    fontWeight: '300',
+    fontSize: theme.fontSizes.small,
     color: theme.colors.primaryBlack,
   },
   row: {
@@ -63,6 +62,7 @@ type Props = {
   options: Array<string>;
   updates: Array<Update>;
   data: Array<Statistic>;
+  onClick?: Function,
   padding?: PaddingOptions;
   className?: string;
 };
@@ -73,6 +73,7 @@ function ActvityCard({
   options,
   updates,
   data,
+  onClick,
   padding = "none",
   className,
 }: Props) {
@@ -98,13 +99,12 @@ function ActvityCard({
           />
         </div>
 
-        <div className={classNames(classes.graph)}>
-          <Graph
-            heading="Active Delegates"
-            outerValue={data[0].value}
-            innerValue={data[1].value}
-          />
-        </div>
+        <Graph
+          className={classNames(classes.graph)}
+          heading="Active Delegates"
+          outerValue={data[0].value}
+          innerValue={data[1].value}
+        />
 
         <div className={classNames(classes.row)}>
           <StatCircle
@@ -126,9 +126,13 @@ function ActvityCard({
           />
         </div>
 
-        <div className={classNames(classes.button)}>
-          <Button archetype="submit">View all Delegates</Button>
-        </div>
+        <Button
+          style={{alignSelf: "center", marginTop: "50px"}}
+          archetype="submit"
+          onClick={() => onClick && onClick()}
+        >
+          View all Delegates
+        </Button>
       </div>
       <div className={classes.dividerHolder}>
         <div className={classes.divider} />
@@ -138,8 +142,9 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates.slice(0,7).map((update) => (
+        {updates && updates.slice(0,7).map((update, i) => (
           <UserUpdate
+            key={i}
             name={update.name}
             course={update.course}
             time={update.time}
