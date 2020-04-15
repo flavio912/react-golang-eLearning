@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: '30px 0',
+    padding: '25px 0',
     opacity: 0.3,
     transition: 'background-color 0.3s linear, opacity 0.3s linear'
   },
