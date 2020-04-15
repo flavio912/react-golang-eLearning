@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundSize: 'cover'
   },
   initials: {
-    color: theme.colors.primaryBlack,
+    color: '#00000080',
     fontWeight: 900,
     fontSize: theme.fontSizes.tiny
   }
@@ -91,11 +91,11 @@ function ProfileIcon({ name = "", url, size = 30, fontSize, className }: Props) 
   const classes = useStyles({ theme });
 
   const initials: string = toInitials(name);
-  const colour: string = initialToColour(initials);
+  const colour: string = initialToColour(initials) + '60';
 
   return (
     <div
-      style={{ opacity: url ? 0.8 : 0.5, backgroundColor: colour, backgroundImage: `url(${url})`,
+      style={{ backgroundColor: colour, backgroundImage: `url(${url})`,
         width: `${size}px`, height: `${size}px`, borderRadius: `${size}px` }}
       className={classNames(classes.root, className)}
     >
