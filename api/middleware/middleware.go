@@ -86,21 +86,22 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	for _, field := range allowedFields {
 		if orderBy.Field == field {
 			allowed = true
+			break
 		}
 	}
 
-	if allowed {
-		ordering := "DESC"
-		if orderBy.Ascending != nil && *orderBy.Ascending {
-			ordering = "ASC"
-		}
-		// fmt.Sprintf is fine here as fields are checked against allowed ones.
-		query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
-		return query, nil
+	if !allowed {
+		glog.Infof("Ordering unauthorized: %s", orderBy.Field)
+		return query, &errors.ErrOrderUnauthorized
 	}
 
-	glog.Infof("Ordering unauthorized: %s", orderBy.Field)
-	return query, &errors.ErrUnauthorized
+	ordering := "DESC"
+	if orderBy.Ascending != nil && *orderBy.Ascending {
+		ordering = "ASC"
+	}
+	// fmt.Sprintf is fine here as fields are checked against allowed ones.
+	query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
+	return query, nil
 }
 
 func getDBErrorType(query *gorm.DB) error {

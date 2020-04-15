@@ -186,7 +186,18 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		return []string{}, gentypes.PageInfo{}, err
 	}
 
-	// TODO: Add filtering
+	if filter != nil {
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.Approved != nil {
+			query = query.Where("approved = ?", *filter.Approved)
+		}
+	}
+
 	query, limit, offset := getPage(query, page)
 
 	query.Find(&companies)

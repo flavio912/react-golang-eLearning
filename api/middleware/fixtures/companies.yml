@@ -2,3 +2,15 @@
   name: TestCompany
   approved: true
   address_id: 0
+- uuid: 00000000-0000-0000-0000-000000000002
+  name: Fake Work Place
+  approved: true
+  address_id: 1
+- uuid: 00000000-0000-0000-0000-000000000003
+  name: ACME
+  approved: true
+  address_id: 1
+- uuid: 00000000-0000-0000-0000-000000000004
+  name: Microsoft
+  approved: false
+  address_id: 1

@@ -83,6 +83,8 @@ func TestManagesCompany(t *testing.T) {
 }
 
 func TestGetManagerIDsByCompany(t *testing.T) {
+	prepareTestDatabase()
+
 	company1 := "00000000-0000-0000-0000-000000000001"
 	t.Run("Must be admin", func(t *testing.T) {
 		grant := middleware.Grant{auth.UserClaims{}, false, true, true}
@@ -194,4 +196,63 @@ func TestGetCompanyByUUID(t *testing.T) {
 	})
 
 	// TODO: Test if manager can get own company
+}
+
+func TestGetCompanyUUIDs(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
+		_, _, err := nonAdminGrant.GetCompanyUUIDs(nil, nil, nil)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+	})
+
+	t.Run("Should return all companies", func(t *testing.T) {
+		ids, _, err := adminGrant.GetCompanyUUIDs(nil, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, ids, 4)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(2)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		ids, pageInfo, err := adminGrant.GetCompanyUUIDs(&page, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, ids, 2)
+		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit})
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		asc := true
+		order := gentypes.OrderBy{Field: "name", Ascending: &asc}
+
+		ids, _, err := adminGrant.GetCompanyUUIDs(nil, nil, &order)
+		assert.Nil(t, err)
+		require.Len(t, ids, 4)
+		assert.Equal(t, "00000000-0000-0000-0000-000000000003", ids[0])
+	})
+
+	t.Run("Should filter", func(t *testing.T) {
+		uuidString := "00000000-0000-0000-0000-000000000003"
+		name := "ACME"
+		approved := true
+
+		filterTests := []struct {
+			name    string
+			filter  gentypes.CompanyFilter
+			wantLen int
+		}{
+			{"UUID", gentypes.CompanyFilter{UUID: &uuidString}, 1},
+			{"Name", gentypes.CompanyFilter{Name: &name}, 1},
+			{"Approved", gentypes.CompanyFilter{Approved: &approved}, 3},
+		}
+
+		for _, test := range filterTests {
+			t.Run(test.name, func(t *testing.T) {
+				ids, _, err := adminGrant.GetCompanyUUIDs(nil, &test.filter, nil)
+				assert.Nil(t, err)
+				require.Len(t, ids, test.wantLen)
+			})
+		}
+	})
 }
