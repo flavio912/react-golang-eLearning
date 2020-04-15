@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// UUID is a custom graphql schema type for representing UUIDS
+// UUID is a custom graphql schema type for representing UUIDs
 type UUID struct {
 	uuid.UUID
 }
@@ -27,4 +27,15 @@ func (u *UUID) UnmarshalGraphQL(input interface{}) error {
 	default:
 		return fmt.Errorf("wrong type")
 	}
+}
+
+// Parse is a wrapper around uuid.Parse for our own type
+func (*UUID) Parse(input string) (UUID, error) {
+	id, err := uuid.Parse(input)
+	if err != nil {
+		return UUID{}, err
+	}
+	return UUID{
+		UUID: id,
+	}, nil
 }
