@@ -1,10 +1,15 @@
 package resolvers_test
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"os"
 	"testing"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/go-testfixtures/testfixtures/v3"
 	graphql "github.com/graph-gophers/graphql-go"
@@ -16,9 +21,11 @@ import (
 )
 
 var (
-	db       *sql.DB
-	fixtures *testfixtures.Loader
-	schema   *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	db             *sql.DB
+	fixtures       *testfixtures.Loader
+	schema         *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	defaultContext context.Context = context.Background()
+	adminContext   context.Context = context.Background()
 )
 
 func TestMain(m *testing.M) {
@@ -50,6 +57,25 @@ func TestMain(m *testing.M) {
 		fmt.Printf("Unable get fixtures: %s", err.Error())
 		return
 	}
+
+	prepareTestDatabase()
+
+	loaders := loader.Init()
+	adminContext = loaders.Attach(adminContext)
+
+	adminToken, err := middleware.GetAdminAccessToken("test123@test.com", "iamasuperadmin")
+	if err != nil {
+		fmt.Printf("Unable to get admin token! %#v", err)
+		return
+	}
+	adminContext = context.WithValue(adminContext, auth.AuthKey, adminToken)
+
+	grant, err := middleware.Authenticate(adminToken)
+	if err != nil {
+		fmt.Printf("Unable auth admin token! %#v", err)
+		return
+	}
+	adminContext = context.WithValue(adminContext, auth.GrantKey, grant)
 
 	os.Exit(m.Run())
 }

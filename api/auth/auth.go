@@ -17,7 +17,6 @@ import (
 
 // HashPassword Hashes and salts a given string
 func HashPassword(pwd string) (string, error) {
-
 	passwordInBytes := []byte(pwd)
 	hash, err := bcrypt.GenerateFromPassword(passwordInBytes, 12)
 	if err != nil {

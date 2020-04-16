@@ -14,7 +14,7 @@ func TestAdminLogin(t *testing.T) {
 	ctx := context.Background()
 	res := schema.Exec(
 		ctx,
-		` mutation {
+		`mutation {
 			adminLogin(input:{email: "test123@test.com", password: "iamasuperadmin"}) {
 				token
 			}
