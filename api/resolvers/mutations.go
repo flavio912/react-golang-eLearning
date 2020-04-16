@@ -3,7 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"github.com/asaskevich/govalidator"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -63,10 +62,6 @@ func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input
 }
 
 func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input gentypes.DeleteManagerInput }) (bool, error) {
-	if err := args.Input.Validate(); err != nil {
-		return false, err
-	}
-
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
@@ -157,7 +152,7 @@ func (m *MutationResolver) ManagerProfileUploadSuccess(
 	}
 
 	res, err := NewManagerResolver(ctx, NewManagerArgs{
-		UUID: grant.Claims.UUID,
+		UUID: grant.Claims.UUID.String(),
 	})
 
 	if err != nil {
@@ -203,11 +198,7 @@ func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args compan
 	return true, nil
 }
 
-func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID string }) (*CompanyResolver, error) {
-	if !govalidator.IsUUIDv4(args.UUID) {
-		return &CompanyResolver{}, &errors.ErrUUIDInvalid
-	}
-
+func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID gentypes.UUID }) (*CompanyResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &CompanyResolver{}, &errors.ErrUnauthorized

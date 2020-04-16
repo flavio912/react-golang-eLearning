@@ -115,7 +115,7 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 		return &CompanyPageResolver{}, err
 	}
 	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
-		UUIDs: companies,
+		UUIDs: uuidsToStrings(companies),
 	}, page)
 }
 

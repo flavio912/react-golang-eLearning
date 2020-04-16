@@ -30,7 +30,7 @@ type Mutation {
     manager: CreateManagerInput!
     recaptcha: String!
   ): Boolean!
-  approveCompany(uuid: String!): Company
+  approveCompany(uuid: UUID!): Company
   saveOnlineCourse(input: SaveOnlineCourseInput!): OnlineCourse
   saveClassroomCourse(input: SaveClassroomCourseInput!): String
 }

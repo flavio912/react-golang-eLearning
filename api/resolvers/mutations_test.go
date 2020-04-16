@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+
 	"github.com/graph-gophers/graphql-go/gqltesting"
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -39,8 +41,8 @@ func TestAdminLogin(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, middleware.Grant{
 		Claims: auth.UserClaims{
-			UUID:    "00000000-0000-0000-0000-000000000001",
-			Company: "",
+			UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
 			Role:    auth.AdminRole,
 		},
 		IsAdmin:    true,

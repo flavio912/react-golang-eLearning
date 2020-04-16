@@ -1,6 +1,6 @@
 type Company {
   approved: Boolean
-  uuid: String!
+  uuid: UUID!
   createdAt: String
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!

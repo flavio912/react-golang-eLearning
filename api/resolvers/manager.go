@@ -79,7 +79,7 @@ func NewManagerResolvers(ctx context.Context, args NewManagersArgs) (*[]*Manager
 	return &resolvers, nil
 }
 
-func (m *ManagerResolver) UUID() string             { return m.manager.UUID.String() }
+func (m *ManagerResolver) UUID() gentypes.UUID      { return m.manager.UUID }
 func (m *ManagerResolver) CreatedAt() *string       { return m.manager.CreatedAt }
 func (m *ManagerResolver) Email() string            { return m.manager.Email }
 func (m *ManagerResolver) FirstName() string        { return m.manager.FirstName }

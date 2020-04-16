@@ -45,7 +45,7 @@ fi
 
 
 # Run the tests
-${dc_cmd} run --rm --no-deps test_api go test -v -coverprofile .testCoverage ./${MODULE}
+${dc_cmd} run --rm --no-deps test_api go test -coverprofile .testCoverage ./${MODULE}
 exit_code=$?
 if (($exit_code == 0 && $COVER == 1)); then
   ${dc_cmd} run --rm test_api go tool cover -func=.testCoverage

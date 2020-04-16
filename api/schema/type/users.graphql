@@ -1,5 +1,5 @@
 interface User {
-  uuid: String!
+  uuid: UUID!
   createdAt: String
   email: String!
   firstName: String!
@@ -15,7 +15,7 @@ input ManagerLogin {
 }
 
 input CreateManagerInput {
-  companyUUID: String # For admins when creating managers of different companies
+  companyUUID: UUID # For admins when creating managers of different companies
   firstName: String!
   lastName: String!
   email: String!
@@ -25,11 +25,11 @@ input CreateManagerInput {
 }
 
 input DeleteManagerInput {
-  uuid: String!
+  uuid: UUID!
 }
 
 type Manager implements User {
-  uuid: String!
+  uuid: UUID!
   createdAt: String
   email: String!
   firstName: String!

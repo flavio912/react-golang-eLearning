@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -15,8 +14,6 @@ import (
 
 func TestCreateManager(t *testing.T) {
 	prepareTestDatabase()
-
-	fakeUUID := "this is not a uuid"
 
 	tests := []struct {
 		name    string
@@ -40,15 +37,6 @@ func TestCreateManager(t *testing.T) {
 			gentypes.CreateManagerInput{},
 		},
 		{
-			"Admin must supply valid company uuid",
-			adminGrant,
-			&errors.ErrUUIDInvalid,
-			gentypes.Manager{},
-			gentypes.CreateManagerInput{
-				CompanyUUID: &fakeUUID,
-			},
-		},
-		{
 			"Admin supplied company must exist",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
@@ -61,7 +49,7 @@ func TestCreateManager(t *testing.T) {
 			"Should use manager's company",
 			managerGrant,
 			nil,
-			gentypes.Manager{CompanyID: uuid.MustParse(managerGrant.Claims.Company)},
+			gentypes.Manager{CompanyID: managerGrant.Claims.Company},
 			gentypes.CreateManagerInput{},
 		},
 	}
@@ -84,19 +72,19 @@ func TestGetManagerByUUID(t *testing.T) {
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
-		uuid    string
+		uuid    gentypes.UUID
 		wantErr interface{}
 	}{
 		{
 			"Delegates cannot get managers",
 			delegateGrant,
-			"00000000-0000-0000-0000-000000000001",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			&errors.ErrUnauthorized,
 		},
 		{
 			"Managers cannot see other managers",
 			managerGrant,
-			"00000000-0000-0000-0000-000000000002", // different to managerGrant.Claims.UUID
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"), // different to managerGrant.Claims.UUID
 			&errors.ErrUnauthorized,
 		},
 		{
@@ -108,19 +96,13 @@ func TestGetManagerByUUID(t *testing.T) {
 		{
 			"Admins can see managers",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000001",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			nil,
-		},
-		{
-			"UUID must be valid",
-			adminGrant,
-			"this is not a uuid",
-			&errors.ErrUUIDInvalid,
 		},
 		{
 			"Should return ErrNotFound if not found",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000000", // does not exist
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"), // does not exist
 			&errors.ErrNotFound,
 		},
 	}
@@ -131,7 +113,7 @@ func TestGetManagerByUUID(t *testing.T) {
 			m, err := test.grant.GetManagerByUUID(test.uuid)
 			assert.Equal(t, test.wantErr, err)
 			if test.wantErr == nil {
-				assert.Equal(t, test.uuid, m.UUID.String())
+				assert.Equal(t, test.uuid, m.UUID)
 			} else {
 				// should return a blank manager if it errors
 				assert.Equal(t, gentypes.Manager{}, m)
@@ -167,7 +149,7 @@ func TestGetManagersByUUID(t *testing.T) {
 		{
 			"Managers can see their own info",
 			managerGrant,
-			[]string{managerGrant.Claims.UUID, "00000000-0000-0000-0000-000000000002"},
+			[]string{managerGrant.Claims.UUID.String(), "00000000-0000-0000-0000-000000000002"},
 			nil,
 			1,
 		},
@@ -215,7 +197,7 @@ func TestGetManagerSelf(t *testing.T) {
 		{
 			"Should return own manager",
 			managerGrant,
-			managerGrant.Claims.UUID,
+			managerGrant.Claims.UUID.String(),
 			nil,
 		},
 	}
@@ -241,7 +223,7 @@ func TestDeleteManager(t *testing.T) {
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
-		uuid    string
+		uuid    gentypes.UUID
 		wantErr interface{}
 	}{
 		{
@@ -265,7 +247,7 @@ func TestDeleteManager(t *testing.T) {
 		{
 			"Admins can delete",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000002",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 			nil,
 		},
 	}
@@ -325,14 +307,14 @@ func TestGetManagers(t *testing.T) {
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
 			User: gentypes.User{
-				UUID:      uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 				Email:     "man@managers.com",
 				FirstName: "Manager",
 				LastName:  "Man",
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)

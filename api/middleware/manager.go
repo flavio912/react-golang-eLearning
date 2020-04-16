@@ -8,7 +8,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 
 	"github.com/golang/glog"
-	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -18,25 +17,25 @@ import (
 func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	profileURL := uploads.GetImgixURL(manager.ProfileKey)
 	// Admins and managers themselves can get all info
-	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyID.String()) {
+	if g.IsAdmin || (g.IsManager && g.Claims.Company.UUID == manager.CompanyID) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
 			User: gentypes.User{
 				CreatedAt: &createdAt,
-				UUID:      manager.UUID,
+				UUID:      gentypes.UUID{UUID: manager.UUID},
 				Email:     manager.Email,
 				FirstName: manager.FirstName,
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 				Telephone: manager.Telephone,
 			},
-			CompanyID:       manager.CompanyID,
+			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
 			ProfileImageURL: &profileURL,
 		}
 	}
 
 	// Delegates can only get a subset of their manager's info
-	if g.IsCompanyDelegate(manager.CompanyID.String()) {
+	if g.IsCompanyDelegate(gentypes.UUID{UUID: manager.CompanyID}) {
 		return gentypes.Manager{
 			User: gentypes.User{
 				Email:     manager.Email,
@@ -44,7 +43,7 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 			},
-			CompanyID:       manager.CompanyID,
+			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
 			ProfileImageURL: &profileURL,
 		}
 	}
@@ -68,7 +67,7 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	// Managers can only get their own info
 	if g.IsManager {
 		for _, uuid := range uuids {
-			if g.Claims.UUID == uuid {
+			if g.Claims.UUID.String() == uuid {
 				allowedUUIDs = append(allowedUUIDs, uuid)
 			}
 		}
@@ -114,14 +113,10 @@ func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	return query
 }
 
-func (g *Grant) GetManagerByUUID(UUID string) (gentypes.Manager, error) {
+func (g *Grant) GetManagerByUUID(UUID gentypes.UUID) (gentypes.Manager, error) {
 	// Admins can get any manager data
 	// Managers can only get their own uuid
 	if g.IsAdmin || (g.IsManager && UUID == g.Claims.UUID) {
-		if _, err := uuid.Parse(UUID); err != nil {
-			return gentypes.Manager{}, &errors.ErrUUIDInvalid
-		}
-
 		var manager models.Manager
 		err := database.GormDB.Where("uuid = ?", UUID).First(&manager).Error
 		if err != nil {
@@ -187,7 +182,7 @@ func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
 }
 
 func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (gentypes.Manager, error) {
-	var inputUUID string
+	var inputUUID gentypes.UUID
 	// Auth
 	if !g.IsAdmin && !g.IsManager {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
@@ -207,13 +202,8 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 		inputUUID = g.Claims.Company
 	}
 
-	_uuid, err := uuid.Parse(inputUUID)
-	if err != nil {
-		return gentypes.Manager{}, &errors.ErrUUIDInvalid
-	}
-
 	// Check if company exists
-	if !g.CompanyExists(_uuid) {
+	if !g.CompanyExists(inputUUID) {
 		return gentypes.Manager{}, &errors.ErrCompanyNotFound
 	}
 
@@ -227,7 +217,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
-		CompanyID: _uuid,
+		CompanyID: inputUUID.UUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error
 	if createErr != nil {
@@ -237,7 +227,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 	return g.managerToGentype(manager), nil
 }
 
-func (g *Grant) DeleteManager(uuid string) (bool, error) {
+func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	// managers can delete themselves
 	// admins can delete any manager
 	if (g.IsManager && g.Claims.UUID == uuid) || g.IsAdmin {

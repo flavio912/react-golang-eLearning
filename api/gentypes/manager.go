@@ -2,14 +2,13 @@ package gentypes
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/google/uuid"
 )
 
 // Manager - CompanyManager graphQL type
 type Manager struct {
 	User
 	ProfileImageURL *string
-	CompanyID       uuid.UUID
+	CompanyID       UUID
 }
 
 type ManagersFilter struct {
@@ -26,13 +25,13 @@ func (m *ManagersFilter) Validate() error {
 }
 
 type CreateManagerInput struct {
-	CompanyUUID *string `valid:"uuidv4"`
-	FirstName   string  `valid:"required,alpha"`
-	LastName    string  `valid:"required,alpha"`
-	Email       string  `valid:"required,email"`
-	JobTitle    string  `valid:"required"`
-	Telephone   string  `valid:"required,numeric"`
-	Password    string  `valid:"required,stringlength(5|30)"`
+	CompanyUUID *UUID
+	FirstName   string `valid:"required,alpha"`
+	LastName    string `valid:"required,alpha"`
+	Email       string `valid:"required,email"`
+	JobTitle    string `valid:"required"`
+	Telephone   string `valid:"required,numeric"`
+	Password    string `valid:"required,stringlength(5|30)"`
 }
 
 func (m *CreateManagerInput) Validate() error {
@@ -41,7 +40,7 @@ func (m *CreateManagerInput) Validate() error {
 }
 
 type DeleteManagerInput struct {
-	UUID string `valid:"uuidv4"`
+	UUID UUID
 }
 
 func (m *DeleteManagerInput) Validate() error {
