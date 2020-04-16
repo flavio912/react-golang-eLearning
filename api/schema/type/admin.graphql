@@ -10,10 +10,6 @@ type AdminPage implements PaginatedQuery {
   pageInfo: PageInfo
 }
 
-input GetAdminInput {
-  uuid: String!
-}
-
 input AdminLogin {
   email: String!
   password: String!
@@ -27,12 +23,12 @@ input CreateAdminInput {
 }
 
 input UpdateAdminInput {
-  uuid: String!
+  uuid: UUID!
   firstName: String
   lastName: String
   email: String
 }
 
 input DeleteAdminInput {
-  uuid: String!
+  uuid: UUID!
 }

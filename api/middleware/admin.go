@@ -54,7 +54,7 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 
 // adminExists returns true if the given uuid is an admin
 // NB: Uses a DB query, so use sparingly
-func (g *Grant) adminExists(uuid string) bool {
+func (g *Grant) adminExists(uuid gentypes.UUID) bool {
 	query := database.GormDB.Where("uuid = ?", uuid).First(&models.Admin{})
 	if query.Error != nil {
 		if query.RecordNotFound() {
@@ -182,7 +182,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 }
 
 // DeleteAdmin allows admins to delete other admins
-func (g *Grant) DeleteAdmin(uuid string) (bool, error) {
+func (g *Grant) DeleteAdmin(uuid gentypes.UUID) (bool, error) {
 	if !g.IsAdmin {
 		return false, &errors.ErrUnauthorized
 	}

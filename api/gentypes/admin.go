@@ -39,7 +39,7 @@ func (m *CreateAdminInput) Validate() error {
 }
 
 type UpdateAdminInput struct {
-	UUID      string  `valid:"uuidv4,required"`
+	UUID      UUID
 	FirstName *string `valid:"alpha"`
 	LastName  *string `valid:"alpha"`
 	Email     *string `valid:"email"`
@@ -50,11 +50,6 @@ func (m *UpdateAdminInput) Validate() error {
 	return err
 }
 
-type RemoveAdminInput struct {
-	UUID string `valid:"uuidv4,required"`
-}
-
-func (m *RemoveAdminInput) Validate() error {
-	_, err := govalidator.ValidateStruct(m)
-	return err
+type DeleteAdminInput struct {
+	UUID UUID
 }

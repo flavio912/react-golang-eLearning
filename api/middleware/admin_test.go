@@ -56,7 +56,7 @@ func TestUpdateAdmin(t *testing.T) {
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	updateAdmin := gentypes.UpdateAdminInput{
-		UUID: "00000000-0000-0000-0000-000000001999", // non-existant uuid
+		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000001999"), // non-existant uuid
 	}
 
 	t.Run("Must be admin to update", func(t *testing.T) {
@@ -72,7 +72,7 @@ func TestUpdateAdmin(t *testing.T) {
 
 	t.Run("Check it updates admin record", func(t *testing.T) {
 		testAdmin := gentypes.Admin{
-			UUID:      "00000000-0000-0000-0000-000000000001",
+			UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			FirstName: "NAME",
 			LastName:  "LASTNAME",
 			Email:     "email@email.com",
@@ -96,22 +96,22 @@ func TestDeleteAdmin(t *testing.T) {
 
 	t.Run("Must be admin to delete", func(t *testing.T) {
 		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
-		_, err := nonAdminGrant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
+		_, err := nonAdminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := grant.DeleteAdmin("00000000-0000-0000-0000-000000000999")
+		_, err := grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
 	t.Run("Check it deletes the admin", func(t *testing.T) {
-		out, err := grant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
+		out, err := grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Nil(t, err)
 		assert.True(t, out)
 
 		// trying to delete again then causes not found
-		_, err = grant.DeleteAdmin("00000000-0000-0000-0000-000000000001")
+		_, err = grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 }
@@ -135,7 +135,7 @@ func TestGetAdmins(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		admin := gentypes.Admin{
-			UUID:      "00000000-0000-0000-0000-000000000004",
+			UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000004"),
 			Email:     "rodger@van.com",
 			FirstName: "Rodger",
 			LastName:  "Van",
