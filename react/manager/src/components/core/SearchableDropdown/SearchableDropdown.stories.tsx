@@ -61,6 +61,41 @@ const categories: CourseCategory[] = [
       },
     ],
   },
+  {
+    title: "Dangerous Goods - Land",
+    courses: [
+      {
+        id: 9,
+        name: "Coffee Machine (COFF) – VC, HS, XRY, ETD",
+        price: 360,
+      },
+      {
+        id: 10,
+        name: "The Heavy Door in the Office (HDO) Recurrent – VC, HS, XRY, ETD",
+        price: 65,
+      },
+    ],
+  },
+  {
+    title: "Dangerous Goods - Sea",
+    courses: [
+      {
+        id: 11,
+        name: "Squids - Giant and Normal Size",
+        price: 200,
+      },
+      {
+        id: 12,
+        name: "Sharks and Other Toothy Creatures",
+        price: 70,
+      },
+      {
+        id: 13,
+        name: "Seaweed and Seagulls",
+        price: 20,
+      },
+    ],
+  },
 ];
 
 const searchFunc = async (query: string) => {

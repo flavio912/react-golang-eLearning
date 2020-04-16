@@ -73,10 +73,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 3,
     padding: [0, 10],
     fontSize: 14,
-
     "&:focus": {
-      borderColor: "#0E63E8",
-      boxShadow: "0 0 3px 1px rgba(14,99,232,0.34)",
+      borderColor: theme.colors.primaryBlue,
     },
   },
   tempResults: {
@@ -84,6 +82,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+    borderTop: `1px solid ${theme.colors.borderGrey}`,
   },
   searchResults: {
     overflowY: "auto",
@@ -98,6 +97,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
+    "&:first-child, &:last-child": {
+      borderBottom: "none",
+    },
   },
   header: {
     backgroundColor: theme.colors.primaryBlue,
@@ -173,7 +175,9 @@ function SearchableDropdown({
 
   const placeholder = multiselect
     ? "Please select one or more Courses"
-    : selected[0] || "Please select the Course you wish to book";
+    : selected.length > 0
+    ? selected[0].name
+    : "Please select the Course you wish to book";
 
   React.useEffect(() => {
     if (isOpen && searchRef && searchRef.current) {
@@ -203,7 +207,7 @@ function SearchableDropdown({
     <>
       {multiselect && selected.length > 0 && (
         <div className={classes.tagContainer}>
-          {selected.map(({ name, id }) => (
+          {selected.map(({ name, id }: Course) => (
             <div className={classes.tag} key={id}>
               {name}
               <Icon
@@ -260,7 +264,7 @@ function SearchableDropdown({
               </div>
             ) : (
               <div className={classes.searchResults}>
-                {categories.map(({ title, courses }) => (
+                {categories.map(({ title, courses }: CourseCategory) => (
                   <div key={title}>
                     <div className={classNames(classes.header, classes.option)}>
                       <span className={classes.title}>{title}</span>
@@ -281,6 +285,7 @@ function SearchableDropdown({
                             }
                           } else {
                             setSelected([{ name, id, price }]);
+                            setSearch("");
                             setOpen(false);
                           }
                         }}
