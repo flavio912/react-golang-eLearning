@@ -15,6 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: "row",
     backgroundColor: theme.colors.backgroundGrey,
     border: `1px solid ${theme.colors.borderGrey}`,
+    borderRadius: theme.buttonBorderRadius,
     fontSize: theme.fontSizes.default,
     padding: [0, 15],
     margin: [0, 15, 15, 0],
@@ -40,7 +41,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     padding: [0, 15],
     border: `1px solid ${theme.colors.borderGrey}`,
-    borderRadius: theme.primaryBorderRadius,
+    borderRadius: theme.buttonBorderRadius,
     cursor: "pointer",
   },
   dropdown: {
@@ -68,7 +69,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   searchBox: {
     height: 40,
     border: `1px solid ${theme.colors.borderGrey}`,
-    borderRadius: theme.primaryBorderRadius,
+    borderRadius: 3,
     padding: [0, 10],
     fontSize: 14,
 
