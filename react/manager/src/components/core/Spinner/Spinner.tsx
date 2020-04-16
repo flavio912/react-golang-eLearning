@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
-import classNames from "classnames";
 import { ReactComponent as SpinnerSVG } from "../../../assets/Loading_Screen_Donut.svg";
 import { Theme } from "helpers/theme";
 
