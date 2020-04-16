@@ -3,14 +3,14 @@ package gentypes
 import "github.com/asaskevich/govalidator"
 
 type Admin struct {
-	UUID      string
+	UUID      UUID
 	Email     string
 	FirstName string
 	LastName  string
 }
 
 // Key gets the admin primary identifier
-func (admin *Admin) Key() string {
+func (admin *Admin) Key() UUID {
 	return admin.UUID
 }
 
