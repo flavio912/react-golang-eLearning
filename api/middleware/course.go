@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -54,6 +55,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 	// 	courseInfo.Tags = infoChanges.Tags
 	// }
 	if infoChanges.Name != nil {
+		fmt.Print("NOT NIL")
 		courseInfo.Name = *infoChanges.Name
 	}
 	if infoChanges.Price != nil {

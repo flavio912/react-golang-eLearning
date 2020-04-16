@@ -28,21 +28,6 @@ type ClassroomCourse {
   info: CourseInfo
 }
 
-# interface CourseInput {
-#   uuid: String # If not given create a new course
-#   name: String # Title/Name of the course
-#   categoryUUID: String # UUID of the category
-#   excerpt: String # QUILL JSON for the excerpt
-#   introduction: String # QUILL JSON for the introduction
-#   backgroundCheck: Boolean # If a background check is required
-#   accessType: AccessType # restricted or open
-#   price: Float # Cost of the course
-#   color: String # HEX color
-#   tags: [String] # List of tag uuid's
-#   specificTerms: String # QUILL JSON for specific terms
-#   bannerImageSuccess: String # JSON Upload Success Token
-# }
-
 input SaveClassroomCourseInput {
   uuid: UUID
   name: String
