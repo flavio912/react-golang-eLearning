@@ -29,8 +29,8 @@ func (u *UUID) UnmarshalGraphQL(input interface{}) error {
 	}
 }
 
-// Parse is a wrapper around uuid.Parse for our own type
-func (*UUID) Parse(input string) (UUID, error) {
+// StringToUUID is a wrapper around uuid.Parse for our own type
+func StringToUUID(input string) (UUID, error) {
 	id, err := uuid.Parse(input)
 	if err != nil {
 		return UUID{}, err

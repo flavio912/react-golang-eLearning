@@ -14,16 +14,18 @@ enum ModuleElement {
   lesson
 }
 
-interface Course {
+type CourseInfo {
   name: String
 }
 
-type OnlineCourse implements Course {
-  name: String
+type OnlineCourse {
+  uuid: UUID!
+  info: CourseInfo!
 }
 
-type ClassroomCourse implements Course {
-  name: String
+type ClassroomCourse {
+  uuid: UUID
+  info: CourseInfo
 }
 
 # interface CourseInput {
@@ -42,9 +44,9 @@ type ClassroomCourse implements Course {
 # }
 
 input SaveClassroomCourseInput {
-  uuid: String
+  uuid: UUID
   name: String
-  categoryUUID: String
+  categoryUUID: UUID
   excerpt: String
   introduction: String
   backgroundCheck: Boolean
@@ -54,14 +56,14 @@ input SaveClassroomCourseInput {
   tags: [String]
   specificTerms: String
   bannerImageSuccess: String
-  tutorUUID: String # UUID of the Tutor (classroom course only)
+  tutorUUID: UUID # UUID of the Tutor (classroom course only)
   maxParticipants: Int
 }
 
 input SaveOnlineCourseInput {
-  uuid: String
+  uuid: UUID
   name: String
-  categoryUUID: String
+  categoryUUID: UUID
   excerpt: String
   introduction: String
   backgroundCheck: Boolean
@@ -76,13 +78,13 @@ input SaveOnlineCourseInput {
 
 input CourseItem {
   type: StructureElement!
-  uuid: String!
+  uuid: UUID!
   items: [ModuleItem!]!
 }
 
 input ModuleItem {
   type: ModuleElement!
-  uuid: String!
+  uuid: UUID!
 }
 
 # [ EXAMPLE COURSE STRUCTURE

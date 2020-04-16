@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/golang/glog"
-	"github.com/google/uuid"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -46,7 +45,7 @@ func duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicate
 }
 
 // GetModuleByUUID gets a module by its UUID
-func (g *Grant) GetModuleByUUID(moduleUUID string) (models.Module, error) {
+func (g *Grant) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
 	var module models.Module
 	query := database.GormDB.Where("uuid = ?", moduleUUID).Find(&module)
 	if query.Error != nil {
@@ -61,7 +60,7 @@ func (g *Grant) GetModuleByUUID(moduleUUID string) (models.Module, error) {
 }
 
 // GetModuleStructure builds the structure of the module into gentype form
-func (g *Grant) GetModuleStructure(moduleUUID string) (gentypes.CourseItem, error) {
+func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error) {
 	var moduleChildren []models.ModuleStructure
 	query := database.GormDB.Where("module_uuid = ?", moduleUUID).
 		Order("rank DESC").
@@ -77,12 +76,12 @@ func (g *Grant) GetModuleStructure(moduleUUID string) (gentypes.CourseItem, erro
 		if child.LessonUUID != nil {
 			structure = append(structure, gentypes.ModuleItem{
 				Type: gentypes.LessonType,
-				UUID: (*child.LessonUUID).String(),
+				UUID: *child.LessonUUID,
 			})
 		} else if child.TestUUID != nil {
 			structure = append(structure, gentypes.ModuleItem{
 				Type: gentypes.TestType,
-				UUID: (*child.TestUUID).String(),
+				UUID: *child.TestUUID,
 			})
 		} else {
 			glog.Error("Blank Module structure item found")
@@ -127,7 +126,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 			return models.Module{}, err
 		}
 		moduleModel = newmod
-		moduleItem.UUID = moduleModel.UUID.String()
+		moduleItem.UUID = moduleModel.UUID
 	} else {
 		query = tx.Where("module_uuid = ?", moduleItem.UUID).Delete(models.ModuleStructure{})
 		if query.Error != nil {
@@ -135,28 +134,17 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 		}
 	}
 
-	// ModuleUUID to real uuid
-	modUUID, err := uuid.Parse(moduleItem.UUID)
-	if err != nil {
-		glog.Errorf("ModuleUUID is invalid: %s", err.Error())
-		return models.Module{}, &errors.ErrUUIDInvalid
-	}
-
 	for _, item := range moduleItem.Items {
-		itemUUID, err := uuid.Parse(item.UUID)
-		if err != nil {
-			glog.Errorf("ItemUUID is invalid: %s", err.Error())
-		}
 
 		// TODO check if lessons + tests exist
 		structureItem := models.ModuleStructure{
-			ModuleUUID: modUUID,
+			ModuleUUID: moduleItem.UUID,
 		}
 		if item.Type == gentypes.LessonType {
-			structureItem.LessonUUID = &itemUUID
+			structureItem.LessonUUID = &item.UUID
 		}
 		if item.Type == gentypes.TestType {
-			structureItem.TestUUID = &itemUUID
+			structureItem.TestUUID = &item.UUID
 		}
 
 		if err := tx.Save(&structureItem).Error; err != nil {

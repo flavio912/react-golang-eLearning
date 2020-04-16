@@ -154,3 +154,5 @@ func TestUpdateCourseInfo(t *testing.T) {
 	})
 
 }
+
+

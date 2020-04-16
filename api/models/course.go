@@ -4,8 +4,6 @@ import (
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-
-	"github.com/google/uuid"
 )
 
 type CourseInfo struct {
@@ -16,7 +14,7 @@ type CourseInfo struct {
 	Price           float64             // 0.00 if free course
 	Color           string              // The primary color for the course
 	Category        Category            // The category that the course belongs to
-	CategoryUUID    *uuid.UUID          // FKEY
+	CategoryUUID    *gentypes.UUID      // FKEY
 	Tags            []Tag               `gorm:"many2many:course_tags_link;"`
 	Excerpt         string              `sql:"json"` // Excert quill json
 	Introduction    string              `sql:"json"` // Introduction quill json
@@ -27,33 +25,33 @@ type CourseInfo struct {
 }
 
 type Category struct {
-	UUID uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name string
 }
 
 type Tag struct {
-	UUID  uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name  string    `gorm:"unique"`
-	Color string    // A hex color for the tag
+	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Name  string        `gorm:"unique"`
+	Color string        // A hex color for the tag
 }
 
 type OnlineCourse struct {
-	UUID         uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	CourseInfo   CourseInfo
 	CourseInfoID uint // FKEY
 	Structure    []CourseStructure
 }
 
 type CourseStructure struct {
-	OnlineCourseUUID uuid.UUID
-	ModuleUUID       *uuid.UUID
-	LessonUUID       *uuid.UUID
-	TestUUID         *uuid.UUID
+	OnlineCourseUUID gentypes.UUID
+	ModuleUUID       *gentypes.UUID
+	LessonUUID       *gentypes.UUID
+	TestUUID         *gentypes.UUID
 	Rank             string
 }
 
 type ClassroomCourse struct {
-	UUID       uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID       gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	CourseInfo CourseInfo
 	//Tutor      Tutor // The tutor user running this course
 	StartDate time.Time

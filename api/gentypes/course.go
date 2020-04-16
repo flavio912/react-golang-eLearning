@@ -16,9 +16,9 @@ const (
 )
 
 type CourseInput struct {
-	UUID               *string `valid:"uuidv4"`
+	UUID               *UUID
 	Name               *string
-	CategoryUUID       *string `valid:"uuidv4"`
+	CategoryUUID       *UUID
 	Excerpt            *string `valid:"json"`
 	Introduction       *string `valid:"json"`
 	BackgroundCheck    *bool
@@ -32,7 +32,7 @@ type CourseInput struct {
 
 type SaveClassroomCourseInput struct {
 	CourseInput
-	TutorUUID       *string `valid:"uuidv4"`
+	TutorUUID       *UUID
 	MaxParticipants *int
 }
 
@@ -43,17 +43,22 @@ type SaveOnlineCourseInput struct {
 
 type CourseItem struct {
 	Type  StructureElement
-	UUID  string
+	UUID  UUID
 	Items []ModuleItem
 }
 
 type ModuleItem struct {
 	Type StructureElement
-	UUID string
+	UUID UUID
+}
+
+type CourseInfo struct {
+	ID   uint
+	Name string
 }
 
 type Course struct {
-	UUID         string
+	UUID         UUID
 	CourseInfoID uint
 }
 

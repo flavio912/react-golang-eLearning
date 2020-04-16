@@ -23,3 +23,18 @@ func NilFloatToZero(item *float64) float64 {
 	}
 	return *item
 }
+
+func StringPointer(str string) *string {
+	_string := str
+	return &_string
+}
+
+func FloatPointer(flo float64) *float64 {
+	_float := flo
+	return &_float
+}
+
+func BoolPointer(boolean bool) *bool {
+	_boolean := boolean
+	return &_boolean
+}

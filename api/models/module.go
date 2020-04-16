@@ -1,30 +1,28 @@
 package models
 
-import (
-	"github.com/google/uuid"
-)
+import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 type Module struct {
-	UUID       uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID       gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Structure  []ModuleStructure
-	Template   bool       // Is the module a template or custom module
-	TemplateID *uuid.UUID // The ID of the template used to create this FKEY
+	Template   bool           // Is the module a template or custom module
+	TemplateID *gentypes.UUID // The ID of the template used to create this FKEY
 }
 
 type ModuleStructure struct {
 	Module     Module
-	ModuleUUID uuid.UUID
+	ModuleUUID gentypes.UUID
 	Lesson     Lesson
-	LessonUUID *uuid.UUID
+	LessonUUID *gentypes.UUID
 	Test       Test
-	TestUUID   *uuid.UUID
+	TestUUID   *gentypes.UUID
 	Rank       string
 }
 
 type Lesson struct {
-	UUID uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 }
 
 type Test struct {
-	UUID uuid.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 }

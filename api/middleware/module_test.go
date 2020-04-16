@@ -14,10 +14,12 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-var templateModuleUUID = "00000000-0000-0000-0000-000000000001"
-
 func TestUpdateModule(t *testing.T) {
 	prepareTestDatabase()
+	lessonUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-00000000001")
+	lesson2UUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000002")
+	testUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
+	templateModuleUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
 
 	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 
@@ -32,11 +34,11 @@ func TestUpdateModule(t *testing.T) {
 			Items: []gentypes.ModuleItem{
 				gentypes.ModuleItem{
 					Type: gentypes.LessonType,
-					UUID: "00000000-0000-0000-0000-000000000001",
+					UUID: lessonUUID,
 				},
 				gentypes.ModuleItem{
 					Type: gentypes.LessonType,
-					UUID: "00000000-0000-0000-0000-000000000002",
+					UUID: lesson2UUID,
 				},
 			},
 		}
@@ -46,18 +48,18 @@ func TestUpdateModule(t *testing.T) {
 		assert.False(t, updatedModule.Template)
 		assert.NotEqual(t, updatedModule.UUID, uuid.UUID{})
 		assert.NotNil(t, updatedModule.TemplateID)
-		assert.Equal(t, templateModuleUUID, (*updatedModule.TemplateID).String())
+		assert.Equal(t, templateModuleUUID.String(), (*updatedModule.TemplateID).String())
 
 		_, err = grant.UpdateModuleStructure(database.GormDB, modItem, true)
 		assert.Nil(t, err)
 
 		// Get structure
-		structure, err := grant.GetModuleStructure(updatedModule.UUID.String())
+		structure, err := grant.GetModuleStructure(updatedModule.UUID)
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(structure.Items))
-		assert.Equal(t, "00000000-0000-0000-0000-000000000001", structure.Items[0].UUID)
+		assert.Equal(t, lessonUUID, structure.Items[0].UUID)
 		assert.Equal(t, gentypes.LessonType, structure.Items[0].Type)
-		assert.Equal(t, "00000000-0000-0000-0000-000000000002", structure.Items[1].UUID)
+		assert.Equal(t, lesson2UUID, structure.Items[1].UUID)
 		assert.Equal(t, gentypes.LessonType, structure.Items[1].Type)
 
 		templateMod, err := grant.GetModuleByUUID(templateModuleUUID)
@@ -72,23 +74,23 @@ func TestUpdateModule(t *testing.T) {
 			Items: []gentypes.ModuleItem{
 				gentypes.ModuleItem{
 					Type: gentypes.LessonType,
-					UUID: "00000000-0000-0000-0000-000000000001",
+					UUID: lessonUUID,
 				},
 				gentypes.ModuleItem{
 					Type: gentypes.LessonType,
-					UUID: "00000000-0000-0000-0000-000000000002",
+					UUID: lesson2UUID,
 				},
 				gentypes.ModuleItem{
 					Type: gentypes.TestType,
-					UUID: "00000000-0000-0000-0000-000000000001",
+					UUID: testUUID,
 				},
 			},
 		}
 		module, err := grant.UpdateModuleStructure(database.GormDB, modItem, false)
 		assert.Nil(t, err)
-		assert.Equal(t, module.UUID.String(), templateModuleUUID)
+		assert.Equal(t, module.UUID.String(), templateModuleUUID.String())
 
-		structure, err := grant.GetModuleStructure(module.UUID.String())
+		structure, err := grant.GetModuleStructure(module.UUID)
 		assert.Nil(t, err)
 		assert.Equal(t, len(modItem.Items), len(structure.Items))
 		for i, item := range modItem.Items {

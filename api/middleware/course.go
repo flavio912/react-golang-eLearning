@@ -5,7 +5,6 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/golang/glog"
-	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -17,9 +16,16 @@ import (
 func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	return gentypes.OnlineCourse{
 		Course: gentypes.Course{
-			UUID:         course.UUID.String(),
+			UUID:         course.UUID,
 			CourseInfoID: course.CourseInfoID,
 		},
+	}
+}
+
+func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
+	return gentypes.CourseInfo{
+		ID:   courseInfo.ID,
+		Name: courseInfo.Name,
 	}
 }
 
@@ -85,17 +91,18 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 	return nil
 }
 
-func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (models.CourseInfo, error) {
+// GetCourseInfoFromID -
+func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, error) {
 	var info models.CourseInfo
 	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return info, &errors.ErrNotFound
+			return courseInfoToGentype(info), &errors.ErrNotFound
 		}
 		glog.Warningf("Unable to get course info: %s", query.Error.Error())
-		return info, &errors.ErrWhileHandling
+		return courseInfoToGentype(info), &errors.ErrWhileHandling
 	}
-	return info, nil
+	return courseInfoToGentype(info), nil
 }
 
 // CreateOnlineCourse creates a new online course
@@ -123,12 +130,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 	}
 
 	if courseInfo.CategoryUUID != nil {
-		catUUID, err := uuid.Parse(*courseInfo.CategoryUUID)
-		if err != nil {
-			glog.Info("category uuid is invalid")
-			return gentypes.OnlineCourse{}, &errors.ErrUUIDInvalid
-		}
-		newCourse.CourseInfo.CategoryUUID = &catUUID
+		newCourse.CourseInfo.CategoryUUID = courseInfo.CategoryUUID
 	}
 	if courseInfo.AccessType != nil {
 		newCourse.CourseInfo.AccessType = *courseInfo.AccessType
@@ -157,11 +159,6 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 		return models.OnlineCourse{}, &errors.ErrUnauthorized
 	}
 
-	_, err := uuid.Parse(*courseInfo.UUID)
-	if err != nil {
-		return models.OnlineCourse{}, &errors.ErrUUIDInvalid
-	}
-
 	// Find Course
 	var onlineCourse models.OnlineCourse
 	query := database.GormDB.Where("uuid = ?", courseInfo.UUID).First(&onlineCourse)
@@ -172,18 +169,12 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 		return models.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
-	// Convert CategoryUUID to
-	var catID uuid.UUID
-	if courseInfo.CategoryUUID != nil {
-		catID, err = uuid.Parse(*courseInfo.CategoryUUID)
-	}
-
 	// TODO: think about putting these two in a transaction
-	err = g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
+	err := g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
-		CategoryUUID: &catID,
+		CategoryUUID: courseInfo.CategoryUUID,
 		// TAGS
 		Excerpt:           courseInfo.Excerpt,
 		Introduction:      courseInfo.Introduction,
@@ -227,7 +218,7 @@ func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gen
 
 }
 
-func (g *Grant) saveOnlineCourseStructure(courseUUID uuid.UUID, structure *[]gentypes.CourseItem) error {
+func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[]gentypes.CourseItem) error {
 	if !g.IsAdmin {
 		return &errors.ErrWhileHandling
 	}
@@ -262,14 +253,6 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID uuid.UUID, structure *[]gen
 			Rank:             strconv.Itoa(i),
 		}
 
-		// String UUID to uuid.UUID
-		itemUUID, err := uuid.Parse(courseItem.UUID)
-		if err != nil {
-			tx.Rollback()
-			glog.Infof("Invalid Course Item UUID, %s", err.Error())
-			return &errors.ErrUUIDInvalid
-		}
-
 		// TODO: Check if these items exist
 		switch courseItem.Type {
 		case gentypes.ModuleType:
@@ -278,11 +261,11 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID uuid.UUID, structure *[]gen
 				tx.Rollback()
 				return err
 			}
-			structureItem.ModuleUUID = &itemUUID
+			structureItem.ModuleUUID = &courseItem.UUID
 		case gentypes.LessonType:
-			structureItem.LessonUUID = &itemUUID
+			structureItem.LessonUUID = &courseItem.UUID
 		case gentypes.TestType:
-			structureItem.TestUUID = &itemUUID
+			structureItem.TestUUID = &courseItem.UUID
 		}
 
 		query := tx.Create(&structureItem)
@@ -299,8 +282,8 @@ type UpdateCourseInfoInput struct {
 	Name              *string
 	Price             *float64
 	Color             *string `valid:"hexcolor"`
-	CategoryUUID      *uuid.UUID
-	Tags              *[]string
+	CategoryUUID      *gentypes.UUID
+	Tags              *[]gentypes.UUID
 	Excerpt           *string `valid:"json"`
 	Introduction      *string `valid:"json"`
 	AccessType        *gentypes.AccessType

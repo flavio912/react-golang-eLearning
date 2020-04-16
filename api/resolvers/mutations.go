@@ -232,8 +232,20 @@ func (m *MutationResolver) SaveOnlineCourse(
 	ctx context.Context,
 	args struct {
 		Input gentypes.SaveOnlineCourseInput
-	}) (*string, error) {
-	return nil, nil
+	}) (*OnlineCourseResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &OnlineCourseResolver{}, &errors.ErrUnauthorized
+	}
+
+	course, err := grant.SaveOnlineCourse(args.Input)
+	if err != nil {
+		return &OnlineCourseResolver{}, err
+	}
+
+	return NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{
+		OnlineCourse: course,
+	})
 }
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
