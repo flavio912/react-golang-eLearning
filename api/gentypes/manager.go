@@ -25,7 +25,7 @@ func (m *ManagersFilter) Validate() error {
 	return err
 }
 
-type AddManagerInput struct {
+type CreateManagerInput struct {
 	CompanyUUID *string `valid:"uuidv4"`
 	FirstName   string  `valid:"required,alpha"`
 	LastName    string  `valid:"required,alpha"`
@@ -35,7 +35,7 @@ type AddManagerInput struct {
 	Password    string  `valid:"required,stringlength(5|30)"`
 }
 
-func (m *AddManagerInput) Validate() error {
+func (m *CreateManagerInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }

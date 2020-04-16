@@ -17,7 +17,7 @@ input UploadFileSuccess {
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
-  addManager(input: AddManagerInput!): Manager
+  createManager(input: CreateManagerInput!): Manager
   managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp
   managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
@@ -27,7 +27,7 @@ type Mutation {
   createCompany(input: CreateCompanyInput!): Company
   createCompanyRequest(
     company: CreateCompanyInput!
-    manager: AddManagerInput!
+    manager: CreateManagerInput!
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: String!): Company

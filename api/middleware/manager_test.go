@@ -13,7 +13,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-func TestAddManager(t *testing.T) {
+func TestCreateManager(t *testing.T) {
 	prepareTestDatabase()
 
 	fakeUUID := "this is not a uuid"
@@ -23,28 +23,28 @@ func TestAddManager(t *testing.T) {
 		grant   middleware.Grant
 		wantErr interface{}
 		want    gentypes.Manager
-		input   gentypes.AddManagerInput
+		input   gentypes.CreateManagerInput
 	}{
 		{
 			"Users cannot create",
 			delegateGrant,
 			&errors.ErrUnauthorized,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{},
+			gentypes.CreateManagerInput{},
 		},
 		{
 			"Admin must supply company uuid",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{},
+			gentypes.CreateManagerInput{},
 		},
 		{
 			"Admin must supply valid company uuid",
 			adminGrant,
 			&errors.ErrUUIDInvalid,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{
+			gentypes.CreateManagerInput{
 				CompanyUUID: &fakeUUID,
 			},
 		},
@@ -53,7 +53,7 @@ func TestAddManager(t *testing.T) {
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{
+			gentypes.CreateManagerInput{
 				CompanyUUID: &uuidZero,
 			},
 		},
@@ -62,12 +62,12 @@ func TestAddManager(t *testing.T) {
 			managerGrant,
 			nil,
 			gentypes.Manager{CompanyID: uuid.MustParse(managerGrant.Claims.Company)},
-			gentypes.AddManagerInput{},
+			gentypes.CreateManagerInput{},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			m, err := test.grant.AddManager(test.input)
+			m, err := test.grant.CreateManager(test.input)
 			assert.Equal(t, test.wantErr, err)
 			// generated fields
 			test.want.UUID = m.UUID

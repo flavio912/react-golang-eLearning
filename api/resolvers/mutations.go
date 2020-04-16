@@ -38,8 +38,8 @@ func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLogin
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
-// AddManager is for an admin to create new managers manually
-func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input gentypes.AddManagerInput }) (*ManagerResolver, error) {
+// CreateManager is for an admin to create new managers manually
+func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input gentypes.CreateManagerInput }) (*ManagerResolver, error) {
 	// Validate the manager input
 	if err := args.Input.Validate(); err != nil {
 		return &ManagerResolver{}, err
@@ -50,7 +50,7 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.AddManager(args.Input)
+	manager, err := grant.CreateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -192,7 +192,7 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 
 type companyRequestInput struct {
 	Company   gentypes.CreateCompanyInput
-	Manager   gentypes.AddManagerInput
+	Manager   gentypes.CreateManagerInput
 	Recaptcha string
 }
 

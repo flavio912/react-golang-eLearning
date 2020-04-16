@@ -248,7 +248,7 @@ func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Com
 }
 
 // CreateCompanyRequest creates a company and sets it to unapproved, for an admin to approve later
-func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.AddManagerInput) error {
+func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error {
 	// Validate input
 	if err := company.Validate(); err != nil {
 		return err

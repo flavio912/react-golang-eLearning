@@ -186,7 +186,7 @@ func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
 	return manager, nil
 }
 
-func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Manager, error) {
+func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (gentypes.Manager, error) {
 	var inputUUID string
 	// Auth
 	if !g.IsAdmin && !g.IsManager {

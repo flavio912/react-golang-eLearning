@@ -310,7 +310,7 @@ func TestCreateCompany(t *testing.T) {
 func TestCreateCompanyRequest(t *testing.T) {
 	prepareTestDatabase()
 
-	managerInput := gentypes.AddManagerInput{
+	managerInput := gentypes.CreateManagerInput{
 		FirstName: "Test",
 		LastName:  "Test",
 		Email:     "uinqad@tes.asd",

@@ -14,7 +14,7 @@ input ManagerLogin {
   password: String!
 }
 
-input AddManagerInput {
+input CreateManagerInput {
   companyUUID: String # For admins when creating managers of different companies
   firstName: String!
   lastName: String!
