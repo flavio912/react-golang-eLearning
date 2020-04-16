@@ -1,0 +1,93 @@
+enum AccessType {
+  restricted
+  open
+}
+
+enum StructureElement {
+  module
+  test
+  lesson
+}
+
+enum ModuleElement {
+  test
+  lesson
+}
+
+type CourseInfo {
+  name: String
+}
+
+type OnlineCourse {
+  uuid: UUID!
+  info: CourseInfo!
+}
+
+type ClassroomCourse {
+  uuid: UUID
+  info: CourseInfo
+}
+
+input SaveClassroomCourseInput {
+  uuid: UUID
+  name: String
+  categoryUUID: UUID
+  excerpt: String
+  introduction: String
+  backgroundCheck: Boolean
+  accessType: AccessType
+  price: Float
+  color: String
+  tags: [String]
+  specificTerms: String
+  bannerImageSuccess: String
+  tutorUUID: UUID # UUID of the Tutor (classroom course only)
+  maxParticipants: Int
+}
+
+input SaveOnlineCourseInput {
+  uuid: UUID
+  name: String
+  categoryUUID: UUID
+  excerpt: String
+  introduction: String
+  backgroundCheck: Boolean
+  accessType: AccessType
+  price: Float
+  color: String
+  tags: [String!]
+  specificTerms: String
+  bannerImageSuccess: String
+  structure: [CourseItem!] # Only for online courses
+}
+
+input CourseItem {
+  type: StructureElement!
+  uuid: UUID!
+  items: [ModuleItem!]!
+}
+
+input ModuleItem {
+  type: ModuleElement!
+  uuid: UUID!
+}
+
+# [ EXAMPLE COURSE STRUCTURE
+#   {type: "module", uuid: "34343-34343-34343-434343"},
+#   { type: "module",
+#     uuid: "1231231-12312312-123123-12313",
+#     items: [
+#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
+#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
+#     ]
+#   },
+#   { type: "module",
+#     uuid: "1231231-12312312-123123-12313", # if is template make a copy
+#     items: [
+#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
+#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
+#     ]
+#   },
+#   {type: "lesson", uuid: "3343434-34343434-55454545-54545"},
+#   {type: "test", uuid: "89898989-5656565-56656565-56565"},
+# ]

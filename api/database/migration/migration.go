@@ -12,4 +12,16 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Company{})
 	database.GormDB.AutoMigrate(&models.Address{})
 	database.GormDB.AutoMigrate(&models.Delegate{})
+
+	// Courses
+	database.GormDB.AutoMigrate(&models.CourseInfo{})
+	database.GormDB.AutoMigrate(&models.CourseStructure{})
+	database.GormDB.AutoMigrate(&models.Category{})
+	database.GormDB.AutoMigrate(&models.Tag{})
+	database.GormDB.AutoMigrate(&models.OnlineCourse{})
+	database.GormDB.AutoMigrate(&models.ClassroomCourse{})
+	database.GormDB.AutoMigrate(&models.Module{})
+	database.GormDB.AutoMigrate(&models.ModuleStructure{})
+	database.GormDB.AutoMigrate(&models.Lesson{})
+	database.GormDB.AutoMigrate(&models.Test{})
 }

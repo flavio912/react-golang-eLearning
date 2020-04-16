@@ -59,7 +59,7 @@ func TestMain(m *testing.M) {
 
 	if err != nil {
 		fmt.Printf("Unable get fixtures: %s", err.Error())
-		return
+		panic("Cannot get test fixtures")
 	}
 
 	os.Exit(m.Run())
@@ -68,6 +68,7 @@ func TestMain(m *testing.M) {
 func prepareTestDatabase() {
 	if err := fixtures.Load(); err != nil {
 		fmt.Printf("Unable to load fixtures for test: %s", err.Error())
+		panic("cannot load test fixtures")
 	}
 }
 
