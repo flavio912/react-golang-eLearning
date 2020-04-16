@@ -75,7 +75,7 @@ type Props = {
   name: IconNames;
   pointer?: boolean;
   style?: React.CSSProperties;
-  size?: number;
+  size?: number | null;
 };
 
 function Icon({
@@ -86,12 +86,12 @@ function Icon({
   ...props
 }: Props & React.ImgHTMLAttributes<HTMLImageElement>) {
   const cursor = pointer ? "pointer" : "auto";
+  const sizeStyle = size ? { height: size, width: size } : {};
   return (
     <img
       style={{
-        height: size,
-        width: size,
         cursor,
+        ...sizeStyle,
         ...style,
       }}
       src={iconNameMap[name]}

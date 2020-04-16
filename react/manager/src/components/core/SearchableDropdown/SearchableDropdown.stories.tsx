@@ -1,6 +1,6 @@
 import * as React from "react";
 import SearchableDropdown from "./SearchableDropdown";
-import { withKnobs, text, object } from "@storybook/addon-knobs";
+import { withKnobs, text, object, boolean } from "@storybook/addon-knobs";
 
 export default {
   title: "Core/SearchableDropdown",
@@ -52,14 +52,15 @@ const options = [
   },
 ];
 
-const DropdownExample = ({ placeholder, options }: any) => {
-  const [selected, setSelected] = React.useState<string | null>(null);
+const DropdownExample = ({ placeholder, options, multiselect }: any) => {
+  const [selected, setSelected] = React.useState<string[]>([]);
   return (
     <SearchableDropdown
       placeholder={placeholder}
       selected={selected}
       setSelected={setSelected}
       options={options}
+      multiselect={multiselect}
     />
   );
 };
@@ -68,6 +69,7 @@ export const normal = () => {
   return (
     <DropdownExample
       placeholder={text("Placeholder", "Placeholder text goes here")}
+      multiselect={boolean("Multiselect", false)}
       options={object("Options", options)}
     />
   );
