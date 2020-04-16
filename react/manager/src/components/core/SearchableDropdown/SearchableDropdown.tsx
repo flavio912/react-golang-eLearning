@@ -4,6 +4,7 @@ import ThemeObject, { Theme } from "helpers/theme";
 import classNames from "classnames";
 import Icon from "../Icon";
 import { ScaleLoader } from "react-spinners";
+import CoreInput from "../CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   tagContainer: {
@@ -73,6 +74,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 3,
     padding: [0, 10],
     fontSize: 14,
+    flex: "auto",
     "&:focus": {
       borderColor: theme.colors.primaryBlue,
     },
@@ -237,11 +239,11 @@ function SearchableDropdown({
                 className={classes.searchIcon}
                 size={20}
               />
-              <input
+              <CoreInput
                 ref={searchRef}
                 placeholder="Search"
                 type="text"
-                onChange={(evt) => setSearch(evt.target.value)}
+                onChange={(text) => setSearch(text)}
                 value={search}
                 className={classes.searchBox}
               />
