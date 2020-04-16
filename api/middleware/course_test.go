@@ -144,7 +144,6 @@ func TestUpdateCourseInfo(t *testing.T) {
 		info, err := grant.GetCourseInfoFromID(1)
 		assert.Nil(t, err)
 		assert.Equal(t, prevInfo.Name, info.Name)
-
 	})
 
 	t.Run("Access Control Tests", func(t *testing.T) {
