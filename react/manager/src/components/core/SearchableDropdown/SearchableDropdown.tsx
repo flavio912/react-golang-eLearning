@@ -92,56 +92,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   placeholder: string;
+  selected: string | null;
+  setSelected: (selected: string) => void;
+  options: {
+    title: string;
+    content: {
+      name: string;
+      price: number;
+    }[];
+  }[];
 };
 
-const options = [
-  {
-    title: "Dangerous Goods - Air",
-    content: [
-      {
-        name: "Cargo Operative Screener (COS) – VC, HS, XRY, ETD",
-        price: 200,
-      },
-      {
-        name: "Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD",
-        price: 65,
-      },
-    ],
-  },
-  {
-    title: "Known Consignor",
-    content: [
-      {
-        name: "Known Consignor Responsible Person",
-        price: 70,
-      },
-      {
-        name: "Known Consignor (Modules 1-7)",
-        price: 55,
-      },
-      {
-        name: "Manual Handling Awareness",
-        price: 25,
-      },
-      {
-        name: "Fire Safety Awareness",
-        price: 25,
-      },
-      {
-        name: "Noise and Vibration Awareness",
-        price: 25,
-      },
-      {
-        name: "Seat Belt Misuse Awareness",
-        price: 300,
-      },
-    ],
-  },
-];
-
-function SearchableDropdown({ placeholder }: Props) {
+function SearchableDropdown({
+  placeholder,
+  selected,
+  setSelected,
+  options,
+}: Props) {
   const classes = useStyles();
-  const [selected, setSelected] = React.useState<string | null>(null);
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const [search, setSearch] = React.useState<string>("");
   const searchRef = React.useRef<HTMLInputElement>(null);
@@ -186,7 +154,13 @@ function SearchableDropdown({ placeholder }: Props) {
                       <span className={classes.pill}>Catagory</span>
                     </div>
                     {filtered.map(({ name, price }) => (
-                      <div className={classes.option}>
+                      <div
+                        className={classes.option}
+                        onClick={() => {
+                          setSelected(name);
+                          setOpen(false);
+                        }}
+                      >
                         <span>{name}</span>
                         <span>£{price.toFixed(2)}</span>
                       </div>
