@@ -76,7 +76,7 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 	return success, err
 }
 
-func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gentypes.AddAdminInput }) (*AdminResolver, error) {
+func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input gentypes.CreateAdminInput }) (*AdminResolver, error) {
 	if err := args.Input.Validate(); err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gent
 		return &AdminResolver{}, &errors.ErrUnauthorized
 	}
 
-	admin, addErr := grant.AddAdmin(args.Input)
+	admin, addErr := grant.CreateAdmin(args.Input)
 	if addErr != nil {
 		return nil, addErr
 	}

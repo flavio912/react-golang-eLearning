@@ -26,14 +26,14 @@ type AdminLoginInput struct {
 	Password string
 }
 
-type AddAdminInput struct {
+type CreateAdminInput struct {
 	FirstName string `valid:"alpha,required"`
 	LastName  string `valid:"alpha,required"`
 	Email     string `valid:"email,required"`
 	Password  string `valid:"stringlength(8|30),required"`
 }
 
-func (m *AddAdminInput) Validate() error {
+func (m *CreateAdminInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }

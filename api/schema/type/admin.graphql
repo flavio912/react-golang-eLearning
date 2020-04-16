@@ -19,7 +19,7 @@ input AdminLogin {
   password: String!
 }
 
-input AddAdminInput {
+input CreateAdminInput {
   firstName: String!
   lastName: String!
   email: String!

@@ -108,8 +108,8 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	return adminsToGentypes(admins), nil
 }
 
-// AddAdmin allows current admins to create new ones
-func (g *Grant) AddAdmin(input gentypes.AddAdminInput) (gentypes.Admin, error) {
+// CreateAdmin allows current admins to create new ones
+func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, error) {
 	if !g.IsAdmin {
 		return gentypes.Admin{}, &errors.ErrUnauthorized
 	}

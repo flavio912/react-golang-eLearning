@@ -11,12 +11,12 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-func TestAddAdmin(t *testing.T) {
+func TestCreateAdmin(t *testing.T) {
 	prepareTestDatabase()
 	// fake grant
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
-	newAdmin := gentypes.AddAdminInput{
+	newAdmin := gentypes.CreateAdminInput{
 		Email:     "admi1n@admin.com",
 		Password:  "aderrmin123",
 		FirstName: "Admin",
@@ -25,12 +25,12 @@ func TestAddAdmin(t *testing.T) {
 
 	t.Run("Must be admin to add user", func(t *testing.T) {
 		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
-		_, err := nonAdminGrant.AddAdmin(newAdmin)
+		_, err := nonAdminGrant.CreateAdmin(newAdmin)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Check Admin is created", func(t *testing.T) {
-		createdAdmin, err := grant.AddAdmin(newAdmin)
+		createdAdmin, err := grant.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Admin{
 			UUID:      createdAdmin.UUID,
@@ -42,9 +42,9 @@ func TestAddAdmin(t *testing.T) {
 
 	newAdmin.Email = "email2@admin.com"
 	t.Run("Check email must be unique", func(t *testing.T) {
-		_, err := grant.AddAdmin(newAdmin)
+		_, err := grant.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
-		a, err := grant.AddAdmin(newAdmin)
+		a, err := grant.CreateAdmin(newAdmin)
 		assert.Equal(t, gentypes.Admin{}, a, "should return blank")
 		assert.Equal(t, &errors.ErrUserExists, err)
 	})
