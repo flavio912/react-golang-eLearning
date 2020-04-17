@@ -95,11 +95,15 @@ function Tabs({ content, closeModal, initialState }: Props) {
   const classes = useStyles();
   const [state, setState] = React.useState<any>(initialState);
   const [active, setActive] = React.useState<string>(content[0].key || "");
+  const [ref, { width }] = useDimensions();
   const [{ right }, set] = useSpring(() => ({
     right: 0,
     config: config.default,
   }));
-  const [ref, { width }] = useDimensions();
+
+  const throwErr = () => {
+    throw new Error("Invalid Tab error");
+  };
 
   React.useEffect(() => {
     content.forEach(({ key }, index) => {
@@ -131,7 +135,11 @@ function Tabs({ content, closeModal, initialState }: Props) {
             <Page
               state={state}
               setState={setState}
-              setTab={(tab: string) => setActive(tab)}
+              setTab={(tab: string) =>
+                content.map((c) => c.key).includes(tab)
+                  ? setActive(tab)
+                  : throwErr()
+              }
               closeModal={closeModal}
             />
           </div>

@@ -3,7 +3,7 @@ import SideModal from "./SideModal";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
 import Button from "components/core/Button";
 import Tabs, { TabContent, Footer, Body } from "./Tabs";
-import SearchableDropdown from "../SearchableDropdown";
+import SearchableDropdown, { CourseCategory } from "../SearchableDropdown";
 import { ResultItem } from "components/UserSearch";
 import MultiUserSearch from "components/UserSearch/MultiUserSearch";
 
@@ -12,15 +12,17 @@ export default {
   decorators: [withKnobs],
 };
 
-const options = [
+const categories: CourseCategory[] = [
   {
     title: "Dangerous Goods - Air",
-    content: [
+    courses: [
       {
+        id: 1,
         name: "Cargo Operative Screener (COS) – VC, HS, XRY, ETD",
         price: 200,
       },
       {
+        id: 2,
         name: "Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD",
         price: 65,
       },
@@ -28,34 +30,59 @@ const options = [
   },
   {
     title: "Known Consignor",
-    content: [
+    courses: [
       {
+        id: 3,
         name: "Known Consignor Responsible Person",
         price: 70,
       },
       {
+        id: 4,
         name: "Known Consignor (Modules 1-7)",
         price: 55,
       },
       {
+        id: 5,
         name: "Manual Handling Awareness",
         price: 25,
       },
       {
+        id: 6,
         name: "Fire Safety Awareness",
         price: 25,
       },
       {
+        id: 7,
         name: "Noise and Vibration Awareness",
         price: 25,
       },
       {
+        id: 8,
         name: "Seat Belt Misuse Awareness",
         price: 300,
       },
     ],
   },
 ];
+
+const courseSearchFunction = async (query: string) => {
+  return await new Promise<CourseCategory[]>((resolve) =>
+    setTimeout(
+      () =>
+        resolve(
+          categories
+            .map(({ title, courses }) => ({
+              title,
+              courses: courses.filter(({ name }) =>
+                name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
+              ),
+            }))
+            .filter(({ courses }) => courses.length > 0)
+        ),
+      700
+    )
+  );
+};
 
 const items: ResultItem[] = [
   {
@@ -89,9 +116,8 @@ const tabs: TabContent[] = [
           </h1>
           <p style={{ fontSize: 15 }}>Select your Course</p>
           <SearchableDropdown
-            placeholder="Please select the Course you wish to book"
-            selected={[state.course]}
-            options={options}
+            selected={state.course ? [state.course] : []}
+            searchQuery={courseSearchFunction}
             setSelected={(selected) =>
               setState((s: object) => ({ ...s, course: selected[0] }))
             }

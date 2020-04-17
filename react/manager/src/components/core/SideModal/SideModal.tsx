@@ -4,6 +4,8 @@ import { animated, useSpring, config } from "react-spring";
 import { Theme } from "helpers/theme";
 import Icon from "../Icon";
 
+const modalWidth = 750;
+
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     width: "100%",
@@ -22,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   modal: {
     zIndex: 55,
     width: "100%",
-    maxWidth: 700,
+    maxWidth: modalWidth,
     height: "100%",
     position: "absolute",
     top: 0,
@@ -62,7 +64,7 @@ type Props = {
 function SideModal({ title, isOpen, closeModal, children }: Props) {
   const classes = useStyles();
   const { right, opacity, pointerEvents } = useSpring({
-    right: isOpen ? 0 : -700,
+    right: isOpen ? 0 : -modalWidth,
     opacity: isOpen ? 1 : 0,
     pointerEvents: isOpen ? "auto" : "none",
     config: config.default,
