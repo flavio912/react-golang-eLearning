@@ -47,6 +47,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
   content: {
     flexShrink: 0,
     height: "100%",
+    display: "flex",
+    flexDirection: "column",
+  },
+  pagebody: {
+    flexGrow: 1,
+    display: "flex",
+    flexDirection: "column",
+    padding: [30, 40],
+  },
+  footer: {
+    height: 120,
+    borderTop: `2px solid ${theme.colors.borderGrey}`,
+    backgroundColor: theme.colors.backgroundGrey,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: [0, 40],
   },
 }));
 
@@ -54,22 +72,28 @@ type ComponentProps = {
   state: any;
   setState: (newState: any) => void;
   setTab: (tab: string) => void;
-  closeModal?: () => void;
+  closeModal: () => void;
 };
 
 export type TabContent = {
   key: string;
-  component: ({ state, setState, setTab }: ComponentProps) => JSX.Element;
+  component: ({
+    state,
+    setState,
+    setTab,
+    closeModal,
+  }: ComponentProps) => JSX.Element;
 };
 
 type Props = {
   content: TabContent[];
-  closeModal?: () => void;
+  initialState: any;
+  closeModal: () => void;
 };
 
-function Tabs({ content, closeModal }: Props) {
+function Tabs({ content, closeModal, initialState }: Props) {
   const classes = useStyles();
-  const [state, setState] = React.useState<any>();
+  const [state, setState] = React.useState<any>(initialState);
   const [active, setActive] = React.useState<string>(content[0].key || "");
   const [{ right }, set] = useSpring(() => ({
     right: 0,
@@ -102,7 +126,7 @@ function Tabs({ content, closeModal }: Props) {
         ))}
       </div>
       <animated.div className={classes.body} ref={ref} style={{ right }}>
-        {content.map(({ key, component: Page }) => (
+        {content.map(({ key, component: Page }: TabContent) => (
           <div key={key} className={classes.content} style={{ width }}>
             <Page
               state={state}
@@ -115,6 +139,20 @@ function Tabs({ content, closeModal }: Props) {
       </animated.div>
     </div>
   );
+}
+
+type FooterProps = {
+  children: React.ReactNode;
+};
+
+export function Body({ children }: FooterProps) {
+  const classes = useStyles();
+  return <div className={classes.pagebody}>{children}</div>;
+}
+
+export function Footer({ children }: FooterProps) {
+  const classes = useStyles();
+  return <div className={classes.footer}>{children}</div>;
 }
 
 export default Tabs;

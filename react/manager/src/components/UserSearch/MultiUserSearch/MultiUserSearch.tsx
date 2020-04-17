@@ -37,28 +37,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
   searchFunction: (query: string) => Promise<ResultItem[]>;
   users: (ResultItem | undefined)[];
-  setUsers: (
-    users:
-      | ((current: (ResultItem | undefined)[]) => (ResultItem | undefined)[])
-      | (ResultItem | undefined)[]
-  ) => void;
+  setUsers: (users: (ResultItem | undefined)[]) => void;
+  style?: React.CSSProperties;
 };
 
-function MultiUserSearch({ searchFunction, users, setUsers }: Props) {
+function MultiUserSearch({ searchFunction, users, setUsers, style }: Props) {
   const classes = useStyles();
 
   const setUserByIndex = (index: number, value: ResultItem | undefined) =>
-    setUsers((users) =>
+    setUsers(
       users.reduce((arr, curr, i) => [...arr, index === i ? value : curr], [])
     );
 
   const removeUserByIndex = (index: number) =>
-    setUsers((users) =>
+    setUsers(
       users.reduce((arr, curr, i) => (index === i ? arr : [...arr, curr]), [])
     );
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} style={style}>
       {users.map((user, index) => (
         <div className={classes.section}>
           <p className={classes.nthdelegate}>
@@ -83,7 +80,7 @@ function MultiUserSearch({ searchFunction, users, setUsers }: Props) {
         <Button
           archetype="grey"
           icon={{ left: "AddDelegateRepeater" }}
-          onClick={() => setUsers((current) => [...current, undefined])}
+          onClick={() => setUsers([...users, undefined])}
           className={classes.button}
           bold
           small
