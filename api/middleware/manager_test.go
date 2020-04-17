@@ -353,3 +353,61 @@ func TestGetManagers(t *testing.T) {
 		})
 	})
 }
+
+func TestUpdateManager(t *testing.T) {
+	prepareTestDatabase()
+
+	input := gentypes.UpdateManagerInput{
+		UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Email:     stringPointer("test@test.com"),
+		FirstName: stringPointer("test"),
+		LastName:  stringPointer("test2"),
+		Telephone: stringPointer("test3"),
+		JobTitle:  stringPointer("test4"),
+	}
+
+	t.Run("Updates existing manager", func(t *testing.T) {
+		prepareTestDatabase()
+		manager, err := adminGrant.UpdateManager(input)
+
+		outputWant := gentypes.Manager{
+			User: gentypes.User{
+				UUID:      input.UUID,
+				Email:     *input.Email,
+				FirstName: *input.FirstName,
+				LastName:  *input.LastName,
+				Telephone: *input.Telephone,
+				JobTitle:  *input.JobTitle,
+				CreatedAt: manager.CreatedAt,
+				LastLogin: manager.LastLogin,
+			},
+			ProfileImageURL: manager.ProfileImageURL,
+			CompanyID:       manager.CompanyID,
+		}
+
+		assert.Nil(t, err)
+		assert.Equal(t, outputWant, manager)
+
+		manager, err = adminGrant.GetManagerByUUID(input.UUID)
+		assert.Nil(t, err)
+		assert.Equal(t, outputWant, manager)
+	})
+
+	t.Run("Access Control Tests", func(t *testing.T) {
+		_, err := managerGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: managerGrant.Claims.UUID})
+		assert.Nil(t, err, "manager should be able to edit itself")
+
+		_, err = managerGrant.UpdateManager(gentypes.UpdateManagerInput{
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		})
+		assert.Equal(t, &errors.ErrUnauthorized, err, "manager should not be able to edit other managers")
+
+		_, err = delegateGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrUnauthorized, err, "delegates must not be able to update manager")
+	})
+
+	t.Run("UUID must exist", func(t *testing.T) {
+		_, err := adminGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrManagerNotFound, err)
+	})
+}

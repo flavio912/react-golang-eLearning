@@ -41,6 +41,15 @@ type Manager implements User {
   profileImageUrl: String
 }
 
+input UpdateManagerInput {
+  uuid: UUID!
+  email: String
+  firstName: String
+  lastName: String
+  telephone: String
+  jobTitle: String
+}
+
 type ManagerPage implements PaginatedQuery {
   edges: [Manager]
   pageInfo: PageInfo

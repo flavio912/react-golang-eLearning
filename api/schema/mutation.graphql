@@ -18,6 +18,7 @@ type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
   createManager(input: CreateManagerInput!): Manager
+  updateManager(input: UpdateManagerInput!): Manager
   managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp
   managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!

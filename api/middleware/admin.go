@@ -175,7 +175,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 	save := database.GormDB.Save(admin)
 	if save.Error != nil {
 		glog.Errorf("Error updating Admin with UUID: %s - error: %s", input.UUID, save.Error.Error())
-		return gentypes.Admin{}, &errors.ErrUnableToResolve
+		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
 	return adminToGentype(admin), nil

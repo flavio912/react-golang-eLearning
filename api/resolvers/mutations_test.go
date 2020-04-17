@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/testhelpers"
 
-	"github.com/graph-gophers/graphql-go/gqltesting"
+	gqlerrors "github.com/graph-gophers/graphql-go/errors"
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -52,7 +54,7 @@ func TestAdminLogin(t *testing.T) {
 }
 
 func TestUpdateAdmin(t *testing.T) {
-	gqltesting.RunTests(t, []*gqltesting.Test{
+	testhelpers.RunTests(t, []*testhelpers.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,
@@ -84,8 +86,130 @@ func TestUpdateAdmin(t *testing.T) {
 	})
 }
 
+func TestUpdateManager(t *testing.T) {
+	testhelpers.RunTests(t, []*testhelpers.Test{
+		{
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateManager(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+						firstName: "edfadd",
+						lastName: "dsa"
+					}) {
+						uuid
+						email
+						firstName
+						lastName
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateManager": {
+					  "uuid": "00000000-0000-0000-0000-000000000002",
+					  "email": "ver@diff.com",
+						"firstName": "edfadd",
+						"lastName": "dsa"
+					}
+				}
+			`,
+		},
+		{
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateManager(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+						email: "dsa@das.dfa",
+						firstName: "asdf",
+						lastName: "fdsa",
+						telephone: "07886515216",
+						jobTitle: "overlord",
+					}) {
+						uuid
+						email
+						firstName
+						lastName
+						telephone
+						jobTitle
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateManager": {
+					  "uuid": "00000000-0000-0000-0000-000000000002",
+					  "email": "dsa@das.dfa",
+						"firstName": "asdf",
+						"lastName": "fdsa",
+						"telephone": "07886515216",
+						"jobTitle": "overlord"
+					}
+				}
+			`,
+		},
+		{
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateManager(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateManager": null
+				}
+			`,
+			ExpectedErrors: []*gqlerrors.QueryError{
+				{
+					Message:       errors.ErrManagerNotFound.Error(),
+					Path:          []interface{}{"updateManager"},
+					ResolverError: &errors.ErrManagerNotFound,
+					Extensions:    errors.ErrManagerNotFound.Extensions(),
+				},
+			},
+		},
+		// {
+		// 	Context: adminContext,
+		// 	Schema:  schema,
+		// 	Query: `
+		// 		mutation {
+		// 			updateManager(input: {
+		// 				uuid: "00000000-0000-0000-0000-000000000000"
+		// 				firstName: "123!"
+		// 				email: "not^%!£$*"
+		// 			}) {
+		// 				uuid
+		// 			}
+		// 		}
+		// 	`,
+		// 	ExpectedResult: `
+		// 		{
+		// 			"updateManager": null
+		// 		}
+		// 	`,
+		// 	ExpectedErrors: []*gqlerrors.QueryError{
+		// 		{
+		// 			Message:       "Email: not^%!£$* does not validate as email;FirstName: 123! does not validate as alpha",
+		// 			Path:          []interface{}{"updateManager"},
+		// 			ResolverError: &errors.ErrManagerNotFound,
+		// 			Extensions:    errors.ErrManagerNotFound.Extensions(),
+		// 		},
+		// 	},
+		// },
+	})
+}
+
 func TestDeleteAdmin(t *testing.T) {
-	gqltesting.RunTests(t, []*gqltesting.Test{
+	testhelpers.RunTests(t, []*testhelpers.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,

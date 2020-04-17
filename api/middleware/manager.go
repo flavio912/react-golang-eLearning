@@ -227,6 +227,46 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 	return g.managerToGentype(manager), nil
 }
 
+func (g *Grant) UpdateManager(input gentypes.UpdateManagerInput) (gentypes.Manager, error) {
+	if !g.IsAdmin && !(g.IsManager && g.Claims.UUID == input.UUID) {
+		return gentypes.Manager{}, &errors.ErrUnauthorized
+	}
+
+	var manager models.Manager
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&manager)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Manager{}, &errors.ErrManagerNotFound
+		}
+		glog.Errorf("Unable to find manager to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
+	if input.Email != nil {
+		manager.Email = *input.Email
+	}
+	if input.FirstName != nil {
+		manager.FirstName = *input.FirstName
+	}
+	if input.LastName != nil {
+		manager.LastName = *input.LastName
+	}
+	if input.Telephone != nil {
+		manager.Telephone = *input.Telephone
+	}
+	if input.JobTitle != nil {
+		manager.JobTitle = *input.JobTitle
+	}
+
+	save := database.GormDB.Save(manager)
+	if save.Error != nil {
+		glog.Errorf("Error updating manager with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
+	return g.managerToGentype(manager), nil
+}
+
 func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	// managers can delete themselves
 	// admins can delete any manager

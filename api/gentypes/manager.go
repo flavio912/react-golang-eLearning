@@ -39,6 +39,20 @@ func (m *CreateManagerInput) Validate() error {
 	return err
 }
 
+type UpdateManagerInput struct {
+	UUID      UUID
+	Email     *string `valid:"email"`
+	FirstName *string `valid:"alpha"`
+	LastName  *string `valid:"alpha"`
+	Telephone *string `valid:"numeric"`
+	JobTitle  *string
+}
+
+func (m *UpdateManagerInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
 type DeleteManagerInput struct {
 	UUID UUID
 }

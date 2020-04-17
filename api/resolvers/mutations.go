@@ -61,6 +61,28 @@ func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input
 	}, loadErr
 }
 
+// Allows a manager to update their details or an admin
+func (m *MutationResolver) UpdateManager(ctx context.Context, args struct{ Input gentypes.UpdateManagerInput }) (*ManagerResolver, error) {
+	// Validate the manager input
+	if err := args.Input.Validate(); err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerResolver{}, &errors.ErrUnauthorized
+	}
+
+	manager, err := grant.UpdateManager(args.Input)
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	return &ManagerResolver{
+		manager: manager,
+	}, nil
+}
+
 func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input gentypes.DeleteManagerInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
