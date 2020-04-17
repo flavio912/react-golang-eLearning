@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/testhelpers"
 
-	gqlerrors "github.com/graph-gophers/graphql-go/errors"
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -89,6 +90,7 @@ func TestUpdateAdmin(t *testing.T) {
 func TestUpdateManager(t *testing.T) {
 	testhelpers.RunTests(t, []*testhelpers.Test{
 		{
+			Name:    "Update Some Fields",
 			Context: adminContext,
 			Schema:  schema,
 			Query: `
@@ -117,6 +119,7 @@ func TestUpdateManager(t *testing.T) {
 			`,
 		},
 		{
+			Name:    "Update All Fields",
 			Context: adminContext,
 			Schema:  schema,
 			Query: `
@@ -152,6 +155,7 @@ func TestUpdateManager(t *testing.T) {
 			`,
 		},
 		{
+			Name:    "UUID does not exist",
 			Context: adminContext,
 			Schema:  schema,
 			Query: `
@@ -168,43 +172,40 @@ func TestUpdateManager(t *testing.T) {
 					"updateManager": null
 				}
 			`,
-			ExpectedErrors: []*gqlerrors.QueryError{
+			ExpectedErrors: []testhelpers.TestQueryError{
 				{
-					Message:       errors.ErrManagerNotFound.Error(),
-					Path:          []interface{}{"updateManager"},
 					ResolverError: &errors.ErrManagerNotFound,
-					Extensions:    errors.ErrManagerNotFound.Extensions(),
+					Path:          []interface{}{"updateManager"},
 				},
 			},
 		},
-		// {
-		// 	Context: adminContext,
-		// 	Schema:  schema,
-		// 	Query: `
-		// 		mutation {
-		// 			updateManager(input: {
-		// 				uuid: "00000000-0000-0000-0000-000000000000"
-		// 				firstName: "123!"
-		// 				email: "not^%!£$*"
-		// 			}) {
-		// 				uuid
-		// 			}
-		// 		}
-		// 	`,
-		// 	ExpectedResult: `
-		// 		{
-		// 			"updateManager": null
-		// 		}
-		// 	`,
-		// 	ExpectedErrors: []*gqlerrors.QueryError{
-		// 		{
-		// 			Message:       "Email: not^%!£$* does not validate as email;FirstName: 123! does not validate as alpha",
-		// 			Path:          []interface{}{"updateManager"},
-		// 			ResolverError: &errors.ErrManagerNotFound,
-		// 			Extensions:    errors.ErrManagerNotFound.Extensions(),
-		// 		},
-		// 	},
-		// },
+		{
+			Name:    "Fail validation",
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateManager(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+						firstName: "123!"
+						email: "not^%!£$*"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateManager": null
+				}
+			`,
+			ExpectedErrors: []testhelpers.TestQueryError{
+				{
+					Message: helpers.StringPointer("Email: not^%!£$* does not validate as email;FirstName: 123! does not validate as alpha"),
+					Path:    []interface{}{"updateManager"},
+				},
+			},
+		},
 	})
 }
 

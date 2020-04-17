@@ -8,23 +8,31 @@ import (
 	"encoding/json"
 	"fmt"
 	"sort"
-	"strconv"
 	"testing"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	graphql "github.com/graph-gophers/graphql-go"
 	gqlerrors "github.com/graph-gophers/graphql-go/errors"
 	"github.com/stretchr/testify/assert"
 )
 
+type TestQueryError struct {
+	Message       *string
+	ResolverError error
+	Path          []interface{}
+}
+
 // Test is a GraphQL test case to be used with RunTest(s).
 type Test struct {
+	Name           string
 	Context        context.Context
 	Schema         *graphql.Schema
 	Query          string
 	OperationName  string
 	Variables      map[string]interface{}
 	ExpectedResult string
-	ExpectedErrors []*gqlerrors.QueryError
+	ExpectedErrors []TestQueryError
 }
 
 // RunTests runs the given GraphQL test cases as subtests.
@@ -35,7 +43,7 @@ func RunTests(t *testing.T, tests []*Test) {
 	}
 
 	for i, test := range tests {
-		t.Run(strconv.Itoa(i+1), func(t *testing.T) {
+		t.Run(fmt.Sprintf("%d %s", i+1, test.Name), func(t *testing.T) {
 			RunTest(t, test)
 		})
 	}
@@ -86,21 +94,35 @@ func formatJSON(data []byte) ([]byte, error) {
 	return formatted, nil
 }
 
-func checkErrors(t *testing.T, want, got []*gqlerrors.QueryError) {
+func checkErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryError) {
+	var gotTestErrors []TestQueryError
+	for _, e := range got {
+		gotTestErrors = append(gotTestErrors, TestQueryError{
+			Message:       helpers.StringPointer(e.Message),
+			Path:          e.Path,
+			ResolverError: e.ResolverError,
+		})
+	}
+	sortErrors(gotTestErrors)
 	sortErrors(want)
-	sortErrors(got)
 
-	for i, g := range got {
+	for i, g := range gotTestErrors {
 		if i > len(want)-1 {
-			t.Errorf("Got more errors than wanted: \n\tWant: %#v\n\tGot : %#v", want, got)
+			t.Errorf("Got more errors than wanted: \n\tWant: %#v\n\tGot : %#v", want, gotTestErrors)
 			return
 		}
 
-		assert.Equal(t, *want[i], *g)
+		assert.Equal(t, want[i].Path, g.Path)
+		if want[i].Message != nil {
+			assert.Equal(t, *want[i].Message, *g.Message)
+		}
+		if want[i].ResolverError != nil {
+			assert.Equal(t, want[i].ResolverError, g.ResolverError)
+		}
 	}
 }
 
-func sortErrors(errors []*gqlerrors.QueryError) {
+func sortErrors(errors []TestQueryError) {
 	if len(errors) <= 1 {
 		return
 	}
