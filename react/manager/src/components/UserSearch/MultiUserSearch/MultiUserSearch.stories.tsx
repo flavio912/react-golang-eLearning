@@ -1,9 +1,10 @@
 import * as React from "react";
-import UserSearch, { ResultItem } from "./UserSearch";
-import { withKnobs, text, number } from "@storybook/addon-knobs";
+import MultiUserSearch from "./MultiUserSearch";
+import { withKnobs } from "@storybook/addon-knobs";
+import { ResultItem } from "../UserSearch";
 
 export default {
-  title: "Search/UserSearch",
+  title: "Search/MultiUserSearch",
   decorators: [withKnobs],
 };
 
@@ -28,12 +29,17 @@ const searchFunc = async (query: string) => {
   );
 };
 
-export const plain = () => {
+const Wrapper = () => {
+  const [users, setUsers] = React.useState<(ResultItem | undefined)[]>([undefined]);
   return (
-    <UserSearch
-      companyName={text("Company name", "Fedex")}
+    <MultiUserSearch
       searchFunction={searchFunc}
-      debounceTime={number("Debounce time (ms)", 500)}
+      users={users}
+      setUsers={setUsers}
     />
   );
+};
+
+export const normal = () => {
+  return <Wrapper />;
 };

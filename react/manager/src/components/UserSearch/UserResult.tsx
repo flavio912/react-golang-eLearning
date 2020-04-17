@@ -34,7 +34,7 @@ function UserResult({ result, onClick }: Props) {
       }}
     >
       {result.key}
-      <IdentTag ident={"Fedex_BruceWillis"} />
+      <IdentTag ident={result.value} />
     </div>
   );
 }
