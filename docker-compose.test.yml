@@ -9,8 +9,6 @@ services:
       - AWS_SECRET_ACCESS_KEY=2BgTH6X0PPsSZy153yzs3orYgSi007S/rT1qSXPr
     volumes:
       - ./api:/app
-    ports:
-      - "8080:8080"
     depends_on:
       - test_db
   test_db:
