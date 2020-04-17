@@ -30,8 +30,8 @@ type OnlineCourse {
 }
 
 type ClassroomCourse {
-  uuid: UUID
-  info: CourseInfo
+  uuid: UUID!
+  info: CourseInfo!
 }
 
 input SaveClassroomCourseInput {

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -66,6 +65,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 		}
 		courseInfo.ImageKey = &key
 	}
+
 	// if infoChanges.Tags != nil {
 	// 	courseInfo.Tags = infoChanges.Tags
 	// }
@@ -109,6 +109,11 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 
 // GetCourseInfoFromID -
 func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, error) {
+	// TODO: This can be relaxed but should check whether they have access to that course
+	if !g.IsAdmin {
+		return gentypes.CourseInfo{}, &errors.ErrUnauthorized
+	}
+
 	var info models.CourseInfo
 	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
 	if query.Error != nil {
@@ -343,6 +348,15 @@ func classroomCourseToGentype(classroomCourse models.ClassroomCourse) gentypes.C
 	}
 }
 
+// SaveClassroomCourse is a wrapper around CreateClassroomCourse and UpdateClassroomCourse to
+// update the course if a uuid is provided, otherwise it will create a new one
+func (g *Grant) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
+	if courseInfo.UUID != nil {
+		return g.UpdateClassroomCourse(courseInfo)
+	}
+	return g.CreateClassroomCourse(courseInfo)
+}
+
 // CreateClassroomCourse makes a new classroom course
 func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
 	if !g.IsAdmin {
@@ -447,8 +461,6 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		updates.MaxParticipants = *courseInfo.MaxParticipants
 	}
 
-	fmt.Print("START DATE")
-	fmt.Print(updates.StartDate)
 	q := database.GormDB.Model(models.ClassroomCourse{}).
 		Where("uuid = ?", *courseInfo.UUID).
 		Updates(&updates).

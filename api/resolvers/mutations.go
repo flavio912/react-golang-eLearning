@@ -250,6 +250,18 @@ func (m *MutationResolver) SaveOnlineCourse(
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
 	Input gentypes.SaveClassroomCourseInput
-}) (*string, error) {
-	return nil, nil
+}) (*ClassroomCourseResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ClassroomCourseResolver{}, &errors.ErrUnauthorized
+	}
+
+	course, err := grant.SaveClassroomCourse(args.Input)
+	if err != nil {
+		return &ClassroomCourseResolver{}, err
+	}
+
+	return NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{
+		ClassroomCourse: course,
+	})
 }

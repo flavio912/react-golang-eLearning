@@ -14,21 +14,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-func stringPointer(str string) *string {
-	_string := str
-	return &_string
-}
-
-func floatPointer(flo float64) *float64 {
-	_float := flo
-	return &_float
-}
-
-func boolPointer(boolean bool) *bool {
-	_boolean := boolean
-	return &_boolean
-}
-
 func TestCreateOnlineCourse(t *testing.T) {
 	prepareTestDatabase()
 
@@ -108,14 +93,14 @@ func TestUpdateCourseInfo(t *testing.T) {
 		prepareTestDatabase()
 		open := gentypes.Open
 		inp := middleware.UpdateCourseInfoInput{
-			Name:            stringPointer("UpdatedCourse"),
-			Price:           floatPointer(43.4),
-			Color:           stringPointer("#ffffff"),
-			Excerpt:         stringPointer("{}"),
-			Introduction:    stringPointer("{}"),
+			Name:            helpers.StringPointer("UpdatedCourse"),
+			Price:           helpers.FloatPointer(43.4),
+			Color:           helpers.StringPointer("#ffffff"),
+			Excerpt:         helpers.StringPointer("{}"),
+			Introduction:    helpers.StringPointer("{}"),
 			AccessType:      &open,
-			BackgroundCheck: boolPointer(false),
-			SpecificTerms:   stringPointer("{}"),
+			BackgroundCheck: helpers.BoolPointer(false),
+			SpecificTerms:   helpers.StringPointer("{}"),
 		}
 		_, err := grant.UpdateCourseInfo(1, inp)
 		assert.Nil(t, err)
