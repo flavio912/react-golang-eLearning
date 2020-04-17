@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -13,32 +14,47 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
-	return gentypes.OnlineCourse{
-		Course: gentypes.Course{
-			UUID:         course.UUID,
-			CourseInfoID: course.CourseInfoID,
-		},
+/* Course Info CRUD */
+
+func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
+	// TODO: Make for admin only
+	return gentypes.CourseInfo{
+		ID:              courseInfo.ID,
+		Name:            courseInfo.Name,
+		AccessType:      courseInfo.AccessType,
+		BackgroundCheck: courseInfo.BackgroundCheck,
+		Price:           courseInfo.Price,
+		Color:           courseInfo.Color,
+		Introduction:    courseInfo.Introduction,
+		Excerpt:         courseInfo.Excerpt,
+		SpecificTerms:   courseInfo.SpecificTerms,
 	}
 }
 
-func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
-	return gentypes.CourseInfo{
-		ID:   courseInfo.ID,
-		Name: courseInfo.Name,
-	}
+type UpdateCourseInfoInput struct {
+	Name              *string
+	Price             *float64
+	Color             *string `valid:"hexcolor"`
+	CategoryUUID      *gentypes.UUID
+	Tags              *[]gentypes.UUID
+	Excerpt           *string `valid:"json"`
+	Introduction      *string `valid:"json"`
+	AccessType        *gentypes.AccessType
+	ImageSuccessToken *string
+	BackgroundCheck   *bool
+	SpecificTerms     *string `valid:"json"`
 }
 
 // UpdateCourseInfo updates the courseInfo for a given courseInfoID
-func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfoInput) error {
+func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfoInput) (gentypes.CourseInfo, error) {
 	if !g.IsAdmin {
-		return &errors.ErrUnauthorized
+		return gentypes.CourseInfo{}, &errors.ErrUnauthorized
 	}
 
 	// Validate input
 	_, err := govalidator.ValidateStruct(infoChanges)
 	if err != nil {
-		return err
+		return gentypes.CourseInfo{}, err
 	}
 
 	var courseInfo models.CourseInfo
@@ -46,7 +62,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
 		if err != nil {
-			return err
+			return gentypes.CourseInfo{}, err
 		}
 		courseInfo.ImageKey = &key
 	}
@@ -81,14 +97,14 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
 	}
 
-	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(courseInfo)
+	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(&courseInfo)
 	if query.Error != nil {
 		glog.Errorf("Unable to update courseInfo: %s", query.Error.Error())
 		//logging.Log(ctx, sentry.LevelError, "Unable to update courseInfo", query.Error)
-		return &errors.ErrWhileHandling
+		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
 	}
 
-	return nil
+	return courseInfoToGentype(courseInfo), nil
 }
 
 // GetCourseInfoFromID -
@@ -103,6 +119,40 @@ func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, err
 		return courseInfoToGentype(info), &errors.ErrWhileHandling
 	}
 	return courseInfoToGentype(info), nil
+}
+
+/* Online Course CRUD */
+
+func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
+	return gentypes.OnlineCourse{
+		Course: gentypes.Course{
+			UUID:         course.UUID,
+			CourseInfoID: course.CourseInfoID,
+		},
+	}
+}
+
+// ComposeCourseInfo creates a courseInfo model from given info
+func ComposeCourseInfo(courseInfo UpdateCourseInfoInput) (models.CourseInfo, error) {
+	info := models.CourseInfo{
+		Name:  helpers.NilStringToEmpty(courseInfo.Name),
+		Price: helpers.NilFloatToZero(courseInfo.Price),
+		Color: helpers.NilStringToEmpty(courseInfo.Color),
+		//TAGS
+		Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
+		Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
+		SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
+		CategoryUUID:  courseInfo.CategoryUUID,
+	}
+
+	if courseInfo.AccessType != nil {
+		info.AccessType = *courseInfo.AccessType
+	}
+	if courseInfo.BackgroundCheck != nil {
+		info.BackgroundCheck = *courseInfo.BackgroundCheck
+	}
+
+	return info, nil
 }
 
 // CreateOnlineCourse creates a new online course
@@ -170,7 +220,7 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 	}
 
 	// TODO: think about putting these two in a transaction
-	err := g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
+	_, err := g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
@@ -278,16 +328,135 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 	return nil
 }
 
-type UpdateCourseInfoInput struct {
-	Name              *string
-	Price             *float64
-	Color             *string `valid:"hexcolor"`
-	CategoryUUID      *gentypes.UUID
-	Tags              *[]gentypes.UUID
-	Excerpt           *string `valid:"json"`
-	Introduction      *string `valid:"json"`
-	AccessType        *gentypes.AccessType
-	ImageSuccessToken *string
-	BackgroundCheck   *bool
-	SpecificTerms     *string `valid:"json"`
+/* Classroom Course CRUD */
+
+func classroomCourseToGentype(classroomCourse models.ClassroomCourse) gentypes.ClassroomCourse {
+	return gentypes.ClassroomCourse{
+		Course: gentypes.Course{
+			UUID:         classroomCourse.UUID,
+			CourseInfoID: classroomCourse.CourseInfoID,
+		},
+		StartDate:       classroomCourse.StartDate,
+		EndDate:         classroomCourse.EndDate,
+		Location:        classroomCourse.Location,
+		MaxParticipants: classroomCourse.MaxParticipants,
+	}
+}
+
+// CreateClassroomCourse makes a new classroom course
+func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
+	if !g.IsAdmin {
+		return gentypes.ClassroomCourse{}, &errors.ErrUnauthorized
+	}
+
+	// Validate
+	_, err := govalidator.ValidateStruct(courseInfo)
+	if err != nil {
+		return gentypes.ClassroomCourse{}, err
+	}
+
+	course := models.ClassroomCourse{}
+
+	if courseInfo.MaxParticipants != nil {
+		course.MaxParticipants = *courseInfo.MaxParticipants
+	}
+	if courseInfo.StartDate != nil {
+		course.StartDate = *courseInfo.StartDate
+	}
+	if courseInfo.EndDate != nil {
+		course.EndDate = *courseInfo.EndDate
+	}
+	if courseInfo.Location != nil {
+		course.Location = *courseInfo.Location
+	}
+
+	course.CourseInfo, err = ComposeCourseInfo(UpdateCourseInfoInput{
+		Name:            courseInfo.Name,
+		Price:           courseInfo.Price,
+		Color:           courseInfo.Color,
+		CategoryUUID:    courseInfo.CategoryUUID,
+		Excerpt:         courseInfo.Excerpt,
+		Introduction:    courseInfo.Introduction,
+		AccessType:      courseInfo.AccessType,
+		BackgroundCheck: courseInfo.BackgroundCheck,
+		SpecificTerms:   courseInfo.SpecificTerms,
+	})
+	if err != nil {
+		return gentypes.ClassroomCourse{}, err
+	}
+
+	query := database.GormDB.Create(&course)
+	if query.Error != nil {
+		glog.Errorf("Unable to create classroom course: %s", query.Error.Error())
+		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+	}
+
+	return classroomCourseToGentype(course), nil
+}
+
+// UpdateClassroomCourse updates the given classroom course
+func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
+	if !g.IsAdmin {
+		return gentypes.ClassroomCourse{}, &errors.ErrUnauthorized
+	}
+
+	// A uuid is required for this function
+	if courseInfo.UUID == nil {
+		return gentypes.ClassroomCourse{}, &errors.ErrUUIDInvalid
+	}
+
+	// Find the course
+	var course models.ClassroomCourse
+	query := database.GormDB.Where("uuid = ?", *courseInfo.UUID).Find(&course)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.ClassroomCourse{}, &errors.ErrNotFound
+		}
+		glog.Errorf("Unable to get course while updating: %s", query.Error.Error())
+		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+	}
+
+	// Update courseInfo
+	_, err := g.UpdateCourseInfo(course.CourseInfoID, UpdateCourseInfoInput{
+		Name:            courseInfo.Name,
+		CategoryUUID:    courseInfo.CategoryUUID,
+		Excerpt:         courseInfo.Excerpt,
+		Introduction:    courseInfo.Introduction,
+		BackgroundCheck: courseInfo.BackgroundCheck,
+		AccessType:      courseInfo.AccessType,
+		Price:           courseInfo.Price,
+		Color:           courseInfo.Color,
+		SpecificTerms:   courseInfo.SpecificTerms,
+	})
+	if err != nil {
+		return gentypes.ClassroomCourse{}, err
+	}
+
+	var updates models.ClassroomCourse
+	if courseInfo.StartDate != nil {
+		updates.StartDate = *courseInfo.StartDate
+	}
+	if courseInfo.EndDate != nil {
+		updates.EndDate = *courseInfo.EndDate
+	}
+	if courseInfo.Location != nil {
+		updates.Location = *courseInfo.Location
+	}
+	if courseInfo.MaxParticipants != nil {
+		// If max participants is 0 it will not update
+		updates.MaxParticipants = *courseInfo.MaxParticipants
+	}
+
+	fmt.Print("START DATE")
+	fmt.Print(updates.StartDate)
+	q := database.GormDB.Model(models.ClassroomCourse{}).
+		Where("uuid = ?", *courseInfo.UUID).
+		Updates(&updates).
+		Find(&course)
+	if q.Error != nil {
+		glog.Errorf("Unable to update course: %s", q.Error.Error())
+		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+	}
+
+	return classroomCourseToGentype(course), nil
 }

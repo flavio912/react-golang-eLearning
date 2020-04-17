@@ -41,3 +41,15 @@ func NewCourseInfoResolver(ctx context.Context, args NewCourseInfoArgs) (*Course
 }
 
 func (r *CourseInfoResolver) Name() *string { return helpers.StringPointer(r.CourseInfo.Name) }
+func (r *CourseInfoResolver) BackgroundCheck() *bool {
+	return helpers.BoolPointer(r.CourseInfo.BackgroundCheck)
+}
+func (r *CourseInfoResolver) Price() *float64  { return helpers.FloatPointer(r.CourseInfo.Price) }
+func (r *CourseInfoResolver) Color() *string   { return helpers.StringPointer(r.CourseInfo.Color) }
+func (r *CourseInfoResolver) Excerpt() *string { return helpers.StringPointer(r.CourseInfo.Excerpt) }
+func (r *CourseInfoResolver) Introduction() *string {
+	return helpers.StringPointer(r.CourseInfo.Introduction)
+}
+func (r *CourseInfoResolver) SpecificTerms() *string {
+	return helpers.StringPointer(r.CourseInfo.SpecificTerms)
+}

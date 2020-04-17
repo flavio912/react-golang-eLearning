@@ -51,13 +51,14 @@ type CourseStructure struct {
 }
 
 type ClassroomCourse struct {
-	UUID       gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	CourseInfo CourseInfo
+	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	CourseInfo   CourseInfo
+	CourseInfoID uint
 	//Tutor      Tutor // The tutor user running this course
-	StartDate time.Time
-	EndDate   time.Time
-	Location  string // e.g The Ritz, London.
-
+	StartDate       gentypes.Time
+	EndDate         gentypes.Time
+	Location        string // e.g The Ritz, London.
+	MaxParticipants int
 	// Classroom courses can require you to take some online courses first
 	OnlineCourses []OnlineCourse `gorm:"many2many:online_classroom_link;"`
 }

@@ -16,6 +16,12 @@ enum ModuleElement {
 
 type CourseInfo {
   name: String
+  backgroundCheck: Boolean
+  price: Float
+  color: String
+  excerpt: String
+  introduction: String
+  specificTerms: String
 }
 
 type OnlineCourse {
@@ -43,6 +49,9 @@ input SaveClassroomCourseInput {
   bannerImageSuccess: String
   tutorUUID: UUID # UUID of the Tutor (classroom course only)
   maxParticipants: Int
+  startDate: Time
+  endDate: Time
+  location: String
 }
 
 input SaveOnlineCourseInput {

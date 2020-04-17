@@ -38,3 +38,13 @@ func BoolPointer(boolean bool) *bool {
 	_boolean := boolean
 	return &_boolean
 }
+
+func IntPointer(integer int) *int {
+	_integer := integer
+	return &_integer
+}
+
+func UintPointer(unsignedInt uint) *uint {
+	_unsignedInt := unsignedInt
+	return &_unsignedInt
+}

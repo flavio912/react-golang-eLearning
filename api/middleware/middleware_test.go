@@ -39,7 +39,7 @@ func TestMain(m *testing.M) {
 	if err := helpers.LoadConfig("../dev_env/test_config.yml"); err != nil {
 		panic(err)
 	}
-	errDb := database.SetupDatabase(false)
+	errDb := database.SetupDatabase(true)
 	if errDb != nil {
 		panic(errDb)
 	}

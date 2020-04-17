@@ -34,6 +34,9 @@ type SaveClassroomCourseInput struct {
 	CourseInput
 	TutorUUID       *UUID
 	MaxParticipants *int
+	StartDate       *Time
+	EndDate         *Time
+	Location        *string
 }
 
 type SaveOnlineCourseInput struct {
@@ -53,8 +56,15 @@ type ModuleItem struct {
 }
 
 type CourseInfo struct {
-	ID   uint
-	Name string
+	ID              uint
+	Name            string
+	AccessType      AccessType
+	BackgroundCheck bool
+	Price           float64
+	Color           string `valid:"hexcolor"`
+	Introduction    string `valid:"json"`
+	Excerpt         string `valid:"json"`
+	SpecificTerms   string `valid:"json"`
 }
 
 type Course struct {
@@ -68,4 +78,8 @@ type OnlineCourse struct {
 
 type ClassroomCourse struct {
 	Course
+	StartDate       Time
+	EndDate         Time
+	Location        string
+	MaxParticipants int
 }

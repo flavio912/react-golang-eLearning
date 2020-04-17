@@ -1,4 +1,5 @@
 scalar UUID
+scalar Time
 
 schema {
   query: Query
