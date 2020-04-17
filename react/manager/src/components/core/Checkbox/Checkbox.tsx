@@ -17,6 +17,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   label: {
     margin: theme.spacing(1),
     fontSize: theme.fontSizes.small,
+    maxWidth: 500,
   },
 }));
 
@@ -26,21 +27,21 @@ type Checkbox = {
 };
 
 type Props = {
-  children: Checkbox[];
+  boxes: Checkbox[];
   setBoxes: (values: Checkbox[]) => void;
 };
 
-function Checkbox({ children, setBoxes }: Props) {
+function Checkbox({ boxes, setBoxes }: Props) {
   const classes = useStyles();
   return (
     <div className={classes.container}>
-      {children.map(({ label, checked }: Checkbox, index: number) => (
+      {boxes.map(({ label, checked }: Checkbox, index: number) => (
         <div
           className={classes.checkbox}
           key={label}
           onClick={() =>
             setBoxes(
-              children.reduce(
+              boxes.reduce(
                 (arr: Checkbox[], curr: Checkbox, i: number) => [
                   ...arr,
                   i === index ? { label, checked: !curr.checked } : curr,

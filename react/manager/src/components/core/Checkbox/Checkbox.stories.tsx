@@ -14,7 +14,7 @@ const Wrapper = () => {
     { label: "Checkbox 1", checked: true },
     { label: "Checkbox 2", checked: false },
   ]);
-  return <Checkbox setBoxes={setBoxes}>{boxes}</Checkbox>;
+  return <Checkbox setBoxes={setBoxes} boxes={boxes} />;
 };
 
 export const normal = () => {

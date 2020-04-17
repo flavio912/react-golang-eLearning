@@ -66,6 +66,48 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     padding: [0, 40],
   },
+  smallHeading: {
+    fontSize: theme.fontSizes.smallHeading,
+    fontWeight: 900,
+  },
+  largeText: {
+    fontSize: 15,
+    maxWidth: 500,
+  },
+  text: {
+    fontSize: theme.fontSizes.default,
+  },
+  termsBox: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "stretch",
+    border: `1px solid ${theme.colors.borderGrey}`,
+    borderRadius: [0, 0, 3, 3],
+    margin: [theme.spacing(1), 0],
+  },
+  termsTitle: {
+    backgroundColor: theme.colors.primaryBlue,
+    color: "white",
+    fontSize: theme.fontSizes.default,
+    fontWeight: 900,
+    padding: [10, 15],
+  },
+  termsContent: {
+    maxHeight: 180,
+    padding: [0, theme.spacing(1)],
+    overflowY: "auto",
+  },
+  course: {
+    height: 40,
+    padding: [0, 15],
+    border: `1px solid ${theme.colors.borderGrey}`,
+    backgroundColor: "white",
+    fontSize: theme.fontSizes.default,
+    borderRadius: 4,
+    display: "flex",
+    alignItems: "center",
+  },
 }));
 
 type ComponentProps = {
@@ -149,18 +191,54 @@ function Tabs({ content, closeModal, initialState }: Props) {
   );
 }
 
-type FooterProps = {
+type SimpleProps = {
   children: React.ReactNode;
 };
 
-export function Body({ children }: FooterProps) {
+export function Body({ children }: SimpleProps) {
   const classes = useStyles();
   return <div className={classes.pagebody}>{children}</div>;
 }
 
-export function Footer({ children }: FooterProps) {
+export function Footer({ children }: SimpleProps) {
   const classes = useStyles();
   return <div className={classes.footer}>{children}</div>;
+}
+
+export function Heading({ children }: SimpleProps) {
+  const classes = useStyles();
+  return <h1 className={classes.smallHeading}>{children}</h1>;
+}
+
+export function LargeText({ children }: SimpleProps) {
+  const classes = useStyles();
+  return <p className={classes.largeText}>{children}</p>;
+}
+
+export function Text({ children }: SimpleProps) {
+  const classes = useStyles();
+  return <p className={classes.text}>{children}</p>;
+}
+
+export function TermsBox({
+  children,
+  title,
+}: {
+  children: React.ReactNode;
+  title: string;
+}) {
+  const classes = useStyles();
+  return (
+    <div className={classes.termsBox}>
+      <div className={classes.termsTitle}>{title}</div>
+      <div className={classes.termsContent}>{children}</div>
+    </div>
+  );
+}
+
+export function CourseHighlight({ children }: SimpleProps) {
+  const classes = useStyles();
+  return <p className={classes.course}>{children}</p>;
 }
 
 export default Tabs;
