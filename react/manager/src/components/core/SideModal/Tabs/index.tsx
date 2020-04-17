@@ -7,7 +7,17 @@ import Tabs, {
   Text,
   TermsBox,
   CourseHighlight,
+  CurrentTotal,
 } from "./Tabs";
-export { Footer, Body, Heading, Text, TermsBox, LargeText, CourseHighlight };
+export {
+  Footer,
+  Body,
+  Heading,
+  Text,
+  TermsBox,
+  LargeText,
+  CourseHighlight,
+  CurrentTotal,
+};
 export type TabContent = _TabContent;
 export default Tabs;

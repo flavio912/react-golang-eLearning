@@ -107,6 +107,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 4,
     display: "flex",
     alignItems: "center",
+    margin: [theme.spacing(1), 0, theme.spacing(2)],
+  },
+  currentTotal: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+  money: {
+    color: "#1081AA",
+    marginLeft: theme.spacing(1),
   },
 }));
 
@@ -239,6 +248,18 @@ export function TermsBox({
 export function CourseHighlight({ children }: SimpleProps) {
   const classes = useStyles();
   return <p className={classes.course}>{children}</p>;
+}
+
+export function CurrentTotal({ total }: { total?: number }) {
+  const classes = useStyles();
+  return total ? (
+    <p className={classes.currentTotal}>
+      Current total:
+      <span className={classes.money}>£{total.toFixed(2)}</span>
+    </p>
+  ) : (
+    <div />
+  );
 }
 
 export default Tabs;

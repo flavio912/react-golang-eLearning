@@ -10,7 +10,8 @@ import Tabs, {
   LargeText,
   TermsBox,
   Text,
-  CourseHighlight
+  CourseHighlight,
+  CurrentTotal
 } from "./Tabs";
 import SearchableDropdown, { CourseCategory } from "../SearchableDropdown";
 import { ResultItem } from "components/UserSearch";
@@ -212,7 +213,7 @@ const tabs: TabContent[] = [
             delegates have recently completed a 5-year background check to
             comply with Civil Aviation Authority standards.
           </LargeText>
-          <CourseHighlight>{state?.course?.name}</CourseHighlight>
+          <CourseHighlight>{state.course ? state.course.name : "Please select a Course"}</CourseHighlight>
           <Checkbox
             boxes={state.checkboxes}
             setBoxes={(checkboxes) =>
@@ -221,7 +222,12 @@ const tabs: TabContent[] = [
           />
         </Body>
         <Footer>
-          <div />
+          <CurrentTotal
+            total={
+              state.course &&
+              state.course.price * state.users.filter(Boolean).length
+            }
+          />
           <div style={{ display: "flex" }}>
             <Button archetype="default" onClick={() => closeModal()}>
               Cancel
