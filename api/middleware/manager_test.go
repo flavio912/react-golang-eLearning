@@ -9,6 +9,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -359,11 +360,11 @@ func TestUpdateManager(t *testing.T) {
 
 	input := gentypes.UpdateManagerInput{
 		UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-		Email:     stringPointer("test@test.com"),
-		FirstName: stringPointer("test"),
-		LastName:  stringPointer("test2"),
-		Telephone: stringPointer("test3"),
-		JobTitle:  stringPointer("test4"),
+		Email:     helpers.StringPointer("test@test.com"),
+		FirstName: helpers.StringPointer("test"),
+		LastName:  helpers.StringPointer("test2"),
+		Telephone: helpers.StringPointer("test3"),
+		JobTitle:  helpers.StringPointer("test4"),
 	}
 
 	t.Run("Updates existing manager", func(t *testing.T) {
