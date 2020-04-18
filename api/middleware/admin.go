@@ -82,9 +82,9 @@ func (g *Grant) adminEmailExists(email string) bool {
 }
 
 // GetAdmins
-func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, error) {
+func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
-		return []gentypes.Admin{}, &errors.ErrUnauthorized
+		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
 	var admins []models.Admin
@@ -99,13 +99,25 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 		}
 	}
 
-	query, _, _ = getPage(query, page)
-	err := query.Find(&admins).Error
-	if err != nil {
-		return []gentypes.Admin{}, err
+	var count int32
+	countErr := query.Model(&models.Manager{}).Count(&count).Error
+	if countErr != nil {
+		glog.Errorf("Unable to count records for admin. error: %s", countErr.Error())
+		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	return adminsToGentypes(admins), nil
+	query, limit, offset := getPage(query, page)
+	err := query.Find(&admins).Error
+	if err != nil {
+		return []gentypes.Admin{}, gentypes.PageInfo{}, err
+	}
+
+	return adminsToGentypes(admins), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(admins)),
+	}, nil
 }
 
 // CreateAdmin allows current admins to create new ones

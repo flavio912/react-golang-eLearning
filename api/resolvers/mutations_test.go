@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/testhelpers"
 
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -55,7 +55,7 @@ func TestAdminLogin(t *testing.T) {
 }
 
 func TestUpdateAdmin(t *testing.T) {
-	testhelpers.RunTests(t, []*testhelpers.Test{
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,
@@ -88,7 +88,7 @@ func TestUpdateAdmin(t *testing.T) {
 }
 
 func TestUpdateManager(t *testing.T) {
-	testhelpers.RunTests(t, []*testhelpers.Test{
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Update Some Fields",
 			Context: adminContext,
@@ -172,7 +172,7 @@ func TestUpdateManager(t *testing.T) {
 					"updateManager": null
 				}
 			`,
-			ExpectedErrors: []testhelpers.TestQueryError{
+			ExpectedErrors: []gqltest.TestQueryError{
 				{
 					ResolverError: &errors.ErrManagerNotFound,
 					Path:          []interface{}{"updateManager"},
@@ -199,7 +199,7 @@ func TestUpdateManager(t *testing.T) {
 					"updateManager": null
 				}
 			`,
-			ExpectedErrors: []testhelpers.TestQueryError{
+			ExpectedErrors: []gqltest.TestQueryError{
 				{
 					Message: helpers.StringPointer("Email: not^%!£$* does not validate as email;FirstName: 123! does not validate as alpha"),
 					Path:    []interface{}{"updateManager"},
@@ -210,7 +210,7 @@ func TestUpdateManager(t *testing.T) {
 }
 
 func TestDeleteAdmin(t *testing.T) {
-	testhelpers.RunTests(t, []*testhelpers.Test{
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,

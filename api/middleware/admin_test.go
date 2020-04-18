@@ -123,12 +123,12 @@ func TestGetAdmins(t *testing.T) {
 
 	t.Run("Must be admin", func(t *testing.T) {
 		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
-		_, err := nonAdminGrant.GetAdmins(nil, nil)
+		_, _, err := nonAdminGrant.GetAdmins(nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Should return all admins", func(t *testing.T) {
-		admins, err := grant.GetAdmins(nil, nil)
+		admins, _, err := grant.GetAdmins(nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 4)
 	})
@@ -154,7 +154,7 @@ func TestGetAdmins(t *testing.T) {
 
 		for _, test := range filterTests {
 			t.Run(test.name, func(t *testing.T) {
-				admins, err := grant.GetAdmins(nil, &test.filter)
+				admins, _, err := grant.GetAdmins(nil, &test.filter)
 				assert.Nil(t, err)
 				require.Len(t, admins, 1)
 				assert.Equal(t, admin, admins[0])
@@ -163,7 +163,7 @@ func TestGetAdmins(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			filter := middleware.AdminFilter{Email: ".com"}
-			admins, err := grant.GetAdmins(nil, &filter)
+			admins, _, err := grant.GetAdmins(nil, &filter)
 			assert.Nil(t, err)
 			require.Len(t, admins, 4)
 		})
@@ -172,9 +172,15 @@ func TestGetAdmins(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(2)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		admins, err := grant.GetAdmins(&page, nil)
+		admins, pageinfo, err := grant.GetAdmins(&page, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 2)
+		assert.Equal(t, gentypes.PageInfo{
+			Total:  4,
+			Offset: 0,
+			Limit:  2,
+			Given:  2,
+		}, pageinfo)
 	})
 }
 

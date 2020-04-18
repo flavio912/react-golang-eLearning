@@ -1,6 +1,6 @@
 // forked from https://github.com/graph-gophers/graphql-go/blob/master/gqltesting/testing.go
 
-package testhelpers
+package gqltest
 
 import (
 	"bytes"

@@ -3,11 +3,13 @@ package resolvers_test
 import (
 	"testing"
 
-	"github.com/graph-gophers/graphql-go/gqltesting"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
 )
 
 func TestAdmin(t *testing.T) {
-	gqltesting.RunTests(t, []*gqltesting.Test{
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,
@@ -33,8 +35,55 @@ func TestAdmin(t *testing.T) {
 	})
 }
 
+func TestAdmins(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all admins",
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				{
+					admins {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"admins":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"},
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000004"}
+						],
+						"pageInfo": {
+							"given": 4,
+							"limit": 100,
+							"offset": 0,
+							"total": 4
+						}
+					}
+				}
+			`,
+		},
+	})
+}
+
 func TestManager(t *testing.T) {
-	gqltesting.RunTests(t, []*gqltesting.Test{
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,
@@ -61,7 +110,9 @@ func TestManager(t *testing.T) {
 }
 
 func TestCompany(t *testing.T) {
-	gqltesting.RunTests(t, []*gqltesting.Test{
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Context: adminContext,
 			Schema:  schema,
