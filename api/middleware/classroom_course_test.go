@@ -31,17 +31,17 @@ func TestCreateClassroomCourse(t *testing.T) {
 			},
 			StartDate:       &startTime,
 			EndDate:         &endTime,
-			MaxParticipants: helpers.IntPointer(0),
+			MaxParticipants: helpers.IntPointer(12),
 			Location:        helpers.StringPointer("A cool new place"),
 		}
 
 		course, err := grant.CreateClassroomCourse(inp)
 		assert.Nil(t, err)
 
-		assert.Equal(t, course.StartDate, startTime)
-		assert.Equal(t, course.EndDate, endTime)
-		assert.Equal(t, course.Location, "A cool new place")
-		// TODO: max participants
+		assert.Equal(t, startTime, course.StartDate)
+		assert.Equal(t, endTime, course.EndDate)
+		assert.Equal(t, "A cool new place", course.Location)
+		assert.Equal(t, 12, course.MaxParticipants)
 
 		// Get course info
 		info, err := grant.GetCourseInfoFromID(course.CourseInfoID)

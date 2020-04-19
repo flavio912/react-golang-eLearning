@@ -12,7 +12,8 @@ import (
 
 /* Tags CRUD */
 
-// CheckTagsExist returns nil if all the given tag uuids are in the database
+// CheckTagsExist returns a slice of tags if all the given tag uuids are in the database
+// If *any* are not found it returns an error and no tags
 func CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
 	var tagModels []models.Tag
 	query := database.GormDB.Where("uuid IN (?)", tags).Find(&tagModels)
@@ -69,7 +70,7 @@ func (g *Grant) CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error) {
 }
 
 // GetTagsByCourseInfoIDs takes a list of courseInfo ids and returns a mapping
-// of courseInfo ids to their respective Tags
+// of a courseInfo Id to a slice of tags
 func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, error) {
 	// TODO: Check if user has access to this particular course
 	if !g.IsAdmin {
@@ -84,11 +85,8 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
 	}
 
-	// Put into a map for easy searching later
-	var tagUUIDsToIds = make(map[gentypes.UUID]uint, len(links))
 	var tagUUIDs []gentypes.UUID
 	for _, i := range links {
-		tagUUIDsToIds[i.TagUUID] = i.CourseInfoID
 		tagUUIDs = append(tagUUIDs, i.TagUUID)
 	}
 
