@@ -24,6 +24,17 @@ type CourseInfo struct {
 	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
 }
 
+// CourseTagsLink is not needed to create the table, but
+// is used to extract information about the course_tags_link table
+type CourseTagsLink struct {
+	CourseInfoID uint
+	TagUUID      gentypes.UUID
+}
+
+func (CourseTagsLink) TableName() string {
+	return "course_tags_link"
+}
+
 type Category struct {
 	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name string

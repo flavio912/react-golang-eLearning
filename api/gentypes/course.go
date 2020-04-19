@@ -25,7 +25,7 @@ type CourseInput struct {
 	AccessType         *AccessType
 	Price              *float64
 	Color              *string `valid:"hexcolor"`
-	Tags               *[]*string
+	Tags               *[]UUID
 	SpecificTerms      *string `valid:"json"`
 	BannerImageSuccess *string
 }
@@ -61,6 +61,7 @@ type CourseInfo struct {
 	AccessType      AccessType
 	BackgroundCheck bool
 	Price           float64
+	Tags            []Tag
 	Color           string `valid:"hexcolor"`
 	Introduction    string `valid:"json"`
 	Excerpt         string `valid:"json"`
@@ -82,4 +83,15 @@ type ClassroomCourse struct {
 	EndDate         Time
 	Location        string
 	MaxParticipants int
+}
+
+type Tag struct {
+	UUID  UUID
+	Name  string
+	Color string
+}
+
+type CreateTagInput struct {
+	Name  string
+	Color string `valid:"hexcolor"`
 }

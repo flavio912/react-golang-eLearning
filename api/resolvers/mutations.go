@@ -265,3 +265,15 @@ func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct 
 		ClassroomCourse: course,
 	})
 }
+
+func (m *MutationResolver) CreateTag(ctx context.Context, args struct{ Input gentypes.CreateTagInput }) (*TagResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &TagResolver{}, &errors.ErrUnauthorized
+	}
+
+	tag, err := grant.CreateTag(args.Input)
+	return &TagResolver{
+		Tag: tag,
+	}, err
+}

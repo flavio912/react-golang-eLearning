@@ -94,4 +94,12 @@ var (
 		Type:    "ErrDuplicationFailure",
 		Message: "Unable to duplicate the requested item",
 	}
+	ErrTagsNotFound = SimpleError{
+		Type:    "ErrTagsNotFound",
+		Message: "Could not find valid tags for all given tag UUIDs",
+	}
+	ErrTagAlreadyExists = SimpleError{
+		Type:    "ErrTagAlreadyExists",
+		Message: "Could not create tag as it already exists",
+	}
 )

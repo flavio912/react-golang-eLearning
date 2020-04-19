@@ -44,7 +44,7 @@ input SaveClassroomCourseInput {
   accessType: AccessType
   price: Float
   color: String
-  tags: [String]
+  tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
   tutorUUID: UUID # UUID of the Tutor (classroom course only)
@@ -64,7 +64,7 @@ input SaveOnlineCourseInput {
   accessType: AccessType
   price: Float
   color: String
-  tags: [String!]
+  tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
   structure: [CourseItem!] # Only for online courses
@@ -81,6 +81,16 @@ input ModuleItem {
   uuid: UUID!
 }
 
+input CreateTagInput {
+  name: String!
+  color: String!
+}
+
+type Tag {
+  uuid: UUID
+  name: String!
+  color: String!
+}
 # [ EXAMPLE COURSE STRUCTURE
 #   {type: "module", uuid: "34343-34343-34343-434343"},
 #   { type: "module",
