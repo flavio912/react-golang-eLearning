@@ -65,7 +65,6 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 	Filter  *gentypes.ManagersFilter
 	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
-
 	if args.Filter != nil {
 		err := (*args.Filter).Validate()
 		if err != nil {

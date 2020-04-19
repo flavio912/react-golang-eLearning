@@ -106,6 +106,8 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
+	query = query.Order("created_at DESC")
+
 	query, limit, offset := getPage(query, page)
 	err := query.Find(&admins).Error
 	if err != nil {

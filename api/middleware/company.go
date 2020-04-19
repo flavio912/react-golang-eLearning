@@ -160,13 +160,6 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
 
-	var count int32
-	query = query.Model(&models.Manager{}).Count(&count)
-	if query.Error != nil {
-		glog.Errorf("DB Error %s", query.Error.Error())
-		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
-	}
-
 	query, err := getOrdering(query, orderBy, []string{"created_at", "name"})
 	if err != nil {
 		return []gentypes.UUID{}, gentypes.PageInfo{}, err
@@ -184,6 +177,12 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		}
 	}
 
+	var count int32
+	countErr := query.Count(&count).Error
+	if countErr != nil {
+		glog.Errorf("DB Error %s", countErr.Error())
+		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
 	query, limit, offset := getPage(query, page)
 
 	query.Find(&companies)

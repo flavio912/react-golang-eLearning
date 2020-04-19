@@ -56,7 +56,7 @@ func RunTest(t *testing.T, test *Test) {
 	}
 	result := test.Schema.Exec(test.Context, test.Query, test.OperationName, test.Variables)
 
-	checkErrors(t, test.ExpectedErrors, result.Errors)
+	CheckErrors(t, test.ExpectedErrors, result.Errors)
 
 	if test.ExpectedResult == "" {
 		if result.Data != nil {
@@ -94,7 +94,7 @@ func formatJSON(data []byte) ([]byte, error) {
 	return formatted, nil
 }
 
-func checkErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryError) {
+func CheckErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryError) {
 	var gotTestErrors []TestQueryError
 	for _, e := range got {
 		gotTestErrors = append(gotTestErrors, TestQueryError{
@@ -106,10 +106,19 @@ func checkErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryErro
 	sortErrors(gotTestErrors)
 	sortErrors(want)
 
+	if len(want) < len(gotTestErrors) {
+		t.Error("Got more errors than wanted:")
+		t.Errorf("want: %#v", want)
+		t.Error("got:")
+	}
+
 	for i, g := range gotTestErrors {
-		if i > len(want)-1 {
-			t.Errorf("Got more errors than wanted: \n\tWant: %#v\n\tGot : %#v", want, gotTestErrors)
-			return
+		if len(want) < len(gotTestErrors) {
+			if g.Message != nil {
+				t.Errorf("%s", *g.Message)
+			}
+			t.Errorf("%#v", g.ResolverError)
+			continue
 		}
 
 		assert.Equal(t, want[i].Path, g.Path)
