@@ -11,7 +11,7 @@ import Tabs, {
   TermsBox,
   Text,
   CourseHighlight,
-  CurrentTotal
+  CurrentTotal,
 } from "./Tabs";
 import SearchableDropdown, { CourseCategory } from "../SearchableDropdown";
 import { ResultItem } from "components/UserSearch";
@@ -19,21 +19,21 @@ import MultiUserSearch from "components/UserSearch/MultiUserSearch";
 import Checkbox from "../Checkbox";
 
 export default {
-  title: "Core/Side Modal",
-  decorators: [withKnobs]
+  title: "Core/Course Management",
+  decorators: [withKnobs],
 };
 
 const checkboxInitialValue = [
   {
     label:
       "I Fred Eccs can confirm that the above delegates have undergone the necessary 5-year background checks for this Training Programme",
-    checked: false
+    checked: false,
   },
   {
     label:
       "I Fred Eccs can confirm that I have read and understood the TTC Terms of Business",
-    checked: false
-  }
+    checked: false,
+  },
 ];
 
 const categories: CourseCategory[] = [
@@ -43,14 +43,14 @@ const categories: CourseCategory[] = [
       {
         id: 1,
         name: "Cargo Operative Screener (COS) – VC, HS, XRY, ETD",
-        price: 200
+        price: 200,
       },
       {
         id: 2,
         name: "Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD",
-        price: 65
-      }
-    ]
+        price: 65,
+      },
+    ],
   },
   {
     title: "Known Consignor",
@@ -58,35 +58,35 @@ const categories: CourseCategory[] = [
       {
         id: 3,
         name: "Known Consignor Responsible Person",
-        price: 70
+        price: 70,
       },
       {
         id: 4,
         name: "Known Consignor (Modules 1-7)",
-        price: 55
+        price: 55,
       },
       {
         id: 5,
         name: "Manual Handling Awareness",
-        price: 25
+        price: 25,
       },
       {
         id: 6,
         name: "Fire Safety Awareness",
-        price: 25
+        price: 25,
       },
       {
         id: 7,
         name: "Noise and Vibration Awareness",
-        price: 25
+        price: 25,
       },
       {
         id: 8,
         name: "Seat Belt Misuse Awareness",
-        price: 300
-      }
-    ]
-  }
+        price: 300,
+      },
+    ],
+  },
 ];
 
 const courseSearchFunction = async (query: string) => {
@@ -99,7 +99,7 @@ const courseSearchFunction = async (query: string) => {
               title,
               courses: courses.filter(({ name }) =>
                 name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-              )
+              ),
             }))
             .filter(({ courses }) => courses.length > 0)
         ),
@@ -111,16 +111,16 @@ const courseSearchFunction = async (query: string) => {
 const items: ResultItem[] = [
   {
     key: "Jim Smith",
-    value: "uuid-1"
+    value: "uuid-1",
   },
   {
     key: "Bruce Willis",
-    value: "uuid-2"
+    value: "uuid-2",
   },
   {
     key: "Tony Stark",
-    value: "uuid-3"
-  }
+    value: "uuid-3",
+  },
 ];
 
 const userSearchFunction = async (query: string) => {
@@ -174,7 +174,7 @@ const tabs: TabContent[] = [
           </div>
         </Footer>
       </>
-    )
+    ),
   },
   {
     key: "Terms of Business",
@@ -213,7 +213,9 @@ const tabs: TabContent[] = [
             delegates have recently completed a 5-year background check to
             comply with Civil Aviation Authority standards.
           </LargeText>
-          <CourseHighlight>{state.course ? state.course.name : "Please select a Course"}</CourseHighlight>
+          <CourseHighlight>
+            {state.course ? state.course.name : "Please select a Course"}
+          </CourseHighlight>
           <Checkbox
             boxes={state.checkboxes}
             setBoxes={(checkboxes) =>
@@ -242,25 +244,133 @@ const tabs: TabContent[] = [
           </div>
         </Footer>
       </>
-    )
+    ),
   },
   {
     key: "Payment",
-    component: ({ setTab }) => (
+    component: ({ state }) => (
       <div style={{ margin: "30px 40px" }}>
-        <p>
-          Storybook doesn't allow you to change the value of the knobs, but this
-          component takes closeModal as a prop so you can close the modal
-        </p>
-        <Button onClick={() => setTab("First")} style={{ marginTop: 20 }}>
-          Back to Start
-        </Button>
+        <pre>{JSON.stringify(state, null, 2)}</pre>
       </div>
-    )
-  }
+    ),
+  },
 ];
 
-export const courseManagement = () => {
+const tabs2: TabContent[] = [
+  {
+    key: "Courses",
+    component: ({ state, setState, setTab, closeModal }) => (
+      <>
+        <Body>
+          <Heading>Book John's first Course</Heading>
+          <LargeText>Book John on Course(s)</LargeText>
+          <SearchableDropdown
+            multiselect
+            selected={state.courses}
+            searchQuery={courseSearchFunction}
+            setSelected={(courses) =>
+              setState((s: object) => ({ ...s, courses }))
+            }
+          />
+        </Body>
+        <Footer>
+          <div />
+          <div style={{ display: "flex" }}>
+            <Button archetype="default" onClick={() => closeModal()}>
+              Cancel
+            </Button>
+            <Button
+              archetype="submit"
+              onClick={() => setTab("Terms of Business")}
+              style={{ marginLeft: 20 }}
+            >
+              Next
+            </Button>
+          </div>
+        </Footer>
+      </>
+    ),
+  },
+  {
+    key: "Terms of Business",
+    component: ({ state, setState, closeModal, setTab }) => (
+      <>
+        <Body>
+          <Heading>Terms of Business</Heading>
+          <LargeText>
+            In order to book John onto these Courses, please refer to and
+            confirm you have read our Terms of Business below.
+          </LargeText>
+          <TermsBox title="TTC Hub - Terms of Business">
+            <Text>
+              Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut
+              deleniti nam porro optio! Nam quo enim ipsum eligendi in nihil
+              perferendis, eaque voluptatem esse dolore quaerat laboriosam rem
+              ipsa reprehenderit.
+            </Text>
+            <Text>
+              Corporis voluptate molestias saepe placeat consequatur, pariatur
+              recusandae ducimus at suscipit corrupti cupiditate, harum sint
+              libero laudantium quaerat ipsum? Sint, ut nisi.
+            </Text>
+            <Text>
+              Ipsam perferendis, id nobis autem, veniam porro magnam cum ex
+              expedita in placeat nemo asperiores aliquam sequi illo aliquid
+              pariatur saepe minus? Voluptas sint voluptatum nihil, suscipit sed
+              eaque rem porro at officiis eos voluptatibus, ullam cupiditate?
+              Nobis porro adipisci animi, vitae ex vel?
+            </Text>
+          </TermsBox>
+          <Heading>Background Check</Heading>
+          <LargeText>
+            The following Courses require you to validate that the above
+            delegates have recently completed a 5-year background check to
+            comply with Civil Aviation Authority standards.
+          </LargeText>
+          <CourseHighlight>
+            What should show here? There are multiple courses. Is this a
+            dropdown?
+          </CourseHighlight>
+          <Checkbox
+            boxes={state.checkboxes}
+            setBoxes={(checkboxes) =>
+              setState((s: object) => ({ ...s, checkboxes }))
+            }
+          />
+        </Body>
+        <Footer>
+          <CurrentTotal
+            total={state.courses
+              .map(({ price }: { price: number }) => price)
+              .reduce((a: number, b: number) => a + b, 0)}
+          />
+          <div style={{ display: "flex" }}>
+            <Button archetype="default" onClick={() => closeModal()}>
+              Cancel
+            </Button>
+            <Button
+              archetype="submit"
+              onClick={() => setTab("Payment")}
+              style={{ marginLeft: 20 }}
+            >
+              Continue to Payment
+            </Button>
+          </div>
+        </Footer>
+      </>
+    ),
+  },
+  {
+    key: "Payment",
+    component: ({ state }) => (
+      <div style={{ margin: "30px 40px" }}>
+        <pre>{JSON.stringify(state, null, 2)}</pre>
+      </div>
+    ),
+  },
+];
+
+export const multipleUsers = () => {
   return (
     <SideModal
       isOpen={boolean("Open", true)}
@@ -273,7 +383,26 @@ export const courseManagement = () => {
         initialState={{
           course: undefined,
           users: [undefined],
-          checkboxes: checkboxInitialValue
+          checkboxes: checkboxInitialValue,
+        }}
+      />
+    </SideModal>
+  );
+};
+
+export const singleUser = () => {
+  return (
+    <SideModal
+      isOpen={boolean("Open", true)}
+      title="Course Management"
+      closeModal={() => alert("Close Function called")}
+    >
+      <Tabs
+        content={tabs2}
+        closeModal={() => alert("Close Function called")}
+        initialState={{
+          courses: [],
+          checkboxes: checkboxInitialValue,
         }}
       />
     </SideModal>
