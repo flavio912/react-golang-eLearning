@@ -4,6 +4,7 @@ COVER=0
 BUILD=0
 DEBUG=0
 UNIQUE=0
+HTML=0
 KEEPALIVE=0
 MODULE="..."
 
@@ -32,6 +33,10 @@ do
     ;;
     -u|--unique)
     UNIQUE=1
+    shift
+    ;;
+    --html)
+    HTML=1
     shift
     ;;
   esac
@@ -64,6 +69,10 @@ fi
 
 if (($exit_code == 0 && $COVER == 1)); then
   ${dc_cmd} run --rm test_api go tool cover -func=.testCoverage
+
+fi
+if (($exit_code == 0 && $HTML == 1)); then
+  ${dc_cmd} run --rm test_api go tool cover -html=.testCoverage -o=cover_report.html
 fi
 
 if (($KEEPALIVE == 0)); then
