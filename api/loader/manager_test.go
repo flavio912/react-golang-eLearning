@@ -24,7 +24,7 @@ func TestSortManagers(t *testing.T) {
 		keys = append(keys, dataloader.StringKey(ident.String()))
 		managers = append(managers, gentypes.Manager{
 			User: gentypes.User{
-				UUID:      ident,
+				UUID:      gentypes.UUID{UUID: ident},
 				Email:     "test@test.com",
 				FirstName: "Test",
 				LastName:  "Person",
@@ -44,8 +44,7 @@ func TestSortManagers(t *testing.T) {
 	// elapsed := time.Since(start)
 	correct := 0
 	for i, manager := range managers {
-		uid, _ := uuid.Parse(keys[i].String())
-		if manager.UUID == uid {
+		if manager.UUID == gentypes.MustParseToUUID(keys[i].String()) {
 			correct = correct + 1
 		}
 	}

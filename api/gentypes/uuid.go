@@ -39,3 +39,9 @@ func StringToUUID(input string) (UUID, error) {
 		UUID: id,
 	}, nil
 }
+
+// Creates a UUID type from a given uuid string.
+// Must parse or will panic. Use StringToUUID for a safe one
+func MustParseToUUID(input string) UUID {
+	return UUID{UUID: uuid.MustParse(input)}
+}

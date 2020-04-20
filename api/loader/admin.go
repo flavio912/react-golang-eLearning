@@ -15,8 +15,8 @@ import (
 type adminLoader struct {
 }
 
-func getKeyList(loadedItems []gentypes.Admin) []string {
-	keys := make([]string, len(loadedItems))
+func getKeyList(loadedItems []gentypes.Admin) []gentypes.UUID {
+	keys := make([]gentypes.UUID, len(loadedItems))
 	for i, item := range loadedItems {
 		keys[i] = item.UUID
 	}
@@ -39,7 +39,7 @@ func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*da
 	res := make([]*dataloader.Result, n)
 	for _, admin := range admins {
 		// results must be in the same order as keys
-		i := indexByString(getKeyList(admins), admin.Key())
+		i := indexByUUID(getKeyList(admins), admin.Key())
 		res[i] = &dataloader.Result{Data: admin}
 	}
 	return res

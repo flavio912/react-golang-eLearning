@@ -7,6 +7,7 @@ import (
 	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 // Manager - DB model for managers
@@ -63,9 +64,9 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 	database.GormDB.Save(manager)
 
 	claims := auth.UserClaims{
-		UUID:    manager.UUID.String(),
+		UUID:    gentypes.UUID{UUID: manager.UUID},
 		Role:    auth.ManagerRole,
-		Company: manager.CompanyID.String(),
+		Company: gentypes.UUID{UUID: manager.CompanyID},
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err

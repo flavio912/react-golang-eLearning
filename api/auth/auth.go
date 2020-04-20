@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"golang.org/x/crypto/bcrypt"
 )
 
 // HashPassword Hashes and salts a given string
 func HashPassword(pwd string) (string, error) {
-
 	passwordInBytes := []byte(pwd)
 	hash, err := bcrypt.GenerateFromPassword(passwordInBytes, 12)
 	if err != nil {
@@ -67,8 +67,8 @@ func RoleToString(role Role) string {
 
 // UserClaims - Claims other than the default added to the JWT
 type UserClaims struct {
-	UUID    string
-	Company string
+	UUID    gentypes.UUID
+	Company gentypes.UUID
 	Role    Role
 }
 

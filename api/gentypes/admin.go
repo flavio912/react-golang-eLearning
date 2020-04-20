@@ -3,14 +3,14 @@ package gentypes
 import "github.com/asaskevich/govalidator"
 
 type Admin struct {
-	UUID      string
+	UUID      UUID
 	Email     string
 	FirstName string
 	LastName  string
 }
 
 // Key gets the admin primary identifier
-func (admin *Admin) Key() string {
+func (admin *Admin) Key() UUID {
 	return admin.UUID
 }
 
@@ -26,20 +26,20 @@ type AdminLoginInput struct {
 	Password string
 }
 
-type AddAdminInput struct {
+type CreateAdminInput struct {
 	FirstName string `valid:"alpha,required"`
 	LastName  string `valid:"alpha,required"`
 	Email     string `valid:"email,required"`
 	Password  string `valid:"stringlength(8|30),required"`
 }
 
-func (m *AddAdminInput) Validate() error {
+func (m *CreateAdminInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }
 
 type UpdateAdminInput struct {
-	UUID      string  `valid:"uuidv4,required"`
+	UUID      UUID
 	FirstName *string `valid:"alpha"`
 	LastName  *string `valid:"alpha"`
 	Email     *string `valid:"email"`
@@ -50,11 +50,6 @@ func (m *UpdateAdminInput) Validate() error {
 	return err
 }
 
-type RemoveAdminInput struct {
-	UUID string `valid:"uuidv4,required"`
-}
-
-func (m *RemoveAdminInput) Validate() error {
-	_, err := govalidator.ValidateStruct(m)
-	return err
+type DeleteAdminInput struct {
+	UUID UUID
 }

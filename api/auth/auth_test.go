@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
@@ -43,7 +45,7 @@ func TestGenAndValidateToken(t *testing.T) {
 	helpers.LoadConfig("../config.yml")
 
 	claims := UserClaims{
-		UUID: "asdasd-asdadsad-asdad-asd",
+		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
 		Role: AdminRole,
 	}
 

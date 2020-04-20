@@ -2,6 +2,9 @@
 
 COVER=0
 BUILD=0
+DEBUG=0
+UNIQUE=0
+HTML=0
 KEEPALIVE=0
 MODULE="..."
 
@@ -24,31 +27,52 @@ do
     BUILD=1
     shift
     ;;
+    -d|--debug)
+    DEBUG=1
+    shift
+    ;;
+    -u|--unique)
+    UNIQUE=1
+    shift
+    ;;
+    --html)
+    HTML=1
+    shift
+    ;;
   esac
 done
 
 # Make the container names unique
+if (($UNIQUE == 1)); then
 export COMPOSE_PROJECT_NAME=$(git rev-parse --short HEAD)
+else
+export COMPOSE_PROJECT_NAME="ttc"
+fi
 dc_cmd="docker-compose -f docker-compose.test.yml"
 
 # you should only need to rebuild if new modules are added
-if (($KEEPALIVE == 0)); then
+if (($KEEPALIVE == 0 || $BUILD == 1)); then
   ${dc_cmd} build
 fi
 
-# start testdb if it's not running
-#DOWN=0
-#if [ -z `${dc_cmd} ps -q test_db` ] || [ -z `docker ps -q --no-trunc | grep $(${dc_cmd} ps -q test_db)` ]; then
-#  DOWN=1
-  ${dc_cmd} up -d --no-deps test_db
-#fi
+${dc_cmd} up -d --no-deps test_db
 
-
+printf "\n\n**********Running Tests**********\n"
 # Run the tests
-${dc_cmd} run --rm --no-deps test_api go test -v -coverprofile .testCoverage ./${MODULE}
-exit_code=$?
+if (($DEBUG == 0)); then
+  ${dc_cmd} run --rm --no-deps test_api go test -coverprofile .testCoverage ./${MODULE}
+  exit_code=$?
+else
+  ${dc_cmd} run --rm --no-deps --workdir="/app/${MODULE}" test_api dlv test --api-version 2 --listen=:2345 --headless --log
+  exit_code=$?
+fi
+
 if (($exit_code == 0 && $COVER == 1)); then
   ${dc_cmd} run --rm test_api go tool cover -func=.testCoverage
+
+fi
+if (($exit_code == 0 && $HTML == 1)); then
+  ${dc_cmd} run --rm test_api go tool cover -html=.testCoverage -o=cover_report.html
 fi
 
 if (($KEEPALIVE == 0)); then

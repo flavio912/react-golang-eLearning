@@ -10,66 +10,63 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-var realCompany = "00000000-0000-0000-0000-000000000001" // A company that exists
-var fakeCompany = "00000000-0000-0000-0000-000000000999" // A company that doesn't exist
+var realCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001") // A company that exists
+var fakeCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999") // A company that doesn't exist
 
 func TestCompanyExists(t *testing.T) {
 	prepareTestDatabase()
 
 	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 	t.Run("Company should exist", func(t *testing.T) {
-		id, _ := uuid.Parse(realCompany)
-		assert.True(t, grant.CompanyExists(id))
+		assert.True(t, grant.CompanyExists(realCompany))
 	})
 
 	t.Run("Company should not exist", func(t *testing.T) {
-		id, _ := uuid.Parse(fakeCompany)
-		assert.False(t, grant.CompanyExists(id))
+		assert.False(t, grant.CompanyExists(fakeCompany))
 	})
 }
 
 func TestIsCompanyDelegate(t *testing.T) {
-	assert.True(t, delegateGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000001"))
-	assert.False(t, delegateGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000002"))
+	assert.True(t, delegateGrant.IsCompanyDelegate(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")))
+	assert.False(t, delegateGrant.IsCompanyDelegate(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")))
 	// should only happen for delegates
-	assert.False(t, managerGrant.IsCompanyDelegate("00000000-0000-0000-0000-000000000001"))
-	assert.False(t, adminGrant.IsCompanyDelegate(""))
+	assert.False(t, managerGrant.IsCompanyDelegate(realCompany))
+	assert.False(t, adminGrant.IsCompanyDelegate(realCompany))
 }
 
 func TestManagesCompany(t *testing.T) {
 	tests := []struct {
 		name  string
 		grant middleware.Grant
-		uuid  string
+		uuid  gentypes.UUID
 		want  bool
 	}{
 		{
 			"Admin always true",
 			adminGrant,
-			"",
+			uuidZero,
 			true,
 		},
 		{
 			"Delegate always false",
 			delegateGrant,
-			"",
+			uuidZero,
 			false,
 		},
 		{
 			"Manager must be part of company",
 			managerGrant,
-			"00000000-0000-0000-0000-000000000001",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			true,
 		},
 		{
 			"Should fail if not managers company",
 			managerGrant,
-			"00000000-0000-0000-0000-000000000002",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 			false,
 		},
 	}
@@ -85,10 +82,10 @@ func TestManagesCompany(t *testing.T) {
 func TestGetManagerIDsByCompany(t *testing.T) {
 	prepareTestDatabase()
 
-	company1 := "00000000-0000-0000-0000-000000000001"
+	company1 := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
 	t.Run("Must be admin", func(t *testing.T) {
 		grant := middleware.Grant{auth.UserClaims{}, false, true, true}
-		ids, _, err := grant.GetManagerIDsByCompany("", nil, nil, nil)
+		ids, _, err := grant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
 		assert.Len(t, ids, 0)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -120,14 +117,14 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
 			User: gentypes.User{
-				UUID:      uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 				Email:     "man@managers.com",
 				FirstName: "Manager",
 				LastName:  "Man",
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -170,10 +167,10 @@ func TestGetCompaniesByUUID(t *testing.T) {
 
 	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Admin can get companies", func(t *testing.T) {
-		comp, err := grant.GetCompaniesByUUID([]string{realCompany})
+		comp, err := grant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
 		assert.Nil(t, err)
 		assert.Len(t, comp, 1)
-		assert.Equal(t, realCompany, comp[0].UUID.String())
+		assert.Equal(t, realCompany, comp[0].UUID)
 	})
 
 	// TODO: Test for managers + delegates access to companies
@@ -186,7 +183,7 @@ func TestGetCompanyByUUID(t *testing.T) {
 	t.Run("Admin can get company", func(t *testing.T) {
 		company, err := grant.GetCompanyByUUID(realCompany)
 		assert.Nil(t, err)
-		assert.Equal(t, realCompany, company.UUID.String())
+		assert.Equal(t, realCompany, company.UUID)
 	})
 
 	t.Run("Get non-existant company", func(t *testing.T) {
@@ -229,7 +226,7 @@ func TestGetCompanyUUIDs(t *testing.T) {
 		ids, _, err := adminGrant.GetCompanyUUIDs(nil, nil, &order)
 		assert.Nil(t, err)
 		require.Len(t, ids, 4)
-		assert.Equal(t, "00000000-0000-0000-0000-000000000003", ids[0])
+		assert.Equal(t, "00000000-0000-0000-0000-000000000003", ids[0].String())
 	})
 
 	t.Run("Should filter", func(t *testing.T) {
@@ -310,7 +307,7 @@ func TestCreateCompany(t *testing.T) {
 func TestCreateCompanyRequest(t *testing.T) {
 	prepareTestDatabase()
 
-	managerInput := gentypes.AddManagerInput{
+	managerInput := gentypes.CreateManagerInput{
 		FirstName: "Test",
 		LastName:  "Test",
 		Email:     "uinqad@tes.asd",
@@ -349,10 +346,10 @@ func TestCreateCompanyRequest(t *testing.T) {
 		}, addresses[0])
 
 		// check it created a manager
-		managers, _, err := adminGrant.GetManagerIDsByCompany(company.UUID.String(), nil, nil, nil)
+		managers, _, err := adminGrant.GetManagerIDsByCompany(company.UUID, nil, nil, nil)
 		require.Nil(t, err)
 		require.Len(t, managers, 1, "Should return the new manager")
-		manager, err := adminGrant.GetManagerByUUID(managers[0].String())
+		manager, err := adminGrant.GetManagerByUUID(managers[0])
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Manager{
 			User: gentypes.User{
@@ -384,16 +381,9 @@ func TestApproveCompany(t *testing.T) {
 		{
 			"Must be admin",
 			middleware.Grant{auth.UserClaims{}, false, true, true},
-			"",
+			"00000000-0000-0000-0000-000000000000",
 			false,
 			&errors.ErrUnauthorized,
-		},
-		{
-			"UUID must be valid",
-			adminGrant,
-			"asdf",
-			false,
-			&errors.ErrUUIDInvalid,
 		},
 		{
 			"company must exist",
@@ -413,10 +403,10 @@ func TestApproveCompany(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			comp, err := test.grant.ApproveCompany(test.uuid)
+			comp, err := test.grant.ApproveCompany(gentypes.MustParseToUUID(test.uuid))
 			assert.Equal(t, test.wantErr, err)
 			if err == nil {
-				assert.Equal(t, uuid.MustParse(test.uuid), comp.UUID)
+				assert.Equal(t, gentypes.MustParseToUUID(test.uuid), comp.UUID)
 				assert.Equal(t, &test.want, comp.Approved)
 			}
 		})
