@@ -41,6 +41,7 @@
     "react-use-dimensions": "^1.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
+    "relay-compiler-language-typescript": "^12.0.0",
     "resolve": "1.12.0",
     "resolve-url-loader": "3.1.0",
     "sass-loader": "7.2.0",
@@ -50,6 +51,7 @@
     "ts-pnp": "1.1.4",
     "tslint": "^5.20.0",
     "url-loader": "2.1.0",
+    "watchman": "^1.0.0",
     "webpack-manifest-plugin": "2.0.4",
     "workbox-webpack-plugin": "4.3.1"
   },
@@ -61,7 +63,7 @@
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --extensions=ts --extensions=tsx"
+    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__"
   },
   "husky": {
     "hooks": {
