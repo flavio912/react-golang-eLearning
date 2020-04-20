@@ -9,3 +9,4 @@ COPY ./bin/run_dev.sh /scripts/run_dev.sh
 RUN ["chmod", "+x", "/scripts/run_dev.sh"]
 
 ENTRYPOINT ["/scripts/run_dev.sh"]
+EXPOSE 4001 3000
