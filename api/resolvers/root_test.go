@@ -7,6 +7,7 @@ import (
 	"os"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -122,30 +123,43 @@ func prepareTestDatabase() {
 	}
 }
 
-func accessTest(
-	t *testing.T, schema *graphql.Schema, query string,
-	expectedErrors []gqltest.TestQueryError,
-	mustAuth, adminAllowed, managerAllowed, delegateAllowed bool,
-) {
+type accessTestOpts struct {
+	Query           string
+	Path            []interface{}
+	MustAuth        bool
+	AdminAllowed    bool
+	ManagerAllowed  bool
+	DelegateAllowed bool
+	CleanDB         bool
+}
+
+func accessTest(t *testing.T, schema *graphql.Schema, opts accessTestOpts) {
 	checkAccess := func(t *testing.T, ctx context.Context, allowed bool) {
-		r := schema.Exec(ctx, query, "", nil)
+		if opts.CleanDB {
+			prepareTestDatabase()
+		}
+
+		r := schema.Exec(ctx, opts.Query, "", nil)
 		if allowed {
 			gqltest.CheckErrors(t, []gqltest.TestQueryError{}, r.Errors)
 		} else {
-			gqltest.CheckErrors(t, expectedErrors, r.Errors)
+			gqltest.CheckErrors(t, []gqltest.TestQueryError{{
+				Path:          opts.Path,
+				ResolverError: &errors.ErrUnauthorized,
+			}}, r.Errors)
 		}
 	}
 
-	t.Run(fmt.Sprintf("Must be authed:%v", mustAuth), func(t *testing.T) {
-		checkAccess(t, defaultContext, !mustAuth)
+	t.Run(fmt.Sprintf("Must be authed:%v", opts.MustAuth), func(t *testing.T) {
+		checkAccess(t, defaultContext, !opts.MustAuth)
 	})
 
-	t.Run(fmt.Sprintf("Admin Allowed:%v", adminAllowed), func(t *testing.T) {
-		checkAccess(t, adminContext, adminAllowed)
+	t.Run(fmt.Sprintf("Admin Allowed:%v", opts.AdminAllowed), func(t *testing.T) {
+		checkAccess(t, adminContext, opts.AdminAllowed)
 	})
 
-	t.Run(fmt.Sprintf("Manager Allowed:%v", managerAllowed), func(t *testing.T) {
-		checkAccess(t, managerContext, managerAllowed)
+	t.Run(fmt.Sprintf("Manager Allowed:%v", opts.ManagerAllowed), func(t *testing.T) {
+		checkAccess(t, managerContext, opts.ManagerAllowed)
 	})
 
 	// there's no delegate context yet ...

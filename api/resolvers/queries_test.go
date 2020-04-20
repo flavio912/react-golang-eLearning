@@ -3,7 +3,6 @@ package resolvers_test
 import (
 	"testing"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
 )
@@ -55,16 +54,14 @@ func TestAdmin(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			 admin(uuid: "00000000-0000-0000-0000-000000000001") { uuid }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"admin"},
-			},
-		}, true, true, false, false,
+		t, schema, accessTestOpts{
+			Query:           `{admin(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"admin"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }
 
@@ -152,16 +149,14 @@ func TestAdmins(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			 admins { edges { uuid } }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"admins"},
-			},
-		}, true, true, false, false,
+		t, schema, accessTestOpts{
+			Query:           `{admins { edges { uuid } }}`,
+			Path:            []interface{}{"admins"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }
 
@@ -194,28 +189,24 @@ func TestManager(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			 manager(uuid: "00000000-0000-0000-0000-000000000001") { uuid }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"manager"},
-			},
-		}, true, true, true, false, // the deafult manager can see itself
+		t, schema, accessTestOpts{
+			Query:           `{manager(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"manager"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  true, // the deafult manager can see itself
+			DelegateAllowed: false,
+		},
 	)
 	accessTest(
-		t, schema,
-		`{
-			 manager(uuid: "00000000-0000-0000-0000-000000000002") { uuid }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"manager"},
-			},
-		}, true, true, false, false, // the deafult manager cannot see others
+		t, schema, accessTestOpts{
+			Query:           `{manager(uuid: "00000000-0000-0000-0000-000000000002") { uuid }}`,
+			Path:            []interface{}{"manager"},
+			MustAuth:        true,
+			AdminAllowed:    false,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }
 
@@ -407,16 +398,14 @@ func TestManagers(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			 managers { edges { uuid } }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"managers"},
-			},
-		}, true, true, false, false,
+		t, schema, accessTestOpts{
+			Query:           `{managers { edges { uuid } }}`,
+			Path:            []interface{}{"managers"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }
 
@@ -453,16 +442,14 @@ func TestCompany(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			company(uuid:"00000000-0000-0000-0000-000000000001") { uuid }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"company"},
-			},
-		}, true, true, false, false,
+		t, schema, accessTestOpts{
+			Query:           `{company(uuid:"00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"company"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }
 
@@ -629,15 +616,13 @@ func TestCompanies(t *testing.T) {
 	})
 
 	accessTest(
-		t, schema,
-		`{
-			 companies { edges { uuid } }
-		 }`,
-		[]gqltest.TestQueryError{
-			{
-				ResolverError: &errors.ErrUnauthorized,
-				Path:          []interface{}{"companies"},
-			},
-		}, true, true, false, false,
+		t, schema, accessTestOpts{
+			Query:           `{companies { edges { uuid } }}`,
+			Path:            []interface{}{"companies"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
 	)
 }

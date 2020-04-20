@@ -59,6 +59,19 @@ func (g *Grant) managersToGentype(managers []models.Manager) []gentypes.Manager 
 	return genManagers
 }
 
+func (g *Grant) managerEmailExists(email string) bool {
+	query := database.GormDB.Where("email = ?", email).First(&models.Manager{})
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return false
+		}
+		// If some other error occurs log it
+		glog.Errorf("Unable to find manager for Email: %s - error: %s", email, query.Error.Error())
+		return false
+	}
+	return true
+}
+
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
 
@@ -188,6 +201,11 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
+	// check manager does not exist
+	if g.managerEmailExists(managerDetails.Email) {
+		return gentypes.Manager{}, &errors.ErrUserExists
+	}
+
 	// If you're an admin you need to provide the company UUID
 	if g.IsAdmin {
 		if managerDetails.CompanyUUID != nil {
@@ -221,7 +239,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 	}
 	createErr := database.GormDB.Create(&manager).Error
 	if createErr != nil {
-		return gentypes.Manager{}, &errors.ErrUnauthorized
+		return gentypes.Manager{}, &errors.ErrWhileHandling
 	}
 
 	return g.managerToGentype(manager), nil
@@ -278,6 +296,9 @@ func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 			return false, &errors.ErrDeleteFailed
 		}
 
+		if query.RowsAffected == 0 {
+			return false, &errors.ErrUserNotFound
+		}
 		return true, nil
 	}
 
