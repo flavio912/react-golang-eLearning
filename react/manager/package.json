@@ -61,7 +61,7 @@
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
-    "relay": "relay-compiler --src ./src --schema ../../api/schema/schema.graphql --extensions js jsx"
+    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --extensions=ts --extensions=tsx"
   },
   "husky": {
     "hooks": {

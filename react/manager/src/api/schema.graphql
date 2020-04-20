@@ -1,0 +1,12 @@
+type Query {
+  getOranges: String
+}
+
+type Mutation {
+  pine: String
+}
+
+schema {
+  query: Query
+  mutation: Mutation
+}
