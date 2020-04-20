@@ -4,56 +4,45 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/google/uuid"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-func TestAddManager(t *testing.T) {
+func TestCreateManager(t *testing.T) {
 	prepareTestDatabase()
-
-	fakeUUID := "this is not a uuid"
 
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
 		wantErr interface{}
 		want    gentypes.Manager
-		input   gentypes.AddManagerInput
+		input   gentypes.CreateManagerInput
 	}{
 		{
 			"Users cannot create",
 			delegateGrant,
 			&errors.ErrUnauthorized,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{},
+			gentypes.CreateManagerInput{},
 		},
 		{
 			"Admin must supply company uuid",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{},
-		},
-		{
-			"Admin must supply valid company uuid",
-			adminGrant,
-			&errors.ErrUUIDInvalid,
-			gentypes.Manager{},
-			gentypes.AddManagerInput{
-				CompanyUUID: &fakeUUID,
-			},
+			gentypes.CreateManagerInput{},
 		},
 		{
 			"Admin supplied company must exist",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Manager{},
-			gentypes.AddManagerInput{
+			gentypes.CreateManagerInput{
 				CompanyUUID: &uuidZero,
 			},
 		},
@@ -61,13 +50,13 @@ func TestAddManager(t *testing.T) {
 			"Should use manager's company",
 			managerGrant,
 			nil,
-			gentypes.Manager{CompanyID: uuid.MustParse(managerGrant.Claims.Company)},
-			gentypes.AddManagerInput{},
+			gentypes.Manager{CompanyID: managerGrant.Claims.Company},
+			gentypes.CreateManagerInput{},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			m, err := test.grant.AddManager(test.input)
+			m, err := test.grant.CreateManager(test.input)
 			assert.Equal(t, test.wantErr, err)
 			// generated fields
 			test.want.UUID = m.UUID
@@ -84,19 +73,19 @@ func TestGetManagerByUUID(t *testing.T) {
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
-		uuid    string
+		uuid    gentypes.UUID
 		wantErr interface{}
 	}{
 		{
 			"Delegates cannot get managers",
 			delegateGrant,
-			"00000000-0000-0000-0000-000000000001",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			&errors.ErrUnauthorized,
 		},
 		{
 			"Managers cannot see other managers",
 			managerGrant,
-			"00000000-0000-0000-0000-000000000002", // different to managerGrant.Claims.UUID
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"), // different to managerGrant.Claims.UUID
 			&errors.ErrUnauthorized,
 		},
 		{
@@ -108,19 +97,13 @@ func TestGetManagerByUUID(t *testing.T) {
 		{
 			"Admins can see managers",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000001",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			nil,
-		},
-		{
-			"UUID must be valid",
-			adminGrant,
-			"this is not a uuid",
-			&errors.ErrUUIDInvalid,
 		},
 		{
 			"Should return ErrNotFound if not found",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000000", // does not exist
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"), // does not exist
 			&errors.ErrNotFound,
 		},
 	}
@@ -131,7 +114,7 @@ func TestGetManagerByUUID(t *testing.T) {
 			m, err := test.grant.GetManagerByUUID(test.uuid)
 			assert.Equal(t, test.wantErr, err)
 			if test.wantErr == nil {
-				assert.Equal(t, test.uuid, m.UUID.String())
+				assert.Equal(t, test.uuid, m.UUID)
 			} else {
 				// should return a blank manager if it errors
 				assert.Equal(t, gentypes.Manager{}, m)
@@ -167,7 +150,7 @@ func TestGetManagersByUUID(t *testing.T) {
 		{
 			"Managers can see their own info",
 			managerGrant,
-			[]string{managerGrant.Claims.UUID, "00000000-0000-0000-0000-000000000002"},
+			[]string{managerGrant.Claims.UUID.String(), "00000000-0000-0000-0000-000000000002"},
 			nil,
 			1,
 		},
@@ -215,7 +198,7 @@ func TestGetManagerSelf(t *testing.T) {
 		{
 			"Should return own manager",
 			managerGrant,
-			managerGrant.Claims.UUID,
+			managerGrant.Claims.UUID.String(),
 			nil,
 		},
 	}
@@ -241,7 +224,7 @@ func TestDeleteManager(t *testing.T) {
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
-		uuid    string
+		uuid    gentypes.UUID
 		wantErr interface{}
 	}{
 		{
@@ -265,7 +248,7 @@ func TestDeleteManager(t *testing.T) {
 		{
 			"Admins can delete",
 			adminGrant,
-			"00000000-0000-0000-0000-000000000002",
+			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 			nil,
 		},
 	}
@@ -325,14 +308,14 @@ func TestGetManagers(t *testing.T) {
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
 			User: gentypes.User{
-				UUID:      uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 				Email:     "man@managers.com",
 				FirstName: "Manager",
 				LastName:  "Man",
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: uuid.MustParse("00000000-0000-0000-0000-000000000001"),
+			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -369,5 +352,63 @@ func TestGetManagers(t *testing.T) {
 			assert.Nil(t, err)
 			require.Len(t, managers, 4)
 		})
+	})
+}
+
+func TestUpdateManager(t *testing.T) {
+	prepareTestDatabase()
+
+	input := gentypes.UpdateManagerInput{
+		UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Email:     helpers.StringPointer("test@test.com"),
+		FirstName: helpers.StringPointer("test"),
+		LastName:  helpers.StringPointer("test2"),
+		Telephone: helpers.StringPointer("test3"),
+		JobTitle:  helpers.StringPointer("test4"),
+	}
+
+	t.Run("Updates existing manager", func(t *testing.T) {
+		prepareTestDatabase()
+		manager, err := adminGrant.UpdateManager(input)
+
+		outputWant := gentypes.Manager{
+			User: gentypes.User{
+				UUID:      input.UUID,
+				Email:     *input.Email,
+				FirstName: *input.FirstName,
+				LastName:  *input.LastName,
+				Telephone: *input.Telephone,
+				JobTitle:  *input.JobTitle,
+				CreatedAt: manager.CreatedAt,
+				LastLogin: manager.LastLogin,
+			},
+			ProfileImageURL: manager.ProfileImageURL,
+			CompanyID:       manager.CompanyID,
+		}
+
+		assert.Nil(t, err)
+		assert.Equal(t, outputWant, manager)
+
+		manager, err = adminGrant.GetManagerByUUID(input.UUID)
+		assert.Nil(t, err)
+		assert.Equal(t, outputWant, manager)
+	})
+
+	t.Run("Access Control Tests", func(t *testing.T) {
+		_, err := managerGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: managerGrant.Claims.UUID})
+		assert.Nil(t, err, "manager should be able to edit itself")
+
+		_, err = managerGrant.UpdateManager(gentypes.UpdateManagerInput{
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		})
+		assert.Equal(t, &errors.ErrUnauthorized, err, "manager should not be able to edit other managers")
+
+		_, err = delegateGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrUnauthorized, err, "delegates must not be able to update manager")
+	})
+
+	t.Run("UUID must exist", func(t *testing.T) {
+		_, err := adminGrant.UpdateManager(gentypes.UpdateManagerInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrManagerNotFound, err)
 	})
 }

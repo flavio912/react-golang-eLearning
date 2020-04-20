@@ -45,10 +45,10 @@ func addSentryContext(r *http.Request, grant *middleware.Grant) {
 	// Add sentry context
 	if hub := sentry.GetHubFromContext(r.Context()); hub != nil {
 		hub.Scope().SetUser(sentry.User{
-			ID: grant.Claims.UUID,
+			ID: grant.Claims.UUID.String(),
 		})
 		hub.Scope().SetTag("role", auth.RoleToString(grant.Claims.Role))
-		hub.Scope().SetTag("company", grant.Claims.Company)
+		hub.Scope().SetTag("company", grant.Claims.Company.String())
 	}
 }
 

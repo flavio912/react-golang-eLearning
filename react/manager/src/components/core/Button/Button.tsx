@@ -63,6 +63,7 @@ interface Props {
   iconSize?: number;
   bold?: boolean;
   small?: boolean;
+  className?: string;
 }
 
 function Button({
@@ -72,6 +73,7 @@ function Button({
   bold,
   small,
   children,
+  className = "",
   ...props
 }: Props & React.PropsWithoutRef<JSX.IntrinsicElements["button"]>) {
   const theme = useTheme();
@@ -83,7 +85,8 @@ function Button({
         classes.button,
         classes[archetype || "default"],
         bold && classes.bold,
-        small && classes.small
+        small && classes.small,
+        className
       )}
       {...props}
     >

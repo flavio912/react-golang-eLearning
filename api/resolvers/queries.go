@@ -27,27 +27,21 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 	if grant == nil {
 		return &AdminPageResolver{}, &errors.ErrUnauthorized
 	}
-	admins, err := grant.GetAdmins(args.Page, nil)
-	if err != nil {
-		return nil, err
-	}
+
+	admins, page, err := grant.GetAdmins(args.Page, nil)
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
 			admin: admin,
 		})
 	}
+
 	return &AdminPageResolver{
 		edges: &adminResolvers,
 		pageInfo: &PageInfoResolver{
-			pageInfo: &gentypes.PageInfo{ // TODO Get proper page
-				Total:  0,
-				Offset: 0,
-				Limit:  0,
-				Given:  int32(len(admins)),
-			},
+			&page,
 		},
-	}, nil
+	}, err
 }
 
 // Admin gets a single admin
@@ -71,7 +65,6 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 	Filter  *gentypes.ManagersFilter
 	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
-
 	if args.Filter != nil {
 		err := (*args.Filter).Validate()
 		if err != nil {
@@ -115,7 +108,7 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 		return &CompanyPageResolver{}, err
 	}
 	return NewCompanyPageResolver(ctx, NewCompanyPageArgs{
-		UUIDs: companies,
+		UUIDs: uuidsToStrings(companies),
 	}, page)
 }
 

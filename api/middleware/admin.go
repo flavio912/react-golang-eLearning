@@ -14,7 +14,7 @@ import (
 // Take in a model, retuns the gentype for it
 func adminToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
-		UUID:      modAdmin.UUID.String(),
+		UUID:      gentypes.UUID{UUID: modAdmin.UUID},
 		Email:     modAdmin.Email,
 		FirstName: modAdmin.FirstName,
 		LastName:  modAdmin.LastName,
@@ -54,7 +54,7 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 
 // adminExists returns true if the given uuid is an admin
 // NB: Uses a DB query, so use sparingly
-func (g *Grant) adminExists(uuid string) bool {
+func (g *Grant) adminExists(uuid gentypes.UUID) bool {
 	query := database.GormDB.Where("uuid = ?", uuid).First(&models.Admin{})
 	if query.Error != nil {
 		if query.RecordNotFound() {
@@ -82,9 +82,9 @@ func (g *Grant) adminEmailExists(email string) bool {
 }
 
 // GetAdmins
-func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, error) {
+func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, gentypes.PageInfo, error) {
 	if !g.IsAdmin {
-		return []gentypes.Admin{}, &errors.ErrUnauthorized
+		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
 	var admins []models.Admin
@@ -99,17 +99,31 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 		}
 	}
 
-	query, _, _ = getPage(query, page)
-	err := query.Find(&admins).Error
-	if err != nil {
-		return []gentypes.Admin{}, err
+	var count int32
+	countErr := query.Model(&models.Manager{}).Count(&count).Error
+	if countErr != nil {
+		glog.Errorf("Unable to count records for admin. error: %s", countErr.Error())
+		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	return adminsToGentypes(admins), nil
+	query = query.Order("created_at DESC")
+
+	query, limit, offset := getPage(query, page)
+	err := query.Find(&admins).Error
+	if err != nil {
+		return []gentypes.Admin{}, gentypes.PageInfo{}, err
+	}
+
+	return adminsToGentypes(admins), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(admins)),
+	}, nil
 }
 
-// AddAdmin allows current admins to create new ones
-func (g *Grant) AddAdmin(input gentypes.AddAdminInput) (gentypes.Admin, error) {
+// CreateAdmin allows current admins to create new ones
+func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, error) {
 	if !g.IsAdmin {
 		return gentypes.Admin{}, &errors.ErrUnauthorized
 	}
@@ -175,14 +189,14 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 	save := database.GormDB.Save(admin)
 	if save.Error != nil {
 		glog.Errorf("Error updating Admin with UUID: %s - error: %s", input.UUID, save.Error.Error())
-		return gentypes.Admin{}, &errors.ErrUnableToResolve
+		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
 	return adminToGentype(admin), nil
 }
 
 // DeleteAdmin allows admins to delete other admins
-func (g *Grant) DeleteAdmin(uuid string) (bool, error) {
+func (g *Grant) DeleteAdmin(uuid gentypes.UUID) (bool, error) {
 	if !g.IsAdmin {
 		return false, &errors.ErrUnauthorized
 	}

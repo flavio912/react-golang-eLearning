@@ -21,11 +21,13 @@ const items: ResultItem[] = [
     value: "uuid-3",
   },
 ];
+
 const searchFunc = async (query: string) => {
   return await new Promise<ResultItem[]>((resolve) =>
     setTimeout(() => resolve(items), 700)
   );
 };
+
 export const plain = () => {
   return (
     <UserSearch

@@ -22,6 +22,13 @@ var (
 		Title:    "Could not find the specified admin user",
 		HelpText: "Oops, no admin with those details exists. Please check the details and try again",
 	}
+	//ErrManagerNotFound given when a manager with the given uuid cannot be found
+	ErrManagerNotFound = FullError{
+		Type:     "ErrManagerNotFound",
+		Message:  "There is no user matching the information given",
+		Title:    "Could not find the specified manager user",
+		HelpText: "Oops, no manager with those details exists. Please check the details and try again",
+	}
 	// ErrAuthFailed given when password or email is not correct
 	ErrAuthFailed = FullError{
 		Type:     "ErrAuthFailed",

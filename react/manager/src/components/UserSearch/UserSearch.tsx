@@ -114,7 +114,7 @@ function UserSearch({
     <div className={focus ? classes.rootFocused : classes.root}>
       <div className={classes.buttonCont}>
         <div className={classes.search}>
-          <Icon name={"SearchGlass"} size={15} />
+          <Icon name="SearchGlass" size={15} />
           <CoreInput
             type="search"
             placeholder={`Search within ${companyName}`}

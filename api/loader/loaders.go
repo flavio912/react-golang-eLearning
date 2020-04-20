@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/graph-gophers/dataloader"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 type contextKey string
@@ -69,6 +70,15 @@ func loadBatchError(err error, n int) []*dataloader.Result {
 }
 
 func indexByString(uuids []string, uuid string) int {
+	for i, v := range uuids {
+		if uuid == v {
+			return i
+		}
+	}
+	panic(fmt.Sprintf("could not find %s in %v", uuid, uuids))
+}
+
+func indexByUUID(uuids []gentypes.UUID, uuid gentypes.UUID) int {
 	for i, v := range uuids {
 		if uuid == v {
 			return i

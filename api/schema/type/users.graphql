@@ -1,5 +1,5 @@
 interface User {
-  uuid: String!
+  uuid: UUID!
   createdAt: String
   email: String!
   firstName: String!
@@ -14,8 +14,8 @@ input ManagerLogin {
   password: String!
 }
 
-input AddManagerInput {
-  companyUUID: String # For admins when creating managers of different companies
+input CreateManagerInput {
+  companyUUID: UUID # For admins when creating managers of different companies
   firstName: String!
   lastName: String!
   email: String!
@@ -25,11 +25,11 @@ input AddManagerInput {
 }
 
 input DeleteManagerInput {
-  uuid: String!
+  uuid: UUID!
 }
 
 type Manager implements User {
-  uuid: String!
+  uuid: UUID!
   createdAt: String
   email: String!
   firstName: String!
@@ -39,6 +39,15 @@ type Manager implements User {
   jobTitle: String!
   company: Company!
   profileImageUrl: String
+}
+
+input UpdateManagerInput {
+  uuid: UUID!
+  email: String
+  firstName: String
+  lastName: String
+  telephone: String
+  jobTitle: String
 }
 
 type ManagerPage implements PaginatedQuery {
