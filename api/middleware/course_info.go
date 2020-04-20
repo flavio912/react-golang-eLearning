@@ -14,7 +14,7 @@ import (
 /* Course Info CRUD */
 
 func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
-	// TODO: Make for admin only
+	// TODO: Check if user has access to this course
 	return gentypes.CourseInfo{
 		ID:              courseInfo.ID,
 		Name:            courseInfo.Name,
