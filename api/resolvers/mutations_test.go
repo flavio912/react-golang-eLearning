@@ -802,3 +802,143 @@ func TestDeleteAdmin(t *testing.T) {
 		},
 	)
 }
+
+func TestCreateCompany(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "create company",
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					createCompany(input: {
+						companyName: "Cool Co"
+						addressLine1: "100 Cool Lane"
+						addressLine2: ""
+						county: "Coolington"
+						postCode: "CO0L3ST"
+						country: "UK"
+					}) {
+						approved
+						name
+						address {
+							addressLine1
+							addressLine2
+							county
+							postCode
+							country
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createCompany":{
+						"address":{
+							"addressLine1":"100 Cool Lane",
+							"addressLine2":"",
+							"country":"UK",
+							"county":"Coolington",
+							"postCode":"CO0L3ST"
+						},
+						"approved":true,
+						"name":"Cool Co"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "should validate",
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					createCompany(input: {
+						companyName: ""
+						addressLine1: ""
+						addressLine2: ""
+						county: ""
+						postCode: "reallylong"
+						country: ""
+					}) {
+						name
+					}
+				}
+			`,
+			ExpectedResult: `{"createCompany":null}`,
+			ExpectedErrors: []gqltest.TestQueryError{{
+				Message: helpers.StringPointer("PostCode: reallylong does not validate as stringlength(6|7)"),
+				Path:    []interface{}{"createCompany"},
+			}},
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createCompany(input: {
+					companyName: ""
+					addressLine1: ""
+					addressLine2: ""
+					county: ""
+					postCode: "1234567"
+					country: ""
+				}) {
+					name
+				}
+			}
+		`,
+		Path:            []interface{}{"createCompany"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+		CleanDB:         false,
+	})
+}
+
+func TestApproveCompany(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "create company",
+			Context: adminContext,
+			Schema:  schema,
+			Query: `
+				mutation {
+					approveCompany(uuid: "00000000-0000-0000-0000-000000000004") {
+						approved
+						name
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"approveCompany":{
+						"approved":true,
+						"name":"Microsoft"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				approveCompany(uuid: "00000000-0000-0000-0000-000000000004") {
+					name
+				}
+			}
+		`,
+		Path:            []interface{}{"approveCompany"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+		CleanDB:         false,
+	})
+}
