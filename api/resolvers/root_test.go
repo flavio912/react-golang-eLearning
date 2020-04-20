@@ -145,7 +145,7 @@ func accessTest(
 	})
 
 	t.Run(fmt.Sprintf("Manager Allowed:%v", managerAllowed), func(t *testing.T) {
-		checkAccess(t, adminContext, adminAllowed)
+		checkAccess(t, managerContext, managerAllowed)
 	})
 
 	// there's no delegate context yet ...
