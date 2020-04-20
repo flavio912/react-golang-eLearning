@@ -2,13 +2,13 @@ import React from 'react';
 import {graphql, createFragmentContainer} from 'react-relay'
 
 type Props = {
-    queryProp: {
-        complete: boolean;
-        text: string;
-    };
+  propName: {
+    complete: boolean;
+    text: string;
+  };
 };
 
-const ExampleComponent = ({queryProp: { complete, text }}: Props) => (
+const ExampleComponent = ({ propName: { complete, text } }: Props) => (
     <li>
         <div>
           <input
@@ -26,9 +26,9 @@ export default createFragmentContainer(
   ExampleComponent,
   // Each key specified in this object will correspond to a prop available to the component
   {
-    queryProp: graphql`
+    propName: graphql`
       # As a convention, we name the fragment as '<ComponentFileName>_<propName>'
-      fragment ExampleComponent_props on Todo {
+      fragment ExampleComponent_propName on Todo {
         complete
         text
       }

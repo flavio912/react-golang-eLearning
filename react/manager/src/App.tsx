@@ -11,6 +11,7 @@ import {
 import { graphql, QueryRenderer } from "react-relay";
 
 import environment from "./api/environment";
+import ExamplePage from "views/ExamplePage";
 
 type Props = {
   classes: any;
@@ -54,40 +55,43 @@ type Response = {
   props: any;
 };
 
+const userID: number = 1;
+
 const App = () => (
   <QueryRenderer
     environment={environment}
     query={graphql`
-      query AppQuery {
-        user {
-          id
-        }
-      }
-    `}
-    variables={{}}
+          query App_UserQuery($userID: ID!) {
+            node(id: $userID) {
+              id
+            }  
+          }
+        `}
+    variables={{userID}}
     render={({ error, props }: Response) => {
-      if (error) {
+      /*if (error) {
+        console.log("error" + error)
         return <div>Error!</div>;
-      }
-      if (!props) {
+      }*/
+      /*if (!props) {
         return <div>Loading...</div>;
-      }
+      }*/
       return (
         <Router>
           <Switch>
-            <Route path="/" exact></Route>
+            <Route path="/" exact>
+              <ExamplePage />
+            </Route>
             <Route path="/login">
               <p>Login</p>
             </Route>
-            <Route>
-              <PrivateRoute
-                isAuthenticated={props.viewer.id === "TEST"}
-                path="/home"
-                exact
-              >
-                <p>test</p>
-              </PrivateRoute>
-            </Route>
+            <PrivateRoute
+              isAuthenticated={props && props.node.id === userID}
+              path="/home"
+              exact
+            >
+              <p>test</p>
+            </PrivateRoute>
           </Switch>
         </Router>
       );
