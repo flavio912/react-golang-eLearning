@@ -144,7 +144,12 @@
       "react-app"
     ],
     "plugins": [
-      "relay"
+      [
+        "relay",
+        {
+          "artifactDirectory": "./src/__generated__"
+        }
+      ]
     ]
   },
   "devDependencies": {
