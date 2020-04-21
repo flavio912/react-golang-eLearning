@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -20,6 +21,14 @@ func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 			CourseInfoID: course.CourseInfoID,
 		},
 	}
+}
+
+func onlineCoursesToGentypes(courses []models.OnlineCourse) []gentypes.OnlineCourse {
+	var _courses = make([]gentypes.OnlineCourse, len(courses))
+	for i, course := range courses {
+		_courses[i] = onlineCourseToGentype(course)
+	}
+	return _courses
 }
 
 // CreateOnlineCourse creates a new online course
@@ -199,4 +208,74 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 	}
 
 	return nil
+}
+
+// HasFullRestrictedAccess returns true if the user has access to all restricted courses
+func (g *Grant) HasFullRestrictedAccess() bool {
+	if g.IsAdmin {
+		return true
+	}
+
+	// If a managers company is authorized a manager can view all restricted courses
+	if g.IsManager {
+		company := models.Company{}
+		query := database.GormDB.Where("uuid = ?", g.Claims.Company).First(&company)
+		if query.Error != nil {
+			glog.Errorf("Unable to get manager's company: %s", query.Error.Error())
+			return false
+		}
+
+		if company.Approved == true {
+			return true
+		}
+	}
+
+	// Delegates cannot access restricted courses unless specifically assigned them
+	if g.IsDelegate {
+		return false
+	}
+
+	return false
+}
+
+func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.OnlineCourse, error) {
+	// TODO: allow delegates access to their assigned courses
+	if !g.IsAdmin && !g.IsManager {
+		return []gentypes.OnlineCourse{}, &errors.ErrUnauthorized
+	}
+
+	var courses []models.OnlineCourse
+	query := database.GormDB.Joins("LEFT JOIN course_infos ON course_infos.id = online_courses.course_info_id")
+
+	// Filter course info
+	if filter != nil {
+		if filter.CourseInfo.Name != nil {
+			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.CourseInfo.Name+"%%")
+		}
+		if filter.CourseInfo.AccessType != nil {
+			query = query.Where("course_infos.access_type = ?", *filter.CourseInfo.AccessType)
+		}
+		if filter.CourseInfo.BackgroundCheck != nil {
+			query = query.Where("course_infos.background_check = ?", *filter.CourseInfo.BackgroundCheck)
+		}
+		if filter.CourseInfo.Price != nil {
+			query = query.Where("course_infos.price = ?", *filter.CourseInfo.Price)
+		}
+		fmt.Print(courses)
+	}
+
+	// Filter out restricted courses
+	if !g.HasFullRestrictedAccess() {
+		query = query.Not("course_infos.access_type = ?", "restricted")
+	}
+
+	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
+
+	query = query.Find(&courses)
+	if query.Error != nil {
+		glog.Errorf("Unable to get courses: %s", query.Error.Error())
+		return []gentypes.OnlineCourse{}, &errors.ErrWhileHandling
+	}
+
+	return onlineCoursesToGentypes(courses), nil
 }

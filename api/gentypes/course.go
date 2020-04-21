@@ -77,6 +77,17 @@ type OnlineCourse struct {
 	Course
 }
 
+type CourseInfoFilter struct {
+	Name            *string
+	AccessType      *AccessType
+	BackgroundCheck *bool
+	Price           *float64
+}
+
+type OnlineCourseFilter struct {
+	CourseInfo CourseInfoFilter
+}
+
 type ClassroomCourse struct {
 	Course
 	StartDate       Time
