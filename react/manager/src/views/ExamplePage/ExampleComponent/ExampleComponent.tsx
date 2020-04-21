@@ -8,8 +8,8 @@ type Props = {
 };
 
 const ExampleComponent = ({ info }: Props) => {
-  console.log(info);
-  return <div>{info.info}</div>;
+  console.log(info && info);
+  return <div>{info && info.info}</div>;
 };
 
 export default createFragmentContainer(

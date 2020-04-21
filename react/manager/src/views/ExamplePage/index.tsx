@@ -1,35 +1,26 @@
 import React from "react";
-import { graphql, QueryRenderer } from "react-relay";
+import { Route, RouteRenderArgs } from 'found';
+import { graphql } from "react-relay";
 
-import environment from "../../api/environment";
-import { default as _ExamplePage } from "./ExamplePage";
+import ExamplePage from "./ExamplePage";
 
-type Response = {
-  error: any;
-  props: any;
-};
+const ExamplePageQuery = graphql`
+  query ExamplePage_Query {
+    ...ExampleComponent_info
+  }
+`
 
-const ExamplePage = () => (
-  <QueryRenderer
-    environment={environment}
-    query={graphql`
-      query ExamplePage_Query {
-        ...ExampleComponent_info
-      }
-    `}
-    variables={{}}
-    render={({ error, props }: Response) => {
-      // Remove when connected to api
-      if (error) {
-        console.log("error" + error);
-        return <div>Error!</div>;
-      }
-      if (!props) {
-        return <div>Loading...</div>;
-      }
-      return <_ExamplePage data={props} />;
-    }}
+const ExamplePageRoute = () => (
+  <Route
+    path="/"
+    Component={ExamplePage}
+    query={ExamplePageQuery}
+    render={({ props }: RouteRenderArgs) => {
+      console.log(props)
+    return (
+      <ExamplePage data={props} />
+    )}}
   />
 );
 
-export default ExamplePage;
+export default ExamplePageRoute;

@@ -1,76 +1,27 @@
 import * as React from "react";
-import { createUseStyles } from "react-jss";
+import { BrowserProtocol, queryMiddleware } from 'farce';
 import {
-  BrowserRouter as Router,
-  Switch,
+  createFarceRouter,
+  createRender,
+  makeRouteConfig,
   Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
-
-import { graphql, QueryRenderer } from "react-relay";
-
+} from 'found';
+import { Resolver } from 'found-relay';
 import environment from "./api/environment";
-import ExamplePage from "views/ExamplePage";
+import ExamplePageRoute from "views/ExamplePage";
 
-type Props = {
-  classes: any;
-};
+const Router = createFarceRouter({
+  historyProtocol: new BrowserProtocol(),
+  historyMiddlewares: [queryMiddleware],
+  routeConfig: makeRouteConfig(
+    <ExamplePageRoute />,
+  ),
 
-type State = {};
-
-type RouteProps = {
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-  path: string;
-  exact: boolean;
-};
-
-const PrivateRoute = ({
-  children,
-  isAuthenticated,
-  path,
-  exact,
-}: RouteProps) => (
-  <Route
-    path={path}
-    exact={exact}
-    render={({ location }) =>
-      isAuthenticated ? (
-        children
-      ) : (
-        <Redirect
-          to={{
-            pathname: "/login",
-            state: { from: location },
-          }}
-        />
-      )
-    }
-  />
-);
-
-type Response = {
-  error: any;
-  props: any;
-};
-
-const userID = 1;
+  render: createRender({}),
+});
 
 const App = () => (
-  <Router>
-    <Switch>
-      <Route path="/" exact>
-        <ExamplePage />
-      </Route>
-      <Route path="/login">
-        <p>Login</p>
-      </Route>
-      <PrivateRoute isAuthenticated={false} path="/home" exact>
-        <p>test</p>
-      </PrivateRoute>
-    </Switch>
-  </Router>
-);
+  <Router resolver={new Resolver(environment)} />
+)
 
 export default App;
