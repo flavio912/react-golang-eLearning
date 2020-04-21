@@ -8,5 +8,5 @@ export default {
 };
 
 export const normal = () => {
-  return <LoginDialogue />;
+  return <LoginDialogue onSubmit={() => {}} />;
 };

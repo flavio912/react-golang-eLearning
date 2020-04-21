@@ -12,11 +12,13 @@ import {
 import { Resolver } from "found-relay";
 import environment from "./api/environment";
 import { graphql, createFragmentContainer } from "react-relay";
-import ExamplePage from "views/ExamplePage";
+import LoginPage from "views/Login";
+import { ThemeProvider } from "react-jss";
+import theme from "./helpers/theme";
 
 const ExamplePageQuery = graphql`
-  query ExamplePage_Query {
-    ...ExampleComponent_info
+  query App_Query {
+    info
   }
 `;
 
@@ -25,12 +27,12 @@ const Router = createFarceRouter({
   historyMiddlewares: [queryMiddleware],
   routeConfig: makeRouteConfig(
     <Route
-      path="/"
-      Component={ExamplePage}
+      path="/login"
+      Component={LoginPage}
       query={ExamplePageQuery}
       render={({ props }: RouteRenderArgs) => {
         console.log(props);
-        return <ExamplePage data={props} />;
+        return <LoginPage data={props} />;
       }}
     />
   ),
@@ -38,6 +40,10 @@ const Router = createFarceRouter({
   render: createRender({}),
 });
 
-const App = () => <Router resolver={new Resolver(environment)} />;
+const App = () => (
+  <ThemeProvider theme={theme}>
+    <Router resolver={new Resolver(environment)} />)
+  </ThemeProvider>
+);
 
 export default App;

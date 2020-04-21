@@ -1,3 +1,16 @@
 type Query {
   info: String!
 }
+
+type Mutation {
+  managerLogin(input: ManagerLogin!): AuthToken
+}
+
+input ManagerLogin {
+  email: String!
+  password: String!
+}
+
+type AuthToken {
+  token: String!
+}
