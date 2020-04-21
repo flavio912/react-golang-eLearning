@@ -238,10 +238,10 @@ func (g *Grant) HasFullRestrictedAccess() bool {
 	return false
 }
 
-func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.OnlineCourse, error) {
+func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.OnlineCourse, gentypes.PageInfo, error) {
 	// TODO: allow delegates access to their assigned courses
 	if !g.IsAdmin && !g.IsManager {
-		return []gentypes.OnlineCourse{}, &errors.ErrUnauthorized
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
 	var courses []models.OnlineCourse
@@ -264,18 +264,22 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 		fmt.Print(courses)
 	}
 
+	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
 	// Filter out restricted courses
 	if !g.HasFullRestrictedAccess() {
 		query = query.Not("course_infos.access_type = ?", "restricted")
 	}
 
-	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
+	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"})
+	if err != nil {
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, err
+	}
 
 	query = query.Find(&courses)
 	if query.Error != nil {
 		glog.Errorf("Unable to get courses: %s", query.Error.Error())
-		return []gentypes.OnlineCourse{}, &errors.ErrWhileHandling
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	return onlineCoursesToGentypes(courses), nil
+	return onlineCoursesToGentypes(courses), gentypes.PageInfo{}, nil
 }

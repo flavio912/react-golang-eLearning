@@ -107,6 +107,7 @@ func TestCreateOnlineCourse(t *testing.T) {
 }
 
 func TestGetOnlineCourses(t *testing.T) {
+
 	name := "test"
 	adminGrant.GetOnlineCourses(nil, &gentypes.OnlineCourseFilter{
 		CourseInfo: gentypes.CourseInfoFilter{
