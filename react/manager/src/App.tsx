@@ -15,6 +15,7 @@ import { graphql, createFragmentContainer } from "react-relay";
 import LoginPage from "views/Login";
 import { ThemeProvider } from "react-jss";
 import theme from "./helpers/theme";
+import { Redirect } from "react-router-dom";
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -26,15 +27,17 @@ const Router = createFarceRouter({
   historyProtocol: new BrowserProtocol(),
   historyMiddlewares: [queryMiddleware],
   routeConfig: makeRouteConfig(
-    <Route
-      path="/login"
-      Component={LoginPage}
-      query={ExamplePageQuery}
-      render={({ props }: RouteRenderArgs) => {
-        console.log(props);
-        return <LoginPage data={props} />;
-      }}
-    />
+    <Route>
+      <Route
+        path="/(login)?"
+        Component={LoginPage}
+        query={ExamplePageQuery}
+        render={({ props }: RouteRenderArgs) => {
+          console.log(props);
+          return <LoginPage data={props} />;
+        }}
+      />
+    </Route>
   ),
 
   render: createRender({}),
