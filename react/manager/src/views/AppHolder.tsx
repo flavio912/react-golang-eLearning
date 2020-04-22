@@ -10,10 +10,11 @@ type Props = {
 
 const useStyles = createUseStyles(() => ({
   appHolder: {
-    marginLeft: 93,
-    padding: 28,
-    justifyContent: "center",
     display: "flex",
+    padding: "42px 60px",
+    marginLeft: 93,
+    marginTop: 87,
+    justifyContent: "center",
   },
   background: {
     background: "#f8f9fb",
@@ -26,7 +27,17 @@ export const AppHolder = ({ children }: Props) => {
   const tabs: Tab[] = [
     {
       id: 0,
-      icon: "TTC_Logo_Icon",
+      icon: "LeftNav_Icon_Dashboard",
+      children: <div></div>,
+    },
+    {
+      id: 1,
+      icon: "LeftNav_Icon_Delegates",
+      children: <div></div>,
+    },
+    {
+      id: 2,
+      icon: "LeftNav_Icon_Courses",
       children: <div></div>,
     },
   ];

@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   titleWrapperTitle: {
     marginBottom: theme.spacing(2),
-    fontWeight: 700,
+    fontWeight: 600,
     fontSize: theme.fontSizes.default,
     color: theme.colors.primaryBlack,
   },

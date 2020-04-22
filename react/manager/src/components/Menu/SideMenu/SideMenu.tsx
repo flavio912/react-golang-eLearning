@@ -7,12 +7,14 @@ import Icon, { IconNames } from "../../core/Icon/Icon";
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
-    flexDirection: "row",
-    position: "absolute",
     zIndex: 10,
+    top: 89,
+    position: "fixed",
+    height: "100%",
+    flexDirection: "row",
+    boxShadow: theme.shadows.primary,
   },
   menu: {
-    height: "906px",
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
