@@ -9,9 +9,11 @@ type Props = {
 };
 
 const useStyles = createUseStyles(() => ({
-  root: {
+  appHolder: {
     marginLeft: 93,
     padding: 28,
+    justifyContent: "center",
+    display: "flex",
   },
   background: {
     background: "#f8f9fb",
@@ -32,7 +34,7 @@ export const AppHolder = ({ children }: Props) => {
     <div className={classes.background}>
       <HeaderMenu logo={""} user={{ name: "Test", url: "My URL" }} />
       <SideMenu tabs={tabs} selected={tabs[0]} onClick={() => {}} />
-      <div className={classes.root}>{children}</div>
+      <div className={classes.appHolder}>{children}</div>
     </div>
   );
 };

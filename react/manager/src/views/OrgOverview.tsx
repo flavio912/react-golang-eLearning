@@ -8,64 +8,72 @@ import classes from "*.module.css";
 import classNames from "classnames";
 import Button from "components/core/Button";
 import UserSearch from "components/UserSearch";
+import PageTitle from "components/PageTitle";
+import TitleWrapper from "components/Overview/TitleWrapper";
+import QuickInfo from "components/Overview/QuickInfo";
+import QuickOverview from "components/Overview/QuickOverview";
+import TrainingProgressCard from "components/Overview/TrainingProgressCard";
+import { Theme } from "helpers/theme";
+import ProfileCard from "components/Overview/ProfileCard";
 
 type Props = {};
 
-const useStyles = createUseStyles(() => ({
+const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "grid",
-    gridGap: 17,
-    gridTemplateRows: "0.1fr minmax(0, 0.1fr) 0.4fr 0.4fr auto",
-    gridTemplateColumns: "repeat(auto-fill, 0.0833fr)",
-  },
-  activity: {
-    gridRowStart: 4,
-    gridColumn: "5 / 13",
-  },
-  title: {
-    gridColumn: "1 / 5",
-  },
-  titleText: {
-    margin: 0,
-  },
-  subtitleText: {
-    margin: 0,
-  },
-  quickBookButton: {
-    gridColumn: "9/11",
-  },
-  centerer: {
     display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    flexDirection: "column",
+    flexGrow: 1,
+    maxWidth: 1200,
   },
-  addDelegatesButton: {
-    gridColumn: "11/13",
+  activity: {},
+  infoHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(2),
   },
-  userSearch: {
-    gridColumn: "1/5",
+  mainButtons: {
+    display: "inline-grid",
+    gridTemplateColumns: "1fr 1fr",
+    gridGap: theme.spacing(2),
+  },
+  statsRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(2),
+  },
+  cardFlex: {
+    display: "flex",
+  },
+  breaker: {
+    width: theme.spacing(2),
+  },
+  searchRow: {
+    marginBottom: theme.spacing(2),
+  },
+  bottomRow: {
+    display: "flex",
+    justifyContent: "space-between",
+    marginBottom: theme.spacing(2),
   },
 }));
 
 export const OrgOverview = () => {
-  const classes = useStyles();
+  const theme = useTheme();
+  const classes = useStyles({ theme });
   return (
     <div className={classes.root}>
-      <div className={classes.title}>
-        <h1 className={classes.titleText}>Fedex</h1>
-        <p className={classes.subtitleText}>Organisation Overview</p>
+      <div className={classes.infoHeader}>
+        <PageTitle title="Fedex" subTitle="Organisation Overview" />
+        <div className={classes.mainButtons}>
+          <Button bold archetype="submit">
+            Quick Booking
+          </Button>
+          <Button bold archetype="submit">
+            Add Delegates
+          </Button>
+        </div>
       </div>
-      <div className={classNames(classes.centerer, classes.quickBookButton)}>
-        <Button bold archetype="submit">
-          Quick Booking
-        </Button>
-      </div>
-      <div className={classNames(classes.centerer, classes.addDelegatesButton)}>
-        <Button bold archetype="submit">
-          Add Delegates
-        </Button>
-      </div>
-      <div className={classes.userSearch}>
+      <div className={classes.searchRow}>
         <UserSearch
           companyName="TESTcompany"
           searchFunction={async (query: string) => {
@@ -73,18 +81,57 @@ export const OrgOverview = () => {
           }}
         />
       </div>
-      <ActvityCard
-        className={classes.activity}
-        padding={"medium"}
-        leftHeading={"Delegates activity"}
-        rightHeading={"Recent Updates"}
-        options={["This month", "All Time"]}
-        updates={[]}
-        data={[
-          { name: "name", value: 10 },
-          { name: "time", value: 15 },
-        ]}
-      />
+      <div className={classes.statsRow}>
+        <TitleWrapper title="Quick Overview">
+          <QuickOverview
+            purchasedCourses={20}
+            numDelegates={130}
+            numValidCertificates={10}
+            numCertificatesExpiringSoon={15}
+          />
+        </TitleWrapper>
+        <TitleWrapper title="Training Progress">
+          <div className={classes.cardFlex}>
+            <TrainingProgressCard
+              coursesDone={20}
+              timeTracked={{ h: 20, m: 15 }}
+              title="Weekly"
+            />
+            <div className={classes.breaker} />
+            <TrainingProgressCard
+              coursesDone={20}
+              timeTracked={{ h: 20, m: 15 }}
+              title="Weekly"
+            />
+          </div>
+        </TitleWrapper>
+      </div>
+      <div className={classes.bottomRow}>
+        <TitleWrapper title="Your information">
+          <ProfileCard
+            heading="Profile"
+            fields={[
+              { fieldName: "Name", value: "Fred Eccleston" },
+              { fieldName: "Role", value: "Group Leader" },
+            ]}
+            padding="medium"
+          />
+        </TitleWrapper>
+        <TitleWrapper title={"Activity"}>
+          <ActvityCard
+            className={classes.activity}
+            padding={"medium"}
+            leftHeading={"Delegates activity"}
+            rightHeading={"Recent Updates"}
+            options={["This month", "All Time"]}
+            updates={[]}
+            data={[
+              { name: "name", value: 10 },
+              { name: "time", value: 15 },
+            ]}
+          />
+        </TitleWrapper>
+      </div>
     </div>
   );
 };
