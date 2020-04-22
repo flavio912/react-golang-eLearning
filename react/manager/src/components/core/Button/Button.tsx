@@ -14,6 +14,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     cursor: "pointer",
     height: 40,
+    justifyContent: "center",
     fontSize: theme.fontSizes.default,
     transition: "0.1s ease",
     transitionProperty: "border-colour, background-color",

@@ -20,6 +20,7 @@ import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Card from 'components/core/Card';
+import { OrgOverview } from 'views/OrgOverview';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -51,7 +52,7 @@ const Router = createFarceRouter({
         }}
       >
         {/* Page info goes here */}
-        <Route Component={LoginPage} />
+        <Route Component={OrgOverview} />
         {/* Page info goes here */}
       </Route>
     </Route>

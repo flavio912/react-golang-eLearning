@@ -100,7 +100,6 @@ function SideMenu({ tabs, selected, onClick, className }: Props) {
             </div>
           ))}
       </div>
-      <div className={classes.body}>{selected && selected.children}</div>
     </div>
   );
 }
