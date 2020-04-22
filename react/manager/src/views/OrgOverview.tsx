@@ -113,6 +113,9 @@ export const OrgOverview = () => {
             fields={[
               { fieldName: "Name", value: "Fred Eccleston" },
               { fieldName: "Role", value: "Group Leader" },
+              { fieldName: "Email", value: "Group Leader" },
+              { fieldName: "Tel Contact", value: "Group Leader" },
+              { fieldName: "Active since", value: "Group Leader" },
             ]}
             padding="medium"
           />
