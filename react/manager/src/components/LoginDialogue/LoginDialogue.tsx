@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    width: 320,
+    width: 378,
     background: "white",
   },
   logoContainer: {

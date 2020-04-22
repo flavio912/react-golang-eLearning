@@ -65,7 +65,7 @@ const theme: Theme = {
     textGrey: "#737988",
   },
   shadows: {
-    primary: "0px 2px 10px #0000001f",
+    primary: "0px 2px 13px #00000014",
     body: "inset 0px -2px 10px 0px #0000001f",
   },
   fontSizes: {
