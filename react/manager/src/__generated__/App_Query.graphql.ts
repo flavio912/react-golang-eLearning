@@ -1,11 +1,15 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash eff14ac7c99523c5fdee1358f5029c27 */
+/* @relayHash 8c4eea5edab6019d9dc9ba61c3f92afa */
 
 import { ConcreteRequest } from "relay-runtime";
 export type App_QueryVariables = {};
 export type App_QueryResponse = {
-    readonly info: string;
+    readonly manager: {
+        readonly uuid: unknown;
+        readonly firstName: string;
+        readonly lastName: string;
+    } | null;
 };
 export type App_Query = {
     readonly response: App_QueryResponse;
@@ -16,18 +20,47 @@ export type App_Query = {
 
 /*
 query App_Query {
-  info
+  manager {
+    uuid
+    firstName
+    lastName
+  }
 }
 */
 
 const node: ConcreteRequest = (function () {
     var v0 = [
         ({
-            "kind": "ScalarField",
+            "kind": "LinkedField",
             "alias": null,
-            "name": "info",
+            "name": "manager",
+            "storageKey": null,
             "args": null,
-            "storageKey": null
+            "concreteType": "Manager",
+            "plural": false,
+            "selections": [
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "uuid",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "firstName",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "lastName",
+                    "args": null,
+                    "storageKey": null
+                }
+            ]
         } as any)
     ];
     return {
@@ -50,10 +83,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Query",
             "id": null,
-            "text": "query App_Query {\n  info\n}\n",
+            "text": "query App_Query {\n  manager {\n    uuid\n    firstName\n    lastName\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = 'cb71d961476f1308026f001d073d9121';
+(node as any).hash = '437b84b52656bf9735572b91f8dffb87';
 export default node;

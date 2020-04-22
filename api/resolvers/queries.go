@@ -52,8 +52,19 @@ func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UU
 }
 
 // Manager gets a single manager
-func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID string }) (*ManagerResolver, error) {
-	manager, err := loader.LoadManager(ctx, args.UUID)
+func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*ManagerResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerResolver{}, &errors.ErrUnauthorized
+	}
+
+	var managerUUID gentypes.UUID
+	if args.UUID != nil {
+		managerUUID = *args.UUID
+	} else {
+		managerUUID = grant.Claims.UUID
+	}
+	manager, err := loader.LoadManager(ctx, managerUUID.String())
 	if err != nil {
 		return &ManagerResolver{}, err
 	}

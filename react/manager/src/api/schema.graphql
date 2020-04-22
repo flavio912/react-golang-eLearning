@@ -1,9 +1,97 @@
+scalar UUID
+
+schema {
+  query: Query
+  mutation: Mutation
+}
+
 type Query {
   info: String!
+  manager(uuid: UUID): Manager
 }
 
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
+}
+
+type PageInfo {
+  total: Int! # Number of pages after this one
+  offset: Int! # The offset of this page from the start
+  limit: Int! # The max shown per page
+  given: Int! # Number of items given
+}
+
+input Page {
+  offset: Int
+  limit: Int
+}
+
+input ManagerFilter {
+  name: String
+  email: String
+  jobTitle: String
+  uuid: UUID
+  telephone: String
+}
+
+input CompanyFilter {
+  uuid: UUID
+  name: String
+}
+
+interface PaginatedQuery {
+  pageInfo: PageInfo
+}
+
+input OrderBy {
+  ascending: Boolean
+  field: String!
+}
+
+type Company {
+  approved: Boolean
+  uuid: UUID!
+  createdAt: String
+  name: String!
+  managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
+  address: Address!
+}
+
+type Address {
+  addressLine1: String!
+  addressLine2: String!
+  county: String!
+  postCode: String!
+  country: String!
+}
+
+type ManagerPage implements PaginatedQuery {
+  edges: [Manager]
+  pageInfo: PageInfo
+}
+
+interface User {
+  uuid: UUID!
+  createdAt: String
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+}
+
+type Manager implements User {
+  uuid: UUID!
+  createdAt: String
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+  company: Company!
+  profileImageUrl: String
 }
 
 input ManagerLogin {
