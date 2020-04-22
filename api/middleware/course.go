@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"fmt"
 	"strconv"
 
 	"github.com/asaskevich/govalidator"
@@ -55,7 +54,6 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 	// 	courseInfo.Tags = infoChanges.Tags
 	// }
 	if infoChanges.Name != nil {
-		fmt.Print("NOT NIL")
 		courseInfo.Name = *infoChanges.Name
 	}
 	if infoChanges.Price != nil {
@@ -83,7 +81,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfo
 		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
 	}
 
-	query := database.GormDB.Save(&courseInfo)
+	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(courseInfo)
 	if query.Error != nil {
 		glog.Errorf("Unable to update courseInfo: %s", query.Error.Error())
 		//logging.Log(ctx, sentry.LevelError, "Unable to update courseInfo", query.Error)

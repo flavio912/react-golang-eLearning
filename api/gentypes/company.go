@@ -2,13 +2,12 @@ package gentypes
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/google/uuid"
 )
 
 type Company struct {
 	CreatedAt *string `valid:"rfc3339"`
 	Approved  *bool
-	UUID      uuid.UUID
+	UUID      UUID
 	Name      string
 	AddressID uint
 }

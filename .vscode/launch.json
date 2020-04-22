@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Connect to Test Debug Server",
+      "type": "go",
+      "request": "launch",
+      "mode": "remote",
+      "remotePath": "/app",
+      "program": "${workspaceFolder}/api",
+      "port": 2345,
+      "host": "172.21.0.3"
+    }
+  ]
+}

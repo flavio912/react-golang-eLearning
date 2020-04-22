@@ -5,6 +5,7 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 // Delegate - DB model for delegates
@@ -39,7 +40,7 @@ circumstances be given without the password - @temmerson
 */
 func (delegate *Delegate) GenerateToken(password string) (string, error) {
 	claims := auth.UserClaims{
-		UUID: delegate.UUID.String(),
+		UUID: gentypes.UUID{UUID: delegate.UUID},
 		Role: auth.DelegateRole,
 	}
 	token, err := auth.GenerateToken(claims, 24)
