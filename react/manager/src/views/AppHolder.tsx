@@ -32,7 +32,16 @@ export const AppHolder = ({ children }: Props) => {
   ];
   return (
     <div className={classes.background}>
-      <HeaderMenu logo={""} user={{ name: "Test", url: "My URL" }} />
+      <HeaderMenu
+        logo={
+          "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png"
+        }
+        user={{
+          name: "Test",
+          url:
+            "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
+        }}
+      />
       <SideMenu tabs={tabs} selected={tabs[0]} onClick={() => {}} />
       <div className={classes.appHolder}>{children}</div>
     </div>

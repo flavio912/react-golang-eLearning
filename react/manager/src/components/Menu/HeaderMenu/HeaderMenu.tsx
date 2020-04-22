@@ -19,6 +19,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     cursor: "pointer",
     height: "50px",
     width: "140px",
+    borderRadius: theme.primaryBorderRadius,
+    border: [1, "solid", theme.colors.borderGrey],
+    boxShadow: theme.shadows.primary,
+    objectFit: "cover",
   },
   profileCircle: {
     height: 57,
