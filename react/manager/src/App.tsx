@@ -30,15 +30,7 @@ const Router = createFarceRouter({
   historyMiddlewares: [queryMiddleware],
   routeConfig: makeRouteConfig(
     <Route>
-      <Route
-        path="/(login)?"
-        Component={LoginPage}
-        query={ExamplePageQuery}
-        render={({ props }: RouteRenderArgs) => {
-          console.log(props);
-          return <LoginPage data={props} />;
-        }}
-      />
+      <Route path="/(login)?" Component={LoginPage} query={ExamplePageQuery} />
       <Route
         path="/app"
         Component={AppHolder}
