@@ -13,7 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     display: "grid",
     gridTemplateColumns: "1fr 50px 1fr",
-    width: '778px'
+    background: "white",
   },
   root: {
     display: "flex",
@@ -59,10 +59,10 @@ export interface Statistic {
 type Props = {
   leftHeading: string;
   rightHeading: string;
-  options: Array<string>;
-  updates: Array<Update>;
-  data: Array<Statistic>;
-  onClick?: Function,
+  options: string[];
+  updates: Update[];
+  data: Statistic[];
+  onClick?: Function;
   padding?: PaddingOptions;
   className?: string;
 };
@@ -127,7 +127,7 @@ function ActvityCard({
         </div>
 
         <Button
-          style={{alignSelf: "center", marginTop: "50px"}}
+          style={{ alignSelf: "center", marginTop: "50px" }}
           archetype="submit"
           onClick={() => onClick && onClick()}
         >
@@ -142,14 +142,17 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates && updates.slice(0,7).map((update, i) => (
-          <UserUpdate
-            key={i}
-            name={update.name}
-            course={update.course}
-            time={update.time}
-          />
-        ))}
+        {updates &&
+          updates
+            .slice(0, 7)
+            .map((update, i) => (
+              <UserUpdate
+                key={i}
+                name={update.name}
+                course={update.course}
+                time={update.time}
+              />
+            ))}
       </div>
     </Card>
   );

@@ -37,7 +37,7 @@ type Query {
   info: String!
   admin(uuid: UUID!): Admin
   admins(page: Page): AdminPage!
-  manager(uuid: UUID!): Manager
+  manager(uuid: UUID): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
   company(uuid: UUID!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage

@@ -7,6 +7,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   card: {
     boxShadow: theme.shadows.primary,
     borderRadius: theme.primaryBorderRadius,
+    background: "white",
   },
   smallPadding: {
     padding: "15px 20px",
