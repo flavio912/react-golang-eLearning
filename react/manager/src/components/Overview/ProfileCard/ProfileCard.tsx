@@ -56,12 +56,13 @@ function ProfileCard({
         />
       </div>
       {fields &&
-        fields.map((field) => (
+        fields.map((field, index) => (
           <InfoField
             key={field.fieldName}
             fieldName={field.fieldName}
             value={field.value}
             padding={field.padding}
+            border={index + 1 !== fields.length}
           />
         ))}
     </Card>

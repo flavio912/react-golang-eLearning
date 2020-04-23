@@ -52,8 +52,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export interface Statistic {
-  name: string;
-  value: number;
+  innerRing: {
+    name: string;
+    value: number;
+  },
+  outerRing: {
+    name: string;
+    value: number;
+  }
 }
 
 type Props = {
@@ -61,7 +67,7 @@ type Props = {
   rightHeading: string;
   options: string[];
   updates: Update[];
-  data: Statistic[];
+  data: Statistic;
   onClick?: Function;
   padding?: PaddingOptions;
   className?: string;
@@ -102,26 +108,26 @@ function ActvityCard({
         <Graph
           className={classNames(classes.graph)}
           heading="Active Delegates"
-          outerValue={data[0].value}
-          innerValue={data[1].value}
+          outerValue={data.outerRing.value}
+          innerValue={data.innerRing.value}
         />
 
         <div className={classNames(classes.row)}>
           <StatCircle
-            heading={data[0].name}
-            value={data[0].value}
+            heading={data.outerRing.name}
+            value={data.outerRing.value}
             color="green"
             border="right"
           />
           <StatCircle
-            heading={data[1].name}
-            value={data[1].value}
+            heading={data.innerRing.name}
+            value={data.innerRing.value}
             color="red"
             border="right"
           />
           <StatCircle
             heading="Total"
-            value={data[0].value + data[1].value}
+            value={data.innerRing.value + data.outerRing.value}
             color="grey"
           />
         </div>
