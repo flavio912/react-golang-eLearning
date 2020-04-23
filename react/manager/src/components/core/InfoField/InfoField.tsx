@@ -7,8 +7,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'flex-start',
-    borderBottom: `1px solid ${theme.colors.borderGrey}`
+    justifyContent: 'flex-start'
   },
   fieldName: {
     flex: 1,
@@ -24,10 +23,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: '15px 0px'
   },
   mediumPadding: {
-    padding: '20px 0px'
+    padding: '26px 0px'
   },
   largePadding: {
     padding: '30px 0px'
+  },
+  border: {
+    borderBottom: `1px solid ${theme.colors.borderGrey}`
   }
 }));
 
@@ -42,10 +44,11 @@ type Props = {
   fieldName: string;
   value: string;
   padding?: PaddingOptions;
+  border?: boolean;
   className?: string;
 };
 
-function InfoField({ fieldName, value, padding = 'small', className }: Props) {
+function InfoField({ fieldName, value, padding = 'medium', border = true, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -57,7 +60,7 @@ function InfoField({ fieldName, value, padding = 'small', className }: Props) {
   };
 
   return (
-    <div className={classNames(classes.container, paddingLink[padding], className)}>
+    <div className={classNames(classes.container, paddingLink[padding], border && classes.border, className)}>
       <span className={classNames(classes.fieldName)}>{fieldName}</span>
       <span className={classNames(classes.value)}>{value}</span>
     </div>
