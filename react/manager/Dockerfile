@@ -10,4 +10,4 @@ RUN ["chmod", "+x", "/scripts/run_staging.sh"]
 
 ENTRYPOINT ["/scripts/run_staging.sh"]
 
-EXPOSE 4000 4001
+EXPOSE 4000

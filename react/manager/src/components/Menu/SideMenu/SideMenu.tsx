@@ -69,7 +69,7 @@ export interface Tab {
 type Props = {
   tabs: Array<Tab>;
   selected: Tab;
-  onClick: Function;
+  onClick: (tab: Tab) => void;
   className?: string;
 };
 

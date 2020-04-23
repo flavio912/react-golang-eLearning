@@ -34,12 +34,12 @@ services:
   manager:
     build:
       context: react/manager
-    image: node:10
+    image: node:13-buster-slim
     volumes:
       - ./react/manager:/app
     ports:
-      - "4000:3000"
-    command: yarn && yarn run relay --watch & yarn run start
+      - "4000:4000"
+    command: yarn run relay --watch & yarn run start
 
   managerStorybook:
     build:
