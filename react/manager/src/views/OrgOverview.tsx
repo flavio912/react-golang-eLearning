@@ -15,6 +15,7 @@ import QuickOverview from "components/Overview/QuickOverview";
 import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import { Theme } from "helpers/theme";
 import ProfileCard from "components/Overview/ProfileCard";
+import PageHeader from "components/PageHeader";
 
 type Props = {};
 
@@ -26,16 +27,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     maxWidth: 1200,
   },
   activity: {},
-  infoHeader: {
-    display: "flex",
-    justifyContent: "space-between",
-    marginBottom: theme.spacing(2),
-  },
-  mainButtons: {
-    display: "inline-grid",
-    gridTemplateColumns: "1fr 1fr",
-    gridGap: theme.spacing(2),
-  },
   statsRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -64,17 +55,11 @@ export const OrgOverview = () => {
   const classes = useStyles({ theme });
   return (
     <div className={classes.root}>
-      <div className={classes.infoHeader}>
-        <PageTitle title="Fedex" subTitle="Organisation Overview" />
-        <div className={classes.mainButtons}>
-          <Button bold archetype="submit">
-            Quick Booking
-          </Button>
-          <Button bold archetype="submit">
-            Add Delegates
-          </Button>
-        </div>
-      </div>
+      <PageHeader
+        showCreateButtons
+        title="Fedex"
+        subTitle="Organisation Overview"
+      />
       <div className={classes.searchRow}>
         <UserSearch
           companyName="TESTcompany"

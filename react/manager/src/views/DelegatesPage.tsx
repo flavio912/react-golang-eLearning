@@ -15,6 +15,7 @@ import QuickOverview from "components/Overview/QuickOverview";
 import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import { Theme } from "helpers/theme";
 import ProfileCard from "components/Overview/ProfileCard";
+import PageHeader from "components/PageHeader";
 
 type Props = {};
 
@@ -32,7 +33,12 @@ const DelegatesPage = () => {
   const classes = useStyles({ theme });
   return (
     <div className={classes.root}>
-      <PageTitle title="Fedex" subTitle="Delegates" />
+      <PageHeader
+        showCreateButtons
+        title="Fedex"
+        subTitle="Organisation Overview"
+        sideText="127 members total"
+      />
     </div>
   );
 };

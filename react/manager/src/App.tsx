@@ -53,9 +53,7 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        {/* Page info goes here */}
         <Route Component={OrgOverview} />
-        {/* Page info goes here */}
         <Route path="/delegates" Component={DelegatesPage} />
       </Route>
     </Route>
