@@ -45,11 +45,12 @@ const Router = createFarceRouter({
         query={ExamplePageQuery}
         render={({ props, error }: any) => {
           // Check if user is logged in, if not redirect to login
-          if (props?.manager) return <AppHolder {...props} />;
-          if (error) {
-            throw new RedirectException("/login");
-          }
-          return undefined;
+          // if (props?.manager) return <AppHolder {...props} />;
+          // if (error) {
+          //   throw new RedirectException("/login");
+          // }
+          // return undefined;
+          return <AppHolder {...props} />;
         }}
       >
         {/* Page info goes here */}
