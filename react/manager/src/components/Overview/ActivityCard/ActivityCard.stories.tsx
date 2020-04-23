@@ -25,17 +25,21 @@ const defaultInfo: Update[] = [
 
 const defaultHeaders = ["This Month", "All Time"];
 
-const defaultData: Statistic[] = [
-  { name: "Active", value: 154 },
-  { name: "Inactive", value: 64 },
-];
+const defaultData: Statistic = {
+  outerRing: {
+    name: "Active", value: 154
+  },
+  innerRing: {
+    name: "Inactive", value: 64
+  }
+};
 
 export const plain = () => {
   const padding: PaddingOptions = select("Padding", paddingOptions, "medium");
   const leftHeadingText: string = text("Left Heading", "");
   const rightHeadingText: string = text("Right Heading", "");
   const optionsValues: string[] = array("Header Options", [...defaultHeaders]);
-  const dataValues: Statistic[] = object("Data Values", [...defaultData]);
+  const dataValues: Statistic = object("Data Values", defaultData);
   const updateData: Update[] = object("Updates", [...defaultInfo]);
   return (
     <ActvityCard

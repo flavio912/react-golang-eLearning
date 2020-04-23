@@ -130,10 +130,14 @@ export const OrgOverview = () => {
             rightHeading={"Recent Updates"}
             options={["This month", "All Time"]}
             updates={[]}
-            data={[
-              { name: "name", value: 10 },
-              { name: "time", value: 15 },
-            ]}
+            data={{
+              outerRing: {
+                name: "Active", value: 154
+              },
+              innerRing: {
+                name: "Inactive", value: 64
+              }
+            }}
           />
         </TitleWrapper>
       </div>
