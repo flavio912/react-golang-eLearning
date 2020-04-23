@@ -24,8 +24,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryBlack,
   },
   subheading: {
-    color: theme.colors.secondaryGrey,
-    fontWeight: 400,
+    color: theme.colors.textGrey,
+    fontWeight: 300,
     fontSize: 15,
     marginTop: 0,
     marginBottom: theme.spacing(2),
