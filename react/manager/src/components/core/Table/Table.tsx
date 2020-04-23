@@ -6,7 +6,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   table: {
     width: "100%",
     borderCollapse: "separate",
-    borderSpacing: '0 10px',
+    borderSpacing: "0 10px",
   },
   row: {
     background: "white",
@@ -14,27 +14,29 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: "box-shadow 0.1s ease",
     "&:hover": {
       boxShadow: theme.shadows.primary,
-      "& $cell": {"&:first-child": {
-        borderRadius: 0,
+      "& $cell": {
+        "&:first-child": {
+          borderRadius: 0,
+        },
+        "&:last-child": {
+          borderRadius: 0,
+        },
       },
-      "&:last-child": {
-        borderRadius: 0,
-      },}
     },
   },
   headerCell: {
     color: theme.colors.textGrey,
     textTransform: "uppercase",
-    fontSize: theme.fontSizes.extraSmall,
+    fontSize: theme.fontSizes.tiny,
     padding: [0, 10],
     textAlign: "left",
   },
   cell: {
     padding: [0, 10],
     borderTop: `1px solid ${theme.colors.borderGrey}`,
-    borderRight: '0',
+    borderRight: "0",
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
-    borderLeft: '0',
+    borderLeft: "0",
     transition: "border-radius 0.1s ease",
     "&:first-child": {
       borderRadius: [5, 0, 0, 5],
@@ -86,19 +88,19 @@ function Table({ header, rows, sort }: Props) {
       const aCell = a.cells[column];
       const bCell = b.cells[column];
 
-      console.log(a, b)
+      console.log(a, b);
 
       if (!(aCell && bCell && aCell.sort && bCell.sort)) {
         console.warn(`Table column ${sort.by} is not able to be sorted`);
       } else {
-        console.log("got here")
+        console.log("got here");
         if (aCell.sort < bCell.sort) return 1;
         if (aCell.sort > bCell.sort) return -1;
       }
     } else {
       console.warn(`Table column ${sort.by} is not present in the table`);
     }
-    console.log('No comparison')
+    console.log("No comparison");
     return 0;
   };
 
