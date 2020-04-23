@@ -1,42 +1,52 @@
 # One docker-compose to rule them all...
-version: "3.7"
+version: '3.7'
 services:
   api:
     build:
       context: api
-      dockerfile: "Dockerfile.dev"
+      dockerfile: 'Dockerfile.dev'
     environment:
       - AWS_ACCESS_KEY_ID=AKIASI6VSGJU23DT7ME4
       - AWS_SECRET_ACCESS_KEY=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
     volumes:
       - ./api:/app
     ports:
-      - "8080:8080"
+      - '8080:8080'
     depends_on:
       - api_db
 
   api_db:
     build:
       context: api
-      dockerfile: "dev_env/postgres.Dockerfile"
+      dockerfile: 'dev_env/postgres.Dockerfile'
     ports:
-      - "5430:5432"
+      - '5430:5432'
 
   admin:
     build:
       context: react/admin
-      dockerfile: "Dockerfile.dev"
+      dockerfile: 'Dockerfile.dev'
     volumes:
       - ./react/admin:/app
     ports:
-      - "5000:3000"
+      - '5000:3000'
 
   manager:
     build:
       context: react/manager
-      dockerfile: "Dockerfile.dev"
+    image: node:10
     volumes:
       - ./react/manager:/app
     ports:
-      - "4000:4000"
-      - "4001:4001"
+      - '4000:4000'
+    command: yarn run relay --watch & yarn run start
+
+  managerStorybook:
+    build:
+      context: react/manager
+    image: node:10
+    volumes:
+      - ./react/manager:/app
+    ports:
+      - '4001:4001'
+    command: yarn && yarn run storybook

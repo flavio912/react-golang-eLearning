@@ -45,6 +45,7 @@ Other services can be run separetely with:
 - `docker-compose up api_db` (just for the database at port 5430)
 - `docker-compose up admin` (for the admin react)
 - `docker-compose up manager` (for the manager react)
+- `docker-compose up managerStorybook` (for the manager storybook)
 
 Its also much faster when you need to rebuild a particular service, just to run `docker-compose build <service>`
 rather than having to rebuild the entire thing.

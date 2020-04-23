@@ -11,6 +11,7 @@ export type IconNames =
   | "CourseExpiringSoon"
   | "CourseFailed"
   | "CourseNewCourse"
+  | "CourseNewCourseGreen"
   | "CourseStatus_Completed"
   | "CourseStatus_Incomplete"
   | "CourseStatus_NotStarted"
@@ -46,6 +47,7 @@ const iconNameMap = {
   CourseExpiringSoon: require("../../../assets/CourseExpiringSoon.svg"),
   CourseFailed: require("../../../assets/CourseFailed.svg"),
   CourseNewCourse: require("../../../assets/CourseNewCourse.svg"),
+  CourseNewCourseGreen: require("../../../assets/CourseNewCourseGreen.svg"),
   CourseStatus_Completed: require("../../../assets/CourseStatus_Completed.svg"),
   CourseStatus_Incomplete: require("../../../assets/CourseStatus_Incomplete.svg"),
   CourseStatus_NotStarted: require("../../../assets/CourseStatus_NotStarted.svg"),

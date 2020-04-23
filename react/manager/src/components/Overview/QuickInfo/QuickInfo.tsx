@@ -11,7 +11,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   text: {
     color: theme.colors.textBlue,
     fontSize: theme.fontSizes.small,
-    margin: [15, 0, 10],
+    margin: [6, 0],
+    fontWeight: 300,
   },
   value: {
     fontWeight: 800,
@@ -20,7 +21,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: 0,
     "& span": {
       fontWeight: 400,
-    }
+    },
   },
 }));
 
