@@ -1,8 +1,10 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
+import ThemeObject, { Theme } from "helpers/theme";
 import classNames from "classnames";
 import Icon from "../Icon";
+import { ScaleLoader } from "react-spinners";
+import CoreInput from "../CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   tagContainer: {
@@ -72,11 +74,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 3,
     padding: [0, 10],
     fontSize: 14,
-
+    flex: "auto",
     "&:focus": {
       borderColor: theme.colors.primaryBlue,
-      boxShadow: "0 0 3px 1px rgba(14,99,232,0.34)",
     },
+  },
+  tempResults: {
+    height: 100,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    borderTop: `1px solid ${theme.colors.borderGrey}`,
   },
   searchResults: {
     overflowY: "auto",
@@ -90,6 +98,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: "center",
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
+    borderBottom: `1px solid ${theme.colors.borderGrey}`,
+    "&:first-child, &:last-child": {
+      borderBottom: "none",
+    },
   },
   header: {
     backgroundColor: theme.colors.primaryBlue,
@@ -129,31 +141,45 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
+export type CourseCategory = {
+  title: string;
+  courses: Course[];
+};
+
+export type Course = {
+  id: number | string; // not sure yet
+  name: string;
+  price: number;
+};
+
 type Props = {
   multiselect?: boolean;
-  placeholder: string;
-  selected: string[];
-  setSelected: (selected: ((current: string[]) => string[]) | string[]) => void;
-  options: {
-    title: string;
-    content: {
-      name: string;
-      price: number;
-    }[];
-  }[];
+  selected: Course[];
+  setSelected: (selected: ((current: Course[]) => Course[]) | Course[]) => void;
+  searchQuery: (query: string) => Promise<CourseCategory[]>;
+  debounceTime?: number;
 };
 
 function SearchableDropdown({
   multiselect,
-  placeholder,
   selected = [],
   setSelected,
-  options,
+  searchQuery,
+  debounceTime = 600,
 }: Props) {
   const classes = useStyles();
   const [isOpen, setOpen] = React.useState<boolean>(false);
+  const [isLoading, setLoading] = React.useState<boolean>(false);
   const [search, setSearch] = React.useState<string>("");
+  const [categories, setCategories] = React.useState<CourseCategory[]>([]);
   const searchRef = React.useRef<HTMLInputElement>(null);
+  const debounceRef = React.useRef<number | undefined>();
+
+  const placeholder = multiselect
+    ? "Please select one or more Courses"
+    : selected.length > 0
+    ? selected[0].name
+    : "Please select the Course you wish to book";
 
   React.useEffect(() => {
     if (isOpen && searchRef && searchRef.current) {
@@ -161,19 +187,37 @@ function SearchableDropdown({
     }
   }, [isOpen]);
 
+  React.useEffect(() => {
+    if (search !== "") {
+      setLoading(true);
+      clearTimeout(debounceRef.current);
+      debounceRef.current = window.setTimeout(async () => {
+        searchQuery(search).then((results) => {
+          setCategories(results);
+          setLoading(false);
+        });
+      }, debounceTime);
+    } else {
+      setLoading(false);
+    }
+    return () => {
+      clearTimeout(debounceRef.current);
+    };
+  }, [search, debounceTime, searchQuery]);
+
   return (
     <>
       {multiselect && selected.length > 0 && (
         <div className={classes.tagContainer}>
-          {selected.map((tag) => (
-            <div className={classes.tag}>
-              {tag}
+          {selected.map(({ name, id }: Course) => (
+            <div className={classes.tag} key={id}>
+              {name}
               <Icon
                 pointer
                 name="RemoveSelectedCourse_X"
                 className={classes.removeTag}
                 size={null} // set in class
-                onClick={() => setSelected((s) => s.filter((f) => f !== tag))}
+                onClick={() => setSelected((s) => s.filter((f) => f.id !== id))}
               />
             </div>
           ))}
@@ -184,7 +228,7 @@ function SearchableDropdown({
           className={classes.clickableBox}
           onClick={() => setOpen((o) => !o)}
         >
-          <p>{multiselect ? placeholder : selected[0] || placeholder}</p>
+          <p>{placeholder}</p>
           <div className={isOpen ? classes.triangleUp : classes.triangleDown} />
         </div>
         {isOpen && (
@@ -195,80 +239,85 @@ function SearchableDropdown({
                 className={classes.searchIcon}
                 size={20}
               />
-              <input
+              <CoreInput
                 ref={searchRef}
                 placeholder="Search"
                 type="text"
-                onChange={(evt) => setSearch(evt.target.value)}
+                onChange={(text) => setSearch(text)}
                 value={search}
                 className={classes.searchBox}
               />
             </div>
-            <div className={classes.searchResults}>
-              {options.map(({ title, content }) => {
-                const filtered = content.filter(
-                  ({ name }) =>
-                    !search ||
-                    name
-                      .toLocaleLowerCase()
-                      .includes(search.toLocaleLowerCase())
-                );
-                if (filtered.length > 0) {
-                  return (
-                    <>
+            {isLoading ? (
+              <div className={classes.tempResults}>
+                <ScaleLoader
+                  color={ThemeObject.colors.borderGrey}
+                  height={20}
+                  loading={isLoading}
+                />
+              </div>
+            ) : search === "" ? (
+              <div className={classes.tempResults}>
+                <p>Start typing to see courses</p>
+              </div>
+            ) : categories.length === 0 ? (
+              <div className={classes.tempResults}>
+                <p>No Courses found</p>
+              </div>
+            ) : (
+              <div className={classes.searchResults}>
+                {categories.map(({ title, courses }: CourseCategory) => (
+                  <div key={title}>
+                    <div className={classNames(classes.header, classes.option)}>
+                      <span className={classes.title}>{title}</span>
+                      <span className={classes.pill}>Category</span>
+                    </div>
+                    {courses.map(({ name, id, price }: Course) => (
                       <div
-                        className={classNames(classes.header, classes.option)}
+                        key={id}
+                        className={classes.option}
+                        onClick={() => {
+                          if (multiselect) {
+                            if (
+                              selected.map((course) => course.id).includes(id)
+                            ) {
+                              setSelected((s) => s.filter((f) => f.id !== id));
+                            } else {
+                              setSelected((s) => [...s, { name, id, price }]);
+                            }
+                          } else {
+                            setSelected([{ name, id, price }]);
+                            setSearch("");
+                            setOpen(false);
+                          }
+                        }}
                       >
-                        <span className={classes.title}>{title}</span>
-                        <span className={classes.pill}>Catagory</span>
+                        <span>
+                          {multiselect &&
+                            (selected
+                              .map((course) => course.id)
+                              .includes(id) ? (
+                              <Icon
+                                name="FormCheckbox_Checked"
+                                className={classes.checkbox}
+                                size={17}
+                              />
+                            ) : (
+                              <Icon
+                                name="FormCheckbox_Unchecked"
+                                className={classes.checkbox}
+                                size={17}
+                              />
+                            ))}
+                          {name}
+                        </span>
+                        <span>£{price.toFixed(2)}</span>
                       </div>
-                      {filtered.map(
-                        ({ name, price }: { name: string; price: number }) => (
-                          <div
-                            className={classes.option}
-                            onClick={() => {
-                              if (multiselect) {
-                                if (selected.includes(name)) {
-                                  setSelected((s) =>
-                                    s.filter((f) => f !== name)
-                                  );
-                                } else {
-                                  setSelected((s) => [...s, name]);
-                                }
-                              } else {
-                                setSelected([name]);
-                                setOpen(false);
-                              }
-                            }}
-                          >
-                            <span>
-                              {multiselect &&
-                                (selected.includes(name) ? (
-                                  <Icon
-                                    name="FormCheckbox_Checked"
-                                    className={classes.checkbox}
-                                    size={17}
-                                  />
-                                ) : (
-                                  <Icon
-                                    name="FormCheckbox_Unchecked"
-                                    className={classes.checkbox}
-                                    size={17}
-                                  />
-                                ))}
-                              {name}
-                            </span>
-                            <span>£{price.toFixed(2)}</span>
-                          </div>
-                        )
-                      )}
-                    </>
-                  );
-                } else {
-                  return null;
-                }
-              })}
-            </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

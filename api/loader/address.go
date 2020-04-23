@@ -6,11 +6,11 @@ import (
 	"strconv"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
 	"github.com/golang/glog"
 	"github.com/graph-gophers/dataloader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
 type addressLoader struct {
@@ -40,10 +40,9 @@ func sortAddresses(addresses []gentypes.Address, keys dataloader.Keys) []gentype
 func (l *addressLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 	n := len(keys)
 
-	// Get batch from middleware
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return loadBatchError(err, n)
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
 	var ids []uint

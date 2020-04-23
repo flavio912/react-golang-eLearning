@@ -45,7 +45,16 @@ func (l *companyLoader) loadCompanyBatch(ctx context.Context, keys dataloader.Ke
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	companies, err := grant.GetCompaniesByUUID(keys.Keys())
+	k := keys.Keys()
+	uuidKeys := make([]gentypes.UUID, len(k))
+	for i, stringK := range k {
+		uuid, err := gentypes.StringToUUID(stringK)
+		if err != nil {
+			return loadBatchError(&errors.ErrUUIDInvalid, n)
+		}
+		uuidKeys[i] = uuid
+	}
+	companies, err := grant.GetCompaniesByUUID(uuidKeys)
 	if err != nil {
 		return loadBatchError(err, n)
 	}

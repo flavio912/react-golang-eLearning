@@ -2,14 +2,13 @@ package gentypes
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/google/uuid"
 )
 
 // Manager - CompanyManager graphQL type
 type Manager struct {
 	User
 	ProfileImageURL *string
-	CompanyID       uuid.UUID
+	CompanyID       UUID
 }
 
 type ManagersFilter struct {
@@ -25,23 +24,37 @@ func (m *ManagersFilter) Validate() error {
 	return err
 }
 
-type AddManagerInput struct {
-	CompanyUUID *string `valid:"uuidv4"`
-	FirstName   string  `valid:"required,alpha"`
-	LastName    string  `valid:"required,alpha"`
-	Email       string  `valid:"required,email"`
-	JobTitle    string  `valid:"required"`
-	Telephone   string  `valid:"required,numeric"`
-	Password    string  `valid:"required,stringlength(5|30)"`
+type CreateManagerInput struct {
+	CompanyUUID *UUID
+	FirstName   string `valid:"required,alpha"`
+	LastName    string `valid:"required,alpha"`
+	Email       string `valid:"required,email"`
+	JobTitle    string `valid:"required"`
+	Telephone   string `valid:"required,numeric"`
+	Password    string `valid:"required,stringlength(5|30)"`
 }
 
-func (m *AddManagerInput) Validate() error {
+func (m *CreateManagerInput) Validate() error {
+	_, err := govalidator.ValidateStruct(m)
+	return err
+}
+
+type UpdateManagerInput struct {
+	UUID      UUID
+	Email     *string `valid:"email"`
+	FirstName *string `valid:"alpha"`
+	LastName  *string `valid:"alpha"`
+	Telephone *string `valid:"numeric"`
+	JobTitle  *string
+}
+
+func (m *UpdateManagerInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }
 
 type DeleteManagerInput struct {
-	UUID string `valid:"uuidv4"`
+	UUID UUID
 }
 
 func (m *DeleteManagerInput) Validate() error {

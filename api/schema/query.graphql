@@ -15,12 +15,12 @@ input ManagerFilter {
   name: String
   email: String
   jobTitle: String
-  uuid: String
+  uuid: UUID
   telephone: String
 }
 
 input CompanyFilter {
-  uuid: String
+  uuid: UUID
   name: String
 }
 
@@ -37,8 +37,8 @@ type Query {
   info: String!
   admin(uuid: UUID!): Admin
   admins(page: Page): AdminPage!
-  manager(uuid: String!): Manager
+  manager(uuid: UUID): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
-  company(uuid: String!): Company
+  company(uuid: UUID!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
 }

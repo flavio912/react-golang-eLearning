@@ -3,6 +3,7 @@ package logging
 import (
 	"context"
 	"fmt"
+	"runtime"
 
 	"github.com/golang/glog"
 
@@ -66,6 +67,8 @@ func glogAtLevel(level sentry.Level, message string) {
 func LogMessage(ctx context.Context, level sentry.Level, message string) {
 	glogAtLevel(level, message)
 	CaptureMessage(ctx, message, level)
+	glog.Infof("hi")
+	fileWithLineNum()
 }
 
 // LogException logs to glog and sentry
@@ -78,4 +81,15 @@ func LogException(ctx context.Context, level sentry.Level, err error) {
 func Log(ctx context.Context, level sentry.Level, message string, err error) {
 	glogAtLevel(level, fmt.Sprintf("%s : %s", message, err.Error()))
 	CaptureException(ctx, err, level)
+	// fmt.Print()
+}
+
+func fileWithLineNum() {
+	for i := 0; i < 15; i++ {
+		_, file, line, ok := runtime.Caller(i)
+		if ok {
+			glog.Infof("%d: %v:%v", i, file, line)
+		}
+	}
+	// return ""
 }

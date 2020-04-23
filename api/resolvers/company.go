@@ -3,8 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"github.com/google/uuid"
-
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -87,7 +85,7 @@ func NewCompanyPageResolver(ctx context.Context, args NewCompanyPageArgs, _pageI
 	}, nil
 }
 
-func uuidsToStrings(uuids []uuid.UUID) []string {
+func uuidsToStrings(uuids []gentypes.UUID) []string {
 	var strings = make([]string, len(uuids))
 	for i, uuid := range uuids {
 		strings[i] = uuid.String()
@@ -95,9 +93,9 @@ func uuidsToStrings(uuids []uuid.UUID) []string {
 	return strings
 }
 
-func (r *CompanyResolver) Name() string       { return r.company.Name }
-func (r *CompanyResolver) CreatedAt() *string { return r.company.CreatedAt }
-func (r *CompanyResolver) UUID() string       { return r.company.UUID.String() }
+func (r *CompanyResolver) Name() string        { return r.company.Name }
+func (r *CompanyResolver) CreatedAt() *string  { return r.company.CreatedAt }
+func (r *CompanyResolver) UUID() gentypes.UUID { return r.company.UUID }
 func (r *CompanyResolver) Approved(ctx context.Context) *bool {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
@@ -124,7 +122,7 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	}
 
 	// TODO: N+1 problem - get it to use dataloaders
-	managers, pageInfo, err := grant.GetManagerIDsByCompany(r.company.UUID.String(), args.Page, args.Filter, args.OrderBy)
+	managers, pageInfo, _ := grant.GetManagerIDsByCompany(r.company.UUID, args.Page, args.Filter, args.OrderBy)
 	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
 	if err != nil {
 		glog.Info("Unable to resolve a manager: ")

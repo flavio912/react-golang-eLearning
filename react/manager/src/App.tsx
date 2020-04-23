@@ -1,30 +1,70 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
+import * as React from 'react';
+//@ts-ignore
+import { BrowserProtocol, queryMiddleware } from 'farce';
 import {
-  BrowserRouter as Router,
-  Switch,
+  createFarceRouter,
+  createRender,
+  makeRouteConfig,
   Route,
-  Link,
-  Redirect,
-} from "react-router-dom";
+  RouteRenderArgs,
+  RenderErrorArgs,
+  RedirectException
+} from 'found';
+//@ts-ignore
+import { Resolver } from 'found-relay';
+import environment from './api/environment';
+import { graphql, createFragmentContainer } from 'react-relay';
+import LoginPage from 'views/Login';
+import { ThemeProvider } from 'react-jss';
+import theme from './helpers/theme';
+import { AppHolder } from 'views/AppHolder';
+import { Redirect } from 'react-router-dom';
+import Card from 'components/core/Card';
+import { OrgOverview } from 'views/OrgOverview';
 
-import { graphql, QueryRenderer } from "react-relay";
+const ExamplePageQuery = graphql`
+  query App_Query {
+    manager {
+      uuid
+      firstName
+      lastName
+    }
+  }
+`;
 
-import environment from "./api/environment";
-import ExamplePage from "views/ExamplePage";
+const Router = createFarceRouter({
+  historyProtocol: new BrowserProtocol(),
+  historyMiddlewares: [queryMiddleware],
+  routeConfig: makeRouteConfig(
+    <Route>
+      <Route path="/(login)?" Component={LoginPage} query={ExamplePageQuery} />
+      <Route
+        path="/app"
+        Component={AppHolder}
+        query={ExamplePageQuery}
+        render={({ props, error }: any) => {
+          // Check if user is logged in, if not redirect to login
+          if (props?.manager) return <AppHolder {...props} />;
+          if (error) {
+            throw new RedirectException('/login');
+          }
+          return undefined;
+        }}
+      >
+        {/* Page info goes here */}
+        <Route Component={OrgOverview} />
+        {/* Page info goes here */}
+      </Route>
+    </Route>
+  ),
+  render: createRender({})
+});
 
-type Props = {
-  classes: any;
-};
-
-type State = {};
-
-type RouteProps = {
-  children: React.ReactNode;
-  isAuthenticated: boolean;
-  path: string;
-  exact: boolean;
-};
+const App = () => (
+  <ThemeProvider theme={theme}>
+    <Router resolver={new Resolver(environment)} />
+  </ThemeProvider>
+);
 
 const PrivateRoute = ({
   children,

@@ -22,7 +22,7 @@ test-api:
     - docker-compose --version
     - apk add --no-cache git bash
   script:
-    - api/dev_env/run_test.sh --cover
+    - api/dev_env/run_test.sh --cover --unique --build
 
 build-admin:
   stage: build

@@ -17,27 +17,11 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/golang/glog"
-	graphql "github.com/graph-gophers/graphql-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/resolvers"
 )
-
-var (
-	// We can pass an option to the schema so we don’t need to
-	// write a method to access each type’s field:
-	opts = []graphql.SchemaOpt{graphql.UseFieldResolvers()}
-)
-
-// Reads and parses the schema from file. Associates resolver. Panics if can't read.
-func parseSchema(schemaString string, resolver interface{}) *graphql.Schema {
-	parsedSchema, err := graphql.ParseSchema(schemaString, resolver, opts...)
-	if err != nil {
-		panic(err)
-	}
-	return parsedSchema
-}
 
 // If admin exists with current email, update its fields, otherwise create a new one
 func updateOrCreateDevAdmin() {
@@ -115,13 +99,13 @@ func main() {
 	// Setup DevAdmin user
 	updateOrCreateDevAdmin()
 
-	_schema := parseSchema(schema.String(), &resolvers.RootResolver{})
+	_schema := helpers.ParseSchema(schema.String(), &resolvers.RootResolver{})
 
 	handle := handler.GraphQL{
 		Schema:  _schema,
 		Loaders: loaders,
 	}
-	http.Handle("/graphql", sentryHandler.Handle(auth.Handler(handler.CORSMiddleware(handle.Serve()))))
+	http.Handle("/graphql", handler.CORSMiddleware(sentryHandler.Handle(auth.Handler(handle.Serve()))))
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

@@ -8,7 +8,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 
 	"github.com/golang/glog"
-	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -18,25 +17,25 @@ import (
 func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	profileURL := uploads.GetImgixURL(manager.ProfileKey)
 	// Admins and managers themselves can get all info
-	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyID.String()) {
+	if g.IsAdmin || (g.IsManager && g.Claims.Company.UUID == manager.CompanyID) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
 			User: gentypes.User{
 				CreatedAt: &createdAt,
-				UUID:      manager.UUID,
+				UUID:      gentypes.UUID{UUID: manager.UUID},
 				Email:     manager.Email,
 				FirstName: manager.FirstName,
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 				Telephone: manager.Telephone,
 			},
-			CompanyID:       manager.CompanyID,
+			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
 			ProfileImageURL: &profileURL,
 		}
 	}
 
 	// Delegates can only get a subset of their manager's info
-	if g.IsCompanyDelegate(manager.CompanyID.String()) {
+	if g.IsCompanyDelegate(gentypes.UUID{UUID: manager.CompanyID}) {
 		return gentypes.Manager{
 			User: gentypes.User{
 				Email:     manager.Email,
@@ -44,7 +43,7 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 			},
-			CompanyID:       manager.CompanyID,
+			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
 			ProfileImageURL: &profileURL,
 		}
 	}
@@ -60,6 +59,19 @@ func (g *Grant) managersToGentype(managers []models.Manager) []gentypes.Manager 
 	return genManagers
 }
 
+func (g *Grant) managerEmailExists(email string) bool {
+	query := database.GormDB.Where("email = ?", email).First(&models.Manager{})
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return false
+		}
+		// If some other error occurs log it
+		glog.Errorf("Unable to find manager for Email: %s - error: %s", email, query.Error.Error())
+		return false
+	}
+	return true
+}
+
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
 
@@ -68,7 +80,7 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	// Managers can only get their own info
 	if g.IsManager {
 		for _, uuid := range uuids {
-			if g.Claims.UUID == uuid {
+			if g.Claims.UUID.String() == uuid {
 				allowedUUIDs = append(allowedUUIDs, uuid)
 			}
 		}
@@ -114,14 +126,10 @@ func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	return query
 }
 
-func (g *Grant) GetManagerByUUID(UUID string) (gentypes.Manager, error) {
+func (g *Grant) GetManagerByUUID(UUID gentypes.UUID) (gentypes.Manager, error) {
 	// Admins can get any manager data
 	// Managers can only get their own uuid
 	if g.IsAdmin || (g.IsManager && UUID == g.Claims.UUID) {
-		if _, err := uuid.Parse(UUID); err != nil {
-			return gentypes.Manager{}, &errors.ErrUUIDInvalid
-		}
-
 		var manager models.Manager
 		err := database.GormDB.Where("uuid = ?", UUID).First(&manager).Error
 		if err != nil {
@@ -186,11 +194,16 @@ func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
 	return manager, nil
 }
 
-func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Manager, error) {
-	var inputUUID string
+func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (gentypes.Manager, error) {
+	var inputUUID gentypes.UUID
 	// Auth
 	if !g.IsAdmin && !g.IsManager {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
+	}
+
+	// check manager does not exist
+	if g.managerEmailExists(managerDetails.Email) {
+		return gentypes.Manager{}, &errors.ErrUserExists
 	}
 
 	// If you're an admin you need to provide the company UUID
@@ -207,13 +220,8 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 		inputUUID = g.Claims.Company
 	}
 
-	_uuid, err := uuid.Parse(inputUUID)
-	if err != nil {
-		return gentypes.Manager{}, &errors.ErrUUIDInvalid
-	}
-
 	// Check if company exists
-	if !g.CompanyExists(_uuid) {
+	if !g.CompanyExists(inputUUID) {
 		return gentypes.Manager{}, &errors.ErrCompanyNotFound
 	}
 
@@ -227,17 +235,57 @@ func (g *Grant) AddManager(managerDetails gentypes.AddManagerInput) (gentypes.Ma
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
-		CompanyID: _uuid,
+		CompanyID: inputUUID.UUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error
 	if createErr != nil {
-		return gentypes.Manager{}, &errors.ErrUnauthorized
+		return gentypes.Manager{}, &errors.ErrWhileHandling
 	}
 
 	return g.managerToGentype(manager), nil
 }
 
-func (g *Grant) DeleteManager(uuid string) (bool, error) {
+func (g *Grant) UpdateManager(input gentypes.UpdateManagerInput) (gentypes.Manager, error) {
+	if !g.IsAdmin && !(g.IsManager && g.Claims.UUID == input.UUID) {
+		return gentypes.Manager{}, &errors.ErrUnauthorized
+	}
+
+	var manager models.Manager
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&manager)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Manager{}, &errors.ErrManagerNotFound
+		}
+		glog.Errorf("Unable to find manager to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
+	if input.Email != nil {
+		manager.Email = *input.Email
+	}
+	if input.FirstName != nil {
+		manager.FirstName = *input.FirstName
+	}
+	if input.LastName != nil {
+		manager.LastName = *input.LastName
+	}
+	if input.Telephone != nil {
+		manager.Telephone = *input.Telephone
+	}
+	if input.JobTitle != nil {
+		manager.JobTitle = *input.JobTitle
+	}
+
+	save := database.GormDB.Save(manager)
+	if save.Error != nil {
+		glog.Errorf("Error updating manager with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		return gentypes.Manager{}, &errors.ErrWhileHandling
+	}
+
+	return g.managerToGentype(manager), nil
+}
+
+func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	// managers can delete themselves
 	// admins can delete any manager
 	if (g.IsManager && g.Claims.UUID == uuid) || g.IsAdmin {
@@ -248,6 +296,9 @@ func (g *Grant) DeleteManager(uuid string) (bool, error) {
 			return false, &errors.ErrDeleteFailed
 		}
 
+		if query.RowsAffected == 0 {
+			return false, &errors.ErrUserNotFound
+		}
 		return true, nil
 	}
 

@@ -3,7 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"github.com/asaskevich/govalidator"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -38,8 +37,8 @@ func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLogin
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
-// AddManager is for an admin to create new managers manually
-func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input gentypes.AddManagerInput }) (*ManagerResolver, error) {
+// CreateManager is for an admin to create new managers manually
+func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input gentypes.CreateManagerInput }) (*ManagerResolver, error) {
 	// Validate the manager input
 	if err := args.Input.Validate(); err != nil {
 		return &ManagerResolver{}, err
@@ -50,7 +49,7 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.AddManager(args.Input)
+	manager, err := grant.CreateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -62,11 +61,29 @@ func (m *MutationResolver) AddManager(ctx context.Context, args struct{ Input ge
 	}, loadErr
 }
 
-func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input gentypes.DeleteManagerInput }) (bool, error) {
+// Allows a manager to update their details or an admin
+func (m *MutationResolver) UpdateManager(ctx context.Context, args struct{ Input gentypes.UpdateManagerInput }) (*ManagerResolver, error) {
+	// Validate the manager input
 	if err := args.Input.Validate(); err != nil {
-		return false, err
+		return &ManagerResolver{}, err
 	}
 
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ManagerResolver{}, &errors.ErrUnauthorized
+	}
+
+	manager, err := grant.UpdateManager(args.Input)
+	if err != nil {
+		return &ManagerResolver{}, err
+	}
+
+	return &ManagerResolver{
+		manager: manager,
+	}, nil
+}
+
+func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input gentypes.DeleteManagerInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
@@ -76,7 +93,7 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 	return success, err
 }
 
-func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gentypes.AddAdminInput }) (*AdminResolver, error) {
+func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input gentypes.CreateAdminInput }) (*AdminResolver, error) {
 	if err := args.Input.Validate(); err != nil {
 		return nil, err
 	}
@@ -86,7 +103,7 @@ func (m *MutationResolver) AddAdmin(ctx context.Context, args struct{ Input gent
 		return &AdminResolver{}, &errors.ErrUnauthorized
 	}
 
-	admin, addErr := grant.AddAdmin(args.Input)
+	admin, addErr := grant.CreateAdmin(args.Input)
 	if addErr != nil {
 		return nil, addErr
 	}
@@ -101,9 +118,9 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 		return nil, err
 	}
 
-	grant, err := middleware.Authenticate(ctx.Value("token").(string))
-	if err != nil {
-		return nil, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &AdminResolver{}, &errors.ErrUnauthorized
 	}
 
 	admin, err := grant.UpdateAdmin(args.Input)
@@ -116,12 +133,7 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 	}, nil
 }
 
-func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.RemoveAdminInput }) (bool, error) {
-	// TODO: Move grant + validate boilerplate stuff further up the request
-	if err := args.Input.Validate(); err != nil {
-		return false, err
-	}
-
+func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.DeleteAdminInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
@@ -162,7 +174,7 @@ func (m *MutationResolver) ManagerProfileUploadSuccess(
 	}
 
 	res, err := NewManagerResolver(ctx, NewManagerArgs{
-		UUID: grant.Claims.UUID,
+		UUID: grant.Claims.UUID.String(),
 	})
 
 	if err != nil {
@@ -192,7 +204,7 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 
 type companyRequestInput struct {
 	Company   gentypes.CreateCompanyInput
-	Manager   gentypes.AddManagerInput
+	Manager   gentypes.CreateManagerInput
 	Recaptcha string
 }
 
@@ -208,11 +220,7 @@ func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args compan
 	return true, nil
 }
 
-func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID string }) (*CompanyResolver, error) {
-	if !govalidator.IsUUIDv4(args.UUID) {
-		return &CompanyResolver{}, &errors.ErrUUIDInvalid
-	}
-
+func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID gentypes.UUID }) (*CompanyResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &CompanyResolver{}, &errors.ErrUnauthorized

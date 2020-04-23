@@ -1,10 +1,11 @@
 import { Meta, Story, Preview, Props } from "@storybook/addon-docs/blocks";
-import { withKnobs, select, text } from '@storybook/addon-knobs';
-import CoreInput, {InputTypes} from './CoreInput';
+import { withKnobs, select, text } from "@storybook/addon-knobs";
+import CoreInput, { InputTypes } from "./CoreInput";
 
-<Meta title="Core/CoreInput" component={CoreInput}/>
+<Meta title="Core/CoreInput" component={CoreInput} />
 
 # Description
+
 An input component with minimal styling for use in more complex input forms.
 This component handles the basics, placeholders, text changing, removing default styles etc.
 
@@ -13,9 +14,13 @@ This component handles the basics, placeholders, text changing, removing default
 <Preview>
   <Story name="CoreInput" parameters={{ decorators: [withKnobs] }}>
     <CoreInput
-      type={select('Input Type', ['email','number','password','search','tel','text'], 'text')}
-      onChange={()=>{}}
-      placeholder={text('Placeholder', 'joe@blogs.com')}
+      type={select(
+        "Input Type",
+        ["email", "number", "password", "search", "tel", "text"],
+        "text"
+      )}
+      onChange={() => {}}
+      placeholder={text("Placeholder", "joe@blogs.com")}
     />
   </Story>
 </Preview>
