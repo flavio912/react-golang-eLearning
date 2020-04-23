@@ -84,7 +84,7 @@ build-manager-webpack:
   artifacts:
     expire_in: 3d
     paths:
-      - react/manager/build
+      - react/manager/build/
 
 deploy-manager-storybook:
   stage: deploy-staging

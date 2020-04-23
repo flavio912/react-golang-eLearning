@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 //@ts-ignore
-import { BrowserProtocol, queryMiddleware } from 'farce';
+import { BrowserProtocol, queryMiddleware } from "farce";
 import {
   createFarceRouter,
   createRender,
@@ -8,19 +8,20 @@ import {
   Route,
   RouteRenderArgs,
   RenderErrorArgs,
-  RedirectException
-} from 'found';
+  RedirectException,
+} from "found";
 //@ts-ignore
-import { Resolver } from 'found-relay';
-import environment from './api/environment';
-import { graphql, createFragmentContainer } from 'react-relay';
-import LoginPage from 'views/Login';
-import { ThemeProvider } from 'react-jss';
-import theme from './helpers/theme';
-import { AppHolder } from 'views/AppHolder';
-import { Redirect } from 'react-router-dom';
-import Card from 'components/core/Card';
-import { OrgOverview } from 'views/OrgOverview';
+import { Resolver } from "found-relay";
+import environment from "./api/environment";
+import { graphql, createFragmentContainer } from "react-relay";
+import LoginPage from "views/Login";
+import { ThemeProvider } from "react-jss";
+import theme from "./helpers/theme";
+import { AppHolder } from "views/AppHolder";
+import { Redirect } from "react-router-dom";
+import Card from "components/core/Card";
+import { OrgOverview } from "views/OrgOverview";
+import DelegatesPage from "views/DelegatesPage";
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -46,7 +47,7 @@ const Router = createFarceRouter({
           // Check if user is logged in, if not redirect to login
           if (props?.manager) return <AppHolder {...props} />;
           if (error) {
-            throw new RedirectException('/login');
+            throw new RedirectException("/login");
           }
           return undefined;
         }}
@@ -54,10 +55,11 @@ const Router = createFarceRouter({
         {/* Page info goes here */}
         <Route Component={OrgOverview} />
         {/* Page info goes here */}
+        <Route path="/delegates" Component={DelegatesPage} />
       </Route>
     </Route>
   ),
-  render: createRender({})
+  render: createRender({}),
 });
 
 const App = () => (

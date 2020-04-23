@@ -3,9 +3,11 @@ import HeaderMenu from "components/Menu/HeaderMenu";
 import SideMenu from "components/Menu/SideMenu";
 import { Tab } from "components/Menu/SideMenu/SideMenu";
 import { createUseStyles, useTheme } from "react-jss";
+import { RedirectException, Redirect, Router } from "found";
 
 type Props = {
   children?: React.ReactChildren;
+  router: Router;
 };
 
 const useStyles = createUseStyles(() => ({
@@ -21,9 +23,8 @@ const useStyles = createUseStyles(() => ({
   },
 }));
 
-export const AppHolder = ({ children }: Props) => {
+export const AppHolder = ({ children, router }: Props) => {
   const classes = useStyles();
-
   const tabs: Tab[] = [
     {
       id: 0,
@@ -41,6 +42,7 @@ export const AppHolder = ({ children }: Props) => {
       children: <div></div>,
     },
   ];
+
   return (
     <div className={classes.background}>
       <HeaderMenu
@@ -53,7 +55,23 @@ export const AppHolder = ({ children }: Props) => {
             "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
         }}
       />
-      <SideMenu tabs={tabs} selected={tabs[0]} onClick={() => {}} />
+      <SideMenu
+        tabs={tabs}
+        selected={tabs[0]}
+        onClick={(tab) => {
+          console.log("tab", tab);
+          switch (tab.id) {
+            case 0:
+              router.push("/app");
+              break;
+            case 1:
+              router.push("/app/delegates");
+              break;
+            default:
+              break;
+          }
+        }}
+      />
       <div className={classes.appHolder}>{children}</div>
     </div>
   );
