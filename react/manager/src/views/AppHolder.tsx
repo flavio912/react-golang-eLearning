@@ -17,9 +17,6 @@ const useStyles = createUseStyles(() => ({
     marginTop: 87,
     justifyContent: "center",
   },
-  background: {
-    background: "#f8f9fb",
-  },
 }));
 
 export const AppHolder = ({ children }: Props) => {
@@ -55,7 +52,7 @@ export const AppHolder = ({ children }: Props) => {
   };
 
   return (
-    <div className={classes.background}>
+    <div>
       <HeaderMenu
         logo={
           "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png"

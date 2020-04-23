@@ -41,6 +41,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: 200,
     fontSize: 15,
     textAlign: "center",
+    margin: 3,
   },
 }));
 
