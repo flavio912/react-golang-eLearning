@@ -40,6 +40,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginBottom: theme.spacing(2),
+    flexWrap: "wrap",
   },
   cardFlex: {
     display: "flex",
@@ -54,6 +55,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     justifyContent: "space-between",
     marginBottom: theme.spacing(2),
+    flexWrap: "wrap",
   },
 }));
 
