@@ -3,11 +3,10 @@ import HeaderMenu from "components/Menu/HeaderMenu";
 import SideMenu from "components/Menu/SideMenu";
 import { Tab } from "components/Menu/SideMenu/SideMenu";
 import { createUseStyles, useTheme } from "react-jss";
-import { RedirectException, Redirect, Router } from "found";
+import { useRouter } from "found";
 
 type Props = {
   children?: React.ReactChildren;
-  router: Router;
 };
 
 const useStyles = createUseStyles(() => ({
@@ -23,8 +22,9 @@ const useStyles = createUseStyles(() => ({
   },
 }));
 
-export const AppHolder = ({ children, router }: Props) => {
+export const AppHolder = ({ children }: Props) => {
   const classes = useStyles();
+  const { match, router } = useRouter();
   const tabs: Tab[] = [
     {
       id: 0,
@@ -43,6 +43,17 @@ export const AppHolder = ({ children, router }: Props) => {
     },
   ];
 
+  const selected = () => {
+    switch (match.location.pathname) {
+      case "/app":
+        return tabs[0];
+      case "/app/delegates":
+        return tabs[1];
+      default:
+        return tabs[0];
+    }
+  };
+
   return (
     <div className={classes.background}>
       <HeaderMenu
@@ -57,7 +68,7 @@ export const AppHolder = ({ children, router }: Props) => {
       />
       <SideMenu
         tabs={tabs}
-        selected={tabs[0]}
+        selected={selected()}
         onClick={(tab) => {
           console.log("tab", tab);
           switch (tab.id) {

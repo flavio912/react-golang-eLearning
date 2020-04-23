@@ -32,7 +32,7 @@ const DelegatesPage = () => {
   const classes = useStyles({ theme });
   return (
     <div className={classes.root}>
-      <PageTitle title="Fedex" subTitle="Organisation Overview" />
+      <PageTitle title="Fedex" subTitle="Delegates" />
     </div>
   );
 };
