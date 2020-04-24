@@ -7,6 +7,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   titleWrapperRoot: {
     display: "flex",
     flexDirection: "column",
+    marginTop: 38, // Helps with wrapping to do it this way
   },
   titleWrapperTitle: {
     marginBottom: theme.spacing(2),

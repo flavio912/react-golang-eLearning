@@ -30,7 +30,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   statsRow: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: theme.spacing(2),
     flexWrap: "wrap",
   },
   cardFlex: {
@@ -40,13 +39,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: theme.spacing(2),
   },
   searchRow: {
-    marginBottom: theme.spacing(2),
+    display: "flex",
+    flexWrap: "wrap",
   },
+  search: { flex: 1 },
   bottomRow: {
     display: "flex",
     justifyContent: "space-between",
-    marginBottom: theme.spacing(2),
     flexWrap: "wrap",
+  },
+  spacer: {
+    minWidth: 770,
+  },
+  grid: {
+    display: "grid",
   },
 }));
 
@@ -60,71 +66,78 @@ export const OrgOverview = () => {
         title="Fedex"
         subTitle="Organisation Overview"
       />
-      <div className={classes.searchRow}>
-        <UserSearch
-          companyName="TESTcompany"
-          searchFunction={async (query: string) => {
-            return [];
-          }}
-        />
-      </div>
-      <div className={classes.statsRow}>
-        <TitleWrapper title="Quick Overview">
-          <QuickOverview
-            purchasedCourses={20}
-            numDelegates={130}
-            numValidCertificates={10}
-            numCertificatesExpiringSoon={15}
-          />
-        </TitleWrapper>
-        <TitleWrapper title="Training Progress">
-          <div className={classes.cardFlex}>
-            <TrainingProgressCard
-              coursesDone={20}
-              timeTracked={{ h: 20, m: 15 }}
-              title="Weekly"
-            />
-            <div className={classes.breaker} />
-            <TrainingProgressCard
-              coursesDone={20}
-              timeTracked={{ h: 20, m: 15 }}
-              title="Weekly"
+      <div className={classes.grid}>
+        <div className={classes.searchRow}>
+          <div className={classes.search}>
+            <UserSearch
+              companyName="TESTcompany"
+              searchFunction={async (query: string) => {
+                return [];
+              }}
             />
           </div>
-        </TitleWrapper>
-      </div>
-      <div className={classes.bottomRow}>
-        <TitleWrapper title="Your information">
-          <ProfileCard
-            heading="Profile"
-            fields={[
-              { fieldName: "Name", value: "Fred Eccleston" },
-              { fieldName: "Role", value: "Group Leader" },
-              { fieldName: "Email", value: "Group Leader" },
-              { fieldName: "Tel Contact", value: "Group Leader" },
-              { fieldName: "Active since", value: "Group Leader" },
-            ]}
-            padding="medium"
-          />
-        </TitleWrapper>
-        <TitleWrapper title={"Activity"}>
-          <ActvityCard
-            className={classes.activity}
-            padding={"medium"}
-            leftHeading={"Delegates activity"}
-            rightHeading={"Recent Updates"}
-            options={["This month", "All Time"]}
-            updates={[]}
-            data={{
-              outerRing: {
-                name: "Active", value: 154
-              },
-              innerRing: {
-                name: "Inactive", value: 64
-              }
-            }}
-          />
-        </TitleWrapper>
+          <div className={classes.spacer} />
+        </div>
+        <div className={classes.statsRow}>
+          <TitleWrapper title="Quick Overview">
+            <QuickOverview
+              purchasedCourses={20}
+              numDelegates={130}
+              numValidCertificates={10}
+              numCertificatesExpiringSoon={15}
+            />
+          </TitleWrapper>
+          <TitleWrapper title="Training Progress">
+            <div className={classes.cardFlex}>
+              <TrainingProgressCard
+                coursesDone={20}
+                timeTracked={{ h: 20, m: 15 }}
+                title="Weekly"
+              />
+              <div className={classes.breaker} />
+              <TrainingProgressCard
+                coursesDone={20}
+                timeTracked={{ h: 20, m: 15 }}
+                title="Monthly"
+              />
+            </div>
+          </TitleWrapper>
+        </div>
+        <div className={classes.bottomRow}>
+          <TitleWrapper title="Your information">
+            <ProfileCard
+              heading="Profile"
+              fields={[
+                { fieldName: "Name", value: "Fred Eccleston" },
+                { fieldName: "Role", value: "Group Leader" },
+                { fieldName: "Email", value: "Group Leader" },
+                { fieldName: "Tel Contact", value: "Group Leader" },
+                { fieldName: "Active since", value: "Group Leader" },
+              ]}
+              padding="medium"
+            />
+          </TitleWrapper>
+          <TitleWrapper title={"Activity"}>
+            <ActvityCard
+              className={classes.activity}
+              padding={"medium"}
+              leftHeading={"Delegates activity"}
+              rightHeading={"Recent Updates"}
+              options={["This month", "All Time"]}
+              updates={[]}
+              data={{
+                outerRing: {
+                  name: "Active",
+                  value: 154,
+                },
+                innerRing: {
+                  name: "Inactive",
+                  value: 64,
+                },
+              }}
+            />
+          </TitleWrapper>
+        </div>
       </div>
     </div>
   );
