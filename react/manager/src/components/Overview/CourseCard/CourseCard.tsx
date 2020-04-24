@@ -10,7 +10,8 @@ import FooterIcon from './FooterIcon';
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
+    margin: '0 20px 20px 0'
   },
   noBorder: {
     borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`,
@@ -86,6 +87,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export type SizeOptions = "small" | "large";
 export interface Course {
   type: string;
+  colour: string;
   url: string;
   title: string;
   price: number;
@@ -98,19 +100,19 @@ export interface Course {
 
 type Props = {
   course: Course;
-  color: string;
+  filterColour: string;
   size?: SizeOptions;
   onClick: Function,
   padding?: PaddingOptions;
   className?: string;
 };
 
-function CourseCard({ course, color, onClick, size = 'small', className }: Props) {
+function CourseCard({ course, filterColour, onClick, size = 'small', className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
-  const backgroundColor = { backgroundColor: color };
-  const backgroundImage = { backgroundImage: `linear-gradient(${color}4D, ${color}4D), url(${course.url})` };
+  const backgroundColor = { backgroundColor: course.colour };
+  const backgroundImage = { backgroundImage: `linear-gradient(${filterColour}, ${filterColour}), url(${course.url})` };
 
   return (
     <Card className={classNames(classes.root, classes.noBorder, classes[size], className)}>

@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
 import Icon from '../../core/Icon/Icon';
-import ProfileIcon from 'components/core/ProfileIcon';
+import CircleBorder, { User } from 'components/core/CircleBorder';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -27,28 +27,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     boxShadow: theme.shadows.primary,
     objectFit: 'cover'
   },
-  profileCircle: {
-    height: 47,
-    width: 47,
-    borderRadius: 47,
-    backgroundColor: theme.colors.primaryWhite
-  },
-  profileBorder: {
-    height: 49,
-    width: 49,
-    borderRadius: 49,
-    backgroundImage: `linear-gradient(45deg,
-      ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`
-  },
   row: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  center: {
-    display: 'flex',
-    justifyContent: 'center',
     alignItems: 'center'
   },
   body: {
@@ -56,11 +38,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexGrow: 1
   }
 }));
-
-export interface User {
-  name: string;
-  url: string;
-}
 
 type Props = {
   logo: string;
@@ -93,16 +70,7 @@ function HeaderMenu({
           alt="Logo"
         />
         <div className={classNames(classes.row)}>
-          <div className={classNames(classes.center, classes.profileBorder)}>
-            <div className={classNames(classes.center, classes.profileCircle)}>
-              <ProfileIcon
-                name={user?.name}
-                url={user?.url}
-                size={45}
-                fontSize={18}
-              />
-            </div>
-          </div>
+          <CircleBorder user={user} />
           <Icon
             name="Card_SecondaryActon_Dots"
             size={20}

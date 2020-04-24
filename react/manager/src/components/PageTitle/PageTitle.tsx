@@ -28,6 +28,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.default,
     fontWeight: 700,
   },
+  sideComponent: {
+    marginLeft: 10
+  },
   titlesHolder: {},
   divider: {
     height: 40,
@@ -41,9 +44,10 @@ type Props = {
   title: string;
   subTitle: string;
   sideText?: string;
+  sideComponent?: React.ReactNode;
 };
 
-function PageTitle({ title, subTitle, sideText }: Props) {
+function PageTitle({ title, subTitle, sideText, sideComponent }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -58,6 +62,11 @@ function PageTitle({ title, subTitle, sideText }: Props) {
           <div className={classes.divider} />
           <p className={classes.sideText}>{sideText}</p>
         </div>
+      )}
+      {sideComponent && (
+        <span className={classes.sideComponent}>
+          {sideComponent}
+        </span>
       )}
     </div>
   );
