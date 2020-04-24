@@ -1,6 +1,6 @@
 import * as React from "react";
 import classNames from "classnames";
-import { createUseStyles } from "react-jss";
+import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 import Button from "components/core/Button";
 import Icon from "components/core/Icon";
@@ -21,26 +21,42 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-    pages: number[];
     currentPage: number;
-    pageRange: number[];
-    setPageRange: Function;
     setCurrentPage: Function;
+    range: number;
+    numberOfPages: number;
 };
 
-function PageNumbers({ pages, currentPage, pageRange, setPageRange, setCurrentPage }: Props) {
-    const classes = useStyles();
+function PageNumbers({ currentPage, setCurrentPage, range = 4, numberOfPages }: Props) {
+    const theme = useTheme();
+    const classes = useStyles({ theme });
+
+    const [pageRange, setPageRange] = React.useState<number>(range);
+    const changeRange = (change : number) => {
+        if (pageRange + change < range) {
+            setPageRange(range);
+        } else if (pageRange + change > numberOfPages) {
+            setPageRange(numberOfPages);
+        } else {
+            setPageRange(pageRange + change);
+        }
+    }
+
+    const pages: number[] = [];
+    for (let pageNum = pageRange - range; pageNum < pageRange; pageNum++) {
+        pages.push(pageNum + 1)
+    }
 
     return (
       <div className={classes.row}>
-          <Button
+        <Button
           style={{ width: 40, marginLeft: 25 }}
-          onClick={() => setPageRange(pages.slice(0,4))}
+          onClick={() => changeRange(-range)}
           small={true}
         >
           <Icon name="ArrowLeft" size={15} />
         </Button>
-        {pageRange.map((pageNum: number) => (
+        {pages.map((pageNum: number) => (
           <Button
             className={classNames(pageNum === currentPage
               ? [classes.pageNumber, classes.currentPage]
@@ -53,7 +69,7 @@ function PageNumbers({ pages, currentPage, pageRange, setPageRange, setCurrentPa
         ))}
         <Button
           style={{ width: 40, marginLeft: 10 }}
-          onClick={() => setPageRange(pages.slice(4,8))}
+          onClick={() => changeRange(range)}
           small={true}
         >
           <Icon name="ArrowRight" size={15} />

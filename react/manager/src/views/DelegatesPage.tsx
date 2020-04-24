@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     flexGrow: 1,
-    maxWidth: 1200,
+    maxWidth: 1275,
   },
 }));
 

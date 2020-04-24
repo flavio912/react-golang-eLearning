@@ -8,17 +8,14 @@ export default {
 };
 
 const Default = () => {
-  const pages: number[] = [1,2,3,4,5,6,7,8];
   const [currentPage, setCurrentPage] = React.useState<number>(1);
-  const [pageRange, setPageRange] = React.useState<number[]>([1,2,3,4]);
 
     return (
         <PageNumbers
-            pages={pages}
+            numberOfPages={8}
+            range={4}
             currentPage={currentPage}
-            pageRange={pageRange}
             setCurrentPage={(page: number) => setCurrentPage(page)}
-            setPageRange={(range: number[]) => setPageRange(range)}
         />
     )
 }
