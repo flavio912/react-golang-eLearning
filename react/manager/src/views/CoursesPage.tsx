@@ -48,6 +48,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexGrow: 1,
     maxWidth: 1275,
   },
+  course: {
+    margin: '15px 10px',
+  },
   dropdown: {
     width: 177,
     marginLeft: 15,
@@ -60,7 +63,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
   row: {
     display: "flex",
     flexDirection: "row",
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
+  },
+  spaceEvenly: {
+    justifyContent: 'space-evenly'
   },
   filterRow: {
     margin: '30px 0px',
@@ -83,9 +89,7 @@ const CoursesPage = () => {
   const [itemsPerPage, setItemsPerPage] = React.useState<DropdownOption>();
 
   // Page number states
-  const pages: number[] = [1,2,3,4,5,6,7,8];
   const [currentPage, setCurrentPage] = React.useState<number>(1);
-  const [pageRange, setPageRange] = React.useState<number[]>([1,2,3,4]);
 
   return (
     <div className={classes.root}>
@@ -120,9 +124,10 @@ const CoursesPage = () => {
           </div>
         </div>
       </div>
-      <div className={classes.row}>
+      <div className={classNames(classes.row, classes.spaceEvenly)}>
         {courses && courses.map((course) => (
           <CourseCard
+            className={classes.course}
             course={course}
             filterColour={filterColour}
             onClick={() => console.log('Pressed')}
@@ -140,11 +145,10 @@ const CoursesPage = () => {
           />
         </div>
         <PageNumbers
-          pages={pages}
+          numberOfPages={10}
+          range={4}
           currentPage={currentPage}
-          pageRange={pageRange}
           setCurrentPage={(page: number) => setCurrentPage(page)}
-          setPageRange={(range: number[]) => setPageRange(range)}
         />
       </div>
     </div>

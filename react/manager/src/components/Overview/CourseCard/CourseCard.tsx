@@ -11,7 +11,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    margin: '0 20px 20px 0'
+    boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
   },
   noBorder: {
     borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`,

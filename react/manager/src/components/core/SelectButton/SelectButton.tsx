@@ -20,7 +20,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     cursor: "pointer",
     width: '50%',
     padding: '8px 0',
-    color: theme.colors.textGrey,
+    color: theme.colors.primaryBlack,
     backgroundColor: 'rgba(255,255,255,0.5)',
     opacity: 0.7,
     fontWeight: 600,
