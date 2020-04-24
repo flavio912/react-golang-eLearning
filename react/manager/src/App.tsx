@@ -38,11 +38,11 @@ const Router = createFarceRouter({
   historyMiddlewares: [queryMiddleware],
   routeConfig: makeRouteConfig(
     <Route>
-      <Route path="/(login)?" Component={LoginPage} query={ExamplePageQuery} />
+      <Route path="/(login)?" Component={LoginPage} />
       <Route
         path="/app"
         Component={AppHolder}
-        query={ExamplePageQuery}
+        //query={ExamplePageQuery}
         render={({ props, error }: any) => {
           // Check if user is logged in, if not redirect to login
           // if (props?.manager) return <AppHolder {...props} />;
