@@ -46,6 +46,8 @@ export const AppHolder = ({ children }: Props) => {
         return tabs[0];
       case "/app/delegates":
         return tabs[1];
+      case "/app/courses":
+        return tabs[2];
       default:
         return tabs[0];
     }
@@ -74,6 +76,9 @@ export const AppHolder = ({ children }: Props) => {
               break;
             case 1:
               router.push("/app/delegates");
+              break;
+            case 2:
+              router.push("/app/courses");
               break;
             default:
               break;

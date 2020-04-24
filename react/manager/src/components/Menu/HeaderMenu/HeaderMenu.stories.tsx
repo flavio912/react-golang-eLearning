@@ -1,5 +1,5 @@
 import * as React from "react";
-import HeaderMenu, { User } from "./HeaderMenu";
+import HeaderMenu from "./HeaderMenu"; 
 import { withKnobs, object, text } from "@storybook/addon-knobs";
 import CourseCard from '../../Overview/CourseCard/CourseCard';
 import SideMenu, { Tab } from '../SideMenu/SideMenu';
@@ -12,6 +12,7 @@ export default {
 // Course card props
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",
+  colour: "#8C1CB4",
   url: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   title: "Dangerous goods by air category 7",
   price: 60,
@@ -24,9 +25,9 @@ const defaultCourse = {
 
 // Side Menu props
 const defaultTabs: Tab[] = [
-    {id: 0, icon: "LeftNav_Icon_Dashboard", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
-    {id: 1, icon: "LeftNav_Icon_Delegates", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="large" />},
-    {id: 2, icon: "LeftNav_Icon_Courses", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
+    {id: 0, icon: "LeftNav_Icon_Dashboard", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
+    {id: 1, icon: "LeftNav_Icon_Delegates", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="large" />},
+    {id: 2, icon: "LeftNav_Icon_Courses", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
 ];
 
 export const withContent = () => React.createElement(() => {
@@ -34,7 +35,7 @@ export const withContent = () => React.createElement(() => {
   const logo: string = text("Logo", require("../../../assets/logo/ttc-logo.svg"));
   const name: string = text("Name", "Fred Ecceleston");
   const url: string = text("Profile Image", require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"));
-  const user: User = { name, url };
+  const user = { name, url };
 
   // SideMenu state
   const [selected, setSelected] = React.useState(defaultTabs[0]);
@@ -61,7 +62,7 @@ export const normal = () => {
   const logo: string = text("Logo", require("../../../assets/logo/ttc-logo.svg"));
   const name: string = text("Name", "Fred Ecceleston");
   const url: string = text("Profile Image", require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"));
-  const user: User = { name, url };
+  const user = { name, url };
   return (
     <HeaderMenu
       logo={logo}

@@ -22,6 +22,7 @@ import { Redirect } from "react-router-dom";
 import Card from "components/core/Card";
 import { OrgOverview } from "views/OrgOverview";
 import DelegatesPage from "views/DelegatesPage";
+import CoursesPage from "views/CoursesPage";
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -55,6 +56,7 @@ const Router = createFarceRouter({
       >
         <Route Component={OrgOverview} />
         <Route path="/delegates" Component={DelegatesPage} />
+        <Route path="/courses" Component={CoursesPage} />
       </Route>
     </Route>
   ),

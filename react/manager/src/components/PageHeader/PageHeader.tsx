@@ -24,6 +24,7 @@ type Props = {
   title: string;
   subTitle: string;
   sideText?: string;
+  sideComponent?: React.ReactNode;
   showCreateButtons: boolean;
 };
 const PageHeader = ({
@@ -31,12 +32,13 @@ const PageHeader = ({
   subTitle,
   showCreateButtons,
   sideText,
+  sideComponent
 }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
     <div className={classes.infoHeader}>
-      <PageTitle title={title} subTitle={subTitle} sideText={sideText} />
+      <PageTitle title={title} subTitle={subTitle} sideText={sideText} sideComponent={sideComponent} />
       {showCreateButtons && (
         <div className={classes.mainButtons}>
           <Button bold archetype="submit">
