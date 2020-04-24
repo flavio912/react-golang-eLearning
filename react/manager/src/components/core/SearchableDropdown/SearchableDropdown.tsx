@@ -47,6 +47,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     cursor: "pointer",
   },
   dropdown: {
+    backgroundColor: "white",
     position: "absolute",
     top: 50,
     width: "100%",
@@ -155,7 +156,7 @@ export type Course = {
 type Props = {
   multiselect?: boolean;
   selected: Course[];
-  setSelected: (selected: ((current: Course[]) => Course[]) | Course[]) => void;
+  setSelected: (selected: Course[]) => void;
   searchQuery: (query: string) => Promise<CourseCategory[]>;
   debounceTime?: number;
 };
@@ -217,7 +218,7 @@ function SearchableDropdown({
                 name="RemoveSelectedCourse_X"
                 className={classes.removeTag}
                 size={null} // set in class
-                onClick={() => setSelected((s) => s.filter((f) => f.id !== id))}
+                onClick={() => setSelected(selected.filter((f) => f.id !== id))}
               />
             </div>
           ))}
@@ -281,9 +282,9 @@ function SearchableDropdown({
                             if (
                               selected.map((course) => course.id).includes(id)
                             ) {
-                              setSelected((s) => s.filter((f) => f.id !== id));
+                              setSelected(selected.filter((f) => f.id !== id));
                             } else {
-                              setSelected((s) => [...s, { name, id, price }]);
+                              setSelected([...selected, { name, id, price }]);
                             }
                           } else {
                             setSelected([{ name, id, price }]);
