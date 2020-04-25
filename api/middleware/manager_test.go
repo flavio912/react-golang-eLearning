@@ -173,6 +173,7 @@ func TestGetManagersByUUID(t *testing.T) {
 	// these only check the uuid returned is correct
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			prepareTestDatabase()
 			m, err := test.grant.GetManagersByUUID(test.uuids)
 			assert.Equal(t, test.wantErr, err)
 			assert.Len(t, m, test.wantLen)
