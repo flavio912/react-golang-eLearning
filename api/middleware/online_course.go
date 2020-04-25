@@ -247,6 +247,11 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 	var courses []models.OnlineCourse
 	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = online_courses.course_info_id")
 
+	// Non-admins can only see published courses
+	if !g.IsAdmin {
+		query.Where("course_infos.published = ?", true)
+	}
+
 	// Filter course info
 	if filter != nil && filter.CourseInfo != nil {
 		if filter.CourseInfo.Name != nil {
