@@ -48,6 +48,11 @@ func IntPointer(integer int) *int {
 	return &_integer
 }
 
+func Int32Pointer(integer int32) *int32 {
+	_integer := integer
+	return &_integer
+}
+
 func UintPointer(unsignedInt uint) *uint {
 	_unsignedInt := unsignedInt
 	return &_unsignedInt

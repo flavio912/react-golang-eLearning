@@ -21,7 +21,7 @@ type NewCourseInfoArgs struct {
 
 func NewCourseInfoResolver(ctx context.Context, args NewCourseInfoArgs) (*CourseInfoResolver, error) {
 	if args.ID != nil {
-		// TODO: Use loader
+		// TODO: Use loader to stop n+1 calls
 		grant := auth.GrantFromContext(ctx)
 		if grant == nil {
 			return &CourseInfoResolver{}, &errors.ErrUnauthorized

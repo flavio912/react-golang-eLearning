@@ -128,3 +128,35 @@ func (q *QueryResolver) Company(ctx context.Context, args struct{ UUID string })
 		UUID: args.UUID,
 	})
 }
+
+func (q *QueryResolver) OnlineCourses(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.OnlineCourseFilter
+	OrderBy *gentypes.OrderBy
+}) (*OnlineCoursePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &OnlineCoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, pageInfo, err := grant.GetOnlineCourses(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &OnlineCoursePageResolver{}, err
+	}
+
+	var courseResolvers []*OnlineCourseResolver
+	for _, course := range courses {
+		resolver, err := NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{OnlineCourse: course})
+		if err != nil {
+			return &OnlineCoursePageResolver{}, err
+		}
+		courseResolvers = append(courseResolvers, resolver)
+	}
+
+	return &OnlineCoursePageResolver{
+		edges: &courseResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		}}, nil
+
+}

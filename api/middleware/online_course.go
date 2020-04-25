@@ -245,10 +245,10 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 	}
 
 	var courses []models.OnlineCourse
-	query := database.GormDB.Joins("LEFT JOIN course_infos ON course_infos.id = online_courses.course_info_id")
+	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = online_courses.course_info_id")
 
 	// Filter course info
-	if filter != nil {
+	if filter != nil && filter.CourseInfo != nil {
 		if filter.CourseInfo.Name != nil {
 			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.CourseInfo.Name+"%%")
 		}
@@ -275,11 +275,25 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, err
 	}
 
+	// Count total that can be retrieved by the current filter
+	var total int32
+	if err := query.Model(&models.OnlineCourse{}).Count(&total).Error; err != nil {
+		glog.Errorf("Unable to get online course count: %s", err)
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := getPage(query, page)
+
 	query = query.Find(&courses)
 	if query.Error != nil {
 		glog.Errorf("Unable to get courses: %s", query.Error.Error())
 		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	return onlineCoursesToGentypes(courses), gentypes.PageInfo{}, nil
+	return onlineCoursesToGentypes(courses), gentypes.PageInfo{
+		Total:  total,
+		Given:  int32(len(courses)),
+		Offset: offset,
+		Limit:  limit,
+	}, nil
 }

@@ -31,3 +31,25 @@
   access_type: restricted
   background_check: false
   specific_terms: {}
+- id: 4
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Online Course test
+  price: 12.06
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: restricted
+  background_check: false
+  specific_terms: {}
+- id: 5
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Fun online Course
+  price: 41.45
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: restricted
+  background_check: false
+  specific_terms: {}

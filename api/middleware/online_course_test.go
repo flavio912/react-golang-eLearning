@@ -3,6 +3,8 @@ package middleware_test
 import (
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -12,7 +14,6 @@ import (
 )
 
 func TestCreateOnlineCourse(t *testing.T) {
-	prepareTestDatabase()
 
 	grant := adminGrant
 
@@ -31,6 +32,7 @@ func TestCreateOnlineCourse(t *testing.T) {
 	}
 
 	t.Run("Create course with name", func(t *testing.T) {
+		prepareTestDatabase()
 		course, err := grant.CreateOnlineCourse(inp)
 		assert.Nil(t, err)
 		assert.NotNil(t, course.CourseInfoID)
@@ -54,6 +56,7 @@ func TestCreateOnlineCourse(t *testing.T) {
 	}
 
 	t.Run("Create course with full info", func(t *testing.T) {
+		prepareTestDatabase()
 		course, err := grant.CreateOnlineCourse(inp)
 		assert.Nil(t, err)
 		assert.NotNil(t, course.CourseInfoID)
@@ -95,6 +98,8 @@ func TestCreateOnlineCourse(t *testing.T) {
 	})
 
 	t.Run("Access Control Tests", func(t *testing.T) {
+		prepareTestDatabase()
+
 		// Manager should fail
 		_, err := managerGrant.CreateOnlineCourse(inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
@@ -108,10 +113,39 @@ func TestCreateOnlineCourse(t *testing.T) {
 
 func TestGetOnlineCourses(t *testing.T) {
 
-	name := "test"
-	adminGrant.GetOnlineCourses(nil, &gentypes.OnlineCourseFilter{
-		CourseInfo: gentypes.CourseInfoFilter{
-			Name: &name,
-		},
-	}, nil)
+	// TODO: Infil -  Test other filters
+	t.Run("Test name filter", func(t *testing.T) {
+		prepareTestDatabase()
+
+		name := "test"
+		courses, pageInfo, err := adminGrant.GetOnlineCourses(nil, &gentypes.OnlineCourseFilter{
+			CourseInfo: &gentypes.CourseInfoFilter{
+				Name: &name,
+			},
+		}, nil)
+		assert.Nil(t, err)
+		assert.Equal(t, 1, len(courses)) // Only one course has test in the name
+		assert.Equal(t, gentypes.PageInfo{
+			Given:  1,
+			Total:  1,
+			Limit:  middleware.MaxPageLimit,
+			Offset: 0,
+		}, pageInfo)
+	})
+
+	t.Run("Test Paging", func(t *testing.T) {
+		prepareTestDatabase()
+		courses, pageInfo, err := adminGrant.GetOnlineCourses(&gentypes.Page{
+			Limit:  helpers.Int32Pointer(2),
+			Offset: helpers.Int32Pointer(0),
+		}, nil, nil)
+		assert.Nil(t, err)
+		assert.Equal(t, 2, len(courses))
+		assert.Equal(t, gentypes.PageInfo{
+			Total:  3,
+			Offset: 0,
+			Limit:  2,
+			Given:  2,
+		}, pageInfo)
+	})
 }

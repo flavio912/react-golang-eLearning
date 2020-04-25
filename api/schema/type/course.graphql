@@ -29,6 +29,11 @@ type OnlineCourse {
   info: CourseInfo!
 }
 
+type OnlineCoursePage implements PaginatedQuery {
+  edges: [OnlineCourse]
+  pageInfo: PageInfo
+}
+
 type ClassroomCourse {
   uuid: UUID!
   info: CourseInfo!

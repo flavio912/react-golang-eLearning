@@ -22,6 +22,7 @@ type CourseInfo struct {
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
 	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
+	Published       bool                // If not published users can't see this course
 }
 
 // CourseTagsLink is not needed to create the table, but

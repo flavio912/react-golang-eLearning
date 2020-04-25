@@ -46,3 +46,11 @@ func (r *OnlineCourseResolver) Info(ctx context.Context) (*CourseInfoResolver, e
 		ID: &r.OnlineCourse.CourseInfoID,
 	})
 }
+
+type OnlineCoursePageResolver struct {
+	edges    *[]*OnlineCourseResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *OnlineCoursePageResolver) PageInfo() *PageInfoResolver     { return r.pageInfo }
+func (r *OnlineCoursePageResolver) Edges() *[]*OnlineCourseResolver { return r.edges }

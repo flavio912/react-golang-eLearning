@@ -30,20 +30,6 @@ type CourseInput struct {
 	BannerImageSuccess *string
 }
 
-type SaveClassroomCourseInput struct {
-	CourseInput
-	TutorUUID       *UUID
-	MaxParticipants *int
-	StartDate       *Time
-	EndDate         *Time
-	Location        *string
-}
-
-type SaveOnlineCourseInput struct {
-	CourseInput
-	Structure *[]CourseItem
-}
-
 type CourseItem struct {
 	Type  StructureElement
 	UUID  UUID
@@ -73,27 +59,11 @@ type Course struct {
 	CourseInfoID uint
 }
 
-type OnlineCourse struct {
-	Course
-}
-
 type CourseInfoFilter struct {
 	Name            *string
 	AccessType      *AccessType
 	BackgroundCheck *bool
 	Price           *float64
-}
-
-type OnlineCourseFilter struct {
-	CourseInfo CourseInfoFilter
-}
-
-type ClassroomCourse struct {
-	Course
-	StartDate       Time
-	EndDate         Time
-	Location        string
-	MaxParticipants int
 }
 
 type Tag struct {
