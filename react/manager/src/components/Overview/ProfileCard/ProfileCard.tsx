@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    width: '425px',
+    width: "425px",
   },
   heading: {
     fontSize: theme.fontSizes.default,
@@ -20,21 +20,27 @@ const useStyles = createUseStyles((theme: Theme) => ({
   row: {
     display: "flex",
     flexDirection: "row",
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingBottom: "15px",
-  }
+  },
 }));
 
 type Props = {
   heading: string;
-  fields: Array<Field>;
+  fields: Field[];
   onClick?: Function;
   padding?: PaddingOptions;
   className?: string;
 };
 
-function ProfileCard({ heading, fields, onClick, padding = "none", className }: Props) {
+function ProfileCard({
+  heading,
+  fields,
+  onClick,
+  padding = "none",
+  className,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -45,16 +51,18 @@ function ProfileCard({ heading, fields, onClick, padding = "none", className }: 
         <Icon
           name="Card_SecondaryActon_Dots"
           size={20}
-          style={{ cursor: 'pointer' }}
+          style={{ cursor: "pointer" }}
           onClick={() => onClick && onClick()}
         />
       </div>
-        {fields && fields.map((field) => (
+      {fields &&
+        fields.map((field, index) => (
           <InfoField
             key={field.fieldName}
             fieldName={field.fieldName}
             value={field.value}
             padding={field.padding}
+            border={index + 1 !== fields.length}
           />
         ))}
     </Card>

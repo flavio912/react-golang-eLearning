@@ -38,7 +38,8 @@ const tabs: TabContent[] = [
     key: "Second",
     component: ({ state, setTab }) => (
       <div style={{ padding: 15 }}>
-        <p>State is: {state}</p>
+        <p>State is:</p>
+        <pre>{JSON.stringify(state, null, 2)}</pre>
         <Button onClick={() => setTab("Third")} style={{ marginTop: 20 }}>
           Next
         </Button>
@@ -70,7 +71,7 @@ export const tabbed = () => {
         /* close the modal here */
       }}
     >
-      <Tabs content={tabs} />
+      <Tabs content={tabs} closeModal={() => {}} initialState={""} />
     </SideModal>
   );
 };

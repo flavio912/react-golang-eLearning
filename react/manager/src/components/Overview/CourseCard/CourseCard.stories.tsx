@@ -11,6 +11,7 @@ const sizeOptions: SizeOptions[] = ["small", "large"];
 
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",
+  colour: "#8C1CB4",
   url: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   title: "Dangerous goods by air category 7",
   price: 60,
@@ -27,5 +28,5 @@ export const plain = () => {
   const size: SizeOptions = select("Size", sizeOptions, "small");
   const colourHex: string = text("Colour", defaultColor);
   const courseData: Course = object("Data", defaultCourse);
-  return <CourseCard course={courseData} color={colourHex} onClick={() => console.log('Pressed')} size={size} />
+  return <CourseCard course={courseData} filterColour={colourHex} onClick={() => console.log('Pressed')} size={size} />
 }

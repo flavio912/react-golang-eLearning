@@ -29,6 +29,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     "&::-moz-focus-inner": {
       border: 0,
     },
+    cursor: "pointer",
   },
 }));
 

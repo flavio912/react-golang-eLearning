@@ -24,7 +24,7 @@ var (
 func Handler(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		// todo: Pass JWT to resolvers for now; this should be moved to middleware
+
 		token := strings.ReplaceAll(r.Header.Get("Authorization"), "Bearer ", "")
 
 		// Attempt to get a grant

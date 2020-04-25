@@ -11,6 +11,7 @@ export type Theme = {
   secondaryBorderRadius: number;
   buttonBorderRadius: number;
   primaryGradient: string;
+  loginBackgroundGradient: string;
   colors: {
     primaryBlack: string;
     primaryBlue: string;
@@ -47,6 +48,7 @@ const theme: Theme = {
   secondaryBorderRadius: 10,
   buttonBorderRadius: 4,
   primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#16C225 100%)",
+  loginBackgroundGradient: "linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)",
   colors: {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
@@ -63,7 +65,7 @@ const theme: Theme = {
     textGrey: "#737988",
   },
   shadows: {
-    primary: "0px 2px 10px #0000001f",
+    primary: "2px 2px 10px rgba(0,0,0,0.07)",
     body: "inset 0px -2px 10px 0px #0000001f",
   },
   fontSizes: {

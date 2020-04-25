@@ -11,6 +11,7 @@ export default {
 // Course card props
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",
+  colour: "#8C1CB4",
   url: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   title: "Dangerous goods by air category 7",
   price: 60,
@@ -23,9 +24,9 @@ const defaultCourse = {
 
 // Menu props
 const defaultTabs: Array<Tab> = [
-    {id: 0, icon: "LeftNav_Icon_Dashboard", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
-    {id: 1, icon: "LeftNav_Icon_Delegates", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="large" />},
-    {id: 2, icon: "LeftNav_Icon_Courses", children: <CourseCard course={defaultCourse} color="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
+    {id: 0, icon: "LeftNav_Icon_Dashboard", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
+    {id: 1, icon: "LeftNav_Icon_Delegates", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="large" />},
+    {id: 2, icon: "LeftNav_Icon_Courses", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
 ];
 
 export const normal = () => React.createElement(() => {

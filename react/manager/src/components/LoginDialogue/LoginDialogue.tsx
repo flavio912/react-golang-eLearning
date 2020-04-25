@@ -10,7 +10,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    width: 340,
+    width: 378,
+    background: "white",
   },
   logoContainer: {
     padding: [30, 0, 20],
@@ -23,25 +24,47 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryBlack,
   },
   subheading: {
-    color: theme.colors.secondaryGrey,
-    fontWeight: 400,
+    color: theme.colors.textGrey,
+    fontWeight: 300,
     fontSize: 15,
     marginTop: 0,
     marginBottom: theme.spacing(2),
   },
   link: {
-    margin: [15, 0, 0, 0],
+    margin: [15, 0, 30, 0],
     textAlign: "center",
     color: theme.colors.textBlue,
     fontSize: theme.fontSizes.small,
   },
+  errMessage: {
+    color: "#43454a",
+    fontWeight: 200,
+    fontSize: 15,
+    textAlign: "center",
+    margin: 3,
+  },
 }));
 
-type Props = {};
+type Props = {
+  onSubmit: (
+    email: string,
+    password: string,
+    errorCallback: (err: string) => void
+  ) => void;
+};
 
-function LoginDialogue(props: Props) {
+function LoginDialogue({ onSubmit }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [error, setError] = React.useState("");
+  const onLogin = () => {
+    onSubmit(email, password, (err) => {
+      setError(err);
+    });
+  };
   return (
     <Card padding="medium" className={classes.root}>
       <div className={classes.logoContainer}>
@@ -51,9 +74,20 @@ function LoginDialogue(props: Props) {
       <p className={classes.subheading}>
         Glad to have you back, please enter your login details to proceed
       </p>
-      <FancyInput label="Email" labelColor={"#5CC301"} type={"email"} />
-      <FancyInput label="Password" labelColor={"#5CC301"} type={"password"} />
-      <FancyButton text="Login to TTC" />
+      <p className={classes.errMessage}>{error}</p>
+      <FancyInput
+        label="Email"
+        labelColor={"#5CC301"}
+        type={"email"}
+        onChange={setEmail}
+      />
+      <FancyInput
+        label="Password"
+        labelColor={"#5CC301"}
+        type={"password"}
+        onChange={setPassword}
+      />
+      <FancyButton text="Login to TTC" onClick={onLogin} />
       <a className={classes.link} href="https://example.com">
         I don't have a TTC Hub account
       </a>

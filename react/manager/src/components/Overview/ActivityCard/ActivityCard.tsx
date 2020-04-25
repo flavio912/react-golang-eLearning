@@ -13,7 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     display: "grid",
     gridTemplateColumns: "1fr 50px 1fr",
-    width: '778px'
+    background: "white",
   },
   root: {
     display: "flex",
@@ -52,17 +52,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export interface Statistic {
-  name: string;
-  value: number;
+  innerRing: {
+    name: string;
+    value: number;
+  },
+  outerRing: {
+    name: string;
+    value: number;
+  }
 }
 
 type Props = {
   leftHeading: string;
   rightHeading: string;
-  options: Array<string>;
-  updates: Array<Update>;
-  data: Array<Statistic>;
-  onClick?: Function,
+  options: string[];
+  updates: Update[];
+  data: Statistic;
+  onClick?: Function;
   padding?: PaddingOptions;
   className?: string;
 };
@@ -102,32 +108,32 @@ function ActvityCard({
         <Graph
           className={classNames(classes.graph)}
           heading="Active Delegates"
-          outerValue={data[0].value}
-          innerValue={data[1].value}
+          outerValue={data.outerRing.value}
+          innerValue={data.innerRing.value}
         />
 
         <div className={classNames(classes.row)}>
           <StatCircle
-            heading={data[0].name}
-            value={data[0].value}
+            heading={data.outerRing.name}
+            value={data.outerRing.value}
             color="green"
             border="right"
           />
           <StatCircle
-            heading={data[1].name}
-            value={data[1].value}
+            heading={data.innerRing.name}
+            value={data.innerRing.value}
             color="red"
             border="right"
           />
           <StatCircle
             heading="Total"
-            value={data[0].value + data[1].value}
+            value={data.innerRing.value + data.outerRing.value}
             color="grey"
           />
         </div>
 
         <Button
-          style={{alignSelf: "center", marginTop: "50px"}}
+          style={{ alignSelf: "center", marginTop: "50px" }}
           archetype="submit"
           onClick={() => onClick && onClick()}
         >
@@ -142,14 +148,17 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates && updates.slice(0,7).map((update, i) => (
-          <UserUpdate
-            key={i}
-            name={update.name}
-            course={update.course}
-            time={update.time}
-          />
-        ))}
+        {updates &&
+          updates
+            .slice(0, 7)
+            .map((update, i) => (
+              <UserUpdate
+                key={i}
+                name={update.name}
+                course={update.course}
+                time={update.time}
+              />
+            ))}
       </div>
     </Card>
   );
