@@ -55,7 +55,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
   header: string[];
   rows: TableRow[];
-  sort: Sort;
+  filter?: Filter;
+  sort?: Sort;
 };
 
 type TableRow = {
@@ -65,43 +66,70 @@ type TableRow = {
 
 type TableCell = {
   component: (() => JSX.Element) | string;
-  sort?: string | number;
+  sort?: string | boolean | number;
 };
 
 type Sort = {
-  by: string;
+  column: number;
   dir: "ASC" | "DESC";
 };
 
-function Table({ header, rows, sort }: Props) {
+type Filter = {
+  column: number;
+  filterFunc: (value: string | number | boolean) => boolean;
+};
+
+function Table({ header, rows, sort, filter }: Props) {
   const classes = useStyles();
 
   const sorter = (a: TableRow, b: TableRow): number => {
-    const column: number = header.findIndex((col) => col === sort.by);
-    if (column > 0) {
+    if (sort === undefined) return 0;
+    if (sort.column < header.length) {
       if (sort.dir === "DESC") {
         const t = b;
         b = a;
         a = t;
       }
 
-      const aCell = a.cells[column];
-      const bCell = b.cells[column];
+      const aCell = a.cells[sort.column];
+      const bCell = b.cells[sort.column];
 
-      console.log(a, b);
-
-      if (!(aCell && bCell && aCell.sort && bCell.sort)) {
-        console.warn(`Table column ${sort.by} is not able to be sorted`);
+      if (
+        !(
+          "sort" in aCell &&
+          aCell.sort !== undefined &&
+          "sort" in bCell &&
+          bCell.sort !== undefined
+        )
+      ) {
+        console.warn(`Table column ${sort.column} is not able to be sorted`);
       } else {
-        console.log("got here");
         if (aCell.sort < bCell.sort) return 1;
         if (aCell.sort > bCell.sort) return -1;
       }
     } else {
-      console.warn(`Table column ${sort.by} is not present in the table`);
+      console.warn(`Table column ${sort.column} is not present in the table`);
     }
-    console.log("No comparison");
     return 0;
+  };
+
+  const filterer = (row: TableRow) => {
+    if (filter === undefined) return true;
+    if (filter.column < row.cells.length) {
+      const value = row.cells[filter.column];
+
+      if ("sort" in value && value.sort !== undefined) {
+        return filter.filterFunc(value.sort);
+      } else {
+        console.warn(
+          `Table column ${filter.column} is not able to be filtered`
+        );
+        return true;
+      }
+    } else {
+      console.warn(`Table column ${filter.column} is not present in the table`);
+      return true;
+    }
   };
 
   return (
@@ -114,23 +142,26 @@ function Table({ header, rows, sort }: Props) {
         </tr>
       </thead>
       <tbody>
-        {rows.sort(sorter).map(({ key, cells }) => {
-          return (
-            <tr key={key} className={classes.row}>
-              {cells.map(({ component: Cell, sort }) => (
-                <td className={classes.cell}>
-                  {typeof Cell === "string" ? (
-                    <p className={classes.defaultCell} key={`${key}-${sort}`}>
-                      {Cell}
-                    </p>
-                  ) : (
-                    <Cell key={`${key}-${sort}`} />
-                  )}
-                </td>
-              ))}
-            </tr>
-          );
-        })}
+        {rows
+          .filter(filterer)
+          .sort(sorter)
+          .map(({ key, cells }) => {
+            return (
+              <tr key={key} className={classes.row}>
+                {cells.map(({ component: Cell, sort }) => (
+                  <td className={classes.cell}>
+                    {typeof Cell === "string" ? (
+                      <p className={classes.defaultCell} key={`${key}-${sort}`}>
+                        {Cell}
+                      </p>
+                    ) : (
+                      <Cell key={`${key}-${sort}`} />
+                    )}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
       </tbody>
     </table>
   );
