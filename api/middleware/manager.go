@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -160,6 +161,7 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 		glog.Errorf("Count query failed: %s", countErr.Error())
 		return []gentypes.Manager{}, gentypes.PageInfo{}, countErr
 	}
+	fmt.Printf("COUNT: %d", count)
 
 	query = query.Order("created_at DESC")
 	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"})

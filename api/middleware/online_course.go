@@ -207,6 +207,10 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 		}
 	}
 
+	if err := tx.Commit().Error; err != nil {
+		glog.Errorf("Commit Error: %s", err.Error())
+		return &errors.ErrWhileHandling
+	}
 	return nil
 }
 

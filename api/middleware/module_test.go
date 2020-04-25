@@ -15,7 +15,6 @@ import (
 )
 
 func TestUpdateModule(t *testing.T) {
-	prepareTestDatabase()
 	lessonUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-00000000001")
 	lesson2UUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000002")
 	testUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
@@ -24,6 +23,7 @@ func TestUpdateModule(t *testing.T) {
 	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 
 	t.Run("Duplicates + updates template correctly", func(t *testing.T) {
+		prepareTestDatabase()
 		// Get module to check for changes after
 		mod, err := grant.GetModuleByUUID(templateModuleUUID)
 		assert.Nil(t, err)
@@ -68,6 +68,7 @@ func TestUpdateModule(t *testing.T) {
 	})
 
 	t.Run("Update template in place", func(t *testing.T) {
+		prepareTestDatabase()
 		modItem := gentypes.CourseItem{
 			Type: gentypes.ModuleType,
 			UUID: templateModuleUUID,

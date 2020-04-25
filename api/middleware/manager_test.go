@@ -219,7 +219,6 @@ func TestGetManagerSelf(t *testing.T) {
 }
 
 func TestDeleteManager(t *testing.T) {
-	prepareTestDatabase()
 
 	tests := []struct {
 		name    string
@@ -256,6 +255,7 @@ func TestDeleteManager(t *testing.T) {
 	// these only check the uuid returned is correct
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			prepareTestDatabase()
 			ret, err := test.grant.DeleteManager(test.uuid)
 			assert.Equal(t, test.wantErr, err)
 			if test.wantErr == nil {
@@ -292,7 +292,7 @@ func TestGetManagers(t *testing.T) {
 		managers, pageInfo, err := adminGrant.GetManagers(&page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, managers, 2)
-		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit})
+		assert.Equal(t, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should order", func(t *testing.T) {
