@@ -7,7 +7,8 @@ import Dropdown, { DropdownOption } from "components/core/Dropdown";
 import PageHeader from "components/PageHeader";
 import SelectButton from "components/core/SelectButton";
 import CircleBorder from "components/core/CircleBorder";
-import PageNumbers from "components/core/PageNumbers";
+import Paginator from "components/Paginator";
+import Spacer from "components/core/Spacers/Spacer";
 
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",
@@ -15,27 +16,33 @@ const defaultCourse = {
   url: "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
   title: "Dangerous goods by air category 7",
   price: 60,
-  description: "This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage",
+  description:
+    "This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage",
   assigned: 40,
   expiring: 9,
   date: "MAR 3rd 2020",
-  location: "TTC at Hilton T4"
+  location: "TTC at Hilton T4",
 };
 
 const filterColour = "#AAAAAA90";
-const courses = [defaultCourse, defaultCourse, defaultCourse, defaultCourse, defaultCourse, defaultCourse, defaultCourse, defaultCourse];
+const courses = [
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+  defaultCourse,
+];
 
-const defaultComponent = () => (
-  <div>
-    PlaceHolder Name
-  </div>
-)
+const defaultComponent = () => <div>PlaceHolder Name</div>;
 
 const defaultOption: DropdownOption = {
   id: 1,
   title: "Test Option",
-  component: defaultComponent()
-}
+  component: defaultComponent(),
+};
 
 const defaultOptions = [defaultOption, defaultOption, defaultOption];
 
@@ -49,28 +56,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
     maxWidth: 1275,
   },
   course: {
-    margin: '15px 10px',
+    margin: "15px 10px",
   },
   dropdown: {
     width: 177,
     marginLeft: 15,
-    backgroundColor: theme.colors.primaryWhite
-  },
-  pageDropdown: {
-    width: 117,
-    backgroundColor: theme.colors.primaryWhite
+    backgroundColor: theme.colors.primaryWhite,
   },
   row: {
     display: "flex",
     flexDirection: "row",
-    flexWrap: 'wrap',
+    flexWrap: "wrap",
   },
   spaceEvenly: {
-    justifyContent: 'space-evenly'
+    justifyContent: "space-evenly",
   },
   filterRow: {
-    margin: '30px 0px',
-    justifyContent: 'space-between'
+    margin: "30px 0px",
+    justifyContent: "space-between",
   },
 }));
 
@@ -80,7 +83,7 @@ const CoursesPage = () => {
 
   // Card size state
   const sizeOptions: SizeOptions[] = ["small", "large"];
-  const options = ['Online Courses', 'Classroom Courses'];
+  const options = ["Online Courses", "Classroom Courses"];
   const [cardSize, setCardSize] = React.useState(options[0]);
 
   // Dropdown states
@@ -125,32 +128,27 @@ const CoursesPage = () => {
         </div>
       </div>
       <div className={classNames(classes.row, classes.spaceEvenly)}>
-        {courses && courses.map((course) => (
-          <CourseCard
-            className={classes.course}
-            course={course}
-            filterColour={filterColour}
-            onClick={() => console.log('Pressed')}
-            size={sizeOptions[options.indexOf(cardSize)]}
-          />
-        ))}
+        {courses &&
+          courses.map((course) => (
+            <CourseCard
+              className={classes.course}
+              course={course}
+              filterColour={filterColour}
+              onClick={() => console.log("Pressed")}
+              size={sizeOptions[options.indexOf(cardSize)]}
+            />
+          ))}
       </div>
+      <Spacer vertical spacing={3} />
       <div className={classes.row}>
-        <div className={classes.pageDropdown}>
-          <Dropdown
-            placeholder="Show 10"
-            options={defaultOptions}
-            selected={itemsPerPage}
-            setSelected={setItemsPerPage}
-          />
-        </div>
-        <PageNumbers
-          numberOfPages={10}
-          range={4}
+        <Paginator
           currentPage={currentPage}
-          setCurrentPage={(page: number) => setCurrentPage(page)}
+          updatePage={setCurrentPage}
+          numPages={10}
+          itemsPerPage={10}
         />
       </div>
+      <Spacer vertical spacing={3} />
     </div>
   );
 };

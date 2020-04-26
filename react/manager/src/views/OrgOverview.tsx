@@ -16,6 +16,7 @@ import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import { Theme } from "helpers/theme";
 import ProfileCard from "components/Overview/ProfileCard";
 import PageHeader from "components/PageHeader";
+import Spacer from "components/core/Spacers/Spacer";
 
 type Props = {};
 
@@ -70,7 +71,7 @@ export const OrgOverview = () => {
         <div className={classes.searchRow}>
           <div className={classes.search}>
             <UserSearch
-              companyName="TESTcompany"
+              companyName="Fedex"
               searchFunction={async (query: string) => {
                 return [];
               }}
@@ -94,7 +95,7 @@ export const OrgOverview = () => {
                 timeTracked={{ h: 20, m: 15 }}
                 title="Weekly"
               />
-              <div className={classes.breaker} />
+              <Spacer spacing={3} horizontal />
               <TrainingProgressCard
                 coursesDone={20}
                 timeTracked={{ h: 20, m: 15 }}

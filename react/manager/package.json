@@ -41,6 +41,7 @@
     "react-scripts": "3.4.1",
     "react-spinners": "^0.8.1",
     "react-spring": "^8.0.27",
+    "react-step-progress-bar": "^1.0.3",
     "react-use-dimensions": "^1.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
