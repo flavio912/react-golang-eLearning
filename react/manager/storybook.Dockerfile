@@ -4,6 +4,5 @@ ENV HOME /app
 
 WORKDIR /app
 
-CMD ["yarn"]
 ENTRYPOINT ["yarn", "run", "storybook"]
 EXPOSE 4001
