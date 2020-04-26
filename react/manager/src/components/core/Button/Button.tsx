@@ -65,12 +65,14 @@ interface Props {
   bold?: boolean;
   small?: boolean;
   className?: string;
+  noIconPadding?: boolean;
 }
 
 function Button({
   archetype,
   icon,
   iconSize,
+  noIconPadding,
   bold,
   small,
   children,
@@ -93,17 +95,17 @@ function Button({
     >
       {/* replace with actual icon */}
       {/* prop should also be a string (icon name) */}
-      {icon && icon.left && (
+      {icon?.left && (
         <Icon
-          style={{ marginRight: small ? 5 : 10 }}
+          style={noIconPadding ? {} : { marginRight: small ? 5 : 10 }}
           name={icon.left}
           size={iconSize ? iconSize : small ? 12 : 15}
         />
       )}
       {children}
-      {icon && icon.right && (
+      {icon?.right && (
         <Icon
-          style={{ marginLeft: small ? 5 : 10 }}
+          style={noIconPadding ? {} : { marginLeft: small ? 5 : 10 }}
           name={icon.right}
           size={iconSize ? iconSize : small ? 12 : 15}
         />

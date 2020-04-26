@@ -11,23 +11,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
   row: {
     background: "white",
     height: 70,
+    borderRadius: theme.primaryBorderRadius,
     transition: "box-shadow 0.1s ease",
     "&:hover": {
       boxShadow: theme.shadows.primary,
-      "& $cell": {
-        "&:first-child": {
-          borderRadius: 0,
-        },
-        "&:last-child": {
-          borderRadius: 0,
-        },
-      },
+      // "& $cell": {
+      //   "&:first-child": {
+      //     borderRadius: 0,
+      //   },
+      //   "&:last-child": {
+      //     borderRadius: 0,
+      //   },
+      // },
     },
   },
   headerCell: {
-    color: theme.colors.textGrey,
+    color: theme.colors.secondaryBlack,
     textTransform: "uppercase",
     fontSize: theme.fontSizes.tiny,
+    fontWeight: 400,
     padding: [0, 10],
     textAlign: "left",
   },
@@ -39,11 +41,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderLeft: "0",
     transition: "border-radius 0.1s ease",
     "&:first-child": {
-      borderRadius: [5, 0, 0, 5],
+      borderRadius: [
+        theme.primaryBorderRadius,
+        0,
+        0,
+        theme.primaryBorderRadius,
+      ],
       borderLeft: `1px solid ${theme.colors.borderGrey}`,
     },
     "&:last-child": {
-      borderRadius: [0, 5, 5, 0],
+      borderRadius: [
+        0,
+        theme.primaryBorderRadius,
+        theme.primaryBorderRadius,
+        0,
+      ],
       borderRight: `1px solid ${theme.colors.borderGrey}`,
     },
   },
@@ -62,6 +74,7 @@ type Props = {
 type TableRow = {
   key: string;
   cells: TableCell[];
+  onClick?: () => void;
 };
 
 type TableCell = {
@@ -145,9 +158,9 @@ function Table({ header, rows, sort, filter }: Props) {
         {rows
           .filter(filterer)
           .sort(sorter)
-          .map(({ key, cells }) => {
+          .map(({ key, cells, onClick }) => {
             return (
-              <tr key={key} className={classes.row}>
+              <tr key={key} className={classes.row} onClick={onClick}>
                 {cells.map(({ component: Cell, sort }) => (
                   <td className={classes.cell}>
                     {typeof Cell === "string" ? (

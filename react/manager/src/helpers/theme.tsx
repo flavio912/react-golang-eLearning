@@ -17,6 +17,7 @@ export type Theme = {
     primaryBlue: string;
     primaryGreen: string;
     secondaryGreen: string;
+    secondaryBlack: string;
     hoverGreen: string;
     primaryRed: string;
     secondaryGrey: string;
@@ -26,6 +27,7 @@ export type Theme = {
     textBlue: string;
     textGrey: string;
     searchHoverGrey: string;
+    progressGrey: string;
   };
   shadows: {
     primary: string;
@@ -53,6 +55,7 @@ const theme: Theme = {
     primaryBlack: "#0C152E",
     primaryBlue: "#0b57ff",
     primaryGreen: "#10b73b",
+    secondaryBlack: "#34373A",
     secondaryGreen: "#15C324",
     hoverGreen: "#E7F8E6",
     primaryRed: "#CB463A",
@@ -63,6 +66,7 @@ const theme: Theme = {
     searchHoverGrey: "#F5FAFC",
     textBlue: "#1081AA",
     textGrey: "#737988",
+    progressGrey: "#d2d6db",
   },
   shadows: {
     primary: "2px 2px 10px rgba(0,0,0,0.07)",

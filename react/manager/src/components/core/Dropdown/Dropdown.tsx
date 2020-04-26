@@ -1,10 +1,11 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
+import classNames from "classnames";
+
 import { Theme } from "helpers/theme";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    width: "100%",
     height: 40,
     position: "relative",
     display: "flex",
@@ -31,13 +32,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: theme.primaryBorderRadius,
     display: "flex",
     flexDirection: "column",
-    backgroundColor: theme.colors.primaryWhite
+    backgroundColor: theme.colors.primaryWhite,
   },
   searchResults: {
     overflowY: "auto",
   },
   title: {
-    fontSize: theme.fontSizes.small
+    fontSize: theme.fontSizes.small,
+    fontWeight: 300,
+    marginRight: 19,
   },
   option: {
     height: 40,
@@ -72,14 +75,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export type DropdownOption = {
   id: number;
   title: string;
-  component?: React.ReactNode
+  component?: React.ReactNode;
 };
 
 type Props = {
   placeholder: string;
   options: DropdownOption[];
   selected?: DropdownOption;
-  setSelected: (selected: ((current: DropdownOption) => DropdownOption) | DropdownOption) => void;
+  setSelected: (
+    selected: ((current: DropdownOption) => DropdownOption) | DropdownOption
+  ) => void;
+  className?: string;
 };
 
 function Dropdown({
@@ -87,18 +93,21 @@ function Dropdown({
   options,
   selected,
   setSelected,
+  className,
 }: Props) {
   const classes = useStyles();
   const [isOpen, setOpen] = React.useState<boolean>(false);
 
   return (
     <>
-      <div className={classes.container}>
+      <div className={classNames(classes.container, className)}>
         <div
           className={classes.clickableBox}
           onClick={() => setOpen((o) => !o)}
         >
-          <p className={classes.title}>{selected ? selected.title : placeholder}</p>
+          <p className={classes.title}>
+            {selected ? selected.title : placeholder}
+          </p>
           <div className={isOpen ? classes.triangleUp : classes.triangleDown} />
         </div>
         {isOpen && (
