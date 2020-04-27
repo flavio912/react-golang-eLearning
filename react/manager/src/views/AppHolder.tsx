@@ -26,16 +26,19 @@ export const AppHolder = ({ children }: Props) => {
     {
       id: 0,
       icon: "LeftNav_Icon_Dashboard",
+      size: 20,
       children: <div></div>,
     },
     {
       id: 1,
       icon: "LeftNav_Icon_Delegates",
+      size: 28,
       children: <div></div>,
     },
     {
       id: 2,
       icon: "LeftNav_Icon_Courses",
+      size: 22,
       children: <div></div>,
     },
   ];

@@ -37,6 +37,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   searchAndFilter: {
     display: "flex",
     justifyContent: "space-between",
+    height: 40,
   },
   tableOptions: {
     display: "flex",

@@ -14,6 +14,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: "column",
     justifyContent: "center",
     background: "white",
+    position: "relative",
   },
   rootFocused: {
     extend: "root",
@@ -111,26 +112,35 @@ function UserSearch({
   };
 
   return (
-    <div className={focus ? classes.rootFocused : classes.root}>
-      <div className={classes.buttonCont}>
-        <div className={classes.search}>
-          <Icon name="SearchGlass" size={15} />
-          <CoreInput
-            type="search"
-            placeholder={`Search within ${companyName}`}
-            onChange={onChange}
-            className={classes.searchInput}
-            onFocus={onFocus}
-            onBlur={onBlur}
-            value={input}
-            setValue={setInput}
-          />
+    <div>
+      <div />
+      <div className={focus ? classes.rootFocused : classes.root}>
+        <div className={classes.buttonCont}>
+          <div className={classes.search}>
+            <Icon name="SearchGlass" size={15} />
+            <CoreInput
+              type="search"
+              placeholder={`Search within ${companyName}`}
+              onChange={onChange}
+              className={classes.searchInput}
+              onFocus={onFocus}
+              onBlur={onBlur}
+              value={input}
+              setValue={setInput}
+            />
+          </div>
+          {selection && (
+            <div className={classes.openDelegate}>Show Delegate</div>
+          )}
         </div>
-        {selection && <div className={classes.openDelegate}>Show Delegate</div>}
+        {focus && (
+          <UserResults
+            loading={loading}
+            results={results}
+            onSelect={onSelect}
+          />
+        )}
       </div>
-      {focus && (
-        <UserResults loading={loading} results={results} onSelect={onSelect} />
-      )}
     </div>
   );
 }

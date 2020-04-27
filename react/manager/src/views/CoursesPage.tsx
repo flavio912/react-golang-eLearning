@@ -55,9 +55,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexGrow: 1,
     maxWidth: 1275,
   },
-  course: {
-    margin: "15px 10px",
-  },
+  course: {},
   dropdown: {
     width: 177,
     marginLeft: 15,
@@ -69,7 +67,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexWrap: "wrap",
   },
   spaceEvenly: {
-    justifyContent: "space-evenly",
+    justifyContent: "space-between",
   },
   filterRow: {
     margin: "30px 0px",
