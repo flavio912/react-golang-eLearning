@@ -55,7 +55,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexGrow: 1,
     maxWidth: 1275,
   },
-  course: {},
+  course: {
+    margin: "15px 0px",
+  },
   dropdown: {
     width: 177,
     marginLeft: 15,
