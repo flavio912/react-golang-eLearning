@@ -104,7 +104,20 @@ export const OrgOverview = () => {
           <UserSearch
             companyName="Fedex"
             searchFunction={async (query: string) => {
-              return [];
+              return [
+                {
+                  key: "Jim Smith",
+                  value: "uuid-1",
+                },
+                {
+                  key: "Bruce Willis",
+                  value: "uuid-2",
+                },
+                {
+                  key: "Tony Stark",
+                  value: "uuid-3",
+                },
+              ];
             }}
           />
         </div>

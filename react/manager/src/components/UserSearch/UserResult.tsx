@@ -12,6 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       background: theme.colors.searchHoverGrey,
     },
     fontSize: theme.fontSizes.default,
+    fontWeight: 300,
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",

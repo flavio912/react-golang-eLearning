@@ -53,6 +53,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
   search: {
     flex: 0.4,
   },
+  actionsRow: {
+    borderLeft: "1px solid #ededed",
+    paddingLeft: 23,
+    height: 38,
+    display: "flex",
+    /* justify-content: center; */
+    alignItems: "center",
+  },
 }));
 
 const delegateRow = (
@@ -63,7 +71,8 @@ const delegateRow = (
   coursesCompleted: number,
   totalCourses: number,
   lastActiveTimestamp: string,
-  nextExpiryTimestamp: string
+  nextExpiryTimestamp: string,
+  classes: any
 ): any => ({
   key: userUUID,
   cells: [
@@ -76,7 +85,13 @@ const delegateRow = (
     },
     { component: () => <Text text={lastActiveTimestamp} formatDate /> },
     { component: () => <Text text={nextExpiryTimestamp} formatDate /> },
-    { component: () => <Icon name={"Card_SecondaryActon_Dots"} /> },
+    {
+      component: () => (
+        <div className={classes.actionsRow}>
+          <Icon name={"Card_SecondaryActon_Dots"} />
+        </div>
+      ),
+    },
   ],
 });
 
@@ -96,7 +111,20 @@ const DelegatesPage = () => {
           <UserSearch
             companyName={"Fedex"}
             searchFunction={async (query: string) => {
-              return [];
+              return [
+                {
+                  key: "Jim Smith",
+                  value: "uuid-1",
+                },
+                {
+                  key: "Bruce Willis",
+                  value: "uuid-2",
+                },
+                {
+                  key: "Tony Stark",
+                  value: "uuid-3",
+                },
+              ];
             }}
           />
         </div>
@@ -140,147 +168,8 @@ const DelegatesPage = () => {
             3,
             6,
             "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Tim Smith",
-            "",
-            "email@email.com",
-            1,
-            9,
             "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Sam Smith",
-            "",
-            "email@email.com",
-            7,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Bob Dylan",
-            "",
-            "email@email.com",
-            10,
-            20,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
-          ),
-          delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
-            2,
-            7,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800"
+            classes
           ),
         ]}
       />
