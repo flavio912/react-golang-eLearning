@@ -42,8 +42,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   searchRow: {
     display: "flex",
     flexWrap: "wrap",
+    height: 40,
   },
-  search: { flex: 1 },
   bottomRow: {
     display: "flex",
     justifyContent: "space-between",
@@ -54,6 +54,38 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   grid: {
     display: "grid",
+    gridTemplateRows: "40px auto auto",
+    gridGap: 38,
+    gridTemplateAreas: `
+      "search search search search search .      .      .      .      .      .     "
+      "overvw overvw overvw overvw overvw .      traini traini traini traini traini"
+      "profle profle profle profle profle actvty actvty actvty actvty actvty actvty"
+    `,
+    "@media (max-width: 1350px)": {
+      gridTemplateAreas: `
+      "search"
+      "overvw"
+      "traini"
+      "profle"
+      "actvty"
+    `,
+    },
+  },
+  search: {
+    flex: 1,
+    gridArea: "search",
+  },
+  quickOverview: {
+    gridArea: "overvw",
+  },
+  trainingProgress: {
+    gridArea: "traini",
+  },
+  yourInfo: {
+    gridArea: "profle",
+  },
+  activityWrapper: {
+    gridArea: "actvty",
   },
 }));
 
@@ -68,77 +100,73 @@ export const OrgOverview = () => {
         subTitle="Organisation Overview"
       />
       <div className={classes.grid}>
-        <div className={classes.searchRow}>
-          <div className={classes.search}>
-            <UserSearch
-              companyName="Fedex"
-              searchFunction={async (query: string) => {
-                return [];
-              }}
+        <div className={classes.search}>
+          <UserSearch
+            companyName="Fedex"
+            searchFunction={async (query: string) => {
+              return [];
+            }}
+          />
+        </div>
+        <TitleWrapper title="Quick Overview" className={classes.quickOverview}>
+          <QuickOverview
+            purchasedCourses={20}
+            numDelegates={130}
+            numValidCertificates={10}
+            numCertificatesExpiringSoon={15}
+          />
+        </TitleWrapper>
+        <TitleWrapper
+          title="Training Progress"
+          className={classes.trainingProgress}
+        >
+          <div className={classes.cardFlex}>
+            <TrainingProgressCard
+              coursesDone={20}
+              timeTracked={{ h: 20, m: 15 }}
+              title="Weekly"
+            />
+            <Spacer spacing={3} horizontal />
+            <TrainingProgressCard
+              coursesDone={20}
+              timeTracked={{ h: 20, m: 15 }}
+              title="Monthly"
             />
           </div>
-          <div className={classes.spacer} />
-        </div>
-        <div className={classes.statsRow}>
-          <TitleWrapper title="Quick Overview">
-            <QuickOverview
-              purchasedCourses={20}
-              numDelegates={130}
-              numValidCertificates={10}
-              numCertificatesExpiringSoon={15}
-            />
-          </TitleWrapper>
-          <TitleWrapper title="Training Progress">
-            <div className={classes.cardFlex}>
-              <TrainingProgressCard
-                coursesDone={20}
-                timeTracked={{ h: 20, m: 15 }}
-                title="Weekly"
-              />
-              <Spacer spacing={3} horizontal />
-              <TrainingProgressCard
-                coursesDone={20}
-                timeTracked={{ h: 20, m: 15 }}
-                title="Monthly"
-              />
-            </div>
-          </TitleWrapper>
-        </div>
-        <div className={classes.bottomRow}>
-          <TitleWrapper title="Your information">
-            <ProfileCard
-              heading="Profile"
-              fields={[
-                { fieldName: "Name", value: "Fred Eccleston" },
-                { fieldName: "Role", value: "Group Leader" },
-                { fieldName: "Email", value: "Group Leader" },
-                { fieldName: "Tel Contact", value: "Group Leader" },
-                { fieldName: "Active since", value: "Group Leader" },
-              ]}
-              padding="medium"
-            />
-          </TitleWrapper>
-          <TitleWrapper title={"Activity"}>
-            <ActvityCard
-              className={classes.activity}
-              padding={"medium"}
-              leftHeading={"Delegates activity"}
-              rightHeading={"Recent Updates"}
-              options={["This month", "All Time"]}
-              updates={[]}
-              data={{
-                outerRing: {
-                  name: "Active",
-                  value: 154,
-                },
-                innerRing: {
-                  name: "Inactive",
-                  value: 64,
-                },
-              }}
-            />
-          </TitleWrapper>
-        </div>
+        </TitleWrapper>
+        <TitleWrapper title="Your information" className={classes.yourInfo}>
+          <ProfileCard
+            heading="Profile"
+            fields={[
+              { fieldName: "Name", value: "Fred Eccleston" },
+              { fieldName: "Role", value: "Group Leader" },
+              { fieldName: "Email", value: "Group Leader" },
+              { fieldName: "Tel Contact", value: "Group Leader" },
+              { fieldName: "Active since", value: "Group Leader" },
+            ]}
+            padding="medium"
+          />
+        </TitleWrapper>
+        <TitleWrapper title={"Activity"} className={classes.activityWrapper}>
+          <ActvityCard
+            className={classes.activity}
+            padding={"medium"}
+            leftHeading={"Delegates activity"}
+            rightHeading={"Recent Updates"}
+            options={["This month", "All Time"]}
+            updates={[]}
+            data={{
+              outerRing: {
+                name: "Active",
+                value: 154,
+              },
+              innerRing: {
+                name: "Inactive",
+                value: 64,
+              },
+            }}
+          />
+        </TitleWrapper>
       </div>
     </div>
   );

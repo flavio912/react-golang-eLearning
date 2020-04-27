@@ -10,7 +10,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
     flexDirection: "column",
-    width: "425px",
   },
   heading: {
     fontSize: theme.fontSizes.default,

@@ -63,6 +63,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export interface Tab {
   id: number;
   icon: IconNames;
+  size?: number;
   children: React.ReactNode;
 }
 
@@ -97,7 +98,11 @@ function SideMenu({ tabs, selected, onClick, className }: Props) {
                     : classes.noFold
                 )}
               />
-              <Icon name={tab.icon} size={20} style={{ cursor: "pointer" }} />
+              <Icon
+                name={tab.icon}
+                size={tab.size ?? 20}
+                style={{ cursor: "pointer" }}
+              />
               <div />
             </div>
           ))}
