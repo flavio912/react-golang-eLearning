@@ -18,7 +18,7 @@ import (
 func TestAdminLogin(t *testing.T) {
 	t.Run("Must auth and return correct grant", func(t *testing.T) {
 		res := schema.Exec(
-			defaultContext,
+			defaultContext(),
 			`mutation {
 				adminLogin(input:{email: "test123@test.com", password: "iamasuperadmin"}) {
 					token
@@ -57,7 +57,7 @@ func TestAdminLogin(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{
 				Name:    "bad email",
-				Context: defaultContext,
+				Context: defaultContext(),
 				Schema:  schema,
 				Query: `
 					mutation {
@@ -76,7 +76,7 @@ func TestAdminLogin(t *testing.T) {
 			},
 			{
 				Name:    "bad password",
-				Context: defaultContext,
+				Context: defaultContext(),
 				Schema:  schema,
 				Query: `
 					mutation {
@@ -102,7 +102,7 @@ func TestManagerLogin(t *testing.T) {
 
 	t.Run("Must auth and return correct grant", func(t *testing.T) {
 		res := schema.Exec(
-			defaultContext,
+			defaultContext(),
 			`mutation {
 				managerLogin(input:{email: "man@managers.com", password: "iamamanager"}) {
 					token
@@ -141,7 +141,7 @@ func TestManagerLogin(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{
 				Name:    "bad email",
-				Context: defaultContext,
+				Context: defaultContext(),
 				Schema:  schema,
 				Query: `
 					mutation {
@@ -160,7 +160,7 @@ func TestManagerLogin(t *testing.T) {
 			},
 			{
 				Name:    "bad password",
-				Context: defaultContext,
+				Context: defaultContext(),
 				Schema:  schema,
 				Query: `
 					mutation {
@@ -187,7 +187,7 @@ func TestCreateManager(t *testing.T) {
 	t.Run("should successfully create a manager", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{{
 			Name:    "create manager",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -230,7 +230,7 @@ func TestCreateManager(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{
 				Name:    "doesn't validate",
-				Context: adminContext,
+				Context: adminContext(),
 				Schema:  schema,
 				Query: `
 				mutation {
@@ -260,7 +260,7 @@ func TestCreateManager(t *testing.T) {
 			},
 			{
 				Name:    "must be authed",
-				Context: defaultContext,
+				Context: defaultContext(),
 				Schema:  schema,
 				Query: `
 				mutation {
@@ -287,7 +287,7 @@ func TestCreateManager(t *testing.T) {
 			},
 			{
 				Name:    "must be unique email",
-				Context: adminContext,
+				Context: adminContext(),
 				Schema:  schema,
 				Query: `
 				mutation {
@@ -322,7 +322,7 @@ func TestUpdateManager(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Update Some Fields",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -351,7 +351,7 @@ func TestUpdateManager(t *testing.T) {
 		},
 		{
 			Name:    "Update All Fields",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -387,7 +387,7 @@ func TestUpdateManager(t *testing.T) {
 		},
 		{
 			Name:    "UUID does not exist",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -412,7 +412,7 @@ func TestUpdateManager(t *testing.T) {
 		},
 		{
 			Name:    "Fail validation",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -465,7 +465,7 @@ func TestDeleteManager(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Delete manager",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -478,7 +478,7 @@ func TestDeleteManager(t *testing.T) {
 		},
 		{
 			Name:    "Check deleted manager was deleted",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -495,18 +495,19 @@ func TestDeleteManager(t *testing.T) {
 		},
 	})
 
+	prepareTestDatabase()
 	accessTest(t, schema, accessTestOpts{
 		Query: `
 				mutation {
 					deleteManager(input: {
-						uuid: "00000000-0000-0000-0000-000000000001"
+						uuid: "00000000-0000-0000-0000-000000000002"
 					})
 				}
 			`,
 		Path:            []interface{}{"deleteManager"},
 		MustAuth:        true,
 		AdminAllowed:    true,
-		ManagerAllowed:  true,
+		ManagerAllowed:  false,
 		DelegateAllowed: false,
 		CleanDB:         true,
 	})
@@ -518,7 +519,7 @@ func TestCreateAdmin(t *testing.T) {
 	t.Run("should successfully create a manager", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{{
 			Name:    "create manager",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -554,7 +555,7 @@ func TestCreateAdmin(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{
 				Name:    "doesn't validate",
-				Context: adminContext,
+				Context: adminContext(),
 				Schema:  schema,
 				Query: `
 				mutation {
@@ -580,7 +581,7 @@ func TestCreateAdmin(t *testing.T) {
 			},
 			{
 				Name:    "must be unique email",
-				Context: adminContext,
+				Context: adminContext(),
 				Schema:  schema,
 				Query: `
 				mutation {
@@ -632,7 +633,7 @@ func TestUpdateAdmin(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "update some fields",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -661,7 +662,7 @@ func TestUpdateAdmin(t *testing.T) {
 		},
 		{
 			Name:    "update some all",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -691,7 +692,7 @@ func TestUpdateAdmin(t *testing.T) {
 		},
 		{
 			Name:    "UUID does not exist",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -716,7 +717,7 @@ func TestUpdateAdmin(t *testing.T) {
 		},
 		{
 			Name:    "Fail validation",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					mutation {
@@ -767,7 +768,7 @@ func TestUpdateAdmin(t *testing.T) {
 func TestDeleteAdmin(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -809,7 +810,7 @@ func TestCreateCompany(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "create company",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -851,7 +852,7 @@ func TestCreateCompany(t *testing.T) {
 		},
 		{
 			Name:    "should validate",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
@@ -905,7 +906,7 @@ func TestApproveCompany(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "create company",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {

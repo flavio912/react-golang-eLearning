@@ -220,13 +220,13 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInfoFilter) *gorm.DB {
 	// Non-admins can only see published courses
 	if !g.IsAdmin {
-		query.Where("course_infos.published = ?", true)
+		query = query.Where("course_infos.published = ?", true)
 	}
 
 	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
 	// Filter out restricted courses
 	if !g.HasFullRestrictedAccess() {
-		query = query.Not("course_infos.access_type = ?", "restricted")
+		query = query.Not("course_infos.access_type = ?", gentypes.Restricted)
 	}
 
 	// Filter course info
@@ -255,9 +255,14 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 
 	var courses []models.OnlineCourse
 	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = online_courses.course_info_id")
-	query = g.filterCoursesFromInfo(query, filter.CourseInfo)
 
-	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"})
+	if filter != nil {
+		query = g.filterCoursesFromInfo(query, filter.CourseInfo)
+	} else {
+		query = g.filterCoursesFromInfo(query, nil)
+	}
+
+	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"}, "created_at DESC")
 	if err != nil {
 		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, err
 	}

@@ -100,7 +100,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	}
 
 	var count int32
-	countErr := query.Model(&models.Manager{}).Count(&count).Error
+	countErr := query.Model(&models.Admin{}).Count(&count).Error
 	if countErr != nil {
 		glog.Errorf("Unable to count records for admin. error: %s", countErr.Error())
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling

@@ -284,7 +284,7 @@ func TestGetManagers(t *testing.T) {
 	t.Run("Should return all managers", func(t *testing.T) {
 		managers, _, err := adminGrant.GetManagers(nil, nil, nil)
 		assert.Nil(t, err)
-		assert.Len(t, managers, 4)
+		assert.Len(t, managers, 5)
 	})
 
 	t.Run("Should page", func(t *testing.T) {
@@ -293,7 +293,7 @@ func TestGetManagers(t *testing.T) {
 		managers, pageInfo, err := adminGrant.GetManagers(&page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, managers, 2)
-		assert.Equal(t, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit}, pageInfo)
+		assert.Equal(t, gentypes.PageInfo{Total: 5, Given: 2, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should order", func(t *testing.T) {
@@ -302,7 +302,7 @@ func TestGetManagers(t *testing.T) {
 
 		managers, _, err := adminGrant.GetManagers(nil, nil, &order)
 		assert.Nil(t, err)
-		assert.Len(t, managers, 4)
+		assert.Len(t, managers, 5)
 		assert.Equal(t, "Jimothy", managers[0].FirstName)
 	})
 
@@ -351,7 +351,7 @@ func TestGetManagers(t *testing.T) {
 			filter := gentypes.ManagersFilter{Email: &email}
 			managers, _, err := adminGrant.GetManagers(nil, &filter, nil)
 			assert.Nil(t, err)
-			require.Len(t, managers, 4)
+			require.Len(t, managers, 5)
 		})
 	})
 }

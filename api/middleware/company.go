@@ -128,7 +128,7 @@ func (g *Grant) GetManagerIDsByCompany(
 		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "first_name", "last_name"})
+	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "first_name", "last_name"}, "created_at DESC")
 	if orderErr != nil {
 		return []gentypes.UUID{}, gentypes.PageInfo{}, orderErr
 	}
@@ -160,7 +160,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
 
-	query, err := getOrdering(query, orderBy, []string{"created_at", "name"})
+	query, err := getOrdering(query, orderBy, []string{"created_at", "name"}, "created_at DESC")
 	if err != nil {
 		return []gentypes.UUID{}, gentypes.PageInfo{}, err
 	}

@@ -23,12 +23,9 @@ import (
 )
 
 var (
-	db             *sql.DB
-	fixtures       *testfixtures.Loader
-	schema         *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
-	defaultContext context.Context = context.Background()
-	adminContext   context.Context = context.Background()
-	managerContext context.Context = context.Background()
+	db       *sql.DB
+	fixtures *testfixtures.Loader
+	schema   *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
 )
 
 func TestMain(m *testing.M) {
@@ -63,22 +60,51 @@ func TestMain(m *testing.M) {
 
 	prepareTestDatabase()
 
-	loaders := loader.Init()
-	defaultContext = loaders.Attach(defaultContext)
+	// loaders := loader.Init()
+	// defaultContext = loaders.Attach(defaultContext)
 
-	adminContext = loaders.Attach(adminContext)
-	adminContext, err = addAdminCreds(adminContext)
-	if err != nil {
-		return
-	}
+	// adminContext = loaders.Attach(adminContext)
+	// adminContext, err = addAdminCreds(adminContext)
+	// if err != nil {
+	// 	return
+	// }
 
-	managerContext = loaders.Attach(managerContext)
-	managerContext, err = addManagerCreds(managerContext)
-	if err != nil {
-		return
-	}
+	// managerContext = loaders.Attach(managerContext)
+	// managerContext, err = addManagerCreds(managerContext)
+	// if err != nil {
+	// 	return
+	// }
 
 	os.Exit(m.Run())
+}
+
+func defaultContext() context.Context {
+	defaultContext := context.Background()
+	loaders := loader.Init()
+	defaultContext = loaders.Attach(defaultContext)
+	return defaultContext
+}
+
+func adminContext() context.Context {
+	cont := context.Background()
+	loaders := loader.Init()
+	cont = loaders.Attach(cont)
+	cont, err := addAdminCreds(cont)
+	if err != nil {
+		panic(err)
+	}
+	return cont
+}
+
+func managerContext() context.Context {
+	adminContext := context.Background()
+	loaders := loader.Init()
+	adminContext = loaders.Attach(adminContext)
+	adminContext, err := addManagerCreds(adminContext)
+	if err != nil {
+		panic(err)
+	}
+	return adminContext
 }
 
 // adds admin 1 to context
@@ -151,15 +177,15 @@ func accessTest(t *testing.T, schema *graphql.Schema, opts accessTestOpts) {
 	}
 
 	t.Run(fmt.Sprintf("Must be authed:%v", opts.MustAuth), func(t *testing.T) {
-		checkAccess(t, defaultContext, !opts.MustAuth)
+		checkAccess(t, defaultContext(), !opts.MustAuth)
 	})
 
 	t.Run(fmt.Sprintf("Admin Allowed:%v", opts.AdminAllowed), func(t *testing.T) {
-		checkAccess(t, adminContext, opts.AdminAllowed)
+		checkAccess(t, adminContext(), opts.AdminAllowed)
 	})
 
 	t.Run(fmt.Sprintf("Manager Allowed:%v", opts.ManagerAllowed), func(t *testing.T) {
-		checkAccess(t, managerContext, opts.ManagerAllowed)
+		checkAccess(t, managerContext(), opts.ManagerAllowed)
 	})
 
 	// there's no delegate context yet ...

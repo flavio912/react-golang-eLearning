@@ -30,7 +30,7 @@ func TestAdmin(t *testing.T) {
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -71,7 +71,7 @@ func TestAdmins(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all admins",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -109,7 +109,7 @@ func TestAdmins(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -165,7 +165,7 @@ func TestManager(t *testing.T) {
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -216,7 +216,7 @@ func TestManagers(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all managers",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -240,13 +240,14 @@ func TestManagers(t *testing.T) {
 							{"uuid":"00000000-0000-0000-0000-000000000004"},
 							{"uuid":"00000000-0000-0000-0000-000000000003"},
 							{"uuid":"00000000-0000-0000-0000-000000000002"},
-							{"uuid":"00000000-0000-0000-0000-000000000001"}
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000005"}
 						],
 						"pageInfo": {
-							"given": 4,
+							"given": 5,
 							"limit": 100,
 							"offset": 0,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -254,7 +255,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should order",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -279,15 +280,16 @@ func TestManagers(t *testing.T) {
 					"managers":{
 						"edges":[
 							{"firstName":"Jimothy"},
-							{"firstName":"Steve"},
+							{"firstName":"Manager"},
 							{"firstName":"Slim"},
-							{"firstName":"Manager"}
+							{"firstName":"Steve"},
+							{"firstName":"Tony"}
 						],
 						"pageInfo": {
-							"given": 4,
+							"given": 5,
 							"limit": 100,
 							"offset": 0,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -295,7 +297,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should filter",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -321,13 +323,14 @@ func TestManagers(t *testing.T) {
 						"edges":[
 							{"firstName": "Jimothy", "lastName": "Bobnes"},
 							{"firstName": "Steve", "lastName": "Person"},
-							{"firstName": "Slim", "lastName":"Shady"}
+							{"firstName": "Slim", "lastName":"Shady"},
+							{"firstName": "Tony", "lastName":"NicePerson"}
 						],
 						"pageInfo": {
-							"given": 3,
+							"given": 4,
 							"limit": 100,
 							"offset": 0,
-							"total": 3
+							"total": 4
 						}
 					}
 				}
@@ -335,7 +338,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -366,7 +369,7 @@ func TestManagers(t *testing.T) {
 							"given": 2,
 							"limit": 2,
 							"offset": 1,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -374,7 +377,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "filter must validate",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -414,7 +417,7 @@ func TestCompany(t *testing.T) {
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -459,7 +462,7 @@ func TestCompanies(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all companies",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -497,7 +500,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should order",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -537,7 +540,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should filter",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -576,7 +579,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -625,4 +628,96 @@ func TestCompanies(t *testing.T) {
 			DelegateAllowed: false,
 		},
 	)
+}
+
+func TestOnlineCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all online courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						onlineCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"onlineCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000001"},
+								{"uuid":"00000000-0000-0000-0000-000000000002"},
+								{"uuid":"00000000-0000-0000-0000-000000000003"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+		{
+			Name:    "Should return unrestricted courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						onlineCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"onlineCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000001"},
+								{"uuid":"00000000-0000-0000-0000-000000000002"},
+								{"uuid":"00000000-0000-0000-0000-000000000003"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+	})
+
+	// accessTest(
+	// 	t, schema, accessTestOpts{
+	// 		Query:           `{companies { edges { uuid } }}`,
+	// 		Path:            []interface{}{"companies"},
+	// 		MustAuth:        true,
+	// 		AdminAllowed:    true,
+	// 		ManagerAllowed:  false,
+	// 		DelegateAllowed: false,
+	// 	},
+	// )
 }

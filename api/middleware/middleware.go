@@ -77,8 +77,9 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 
 In no circumstances is "allowedFields" to be given by the user
 */
-func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string) (*gorm.DB, error) {
+func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
 	if orderBy == nil {
+		query = query.Order(defaultOrdering)
 		return query, nil
 	}
 

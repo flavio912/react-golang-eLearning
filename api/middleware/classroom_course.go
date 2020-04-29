@@ -173,7 +173,7 @@ func (g *Grant) GetClassroomCourses(
 	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = classroom_courses.course_info_id")
 	query = g.filterCoursesFromInfo(query, filter.CourseInfo)
 
-	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"})
+	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"}, "created_at DESC")
 	if err != nil {
 		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, err
 	}

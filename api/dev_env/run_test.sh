@@ -60,7 +60,7 @@ ${dc_cmd} up -d --no-deps test_db
 printf "\n\n**********Running Tests**********\n"
 # Run the tests
 if (($DEBUG == 0)); then
-  ${dc_cmd} run --rm --no-deps test_api go test -coverprofile .testCoverage ./${MODULE}
+  ${dc_cmd} run --rm --no-deps test_api go test -coverprofile .testCoverage ./${MODULE} -p=1
   exit_code=$?
 else
   ${dc_cmd} run --rm --no-deps --workdir="/app/${MODULE}" test_api dlv test --api-version 2 --listen=:2345 --headless --log
