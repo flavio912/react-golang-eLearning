@@ -48,3 +48,21 @@ services:
       - ./react/manager:/app
     ports:
       - "4001:4001"
+
+  delegate:
+    build:
+      context: ./react/delegate
+      dockerfile: "dev.Dockerfile"
+    volumes:
+      - ./react/delegate:/app
+    ports:
+      - "4000:3000"
+
+  delegate_storybook:
+    build:
+      context: ./react/delegate
+      dockerfile: "storybook.Dockerfile"
+    volumes:
+      - ./react/delegate:/app
+    ports:
+      - "4001:4001"
