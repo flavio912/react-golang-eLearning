@@ -110,7 +110,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   course: {
     height: 40,
-    cursor: "pointer",
     display: "flex",
     flexDirection: "row",
     justifyContent: "space-between",
