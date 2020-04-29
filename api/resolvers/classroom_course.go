@@ -46,3 +46,11 @@ func (r *ClassroomCourseResolver) Info(ctx context.Context) (*CourseInfoResolver
 		ID: &r.ClassroomCourse.CourseInfoID,
 	})
 }
+
+type ClassroomCoursePageResolver struct {
+	edges    *[]*ClassroomCourseResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *ClassroomCoursePageResolver) PageInfo() *PageInfoResolver        { return r.pageInfo }
+func (r *ClassroomCoursePageResolver) Edges() *[]*ClassroomCourseResolver { return r.edges }

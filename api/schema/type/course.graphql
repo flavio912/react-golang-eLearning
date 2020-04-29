@@ -39,6 +39,11 @@ type ClassroomCourse {
   info: CourseInfo!
 }
 
+type ClassroomCoursePage implements PaginatedQuery {
+  edges: [ClassroomCourse]
+  pageInfo: PageInfo
+}
+
 input SaveClassroomCourseInput {
   uuid: UUID
   name: String

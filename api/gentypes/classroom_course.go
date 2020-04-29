@@ -8,6 +8,10 @@ type ClassroomCourse struct {
 	MaxParticipants int
 }
 
+type ClassroomCourseFilter struct {
+	CourseInfo *CourseInfoFilter
+}
+
 type SaveClassroomCourseInput struct {
 	CourseInput
 	TutorUUID       *UUID

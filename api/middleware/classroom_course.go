@@ -24,6 +24,14 @@ func classroomCourseToGentype(classroomCourse models.ClassroomCourse) gentypes.C
 	}
 }
 
+func classroomCoursesToGentypes(courses []models.ClassroomCourse) []gentypes.ClassroomCourse {
+	var _courses = make([]gentypes.ClassroomCourse, len(courses))
+	for i, course := range courses {
+		_courses[i] = classroomCourseToGentype(course)
+	}
+	return _courses
+}
+
 // SaveClassroomCourse is a wrapper around CreateClassroomCourse and UpdateClassroomCourse to
 // update the course if a uuid is provided, otherwise it will create a new one
 func (g *Grant) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
@@ -149,4 +157,46 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 	}
 
 	return classroomCourseToGentype(course), nil
+}
+
+func (g *Grant) GetClassroomCourses(
+	page *gentypes.Page,
+	filter *gentypes.ClassroomCourseFilter,
+	orderBy *gentypes.OrderBy,
+) ([]gentypes.ClassroomCourse, gentypes.PageInfo, error) {
+	// TODO: allow delegates access to their assigned courses
+	if !g.IsAdmin && !g.IsManager {
+		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	var courses []models.ClassroomCourse
+	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = classroom_courses.course_info_id")
+	query = g.filterCoursesFromInfo(query, filter.CourseInfo)
+
+	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"})
+	if err != nil {
+		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, err
+	}
+
+	// Count total that can be retrieved by the current filter
+	var total int32
+	if err := query.Model(&models.ClassroomCourse{}).Count(&total).Error; err != nil {
+		glog.Errorf("Unable to get classroom course count: %s", err)
+		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := getPage(query, page)
+
+	query = query.Find(&courses)
+	if query.Error != nil {
+		glog.Errorf("Unable to get courses: %s", query.Error.Error())
+		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return classroomCoursesToGentypes(courses), gentypes.PageInfo{
+		Total:  total,
+		Given:  int32(len(courses)),
+		Offset: offset,
+		Limit:  limit,
+	}, nil
 }

@@ -1,8 +1,9 @@
 package middleware
 
 import (
-	"fmt"
 	"strconv"
+
+	"github.com/jinzhu/gorm"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/golang/glog"
@@ -214,32 +215,36 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 	return nil
 }
 
-// HasFullRestrictedAccess returns true if the user has access to all restricted courses
-func (g *Grant) HasFullRestrictedAccess() bool {
-	if g.IsAdmin {
-		return true
+// filterCoursesFromInfo takes a join of course_infos and online_courses or classroom_courses
+// and filters by course info
+func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInfoFilter) *gorm.DB {
+	// Non-admins can only see published courses
+	if !g.IsAdmin {
+		query.Where("course_infos.published = ?", true)
 	}
 
-	// If a managers company is authorized a manager can view all restricted courses
-	if g.IsManager {
-		company := models.Company{}
-		query := database.GormDB.Where("uuid = ?", g.Claims.Company).First(&company)
-		if query.Error != nil {
-			glog.Errorf("Unable to get manager's company: %s", query.Error.Error())
-			return false
+	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
+	// Filter out restricted courses
+	if !g.HasFullRestrictedAccess() {
+		query = query.Not("course_infos.access_type = ?", "restricted")
+	}
+
+	// Filter course info
+	if filter != nil {
+		if filter.Name != nil {
+			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.Name+"%%")
 		}
-
-		if company.Approved == true {
-			return true
+		if filter.AccessType != nil {
+			query = query.Where("course_infos.access_type = ?", *filter.AccessType)
+		}
+		if filter.BackgroundCheck != nil {
+			query = query.Where("course_infos.background_check = ?", *filter.BackgroundCheck)
+		}
+		if filter.Price != nil {
+			query = query.Where("course_infos.price = ?", *filter.Price)
 		}
 	}
-
-	// Delegates cannot access restricted courses unless specifically assigned them
-	if g.IsDelegate {
-		return false
-	}
-
-	return false
+	return query
 }
 
 func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.OnlineCourse, gentypes.PageInfo, error) {
@@ -250,34 +255,7 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 
 	var courses []models.OnlineCourse
 	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = online_courses.course_info_id")
-
-	// Non-admins can only see published courses
-	if !g.IsAdmin {
-		query.Where("course_infos.published = ?", true)
-	}
-
-	// Filter course info
-	if filter != nil && filter.CourseInfo != nil {
-		if filter.CourseInfo.Name != nil {
-			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.CourseInfo.Name+"%%")
-		}
-		if filter.CourseInfo.AccessType != nil {
-			query = query.Where("course_infos.access_type = ?", *filter.CourseInfo.AccessType)
-		}
-		if filter.CourseInfo.BackgroundCheck != nil {
-			query = query.Where("course_infos.background_check = ?", *filter.CourseInfo.BackgroundCheck)
-		}
-		if filter.CourseInfo.Price != nil {
-			query = query.Where("course_infos.price = ?", *filter.CourseInfo.Price)
-		}
-		fmt.Print(courses)
-	}
-
-	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
-	// Filter out restricted courses
-	if !g.HasFullRestrictedAccess() {
-		query = query.Not("course_infos.access_type = ?", "restricted")
-	}
+	query = g.filterCoursesFromInfo(query, filter.CourseInfo)
 
 	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"})
 	if err != nil {

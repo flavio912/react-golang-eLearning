@@ -30,6 +30,10 @@ input OnlineCourseFilter {
   courseInfo: CourseInfoFilter
 }
 
+input ClassroomCourseFilter {
+  courseInfo: CourseInfoFilter
+}
+
 input CompanyFilter {
   uuid: UUID
   name: String
@@ -57,4 +61,9 @@ type Query {
     filter: OnlineCourseFilter
     orderBy: OrderBy
   ): OnlineCoursePage
+  classroomCourses(
+    page: Page
+    filter: ClassroomCourseFilter
+    orderBy: OrderBy
+  ): ClassroomCoursePage
 }

@@ -160,3 +160,34 @@ func (q *QueryResolver) OnlineCourses(ctx context.Context, args struct {
 		}}, nil
 
 }
+
+func (q *QueryResolver) ClassroomCourses(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.ClassroomCourseFilter
+	OrderBy *gentypes.OrderBy
+}) (*ClassroomCoursePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ClassroomCoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, pageInfo, err := grant.GetClassroomCourses(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &ClassroomCoursePageResolver{}, err
+	}
+
+	var courseResolvers []*ClassroomCourseResolver
+	for _, course := range courses {
+		resolver, err := NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{ClassroomCourse: course})
+		if err != nil {
+			return &ClassroomCoursePageResolver{}, err
+		}
+		courseResolvers = append(courseResolvers, resolver)
+	}
+
+	return &ClassroomCoursePageResolver{
+		edges: &courseResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		}}, nil
+}
