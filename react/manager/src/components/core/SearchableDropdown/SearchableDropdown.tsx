@@ -151,6 +151,7 @@ export type Course = {
   id: number | string; // not sure yet
   name: string;
   price: number;
+  trainingReq: boolean;
 };
 
 type Props = {
@@ -273,7 +274,7 @@ function SearchableDropdown({
                       <span className={classes.title}>{title}</span>
                       <span className={classes.pill}>Category</span>
                     </div>
-                    {courses.map(({ name, id, price }: Course) => (
+                    {courses.map(({ name, id, price, trainingReq }: Course) => (
                       <div
                         key={id}
                         className={classes.option}
@@ -284,10 +285,10 @@ function SearchableDropdown({
                             ) {
                               setSelected(selected.filter((f) => f.id !== id));
                             } else {
-                              setSelected([...selected, { name, id, price }]);
+                              setSelected([...selected, { name, id, price, trainingReq }]);
                             }
                           } else {
-                            setSelected([{ name, id, price }]);
+                            setSelected([{ name, id, price, trainingReq }]);
                             setSearch("");
                             setOpen(false);
                           }

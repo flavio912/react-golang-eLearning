@@ -6,7 +6,7 @@ import Tabs, {
   Heading,
   Text,
   TermsBox,
-  CourseHighlight,
+  CourseList,
   CurrentTotal,
 } from "./Tabs";
 export {
@@ -16,7 +16,7 @@ export {
   Text,
   TermsBox,
   LargeText,
-  CourseHighlight,
+  CourseList,
   CurrentTotal,
 };
 export type TabContent = _TabContent;

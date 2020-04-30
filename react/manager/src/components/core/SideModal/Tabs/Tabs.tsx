@@ -5,6 +5,7 @@ import { Theme } from "helpers/theme";
 import useDimensions from "react-use-dimensions";
 import { useSpring, animated, config } from "react-spring";
 import classNames from "classnames";
+import { Course } from "../../SearchableDropdown";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
@@ -98,16 +99,27 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: [0, theme.spacing(1)],
     overflowY: "auto",
   },
-  course: {
-    height: 40,
-    padding: [0, 15],
+  courseContainer: {
     border: `1px solid ${theme.colors.borderGrey}`,
     backgroundColor: "white",
-    fontSize: theme.fontSizes.default,
     borderRadius: 4,
     display: "flex",
-    alignItems: "center",
+    flexDirection: "column",
+    alignItems: "stretch",
     margin: [theme.spacing(1), 0, theme.spacing(2)],
+  },
+  course: {
+    height: 40,
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: [0, 15],
+    fontSize: theme.fontSizes.default,
+    borderBottom: `1px solid ${theme.colors.borderGrey}`,
+    "&:last-child": {
+      borderBottom: "none",
+    },
   },
   currentTotal: {
     fontSize: 15,
@@ -245,9 +257,15 @@ export function TermsBox({
   );
 }
 
-export function CourseHighlight({ children }: SimpleProps) {
+export function CourseList({ courses }: { courses: Course[] }) {
   const classes = useStyles();
-  return <p className={classes.course}>{children}</p>;
+  return (
+    <div className={classes.courseContainer}>
+      {courses.map((course: Course) => (
+        <div className={classes.course} key={course.id}>{course.name}</div>
+      ))}
+    </div>
+  );
 }
 
 export function CurrentTotal({ total }: { total?: number }) {
