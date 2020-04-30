@@ -709,15 +709,48 @@ func TestOnlineCourses(t *testing.T) {
 				`,
 		},
 	})
+}
 
-	// accessTest(
-	// 	t, schema, accessTestOpts{
-	// 		Query:           `{companies { edges { uuid } }}`,
-	// 		Path:            []interface{}{"companies"},
-	// 		MustAuth:        true,
-	// 		AdminAllowed:    true,
-	// 		ManagerAllowed:  false,
-	// 		DelegateAllowed: false,
-	// 	},
-	// )
+func TestClassroomCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all classroom courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						classroomCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"classroomCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000013"},
+								{"uuid":"00000000-0000-0000-0000-000000000014"},
+								{"uuid":"00000000-0000-0000-0000-000000000012"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+	})
 }

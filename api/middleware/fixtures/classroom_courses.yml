@@ -2,3 +2,11 @@
   course_info_id: 2
   location: a nice place in the country
   max_participants: 32
+- uuid: 00000000-0000-0000-0000-000000000013
+  course_info_id: 1
+  location: Haunted house
+  max_participants: 3
+- uuid: 00000000-0000-0000-0000-000000000014
+  course_info_id: 2
+  location: Disney world
+  max_participants: 33
