@@ -1,6 +1,6 @@
 import * as React from 'react';
-import CourseCard, { Course, SizeOptions } from './CourseCard';
-import { withKnobs, select, text, object } from '@storybook/addon-knobs';
+import CourseCard, { Course, SizeOptions, Completion } from './CourseCard';
+import { withKnobs, select, text, object, number } from '@storybook/addon-knobs';
 
 export default {
   title: 'Overview/CourseCard',
@@ -24,9 +24,15 @@ const defaultCourse = {
 
 const defaultColor = "#8C1CB4";
 
+const defaultProgress: Completion = {
+  total: 100,
+  complete: 40
+}
+
 export const plain = () => {
   const size: SizeOptions = select("Size", sizeOptions, "small");
   const colourHex: string = text("Colour", defaultColor);
+  const progress: Completion = object("Progress Bar", defaultProgress);
   const courseData: Course = object("Data", defaultCourse);
-  return <CourseCard course={courseData} filterColour={colourHex} onClick={() => console.log('Pressed')} size={size} />
+  return <CourseCard course={courseData} filterColour={colourHex} onClick={() => console.log('Pressed')} size={size} progress={progress} />
 }

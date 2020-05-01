@@ -1,6 +1,6 @@
 import * as React from "react";
-import Card, { PaddingOptions } from "../../core/Card";
-import Button from "../../core/Button";
+import Card, { PaddingOptions } from "../../../sharedComponents/core/Card";
+import Button from "../../../sharedComponents/core/Button";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";

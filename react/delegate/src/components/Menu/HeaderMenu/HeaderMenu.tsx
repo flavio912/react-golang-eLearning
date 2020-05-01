@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
-import Icon from "../../core/Icon/Icon";
+import Icon from "../../../sharedComponents/core/Icon/Icon";
 import CircleBorder, { User } from "components/core/CircleBorder";
 
 const useStyles = createUseStyles((theme: Theme) => ({

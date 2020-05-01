@@ -8,7 +8,7 @@ import {
   boolean,
   object,
 } from "@storybook/addon-knobs";
-import { IconNames } from "components/core/Icon";
+import { IconNames } from "sharedComponents/core/Icon";
 
 export default {
   title: "Overview/Quick Info",

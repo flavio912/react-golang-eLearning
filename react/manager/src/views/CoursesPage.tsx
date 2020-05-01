@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
-import CourseCard, { SizeOptions } from "components/Overview/CourseCard";
+import CourseCard, { SizeOptions } from "sharedComponents/Overview/CourseCard";
 import Dropdown, { DropdownOption } from "components/core/Dropdown";
 import PageHeader from "components/PageHeader";
 import SelectButton from "components/core/SelectButton";

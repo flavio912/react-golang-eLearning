@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
-import Icon, { IconNames } from "components/core/Icon";
+import Icon, { IconNames } from "sharedComponents/core/Icon";
 import { Theme } from "helpers/theme";
 
 const useStyles = createUseStyles((theme: Theme) => ({

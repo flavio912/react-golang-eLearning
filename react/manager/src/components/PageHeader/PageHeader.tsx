@@ -1,6 +1,6 @@
 import * as React from "react";
 import PageTitle from "components/PageTitle";
-import Button from "components/core/Button";
+import Button from "sharedComponents/core/Button";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 

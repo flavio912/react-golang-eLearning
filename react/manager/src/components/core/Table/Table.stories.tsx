@@ -7,7 +7,7 @@ import {
   boolean,
   number,
 } from "@storybook/addon-knobs";
-import Icon from "../Icon";
+import Icon from "../../../sharedComponents/core/Icon";
 
 export default {
   title: "/Table",

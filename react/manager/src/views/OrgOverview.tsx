@@ -6,7 +6,7 @@ import ActvityCard from "components/Overview/ActivityCard";
 import { createUseStyles, useTheme } from "react-jss";
 import classes from "*.module.css";
 import classNames from "classnames";
-import Button from "components/core/Button";
+import Button from "sharedComponents/core/Button";
 import UserSearch from "components/UserSearch";
 import PageTitle from "components/PageTitle";
 import TitleWrapper from "components/Overview/TitleWrapper";

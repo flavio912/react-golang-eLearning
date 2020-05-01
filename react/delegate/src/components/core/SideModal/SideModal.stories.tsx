@@ -1,7 +1,7 @@
 import * as React from "react";
 import SideModal from "./SideModal";
 import { withKnobs, boolean, text } from "@storybook/addon-knobs";
-import Button from "components/core/Button";
+import Button from "sharedComponents/core/Button";
 import FancyInput from "components/LoginDialogue/FancyInput";
 import Tabs, { TabContent } from "./Tabs";
 

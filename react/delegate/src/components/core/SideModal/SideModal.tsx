@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { animated, useSpring, config } from "react-spring";
 import { Theme } from "helpers/theme";
-import Icon from "../Icon";
+import Icon from "../../../sharedComponents/core/Icon";
 
 const modalWidth = 750;
 

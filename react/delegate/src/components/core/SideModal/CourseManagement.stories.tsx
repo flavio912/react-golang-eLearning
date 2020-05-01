@@ -1,7 +1,7 @@
 import * as React from "react";
 import SideModal from "./SideModal";
 import { withKnobs, boolean } from "@storybook/addon-knobs";
-import Button from "components/core/Button";
+import Button from "sharedComponents/core/Button";
 import Tabs, {
   TabContent,
   Footer,
