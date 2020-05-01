@@ -202,6 +202,25 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 	return NewCompanyResolver(ctx, NewCompanyArgs{Company: company})
 }
 
+func (m *MutationResolver) UpdateCompany(ctx context.Context, args struct{ Input gentypes.UpdateCompanyInput }) (*CompanyResolver, error) {
+	// Validate the company input
+	if err := args.Input.Validate(); err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CompanyResolver{}, &errors.ErrUnauthorized
+	}
+
+	company, err := grant.UpdateCompany(args.Input)
+	if err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	return NewCompanyResolver(ctx, NewCompanyArgs{Company: company})
+}
+
 type companyRequestInput struct {
 	Company   gentypes.CreateCompanyInput
 	Manager   gentypes.CreateManagerInput

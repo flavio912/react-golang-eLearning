@@ -275,7 +275,7 @@ func (g *Grant) UpdateManager(input gentypes.UpdateManagerInput) (gentypes.Manag
 		manager.JobTitle = *input.JobTitle
 	}
 
-	save := database.GormDB.Save(manager)
+	save := database.GormDB.Save(&manager)
 	if save.Error != nil {
 		glog.Errorf("Error updating manager with UUID: %s - error: %s", input.UUID, save.Error.Error())
 		return gentypes.Manager{}, &errors.ErrWhileHandling

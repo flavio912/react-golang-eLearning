@@ -232,6 +232,54 @@ func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Com
 	return g.companyToGentype(compModel), nil
 }
 
+func (g *Grant) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Company, error) {
+	if !g.IsAdmin {
+		return gentypes.Company{}, &errors.ErrUnauthorized
+	}
+
+	var company models.Company
+	query := database.GormDB.Preload("Address").Where("uuid = ?", input.UUID).First(&company)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Company{}, &errors.ErrCompanyNotFound
+		}
+
+		glog.Errorf("Unable to find company to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	if input.CompanyName != nil {
+		company.Name = *input.CompanyName
+	}
+	if input.Approved != nil {
+		company.Approved = *input.Approved
+	}
+	if input.AddressLine1 != nil {
+		company.Address.AddressLine1 = *input.AddressLine1
+	}
+	if input.AddressLine2 != nil {
+		company.Address.AddressLine2 = *input.AddressLine2
+	}
+	if input.PostCode != nil {
+		company.Address.PostCode = *input.PostCode
+	}
+	if input.County != nil {
+		company.Address.County = *input.County
+	}
+	if input.Country != nil {
+		company.Address.Country = *input.Country
+	}
+
+	save := database.GormDB.Save(&company)
+	if save.Error != nil {
+		glog.Errorf("Error updating company with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	return g.companyToGentype(company), nil
+
+}
+
 // CreateCompanyRequest creates a company and sets it to unapproved, for an admin to approve later
 func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error {
 	// Validate input

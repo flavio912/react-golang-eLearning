@@ -26,6 +26,7 @@ type Mutation {
   updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
   createCompany(input: CreateCompanyInput!): Company
+  updateCompany(input: UpdateCompanyInput!): Company
   createCompanyRequest(
     company: CreateCompanyInput!
     manager: CreateManagerInput!
