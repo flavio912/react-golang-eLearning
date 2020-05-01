@@ -285,3 +285,19 @@ func (m *MutationResolver) CreateTag(ctx context.Context, args struct{ Input gen
 		Tag: tag,
 	}, err
 }
+
+func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Input gentypes.CreateCategoryInput }) (*CategoryResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CategoryResolver{}, &errors.ErrUnauthorized
+	}
+
+	category, err := grant.CreateCategory(ctx, args.Input)
+	if err != nil {
+		return &CategoryResolver{}, err
+	}
+
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		Category: category,
+	})
+}

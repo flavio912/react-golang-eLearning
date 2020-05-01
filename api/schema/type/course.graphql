@@ -22,6 +22,7 @@ type CourseInfo {
   excerpt: String
   introduction: String
   specificTerms: String
+  category: Category
 }
 
 type OnlineCourse {
@@ -101,6 +102,18 @@ type Tag {
   name: String!
   color: String!
 }
+
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+input CreateCategoryInput {
+  name: String!
+  color: String!
+}
+
 # [ EXAMPLE COURSE STRUCTURE
 #   {type: "module", uuid: "34343-34343-34343-434343"},
 #   { type: "module",

@@ -53,3 +53,9 @@ func (r *CourseInfoResolver) Introduction() *string {
 func (r *CourseInfoResolver) SpecificTerms() *string {
 	return helpers.StringPointer(r.CourseInfo.SpecificTerms)
 }
+func (r *CourseInfoResolver) Category(ctx context.Context) (*CategoryResolver, error) {
+	if r.CourseInfo.CategoryUUID != nil {
+		return NewCategoryResolver(ctx, NewCategoryResolverArgs{UUID: *r.CourseInfo.CategoryUUID})
+	}
+	return &CategoryResolver{}, nil
+}

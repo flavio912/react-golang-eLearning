@@ -115,3 +115,13 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 	}
 	return courseInfoIdsToTags, nil
 }
+
+// TODO: Finish func
+// GetTags returns a slice of tags
+func (g *Grant) GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]gentypes.Tag, error) {
+	if !g.IsAdmin {
+		return []gentypes.Tag{}, &errors.ErrUnauthorized
+	}
+
+	return []gentypes.Tag{}, nil
+}

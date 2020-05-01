@@ -109,4 +109,8 @@ var (
 		Type:    "ErrTagAlreadyExists",
 		Message: "Could not create tag as it already exists",
 	}
+	ErrCategoryAlreadyExists = SimpleError{
+		Type:    "ErrCategoryAlreadyExists",
+		Message: "Could not create category as it already exists",
+	}
 )

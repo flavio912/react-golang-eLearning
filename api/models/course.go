@@ -37,8 +37,9 @@ func (CourseTagsLink) TableName() string {
 }
 
 type Category struct {
-	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name string
+	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Name  string        `gorm:"unique"`
+	Color string
 }
 
 type Tag struct {

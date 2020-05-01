@@ -25,6 +25,7 @@ func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
 		Introduction:    courseInfo.Introduction,
 		Excerpt:         courseInfo.Excerpt,
 		SpecificTerms:   courseInfo.SpecificTerms,
+		CategoryUUID:    courseInfo.CategoryUUID,
 	}
 }
 
@@ -115,7 +116,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 		courseInfo.Color = *infoChanges.Color
 	}
 	if infoChanges.CategoryUUID != nil {
-		courseInfo.CategoryUUID = infoChanges.CategoryUUID
+		courseInfo.CategoryUUID = infoChanges.CategoryUUID // TODO: Check if exists
 	}
 	if infoChanges.Excerpt != nil {
 		courseInfo.Excerpt = *infoChanges.Excerpt

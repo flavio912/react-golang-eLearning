@@ -52,6 +52,7 @@ type CourseInfo struct {
 	Introduction    string `valid:"json"`
 	Excerpt         string `valid:"json"`
 	SpecificTerms   string `valid:"json"`
+	CategoryUUID    *UUID
 }
 
 type Course struct {
@@ -64,15 +65,4 @@ type CourseInfoFilter struct {
 	AccessType      *AccessType
 	BackgroundCheck *bool
 	Price           *float64
-}
-
-type Tag struct {
-	UUID  UUID
-	Name  string
-	Color string
-}
-
-type CreateTagInput struct {
-	Name  string
-	Color string `valid:"hexcolor"`
 }

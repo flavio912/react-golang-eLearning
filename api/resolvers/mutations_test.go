@@ -943,3 +943,52 @@ func TestApproveCompany(t *testing.T) {
 		CleanDB:         false,
 	})
 }
+
+func TestCreateCategory(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "create category",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createCategory(
+						input:{
+							name: "best category ever made",
+							color: "#fffffa"
+						}
+					) {
+						color
+						name
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createCategory":{
+							"color": "#fffffa",
+							"name": "best category ever made"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				approveCompany(uuid: "00000000-0000-0000-0000-000000000004") {
+					name
+				}
+			}
+		`,
+		Path:            []interface{}{"approveCompany"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+		CleanDB:         false,
+	})
+}

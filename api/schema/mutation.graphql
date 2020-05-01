@@ -35,4 +35,5 @@ type Mutation {
   saveOnlineCourse(input: SaveOnlineCourseInput!): OnlineCourse
   saveClassroomCourse(input: SaveClassroomCourseInput!): ClassroomCourse
   createTag(input: CreateTagInput!): Tag
+  createCategory(input: CreateCategoryInput!): Category
 }
