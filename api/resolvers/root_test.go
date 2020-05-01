@@ -23,9 +23,11 @@ import (
 )
 
 var (
-	db       *sql.DB
-	fixtures *testfixtures.Loader
-	schema   *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	db                 *sql.DB
+	fixtures           *testfixtures.Loader
+	schema             *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	baseAdminContext   context.Context
+	baseManagerContext context.Context
 )
 
 func TestMain(m *testing.M) {
@@ -60,51 +62,34 @@ func TestMain(m *testing.M) {
 
 	prepareTestDatabase()
 
-	// loaders := loader.Init()
-	// defaultContext = loaders.Attach(defaultContext)
-
-	// adminContext = loaders.Attach(adminContext)
-	// adminContext, err = addAdminCreds(adminContext)
-	// if err != nil {
-	// 	return
-	// }
-
-	// managerContext = loaders.Attach(managerContext)
-	// managerContext, err = addManagerCreds(managerContext)
-	// if err != nil {
-	// 	return
-	// }
+	baseAdminContext, err = addAdminCreds(context.Background())
+	if err != nil {
+		return
+	}
+	baseManagerContext, err = addManagerCreds(context.Background())
+	if err != nil {
+		return
+	}
 
 	os.Exit(m.Run())
 }
 
-func defaultContext() context.Context {
-	defaultContext := context.Background()
+func attachLoaders(ctx context.Context) context.Context {
 	loaders := loader.Init()
-	defaultContext = loaders.Attach(defaultContext)
-	return defaultContext
+	ctx = loaders.Attach(ctx)
+	return ctx
+}
+
+func defaultContext() context.Context {
+	return attachLoaders(context.Background())
 }
 
 func adminContext() context.Context {
-	cont := context.Background()
-	loaders := loader.Init()
-	cont = loaders.Attach(cont)
-	cont, err := addAdminCreds(cont)
-	if err != nil {
-		panic(err)
-	}
-	return cont
+	return attachLoaders(baseAdminContext)
 }
 
 func managerContext() context.Context {
-	adminContext := context.Background()
-	loaders := loader.Init()
-	adminContext = loaders.Attach(adminContext)
-	adminContext, err := addManagerCreds(adminContext)
-	if err != nil {
-		panic(err)
-	}
-	return adminContext
+	return attachLoaders(baseManagerContext)
 }
 
 // adds admin 1 to context
