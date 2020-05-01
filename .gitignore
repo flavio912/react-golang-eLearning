@@ -15,4 +15,5 @@ yarn-error.log*
 !.elasticbeanstalk/*.global.yml
 tmp
 api/.testCoverage
+api/cover_report.html
 debug.test
