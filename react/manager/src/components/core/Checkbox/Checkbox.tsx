@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { Theme } from "helpers/theme";
-import Icon from "../Icon";
+import Icon from "../../../sharedComponents/core/Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {

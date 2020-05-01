@@ -13,10 +13,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.tiny,
     fontWeight: 300,
     color: theme.colors.textBlue,
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(1),
   },
   fractionHolder: {
-    marginLeft: theme.spacing(2),
+    marginLeft: theme.spacing(1),
     fontSize: theme.fontSizes.tiny,
     color: theme.colors.textBlue,
     display: "flex",
@@ -37,9 +37,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
   complete: number;
   total: number;
+  width?: number;
+  fraction?: boolean;
 };
 
-function CourseCompletion({ complete, total }: Props) {
+function CourseCompletion({ complete, total, width = 200, fraction = true }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -47,12 +49,14 @@ function CourseCompletion({ complete, total }: Props) {
   return (
     <div className={classes.CourseCompletionRoot}>
       <div className={classes.percentText}>{percent}%</div>
-      <ProgressBar percent={percent} width={200} />
-      <div className={classes.fractionHolder}>
-        <div className={classes.numerator}>{complete}</div>
-        <div className={classes.divider} />
-        <div className={classes.denominator}>{total}</div>
-      </div>
+      <ProgressBar percent={percent} width={width} />
+      {fraction && (
+        <div className={classes.fractionHolder}>
+          <div className={classes.numerator}>{complete}</div>
+          <div className={classes.divider} />
+          <div className={classes.denominator}>{total}</div>
+        </div>
+      )}
     </div>
   );
 }

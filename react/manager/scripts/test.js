@@ -38,6 +38,15 @@ function isInMercurialRepository() {
   }
 }
 
+function sharedComponentsAreEqual() {
+  try {
+    execSync('git diff --no-index ../../delegate/src/sharedComponents ../../manager/src/sharedComponents --exit-code', { stdio: 'ignore' });
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 // Watch unless on CI or explicitly running all tests
 if (
   !process.env.CI &&
@@ -47,6 +56,7 @@ if (
   // https://github.com/facebook/create-react-app/issues/5210
   const hasSourceControl = isInGitRepository() || isInMercurialRepository();
   argv.push(hasSourceControl ? '--watch' : '--watchAll');
+  argv.push(sharedComponentsAreEqual());
 }
 
 

@@ -1,11 +1,12 @@
 import * as React from 'react';
-import Card, { PaddingOptions } from '../../core/Card';
+import Card, { PaddingOptions } from '../../../sharedComponents/core/Card';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
-import Button from "../../core/Button";
-import Icon from "../../core/Icon";
+import Button from "../../../sharedComponents/core/Button";
+import Icon from "../../../sharedComponents/core/Icon";
 import { Theme } from 'helpers/theme';
 import FooterIcon from './FooterIcon';
+import CourseCompletion from 'sharedComponents/core/Table/CourseCompletion';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -61,6 +62,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize:  theme.fontSizes.small,
     margin: '20px'
   },
+  progress: {
+    color: theme.colors.primaryBlack,
+    margin: '15px 0',
+    fontSize:  theme.fontSizes.tiny,
+    fontWeight: '400'
+  },
   button: {
     flex: 1,
     display: 'flex',
@@ -87,6 +94,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type SizeOptions = "small" | "large";
+export type Completion = {
+  total: number;
+  complete: number;
+}
 export interface Course {
   type: string;
   colour: string;
@@ -104,12 +115,13 @@ type Props = {
   course: Course;
   filterColour: string;
   size?: SizeOptions;
+  progress?: Completion;
   onClick: Function,
   padding?: PaddingOptions;
   className?: string;
 };
 
-function CourseCard({ course, filterColour, onClick, size = 'small', className }: Props) {
+function CourseCard({ course, filterColour, onClick, size = 'small', progress, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -144,7 +156,12 @@ function CourseCard({ course, filterColour, onClick, size = 'small', className }
           )}
       </div>
 
-    {size === 'small' ? (
+    {progress && progress.complete && progress.total ? 
+      <div className={classNames(classes.row, classes.footer)}>
+        <div className={classes.progress}>PROGRESS</div>
+        <CourseCompletion complete={progress.complete} total={progress.total} width={125} fraction={false} />
+      </div>
+    : size === 'small' ? (
       <div className={classNames(classes.row, classes.footer)}>
           <FooterIcon name="Icon_Delegates" size={20} value={course.assigned} />
           <FooterIcon name="CourseExpiringSoon" size={20} value={course.expiring} />

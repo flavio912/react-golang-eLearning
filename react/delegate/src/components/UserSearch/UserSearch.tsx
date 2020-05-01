@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 
 import { Theme } from "helpers/theme";
-import Icon from "components/core/Icon";
+import Icon from "sharedComponents/core/Icon";
 import CoreInput from "components/core/CoreInput";
 import UserResults from "./UserResults";
 

@@ -10,6 +10,14 @@ variables:
   MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
   ADMIN_IMAGE_TAG: $CI_REGISTRY_IMAGE:admin
 
+test:
+  stage: test
+  image: node:10.16.2
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  script:
+    - git diff --exit-code --no-index ./react/delegate/src/sharedComponents ./react/manager/src/sharedComponents
+
 test-api:
   stage: test
   image: docker/compose:latest

@@ -1,6 +1,6 @@
 import * as React from "react";
 import ActvityCard, { Statistic } from "./ActivityCard";
-import { PaddingOptions } from "../../core/Card/index";
+import { PaddingOptions } from "../../../sharedComponents/core/Card/index";
 import { Update } from "./UserUpdate";
 import { withKnobs, select, text, object, array } from "@storybook/addon-knobs";
 

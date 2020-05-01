@@ -1,7 +1,7 @@
 import * as React from "react";
 import SideMenu, { Tab } from "./SideMenu";
 import { withKnobs, object } from "@storybook/addon-knobs";
-import CourseCard from '../../Overview/CourseCard/CourseCard';
+import CourseCard from '../../../sharedComponents/Overview/CourseCard/CourseCard';
 
 export default {
   title: "Menu/SideMenu",

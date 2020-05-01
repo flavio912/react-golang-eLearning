@@ -2,8 +2,8 @@ import * as React from "react";
 import classNames from "classnames";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
-import Button from "components/core/Button";
-import Icon from "components/core/Icon";
+import Button from "sharedComponents/core/Button";
+import Icon from "sharedComponents/core/Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     row: {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles } from "react-jss";
 import ThemeObject, { Theme } from "helpers/theme";
 import classNames from "classnames";
-import Icon from "../Icon";
+import Icon from "../../../sharedComponents/core/Icon";
 import { ScaleLoader } from "react-spinners";
 import CoreInput from "../CoreInput";
 

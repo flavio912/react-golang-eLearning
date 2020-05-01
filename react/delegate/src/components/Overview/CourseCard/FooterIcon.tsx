@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import moment from 'moment';
-import Icon, { IconNames } from "../../core/Icon";
+import Icon, { IconNames } from "../../../sharedComponents/core/Icon";
 import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({

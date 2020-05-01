@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
-import Icon, { IconNames } from "../../core/Icon/Icon";
+import Icon, { IconNames } from "../../../sharedComponents/core/Icon/Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {

@@ -19,10 +19,6 @@ import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
-import Card from 'components/core/Card';
-import { OrgOverview } from 'views/OrgOverview';
-import DelegatesPage from 'views/DelegatesPage';
-import CoursesPage from 'views/CoursesPage';
 
 const ExamplePageQuery = graphql`
   query App_Query {
