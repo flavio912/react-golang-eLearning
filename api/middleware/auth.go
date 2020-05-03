@@ -52,6 +52,26 @@ func GetManagerAccessToken(email string, password string) (string, error) {
 	return token, nil
 }
 
+func GetDelegateAccessToken(ttcId string, password string) (string, error) {
+	d := &models.Delegate{}
+	delegate, err := d.FindUser(ttcId)
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return "", &errors.ErrUserNotFound
+		}
+
+		glog.Info(err.Error())
+		return "", &errors.ErrAuthFailed
+	}
+
+	token, err := delegate.GenerateToken(password)
+	if err != nil {
+		glog.Info(err.Error())
+		return "", &errors.ErrAuthFailed
+	}
+	return token, nil
+}
+
 // HasFullRestrictedAccess returns true if the user has access to all restricted courses
 func (g *Grant) HasFullRestrictedAccess() bool {
 	if g.IsAdmin {
@@ -67,7 +87,7 @@ func (g *Grant) HasFullRestrictedAccess() bool {
 			return false
 		}
 
-		if company.Approved == true {
+		if company.Approved {
 			return true
 		}
 	}

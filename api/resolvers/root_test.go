@@ -131,6 +131,7 @@ func addManagerCreds(ctx context.Context) (context.Context, error) {
 func prepareTestDatabase() {
 	if err := fixtures.Load(); err != nil {
 		fmt.Printf("Unable to load fixtures for test: %s", err.Error())
+		panic(err)
 	}
 }
 

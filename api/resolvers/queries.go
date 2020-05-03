@@ -51,7 +51,17 @@ func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UU
 	return &AdminResolver{admin: admin}, err
 }
 
-// Manager gets a single manager
+func (q *QueryResolver) Delegate(ctx context.Context, args struct{ UUID gentypes.UUID }) (*DelegateResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &DelegateResolver{}, &errors.ErrUnauthorized
+	}
+
+	res, err := NewDelegateResolver(ctx, NewDelegateArgs{UUID: &args.UUID})
+
+	return res, err
+}
+
 func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*ManagerResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {

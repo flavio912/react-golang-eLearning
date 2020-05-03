@@ -412,6 +412,62 @@ func TestManagers(t *testing.T) {
 	)
 }
 
+func TestDelegate(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegate(uuid: "00000000-0000-0000-0000-000000000001") {
+						uuid
+						TTC_ID
+						email
+						firstName
+						lastName
+						telephone
+						jobTitle
+						company {
+							uuid
+							name
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegate":{
+						"TTC_ID":"delegate-test-1",
+						"company":{
+							"name":"TestCompany",
+							"uuid":"00000000-0000-0000-0000-000000000001"
+						},
+						"email":"del@delegates.com",
+						"firstName":"Delegate",
+						"jobTitle":"Doer",
+						"lastName":"Man",
+						"telephone":"7912938287",
+						"uuid":"00000000-0000-0000-0000-000000000001"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{delegate(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"delegate"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  true, // the deafult manager can see itself
+			DelegateAllowed: false,
+		},
+	)
+}
+
 func TestCompany(t *testing.T) {
 	prepareTestDatabase()
 
