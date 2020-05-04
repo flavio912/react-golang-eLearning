@@ -65,7 +65,15 @@ func (l *Logger) LogException(level sentry.Level, err error) {
 }
 
 // Log logs both a sentry exception as well as a glog message
-func (l *Logger) Log(level sentry.Level, message string, err error) {
+func (l *Logger) Log(level sentry.Level, err error, message string) {
 	glogAtLevel(level, fmt.Sprintf("%s : %s", message, err.Error()))
+	l.CaptureException(err, level)
+}
+
+// Log logs both a sentry exception as well as a glog message
+func (l *Logger) Logf(level sentry.Level, err error, message string, args ...interface{}) {
+	m := fmt.Sprintf(message, args...)
+	glogAtLevel(level, fmt.Sprintf("%s : %s", m, err.Error()))
+	l.Hub.AddBreadcrumb(&sentry.Breadcrumb{Type: "Message", Message: m}, nil)
 	l.CaptureException(err, level)
 }
