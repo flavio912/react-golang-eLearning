@@ -3,6 +3,7 @@ package middleware
 import (
 	"fmt"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -44,8 +45,10 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 	var admins []models.Admin
 	q := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins)
 	if q.Error != nil {
+		g.Logger.Log(sentry.LevelError, "Unable to get admins by UUID", q.Error)
 		return []gentypes.Admin{}, &errors.ErrWhileHandling
 	}
+
 	if len(admins) == 0 {
 		return []gentypes.Admin{}, &errors.ErrNotFound
 	}
@@ -86,6 +89,8 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	if !g.IsAdmin {
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
+
+	g.Logger.Log(sentry.LevelError, "Hello", &errors.ErrAdminNotFound)
 
 	var admins []models.Admin
 

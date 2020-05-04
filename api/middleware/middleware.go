@@ -8,6 +8,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 )
 
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
@@ -17,6 +18,8 @@ type Grant struct {
 	IsAdmin    bool
 	IsManager  bool
 	IsDelegate bool
+	// contains the sentry hub
+	Logger logging.Logger
 }
 
 // Authenticate is used to verify and get access to middleware functions
