@@ -8,10 +8,11 @@ export default {
 };
 
 export const normal = () => {
+  const colour: string = text("Colour", "#FFFFFF");
   const name: string = text("Name", "Fred Ecceleston");
   const url: string = text("Profile Image", require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"));
   const user: User = { name, url };
   const size: number = number("Size", 45);
   const fontSize: number = number("fontSize", 18);
-  return <CircleBorder user={user} size={size} fontSize={fontSize} />;
+  return <CircleBorder user={user} size={size} fontSize={fontSize} colour={colour} />;
 };
