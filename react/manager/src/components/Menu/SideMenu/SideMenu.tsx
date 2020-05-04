@@ -64,7 +64,6 @@ export interface Tab {
   id: number;
   icon: IconNames;
   size?: number;
-  children: React.ReactNode;
 }
 
 type Props = {
