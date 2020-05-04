@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from 'classnames';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from "helpers/theme";
-import ProfileIcon from 'components/core/ProfileIcon';
+import ProfileIcon from 'sharedComponents/core/ProfileIcon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   center: {
@@ -16,7 +16,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   profileBorder: {
     backgroundImage: `linear-gradient(45deg,
-        ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`
+        ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    boxShadow: theme.shadows.primary
   },
 }));
 
@@ -30,16 +31,17 @@ type Props = {
     text?: string | number;
     size?: number;
     fontSize?: number;
+    colour?: string;
     className?: string;
 };
 
-function CircleBorder({ user, text, size = 45, fontSize = 18, className }: Props) {
+function CircleBorder({ user, text, size = 45, fontSize = 18, colour, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
     <div
         className={classNames(classes.center, classes.profileBorder, className)}
-        style={{ height: size + 4, width: size + 4, borderRadius: size + 4 }}
+        style={{ height: size + 4, width: size + 4, borderRadius: size + 4, backgroundImage: colour && `linear-gradient(45deg, ${colour}, ${colour})` }}
     >
         <div
             className={classNames(classes.center, classes.profileCircle)}

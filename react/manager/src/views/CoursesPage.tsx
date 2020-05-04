@@ -6,7 +6,7 @@ import CourseCard, { SizeOptions } from "sharedComponents/Overview/CourseCard";
 import Dropdown, { DropdownOption } from "components/core/Dropdown";
 import PageHeader from "components/PageHeader";
 import SelectButton from "components/core/SelectButton";
-import CircleBorder from "components/core/CircleBorder";
+import CircleBorder from "sharedComponents/core/CircleBorder";
 import Paginator from "components/Paginator";
 import Spacer from "components/core/Spacers/Spacer";
 
