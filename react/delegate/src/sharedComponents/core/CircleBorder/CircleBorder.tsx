@@ -2,7 +2,7 @@ import * as React from "react";
 import classNames from 'classnames';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from "helpers/theme";
-import ProfileIcon from 'components/core/ProfileIcon';
+import ProfileIcon from 'sharedComponents/core/ProfileIcon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   center: {

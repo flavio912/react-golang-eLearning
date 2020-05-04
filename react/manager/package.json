@@ -72,7 +72,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && yarn run test"
+      "pre-commit": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents"
     }
   },
   "lint-staged": {
@@ -192,6 +192,7 @@
     "eslint-plugin-react-hooks": "^1.6.1",
     "fork-ts-checker-webpack-plugin": "^4.1.2",
     "graphql": "^15.0.0",
+    "husky": "^4.2.5",
     "jest": "^25.2.2",
     "jest-environment-jsdom-fourteen": "0.1.0",
     "jest-resolve": "24.9.0",
