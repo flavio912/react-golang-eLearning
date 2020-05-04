@@ -22,19 +22,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite,
   },
   tab: {
-    width: "93px",
+    width: "274px",
     cursor: "pointer",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-start",
     padding: "25px 0",
     opacity: 0.3,
     transition: "background-color 0.3s linear, opacity 0.3s linear",
   },
   selected: {
     backgroundColor: theme.colors.hoverGreen,
-    justifyContent: "space-between",
     opacity: 1,
     transition: "background-color 0.3s linear, opacity 0.3s linear",
   },
@@ -52,19 +51,30 @@ const useStyles = createUseStyles((theme: Theme) => ({
     opacity: 0,
     transition: "visibility 0s 1s, opacity 1s linear",
   },
+  title: {
+    fontSize: theme.fontSizes.large,
+    fontWeight: '700',
+    color: theme.colors.textBlue,
+    margin: '0 25px'
+  },
   body: {
     padding: "30px 30px",
     backgroundColor: theme.colors.backgroundGrey,
     boxShadow: theme.shadows.body,
     flexGrow: 1,
   },
+  row: {
+    display: "flex",
+    flexDirection: "row",
+    marginLeft: '30px'
+  }
 }));
 
 export interface Tab {
   id: number;
   icon: IconNames;
+  title: string;
   size?: number;
-  children: React.ReactNode;
 }
 
 type Props = {
@@ -98,11 +108,14 @@ function SideMenu({ tabs, selected, onClick, className }: Props) {
                     : classes.noFold
                 )}
               />
-              <Icon
-                name={tab.icon}
-                size={tab.size ?? 20}
-                style={{ cursor: "pointer" }}
-              />
+              <div className={classes.row}>
+                <Icon
+                  name={tab.icon}
+                  size={tab.size ?? 20}
+                  style={{ cursor: "pointer" }}
+                />
+                <div className={classes.title}>{tab.title}</div>
+              </div>
               <div />
             </div>
           ))}
