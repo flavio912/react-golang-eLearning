@@ -1,6 +1,6 @@
 import * as React from "react";
 import SideMenu, { Tab } from "./SideMenu";
-import { withKnobs, object } from "@storybook/addon-knobs";
+import { withKnobs, text, object } from "@storybook/addon-knobs";
 
 export default {
   title: "Menu/SideMenu",
@@ -16,9 +16,11 @@ const defaultTabs: Array<Tab> = [
 export const normal = () => React.createElement(() => {
     const [selected, setSelected] = React.useState(defaultTabs[0]);
     const tabs: Array<Tab> = object("Options", defaultTabs);
+    const logo: string = text("Logo", require("../../../assets/logo/ttc-logo.svg"));
 
     return (
         <SideMenu
+            logo={logo}
             selected={selected}
             tabs={tabs}
             onClick={(tab: Tab) => setSelected(tab)}

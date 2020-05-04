@@ -25,9 +25,8 @@ const defaultCourse = {
 
 // Side Menu props
 const defaultTabs: Tab[] = [
-    {id: 0, icon: "LeftNav_Icon_Dashboard", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
-    {id: 1, icon: "LeftNav_Icon_Delegates", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="large" />},
-    {id: 2, icon: "LeftNav_Icon_Courses", children: <CourseCard course={defaultCourse} filterColour="#8C1CB4" onClick={() => console.log('Pressed')} size="small" />},
+    {id: 0, icon: "LeftNav_Icon_Dashboard", title: "Dashboard" },
+    {id: 2, icon: "LeftNav_Icon_Courses", title: "Online Courses" },
 ];
 
 export const withContent = () => React.createElement(() => {
@@ -48,6 +47,7 @@ export const withContent = () => React.createElement(() => {
           onProfileClick={() => console.log('Profile Pressed')}
           children={
             <SideMenu
+              logo={logo}
               selected={selected}
               tabs={tabs}
               onClick={(tab: Tab) => setSelected(tab)}
