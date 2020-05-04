@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 
 	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/stretchr/testify/assert"
@@ -21,18 +22,22 @@ import (
 var (
 	db       *sql.DB
 	fixtures *testfixtures.Loader
-)
 
-var adminGrant = middleware.Grant{auth.UserClaims{}, true, false, false}
-var managerGrant = middleware.Grant{auth.UserClaims{
-	UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-	Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-	Role:    auth.ManagerRole,
-}, false, true, false}
-var delegateGrant = middleware.Grant{auth.UserClaims{
-	Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-}, false, false, true}
-var uuidZero = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, logging.Logger{}}
+	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, logging.Logger{}}
+	managerGrant  = middleware.Grant{auth.UserClaims{
+		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Role:    auth.ManagerRole,
+	}, false, true, false, logging.Logger{}}
+	delegateGrant = middleware.Grant{auth.UserClaims{
+		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		Role:    auth.DelegateRole,
+	}, false, false, true, logging.Logger{}}
+
+	uuidZero = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+)
 
 func TestMain(m *testing.M) {
 	var err error

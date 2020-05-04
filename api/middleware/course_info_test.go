@@ -6,14 +6,12 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/stretchr/testify/assert"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
 func TestUpdateCourseInfo(t *testing.T) {
-	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Updates existing course", func(t *testing.T) {
 		prepareTestDatabase()
 		open := gentypes.Open
@@ -27,10 +25,10 @@ func TestUpdateCourseInfo(t *testing.T) {
 			BackgroundCheck: helpers.BoolPointer(false),
 			SpecificTerms:   helpers.StringPointer("{}"),
 		}
-		_, err := grant.UpdateCourseInfo(1, inp)
+		_, err := adminGrant.UpdateCourseInfo(1, inp)
 		assert.Nil(t, err)
 
-		info, err := grant.GetCourseInfoFromID(1)
+		info, err := adminGrant.GetCourseInfoFromID(1)
 		assert.Nil(t, err)
 		assert.Equal(t, *inp.Name, info.Name)
 		assert.Equal(t, *inp.AccessType, info.AccessType)
@@ -45,16 +43,16 @@ func TestUpdateCourseInfo(t *testing.T) {
 	t.Run("Doesn't update nil fields", func(t *testing.T) {
 		prepareTestDatabase()
 
-		prevInfo, err := grant.GetCourseInfoFromID(1)
+		prevInfo, err := adminGrant.GetCourseInfoFromID(1)
 		assert.Nil(t, err)
 
 		inp := middleware.CourseInfoInput{
 			Color: helpers.StringPointer("#ffffff"),
 		}
-		_, err = grant.UpdateCourseInfo(1, inp)
+		_, err = adminGrant.UpdateCourseInfo(1, inp)
 		assert.Nil(t, err)
 
-		info, err := grant.GetCourseInfoFromID(1)
+		info, err := adminGrant.GetCourseInfoFromID(1)
 		assert.Nil(t, err)
 		assert.Equal(t, prevInfo.Name, info.Name)
 	})
@@ -63,23 +61,17 @@ func TestUpdateCourseInfo(t *testing.T) {
 		prepareTestDatabase()
 
 		// Manager should fail
-		grant := &middleware.Grant{auth.UserClaims{}, false, true, false}
-
 		inp := middleware.CourseInfoInput{
 			Name: helpers.StringPointer("New Course name"),
 		}
-
-		_, err := grant.UpdateCourseInfo(1, inp)
+		_, err := managerGrant.UpdateCourseInfo(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 
-		// Delegate should fail
-		grant = &middleware.Grant{auth.UserClaims{}, false, false, true}
-
+		// delegate should fail
 		inp = middleware.CourseInfoInput{
 			Name: helpers.StringPointer("New Course name"),
 		}
-
-		_, err = grant.UpdateCourseInfo(1, inp)
+		_, err = delegateGrant.UpdateCourseInfo(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 

@@ -10,6 +10,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -192,7 +193,7 @@ func TestGetManagerSelf(t *testing.T) {
 	}{
 		{
 			"Must be manager",
-			middleware.Grant{auth.UserClaims{}, true, false, true},
+			middleware.Grant{auth.UserClaims{}, true, false, true, logging.Logger{}},
 			"",
 			&errors.ErrUnauthorized,
 		},
@@ -276,7 +277,6 @@ func TestGetManagers(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetManagers(nil, nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})

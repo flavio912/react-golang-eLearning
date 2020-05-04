@@ -10,7 +10,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -20,13 +19,12 @@ var fakeCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999
 func TestCompanyExists(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 	t.Run("Company should exist", func(t *testing.T) {
-		assert.True(t, grant.CompanyExists(realCompany))
+		assert.True(t, adminGrant.CompanyExists(realCompany))
 	})
 
 	t.Run("Company should not exist", func(t *testing.T) {
-		assert.False(t, grant.CompanyExists(fakeCompany))
+		assert.False(t, adminGrant.CompanyExists(fakeCompany))
 	})
 }
 
@@ -84,8 +82,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 	company1 := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
 	t.Run("Must be admin", func(t *testing.T) {
-		grant := middleware.Grant{auth.UserClaims{}, false, true, true}
-		ids, _, err := grant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
+		ids, _, err := nonAdminGrant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
 		assert.Len(t, ids, 0)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -165,9 +162,8 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 func TestGetCompaniesByUUID(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Admin can get companies", func(t *testing.T) {
-		comp, err := grant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
+		comp, err := adminGrant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
 		assert.Nil(t, err)
 		assert.Len(t, comp, 1)
 		assert.Equal(t, realCompany, comp[0].UUID)
@@ -179,15 +175,14 @@ func TestGetCompaniesByUUID(t *testing.T) {
 func TestGetCompanyByUUID(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Admin can get company", func(t *testing.T) {
-		company, err := grant.GetCompanyByUUID(realCompany)
+		company, err := adminGrant.GetCompanyByUUID(realCompany)
 		assert.Nil(t, err)
 		assert.Equal(t, realCompany, company.UUID)
 	})
 
 	t.Run("Get non-existant company", func(t *testing.T) {
-		company, err := grant.GetCompanyByUUID(fakeCompany)
+		company, err := adminGrant.GetCompanyByUUID(fakeCompany)
 		assert.Equal(t, &errors.ErrCompanyNotFound, err)
 		assert.Equal(t, gentypes.Company{}, company)
 	})
@@ -199,7 +194,6 @@ func TestGetCompanyUUIDs(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetCompanyUUIDs(nil, nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -267,7 +261,6 @@ func TestCreateCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.CreateCompany(gentypes.CreateCompanyInput{})
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -380,7 +373,7 @@ func TestApproveCompany(t *testing.T) {
 	}{
 		{
 			"Must be admin",
-			middleware.Grant{auth.UserClaims{}, false, true, true},
+			nonAdminGrant,
 			"00000000-0000-0000-0000-000000000000",
 			false,
 			&errors.ErrUnauthorized,
