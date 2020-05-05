@@ -107,13 +107,3 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
 	return query, nil
 }
-
-func getDBErrorType(query *gorm.DB) error {
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return &errors.ErrNotFound
-		}
-		return &errors.ErrWhileHandling
-	}
-	return nil
-}

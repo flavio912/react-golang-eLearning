@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -62,7 +63,7 @@ func (g *Grant) HasFullRestrictedAccess() bool {
 		company := models.Company{}
 		query := database.GormDB.Where("uuid = ?", g.Claims.Company).First(&company)
 		if query.Error != nil {
-			glog.Errorf("Unable to get manager's company: %s", query.Error.Error())
+			g.Logger.Log(sentry.LevelError, query.Error, "Unable to get manager's company")
 			return false
 		}
 

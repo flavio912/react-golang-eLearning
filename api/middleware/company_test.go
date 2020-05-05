@@ -1,6 +1,7 @@
 package middleware_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -310,7 +311,7 @@ func TestCreateCompanyRequest(t *testing.T) {
 	}
 
 	t.Run("Should create company, address, and manager", func(t *testing.T) {
-		err := middleware.CreateCompanyRequest(newCompInput, managerInput)
+		err := middleware.CreateCompanyRequest(context.Background(), newCompInput, managerInput)
 		assert.Nil(t, err)
 
 		// get the latest company

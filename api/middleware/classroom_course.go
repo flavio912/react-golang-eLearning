@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -68,7 +68,7 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		course.Location = *courseInfo.Location
 	}
 
-	course.CourseInfo, err = ComposeCourseInfo(CourseInfoInput{
+	course.CourseInfo, err = g.ComposeCourseInfo(CourseInfoInput{
 		Name:            courseInfo.Name,
 		Price:           courseInfo.Price,
 		Color:           courseInfo.Color,
@@ -86,7 +86,7 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 
 	query := database.GormDB.Create(&course)
 	if query.Error != nil {
-		glog.Errorf("Unable to create classroom course: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create classroom course")
 		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -111,7 +111,7 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		if query.RecordNotFound() {
 			return gentypes.ClassroomCourse{}, &errors.ErrNotFound
 		}
-		glog.Errorf("Unable to get course while updating: %s", query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to get course while updating: %s", *courseInfo.UUID)
 		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -152,7 +152,7 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		Updates(&updates).
 		Find(&course)
 	if q.Error != nil {
-		glog.Errorf("Unable to update course: %s", q.Error.Error())
+		g.Logger.Log(sentry.LevelError, q.Error, "Unable to update course")
 		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -185,7 +185,7 @@ func (g *Grant) GetClassroomCourses(
 	// Count total that can be retrieved by the current filter
 	var total int32
 	if err := query.Model(&models.ClassroomCourse{}).Count(&total).Error; err != nil {
-		glog.Errorf("Unable to get classroom course count: %s", err)
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get classroom course count")
 		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -193,7 +193,7 @@ func (g *Grant) GetClassroomCourses(
 
 	query = query.Find(&courses)
 	if query.Error != nil {
-		glog.Errorf("Unable to get courses: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get courses")
 		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
