@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Icon from "../../../sharedComponents/core/Icon/Icon";
 import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
+import CoreInput from "../../core/CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -16,17 +17,34 @@ const useStyles = createUseStyles((theme: Theme) => ({
     zIndex: 10,
   },
   menu: {
-    backgroundColor: theme.colors.primaryWhite,
+    display: "flex",
+    flexDirection: "row",
+    justfiyContent: 'flex-start',
+    backgroundImage: `linear-gradient(90deg,
+      ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
     padding: "17px 25px",
   },
-  logo: {
-    cursor: "pointer",
-    height: "50px",
-    width: "140px",
-    borderRadius: theme.primaryBorderRadius,
-    border: [1, "solid", theme.colors.borderGrey],
-    boxShadow: theme.shadows.primary,
-    objectFit: "cover",
+  search: {
+    display: "flex",
+    alignItems: "center",
+    flex: 1,
+    padding: theme.spacing(1),
+  },
+  searchInput: {
+    color: theme.colors.primaryWhite,
+    fontSize: theme.fontSizes.large,
+    fontWeight: 300,
+    paddingLeft: theme.spacing(1),
+    backgroundColor: 'transparent'
+  },
+  profile: {
+    display: "flex",
+    alignSelf: 'flex-end',
+  },
+  name: {
+    fontSize: theme.fontSizes.tinyHeading,
+    fontWeight: 800,
+    color: theme.colors.primaryWhite
   },
   row: {
     display: "flex",
@@ -41,19 +59,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  logo: string;
   user: User;
   children?: React.ReactNode;
-  onLogoClick?: Function;
   onProfileClick?: Function;
   className?: string;
 };
 
 function HeaderMenu({
-  logo,
   user,
   children,
-  onLogoClick,
   onProfileClick,
   className,
 }: Props) {
@@ -63,24 +77,31 @@ function HeaderMenu({
   return (
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
-        <Icon name="TTC_Logo_Icon" size={55} />
-        <img
-          className={classNames(classes.logo)}
-          onClick={() => onLogoClick && onLogoClick()}
-          src={logo}
-          alt="Logo"
-        />
-        <div className={classNames(classes.row)}>
-          <CircleBorder user={user} />
-          <Icon
-            name="Card_SecondaryActon_Dots"
-            size={20}
-            style={{ cursor: "pointer", margin: "0 20px" }}
-            onClick={() => onProfileClick && onProfileClick()}
+        <div className={classes.search}>
+          <Icon name="SearchGlass" size={15} />
+          <CoreInput
+            type="search"
+            placeholder="Search"
+            className={classes.searchInput}
+            /*
+            onChange={onChange}
+            onFocus={onFocus}
+            onBlur={onBlur}
+            value={input}
+            setValue={setInput}*/
           />
         </div>
+        <div
+          className={classNames(classes.row, classes.profile)}
+          onClick={() => onProfileClick && onProfileClick()}
+        >
+          <div className={classes.name}>{user.name}</div>
+          <CircleBorder user={user} colour="#FFF" />
+        </div>
       </div>
-      <div className={classes.body}>{children}</div>
+      <div className={classes.body}>
+        {children}
+      </div>
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
-
+import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Icon from "sharedComponents/core/Icon";
 import CoreInput from "components/core/CoreInput";
@@ -58,12 +58,14 @@ type Props = {
   companyName: string;
   searchFunction: (query: string) => Promise<ResultItem[]>;
   debounceTime?: number;
+  className?: String;
 };
 
 function UserSearch({
   companyName,
   searchFunction,
   debounceTime = 600,
+  className,
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -114,7 +116,7 @@ function UserSearch({
   return (
     <div>
       <div />
-      <div className={focus ? classes.rootFocused : classes.root}>
+      <div className={classNames(focus ? classes.rootFocused : classes.root, className)}>
         <div className={classes.buttonCont}>
           <div className={classes.search}>
             <Icon name="SearchGlass" size={15} />
