@@ -3,7 +3,7 @@ package middleware
 import (
 	"time"
 
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -34,12 +34,12 @@ func (g *Grant) delegateExists(email string, ttcId string) bool {
 		if query.RecordNotFound() {
 			return false
 		}
-		// If some other error occurs log it
-		glog.Errorf("Unable to find delegate for Email: %s - error: %s", email, query.Error.Error())
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find delegate for Email: %s", email)
 		return false
 	}
-	return true
 
+	return true
 }
 
 func (g *Grant) GetDelegateFromUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
@@ -50,7 +50,8 @@ func (g *Grant) GetDelegateFromUUID(UUID gentypes.UUID) (gentypes.Delegate, erro
 			return gentypes.Delegate{}, &errors.ErrNotFound
 		}
 
-		return gentypes.Delegate{}, err
+		g.Logger.Log(sentry.LevelError, err, "Unable to find delegate")
+		return gentypes.Delegate{}, &errors.ErrWhileHandling
 	}
 
 	if !g.IsAdmin && g.Claims.Company.UUID != delegate.CompanyUUID {
@@ -101,6 +102,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	}
 	createErr := database.GormDB.Create(&delegate).Error
 	if createErr != nil {
+		g.Logger.Log(sentry.LevelError, createErr, "Unable to create delegate")
 		return gentypes.Delegate{}, &errors.ErrWhileHandling
 	}
 
