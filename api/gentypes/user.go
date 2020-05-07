@@ -14,10 +14,10 @@ type User struct {
 
 type UserFilter struct {
 	UUID      *string `valid:"uuidv4"`
-	Email     *string `valid:"-"`
-	Name      *string `valid:"-"`
-	JobTitle  *string `valid:"-"`
-	Telephone UUID
+	Email     *string
+	Name      *string
+	JobTitle  *string
+	Telephone *string `valid:"numeric"`
 }
 
 type CreateUserInput struct {

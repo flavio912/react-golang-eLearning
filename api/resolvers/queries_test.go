@@ -203,7 +203,7 @@ func TestManager(t *testing.T) {
 			Query:           `{manager(uuid: "00000000-0000-0000-0000-000000000002") { uuid }}`,
 			Path:            []interface{}{"manager"},
 			MustAuth:        true,
-			AdminAllowed:    false,
+			AdminAllowed:    true,
 			ManagerAllowed:  false,
 			DelegateAllowed: false,
 		},
@@ -393,7 +393,7 @@ func TestManagers(t *testing.T) {
 			ExpectedResult: `{"managers":null}`,
 			ExpectedErrors: []gqltest.TestQueryError{
 				{
-					Message: helpers.StringPointer("Telephone: sa#q345654sdf does not validate as numeric"),
+					Message: helpers.StringPointer("UserFilter.Telephone: sa#q345654sdf does not validate as numeric"),
 					Path:    []interface{}{"managers"},
 				},
 			},
@@ -506,7 +506,17 @@ func TestCompany(t *testing.T) {
 			Path:            []interface{}{"company"},
 			MustAuth:        true,
 			AdminAllowed:    true,
-			ManagerAllowed:  false,
+			ManagerAllowed:  true,
+			DelegateAllowed: false,
+		},
+	)
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{company(uuid:"00000000-0000-0000-0000-000000000002") { uuid }}`,
+			Path:            []interface{}{"company"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false, // manager can only see it's own company
 			DelegateAllowed: false,
 		},
 	)

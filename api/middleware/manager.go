@@ -74,9 +74,11 @@ func (g *Grant) managerEmailExists(email string) bool {
 
 func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 	var managers []gentypes.Manager
+	if !g.IsAdmin && !g.IsManager {
+		return managers, &errors.ErrUnauthorized
+	}
 
 	var allowedUUIDs []string
-
 	// Managers can only get their own info
 	if g.IsManager {
 		for _, uuid := range uuids {
@@ -84,15 +86,14 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 				allowedUUIDs = append(allowedUUIDs, uuid)
 			}
 		}
+		if len(uuids) > 0 && len(allowedUUIDs) == 0 {
+			return managers, &errors.ErrUnauthorized
+		}
 	}
 
 	// Admin can get any manager info
 	if g.IsAdmin {
 		allowedUUIDs = uuids
-	}
-
-	if !g.IsAdmin && !g.IsManager {
-		return managers, &errors.ErrUnauthorized
 	}
 
 	query := database.GormDB.Where("uuid IN (?)", allowedUUIDs).Find(&managers)
@@ -110,18 +111,7 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 
 func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	if filter != nil {
-		if filter.Email != nil && *filter.Email != "" {
-			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
-		}
-		if filter.Name != nil && *filter.Name != "" {
-			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
-		}
-		if filter.UUID != nil && *filter.UUID != "" {
-			query = query.Where("uuid = ?", *filter.UUID)
-		}
-		if filter.JobTitle != nil && *filter.JobTitle != "" {
-			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
-		}
+		query = filterUser(query, &filter.UserFilter)
 	}
 
 	return query

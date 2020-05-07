@@ -132,13 +132,13 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 			name   string
 			filter gentypes.ManagersFilter
 		}{
-			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
-			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
-			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
-			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
-			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
-			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
-			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+			{"Email", gentypes.ManagersFilter{gentypes.UserFilter{Email: &manager.Email}}},
+			{"FirstName", gentypes.ManagersFilter{gentypes.UserFilter{Name: &manager.FirstName}}},
+			{"LastName", gentypes.ManagersFilter{gentypes.UserFilter{Name: &manager.LastName}}},
+			{"First and Last", gentypes.ManagersFilter{gentypes.UserFilter{Name: &fullName}}},
+			{"JobTitle", gentypes.ManagersFilter{gentypes.UserFilter{JobTitle: &manager.JobTitle}}},
+			{"uuid", gentypes.ManagersFilter{gentypes.UserFilter{UUID: &uuidString}}},
+			{"Full", gentypes.ManagersFilter{gentypes.UserFilter{Name: &fullName, Email: &manager.Email}}},
 		}
 
 		for _, test := range filterTests {
@@ -152,7 +152,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.ManagersFilter{Email: &email}
+			filter := gentypes.ManagersFilter{gentypes.UserFilter{Email: &email}}
 			managers, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, managers, 2)

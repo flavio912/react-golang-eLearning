@@ -73,10 +73,20 @@ func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
 func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error) {
 	// Check that all requested uuid's are allowed to be returned to the user
 	var authorizedUUIDs []gentypes.UUID
-	for _, uuid := range uuids {
-		if g.ManagesCompany(uuid) {
-			authorizedUUIDs = append(authorizedUUIDs, uuid)
+
+	if g.IsManager {
+		for _, uuid := range uuids {
+			if g.ManagesCompany(uuid) {
+				authorizedUUIDs = append(authorizedUUIDs, uuid)
+			}
+			if len(uuids) > 0 && len(authorizedUUIDs) == 0 {
+				return []gentypes.Company{}, &errors.ErrUnauthorized
+			}
 		}
+	} else if g.IsAdmin {
+		authorizedUUIDs = uuids
+	} else {
+		return []gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
 	var companies []models.Company

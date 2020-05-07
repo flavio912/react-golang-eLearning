@@ -844,7 +844,7 @@ func TestUpdateAdmin(t *testing.T) {
 			`,
 			Path:            []interface{}{"updateAdmin"},
 			MustAuth:        true,
-			AdminAllowed:    false,
+			AdminAllowed:    true,
 			ManagerAllowed:  false,
 			DelegateAllowed: false,
 		},
