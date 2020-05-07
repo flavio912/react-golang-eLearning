@@ -9,15 +9,14 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/testhelpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/go-testfixtures/testfixtures/v3"
 	graphql "github.com/graph-gophers/graphql-go"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/resolvers"
 	s "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
 )
@@ -34,32 +33,10 @@ func TestMain(m *testing.M) {
 	var err error
 
 	// Load in the config.yaml file
-	if err := helpers.LoadConfig("../dev_env/test_config.yml"); err != nil {
-		panic(err)
-	}
-	errDb := database.SetupDatabase(false)
-	if errDb != nil {
-		panic(errDb)
-	}
-	migration.InitMigrations()
-
-	db, err = sql.Open("postgres", "host=test_db port=5432 user=test dbname=testdb password=test sslmode=disable")
+	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
 	if err != nil {
-		fmt.Printf("Unable to connect to test DB: %s", err.Error())
-		return
+		panic("Failed to init test db")
 	}
-
-	fixtures, err = testfixtures.New(
-		testfixtures.Database(db), // Your database connection
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("../middleware/fixtures"), // the directory containing the YAML files
-	)
-
-	if err != nil {
-		fmt.Printf("Unable get fixtures: %s", err.Error())
-		return
-	}
-
 	prepareTestDatabase()
 
 	baseAdminContext, err = addAdminCreds(context.Background())
