@@ -11,12 +11,12 @@ type Delegate struct {
 	ProfileImageURL *string
 }
 
-type DelegateFilter struct {
+type DelegatesFilter struct {
 	UserFilter
 	TTC_ID *string
 }
 
-func (d *DelegateFilter) Validate() error {
+func (d *DelegatesFilter) Validate() error {
 	_, err := govalidator.ValidateStruct(d)
 	return err
 }

@@ -25,7 +25,7 @@ func NewDelegateResolver(ctx context.Context, args NewDelegateArgs) (*DelegateRe
 			return &DelegateResolver{}, &errors.ErrUnauthorized
 		}
 
-		delegate, err := grant.GetDelegateFromUUID(*args.UUID)
+		delegate, err := grant.GetDelegateByUUID(*args.UUID)
 		if err != nil {
 			return &DelegateResolver{}, err
 		}
@@ -52,3 +52,11 @@ func (d *DelegateResolver) Company(ctx context.Context) (*CompanyResolver, error
 		UUID: d.delegate.CompanyUUID.String(),
 	})
 }
+
+type DelegatePageResolver struct {
+	edges    *[]*DelegateResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *DelegatePageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *DelegatePageResolver) Edges() *[]*DelegateResolver { return r.edges }

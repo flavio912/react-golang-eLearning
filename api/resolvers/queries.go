@@ -62,6 +62,45 @@ func (q *QueryResolver) Delegate(ctx context.Context, args struct{ UUID gentypes
 	return res, err
 }
 
+func (q *QueryResolver) Delegates(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.DelegatesFilter
+	OrderBy *gentypes.OrderBy
+}) (*DelegatePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &DelegatePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	if args.Filter != nil {
+		err := (*args.Filter).Validate()
+		if err != nil {
+			return &DelegatePageResolver{}, err
+		}
+	}
+
+	delegates, pageInfo, err := grant.GetDelegates(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &DelegatePageResolver{}, err
+	}
+
+	var delegateResolvers []*DelegateResolver
+	for _, delegate := range delegates {
+		resolver, err := NewDelegateResolver(ctx, NewDelegateArgs{Delegate: delegate})
+		if err != nil {
+			return &DelegatePageResolver{}, err
+		}
+		delegateResolvers = append(delegateResolvers, resolver)
+	}
+
+	return &DelegatePageResolver{
+		edges: &delegateResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, nil
+}
+
 func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*ManagerResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {

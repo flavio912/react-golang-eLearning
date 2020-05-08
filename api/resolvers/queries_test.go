@@ -448,7 +448,7 @@ func TestDelegate(t *testing.T) {
 						"firstName":"Delegate",
 						"jobTitle":"Doer",
 						"lastName":"Man",
-						"telephone":"7912938287",
+						"telephone":"7912935287",
 						"uuid":"00000000-0000-0000-0000-000000000001"
 					}
 				}
@@ -468,6 +468,203 @@ func TestDelegate(t *testing.T) {
 	)
 }
 
+func TestDelegates(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all delegates",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000004"},
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"},
+							{"uuid":"00000000-0000-0000-0000-000000000001"}
+						],
+						"pageInfo":{
+							"given":4,
+							"limit":100,
+							"offset":0,
+							"total":4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should order",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (orderBy: {
+						ascending: true
+						field: "first_name"
+					}) {
+						edges {
+							firstName
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates": {
+						"edges": [
+							{"firstName": "David"},
+							{"firstName": "Delegate"},
+							{"firstName": "James"},
+							{"firstName": "Person"}
+						],
+						"pageInfo": {
+							"given": 4,
+							"limit": 100,
+							"offset": 0,
+							"total": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should filter",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (filter: {
+						name: "S"
+					}) {
+						edges {
+							firstName
+							lastName
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates": {
+						"edges": [
+							{"firstName": "James","lastName": "Bay"},
+							{"firstName": "Person","lastName": "Pearson"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 100,
+							"offset": 0,
+							"total": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should page",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (page: {
+						offset: 1
+						limit: 2
+					}) {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 2,
+							"offset": 1,
+							"total": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "filter must validate",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (filter: {
+						telephone: "sa#q345654sdf"
+					}) {
+						edges {
+							uuid
+						}
+					}
+				}
+			`,
+			ExpectedResult: `{"delegates":null}`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					Message: helpers.StringPointer("UserFilter.Telephone: sa#q345654sdf does not validate as numeric"),
+					Path:    []interface{}{"delegates"},
+				},
+			},
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{delegates { edges { uuid } }}`,
+			Path:            []interface{}{"delegates"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  true,
+			DelegateAllowed: false,
+		},
+	)
+}
 func TestCompany(t *testing.T) {
 	prepareTestDatabase()
 

@@ -6,6 +6,39 @@
   password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
   first_name: Delegate
   last_name: Man
-  telephone: 07912938287
+  telephone: 07912935287
   job_title: Doer
   company_uuid: 00000000-0000-0000-0000-000000000001
+- uuid: 00000000-0000-0000-0000-000000000002
+  created_at: 2020-02-08 13:53:37.338775+00
+  updated_at: 2020-02-08 13:53:37.338775+00
+  ttc_id: delegate-test-2
+  email: this@is.me
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: Person
+  last_name: Pearson
+  telephone: 07912938287
+  job_title: Maker
+  company_uuid: 00000000-0000-0000-0000-000000000001
+- uuid: 00000000-0000-0000-0000-000000000003
+  created_at: 2020-03-08 13:53:37.338775+00
+  updated_at: 2020-03-08 13:53:37.338775+00
+  ttc_id: ttc-1
+  email: del@ttc.com
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: James
+  last_name: Bay
+  telephone: 07912968287
+  job_title: Thing
+  company_uuid: 00000000-0000-0000-0000-000000000002
+- uuid: 00000000-0000-0000-0000-000000000004
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  ttc_id: smelligate-2
+  email: david@eck.ko
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: David
+  last_name: Eck
+  telephone: 07212938287
+  job_title: Problem Solver
+  company_uuid: 00000000-0000-0000-0000-000000000002

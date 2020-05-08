@@ -28,6 +28,15 @@ func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 	}
 }
 
+func (g *Grant) delegatesToGentype(delegates []models.Delegate) []gentypes.Delegate {
+	var genDelegates []gentypes.Delegate
+	for _, delegate := range delegates {
+		genDelegates = append(genDelegates, g.delegateToGentype(delegate))
+	}
+
+	return genDelegates
+}
+
 func (g *Grant) delegateExists(email string, ttcId string) bool {
 	query := database.GormDB.Where("email = ? or ttc_id = ?", email, ttcId).First(&models.Delegate{})
 	if query.Error != nil {
@@ -42,7 +51,7 @@ func (g *Grant) delegateExists(email string, ttcId string) bool {
 	return true
 }
 
-func (g *Grant) GetDelegateFromUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
+func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
 	var delegate models.Delegate
 	err := database.GormDB.Where("uuid = ?", UUID).First(&delegate).Error
 	if err != nil {
@@ -54,11 +63,69 @@ func (g *Grant) GetDelegateFromUUID(UUID gentypes.UUID) (gentypes.Delegate, erro
 		return gentypes.Delegate{}, &errors.ErrWhileHandling
 	}
 
-	if !g.IsAdmin && g.Claims.Company.UUID != delegate.CompanyUUID {
+	if !g.IsAdmin &&
+		!(g.IsManager && g.Claims.Company.UUID == delegate.CompanyUUID) &&
+		!(g.IsDelegate && g.Claims.UUID.UUID == delegate.UUID) {
 		return gentypes.Delegate{}, &errors.ErrUnauthorized
 	}
 
 	return g.delegateToGentype(delegate), nil
+}
+
+func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
+	if filter != nil {
+		query = filterUser(query, &filter.UserFilter)
+		if filter.TTC_ID != nil && *filter.TTC_ID != "" {
+			query = query.Where("ttc_id ILIKE ?", "%%"+*filter.TTC_ID+"%%")
+		}
+	}
+
+	return query
+}
+
+func (g *Grant) GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilter, orderBy *gentypes.OrderBy) ([]gentypes.Delegate, gentypes.PageInfo, error) {
+	if !g.IsAdmin && !g.IsManager {
+		return []gentypes.Delegate{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	var delegates []models.Delegate
+
+	query := filterDelegate(database.GormDB, filter)
+	// only get manager's company's delegates
+	if g.IsManager {
+		query = query.Where("company_uuid = ?", g.Claims.Company.UUID)
+	}
+
+	// Count the total filtered dataset
+	var count int32
+	countErr := query.Model(&models.Delegate{}).Limit(MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		g.Logger.Log(sentry.LevelError, countErr, "Unable to count delegates")
+		return []gentypes.Delegate{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title", "ttc_id"}, "created_at DESC")
+	if orderErr != nil {
+		return []gentypes.Delegate{}, gentypes.PageInfo{}, orderErr
+	}
+
+	query, limit, offset := getPage(query, page)
+	query = query.Find(&delegates)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []gentypes.Delegate{}, gentypes.PageInfo{}, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to find delegates")
+		return []gentypes.Delegate{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return g.delegatesToGentype(delegates), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(delegates)),
+	}, nil
 }
 
 func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, error) {
