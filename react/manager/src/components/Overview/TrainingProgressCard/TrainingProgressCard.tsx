@@ -21,9 +21,17 @@ type Props = {
   coursesDone: number;
   timeTracked: { h: number; m: number };
   title: string;
+  coursesPercent?: number;
+  timePercent?: number;
 };
 
-function TrainingProgressCard({ coursesDone, timeTracked, title }: Props) {
+function TrainingProgressCard({
+  coursesDone,
+  timeTracked,
+  title,
+  coursesPercent,
+  timePercent,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -35,11 +43,13 @@ function TrainingProgressCard({ coursesDone, timeTracked, title }: Props) {
           icon="CourseNewCourseGreen"
           text="Courses done"
           value={coursesDone}
+          percentValue={coursesPercent}
         />
         <QuickInfo
           icon="CourseTimeTracked"
           text="Time Tracked"
           value={timeTracked}
+          percentValue={timePercent}
         />
       </div>
     </Card>

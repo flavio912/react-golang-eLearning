@@ -26,19 +26,30 @@ type Props = {
   sideText?: string;
   sideComponent?: React.ReactNode;
   showCreateButtons: boolean;
+  backProps?: {
+    text: string;
+    onClick: Function;
+  };
 };
 const PageHeader = ({
   title,
   subTitle,
   showCreateButtons,
   sideText,
-  sideComponent
+  sideComponent,
+  backProps,
 }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
     <div className={classes.infoHeader}>
-      <PageTitle title={title} subTitle={subTitle} sideText={sideText} sideComponent={sideComponent} />
+      <PageTitle
+        title={title}
+        subTitle={subTitle}
+        sideText={sideText}
+        sideComponent={sideComponent}
+        backProps={backProps}
+      />
       {showCreateButtons && (
         <div className={classes.mainButtons}>
           <Button bold archetype="submit">

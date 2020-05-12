@@ -23,6 +23,7 @@ import Card from "sharedComponents/core/Card";
 import { OrgOverview } from "views/OrgOverview";
 import DelegatesPage from "views/DelegatesPage";
 import CoursesPage from "views/CoursesPage";
+import DelegateProfilePage from "views/DelegateProfilePage";
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -54,8 +55,9 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        <Route Component={OrgOverview} />
+        <Route path="/" Component={OrgOverview} />
         <Route path="/delegates" Component={DelegatesPage} />
+        <Route path="/delegates/:id" Component={DelegateProfilePage} />
         <Route path="/courses" Component={CoursesPage} />
       </Route>
     </Route>

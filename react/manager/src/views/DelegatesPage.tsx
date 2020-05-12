@@ -72,12 +72,15 @@ const delegateRow = (
   totalCourses: number,
   lastActiveTimestamp: string,
   nextExpiryTimestamp: string,
-  classes: any
+  classes: any,
+  router: any
 ): any => ({
   key: userUUID,
   cells: [
     { component: () => <UserLabel name={name} profileUrl={profileUrl} /> },
-    { component: () => <Text text={email} color={theme.colors.textBlue} /> },
+    {
+      component: () => <Text text={email} color={theme.colors.textBlue} />,
+    },
     {
       component: () => (
         <CourseCompletion total={totalCourses} complete={coursesCompleted} />
@@ -93,11 +96,13 @@ const delegateRow = (
       ),
     },
   ],
+  onClick: () => router.push(`/app/delegates/${userUUID}`),
 });
 
-const DelegatesPage = () => {
+const DelegatesPage = (props: any) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
+  const { router } = props;
   return (
     <div className={classes.root}>
       <PageHeader
@@ -169,7 +174,20 @@ const DelegatesPage = () => {
             6,
             "2013-04-20T20:00:00+0800",
             "2013-04-20T20:00:00+0800",
-            classes
+            classes,
+            router
+          ),
+          delegateRow(
+            "abc",
+            "Bruce Willis",
+            "",
+            "bruce.willis@email.com",
+            3,
+            6,
+            "2013-04-20T20:00:00+0800",
+            "2013-04-20T20:00:00+0800",
+            classes,
+            router
           ),
         ]}
       />

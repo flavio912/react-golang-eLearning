@@ -65,7 +65,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  header: string[];
+  header: Array<string | JSX.Element>;
   rows: TableRow[];
   filter?: Filter;
   sort?: Sort;

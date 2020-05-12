@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
+import Icon from "sharedComponents/core/Icon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   pageTitleRoot: {
@@ -29,7 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: 700,
   },
   sideComponent: {
-    marginLeft: 10
+    marginLeft: 10,
   },
   titlesHolder: {},
   divider: {
@@ -38,6 +39,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: 1,
     margin: [0, theme.spacing(3)],
   },
+  backTitle: {
+    cursor: "pointer",
+    marginBottom: 8,
+    display: "flex",
+    alignItems: "center",
+  },
+  backText: {
+    color: theme.colors.textBlue,
+    fontSize: theme.fontSizes.xSmall,
+    marginLeft: 7,
+  },
 }));
 
 type Props = {
@@ -45,15 +57,33 @@ type Props = {
   subTitle: string;
   sideText?: string;
   sideComponent?: React.ReactNode;
+  backProps?: {
+    text: string;
+    onClick: Function;
+  };
 };
 
-function PageTitle({ title, subTitle, sideText, sideComponent }: Props) {
+function PageTitle({
+  title,
+  subTitle,
+  sideText,
+  sideComponent,
+  backProps,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
   return (
     <div className={classes.pageTitleRoot}>
       <div className={classes.titlesHolder}>
+        {backProps && (
+          <div
+            className={classes.backTitle}
+            onClick={() => backProps.onClick()}
+          >
+            <Icon name="ArrowLeft" size={12} />
+            <span className={classes.backText}>{backProps.text}</span>
+          </div>
+        )}
         <h1 className={classes.titleText}>{title}</h1>
         <p className={classes.subtitleText}>{subTitle}</p>
       </div>
@@ -64,9 +94,7 @@ function PageTitle({ title, subTitle, sideText, sideComponent }: Props) {
         </div>
       )}
       {sideComponent && (
-        <span className={classes.sideComponent}>
-          {sideComponent}
-        </span>
+        <span className={classes.sideComponent}>{sideComponent}</span>
       )}
     </div>
   );
