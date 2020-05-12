@@ -142,6 +142,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginBottom: 5,
   },
   headerActions: {},
+  timeSpent: {
+    display: "flex",
+    "& div": {
+      marginLeft: 7,
+    },
+  },
 }));
 
 const courseRow = (
@@ -259,24 +265,31 @@ const activityRow = (
     },
     {
       component: () => {
-        let colorActiveType = theme.colors.secondaryBlack;
-        if (activeType.icon === "CourseFailed") {
-          colorActiveType = theme.colors.secondaryDanger;
-        }
+        const colorActiveTypes = {
+          CourseCertificates: theme.colors.secondaryGreen,
+          CourseFailed: theme.colors.secondaryDanger,
+          CourseNewCourse: theme.colors.primaryBlack,
+        };
         return (
           <span className={classes.activeType}>
-            <Icon name={activeType.icon} size={28} />
-            <Text text={activeType.text} color={colorActiveType} />
+            <Icon name={activeType.icon} size={25} />
+            <Text
+              text={activeType.text}
+              color={colorActiveTypes[activeType.icon]}
+            />
           </span>
         );
       },
     },
     {
       component: () => (
-        <Text
-          text={`${timeSpent.h}hr ${timeSpent.m}mins`}
-          color={theme.colors.secondaryBlack}
-        />
+        <span className={classes.timeSpent}>
+          <Icon name={"CourseStatus_Completed"} size={25} />
+          <Text
+            text={`${timeSpent.h}hr ${timeSpent.m}mins`}
+            color={theme.colors.secondaryBlack}
+          />
+        </span>
       ),
     },
     { component: () => null },
@@ -426,6 +439,17 @@ const DelegateProfilePage = (props: any) => {
             80,
             32,
             "1",
+            false,
+            "",
+            classes
+          ),
+          courseRow(
+            1,
+            "Dangerous Goods by Road Awareness",
+            "DANGEROUS GOODS(ROAD)",
+            80,
+            32,
+            "1",
             true,
             "20/02/2022",
             classes
@@ -441,14 +465,6 @@ const DelegateProfilePage = (props: any) => {
       <div className={classes.sectionTitleWrapper}>
         <h2>Bruce's activity</h2>
         <div className={classes.courseDropdown}>
-          {/* <Dropdown
-            placeholder="Show Historical Courses"
-            options={defaultFilterCourseOptions}
-            selected={filterCourse}
-            setSelected={(selected) => {
-              setFilterCourse(selected);
-            }}
-          /> */}
           <Button
             archetype={"default"}
             icon={{ right: "FilterAdjust" }}
@@ -495,6 +511,24 @@ const DelegateProfilePage = (props: any) => {
             {
               icon: "CourseNewCourse",
               text: "New Course",
+            },
+            {
+              h: 3,
+              m: 15,
+            },
+            "Bruce Willis",
+            classes
+          ),
+          activityRow(
+            1,
+            {
+              time: "10:29",
+              date: "01/02/2020",
+            },
+            "Bruce failed the Dangerous Goods by Road Awareness Course",
+            {
+              icon: "CourseCertificates",
+              text: "New New certificate!",
             },
             {
               h: 3,

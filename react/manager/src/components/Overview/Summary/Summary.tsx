@@ -56,7 +56,7 @@ function Summary({
         />
         <div className={classes.spacer} />
         <QuickInfo
-          icon="CourseExpiringSoon"
+          icon="Course_Calendar"
           text="Last active"
           value={`${numLastActive}d`}
         />
