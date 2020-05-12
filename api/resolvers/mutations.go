@@ -231,7 +231,7 @@ type companyRequestInput struct {
 func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args companyRequestInput) (bool, error) {
 	// TODO: Check recaptcha token
 
-	err := middleware.CreateCompanyRequest(args.Company, args.Manager)
+	err := middleware.CreateCompanyRequest(ctx, args.Company, args.Manager)
 	if err != nil {
 		return false, err
 	}

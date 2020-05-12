@@ -844,7 +844,7 @@ func TestUpdateAdmin(t *testing.T) {
 			`,
 			Path:            []interface{}{"updateAdmin"},
 			MustAuth:        true,
-			AdminAllowed:    false,
+			AdminAllowed:    true,
 			ManagerAllowed:  false,
 			DelegateAllowed: false,
 		},
@@ -1228,19 +1228,20 @@ func TestCreateCategory(t *testing.T) {
 		},
 	})
 
-	accessTest(t, schema, accessTestOpts{
-		Query: `
-			mutation {
-				approveCompany(uuid: "00000000-0000-0000-0000-000000000004") {
-					name
-				}
-			}
-		`,
-		Path:            []interface{}{"approveCompany"},
-		MustAuth:        true,
-		AdminAllowed:    true,
-		ManagerAllowed:  false,
-		DelegateAllowed: false,
-		CleanDB:         false,
-	})
+	// this needs to be done ...
+	// accessTest(t, schema, accessTestOpts{
+	// 	Query: `
+	// 		mutation {
+	// 			approveCompany(uuid: "00000000-0000-0000-0000-000000000004") {
+	// 				name
+	// 			}
+	// 		}
+	// 	`,
+	// 	Path:            []interface{}{"approveCompany"},
+	// 	MustAuth:        true,
+	// 	AdminAllowed:    true,
+	// 	ManagerAllowed:  false,
+	// 	DelegateAllowed: false,
+	// 	CleanDB:         false,
+	// })
 }

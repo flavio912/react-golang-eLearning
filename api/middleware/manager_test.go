@@ -10,6 +10,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -144,7 +145,7 @@ func TestGetManagersByUUID(t *testing.T) {
 			"Managers cannot see other managers",
 			managerGrant,
 			[]string{"00000000-0000-0000-0000-000000000002"},
-			nil,
+			&errors.ErrUnauthorized,
 			0,
 		},
 		{
@@ -192,7 +193,7 @@ func TestGetManagerSelf(t *testing.T) {
 	}{
 		{
 			"Must be manager",
-			middleware.Grant{auth.UserClaims{}, true, false, true},
+			middleware.Grant{auth.UserClaims{}, true, false, true, logging.Logger{}},
 			"",
 			&errors.ErrUnauthorized,
 		},
@@ -276,7 +277,6 @@ func TestGetManagers(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetManagers(nil, nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -326,13 +326,13 @@ func TestGetManagers(t *testing.T) {
 			name   string
 			filter gentypes.ManagersFilter
 		}{
-			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
-			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
-			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
-			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
-			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
-			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
-			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+			{"Email", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &manager.Email}}},
+			{"FirstName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.FirstName}}},
+			{"LastName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.LastName}}},
+			{"First and Last", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
+			{"JobTitle", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{JobTitle: &manager.JobTitle}}},
+			{"uuid", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
+			{"Full", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName, Email: &manager.Email}}},
 		}
 
 		for _, test := range filterTests {
@@ -348,7 +348,7 @@ func TestGetManagers(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.ManagersFilter{Email: &email}
+			filter := gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &email}}
 			managers, _, err := adminGrant.GetManagers(nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, managers, 5)

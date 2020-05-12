@@ -19,6 +19,15 @@ input ManagerFilter {
   telephone: String
 }
 
+input DelegateFilter {
+  uuid: UUID
+  ttc_id: String
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
+}
+
 input CourseInfoFilter {
   name: String
   accessType: AccessType
@@ -54,6 +63,8 @@ type Query {
   admins(page: Page): AdminPage!
   manager(uuid: UUID): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
+  delegate(uuid: UUID!): Delegate
+  delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
   company(uuid: UUID!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
   onlineCourses(

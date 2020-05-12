@@ -1,9 +1,12 @@
 package middleware
 
 import (
+	"context"
 	"time"
 
-	"github.com/golang/glog"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -44,12 +47,13 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 // CompanyExists checks is a companyUUID exists in the DB
 func (g *Grant) CompanyExists(companyUUID gentypes.UUID) bool {
 	var company models.Company
-	existsErr := database.GormDB.Where("uuid = ?", companyUUID).First(&company)
-	if existsErr.Error != nil {
-		if existsErr.RecordNotFound() {
+	query := database.GormDB.Where("uuid = ?", companyUUID).First(&company)
+	if query.Error != nil {
+		if query.RecordNotFound() {
 			return false
 		}
-		glog.Errorf("Error while finding company: %s", existsErr.Error.Error())
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Error while finding company: %s", companyUUID)
 		return false
 	}
 	return true
@@ -69,16 +73,31 @@ func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
 func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error) {
 	// Check that all requested uuid's are allowed to be returned to the user
 	var authorizedUUIDs []gentypes.UUID
-	for _, uuid := range uuids {
-		if g.ManagesCompany(uuid) {
-			authorizedUUIDs = append(authorizedUUIDs, uuid)
+
+	if g.IsManager {
+		for _, uuid := range uuids {
+			if g.ManagesCompany(uuid) {
+				authorizedUUIDs = append(authorizedUUIDs, uuid)
+			}
+			if len(uuids) > 0 && len(authorizedUUIDs) == 0 {
+				return []gentypes.Company{}, &errors.ErrUnauthorized
+			}
 		}
+	} else if g.IsAdmin {
+		authorizedUUIDs = uuids
+	} else {
+		return []gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
 	var companies []models.Company
 	query := database.GormDB.Where("uuid IN (?)", authorizedUUIDs).Find(&companies)
 	if query.Error != nil {
-		return []gentypes.Company{}, getDBErrorType(query)
+		if query.RecordNotFound() {
+			return []gentypes.Company{}, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Error finding companies by uuid")
+		return []gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
 	return g.companiesToGentype(companies), nil
@@ -95,6 +114,8 @@ func (g *Grant) GetCompanyByUUID(uuid gentypes.UUID) (gentypes.Company, error) {
 		if query.RecordNotFound() {
 			return gentypes.Company{}, &errors.ErrCompanyNotFound
 		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Error finding company by uuid: %s", uuid)
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
@@ -121,10 +142,9 @@ func (g *Grant) GetManagerIDsByCompany(
 	query = filterManager(query, filter)
 
 	var count int32
-	err := query.Model(&models.Manager{}).Count(&count)
-	if err.Error != nil {
-		glog.Errorf("DB Error %s", err.Error.Error())
-		glog.Errorf("Unable to count records for %s", companyUUID)
+	countQuery := query.Model(&models.Manager{}).Count(&count)
+	if countQuery.Error != nil {
+		g.Logger.Logf(sentry.LevelError, countQuery.Error, "Error trying to count managers for company uuid: %s", companyUUID)
 		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -136,7 +156,12 @@ func (g *Grant) GetManagerIDsByCompany(
 	query, limit, offset := getPage(query, page)
 	query.Find(&managers)
 	if query.Error != nil {
-		return []gentypes.UUID{}, gentypes.PageInfo{}, getDBErrorType(query)
+		if query.RecordNotFound() {
+			return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrCompanyNotFound
+		}
+
+		g.Logger.Logf(sentry.LevelError, countQuery.Error, "Error getting managers for company uuid: %s", companyUUID)
+		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
 	for _, manager := range managers {
@@ -180,7 +205,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 	var count int32
 	countErr := query.Count(&count).Error
 	if countErr != nil {
-		glog.Errorf("DB Error %s", countErr.Error())
+		g.Logger.Log(sentry.LevelError, countErr, "Error getting company uuids")
 		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 	query, limit, offset := getPage(query, page)
@@ -225,7 +250,7 @@ func (g *Grant) CreateCompany(company gentypes.CreateCompanyInput) (gentypes.Com
 
 	query := database.GormDB.Create(&compModel)
 	if query.Error != nil {
-		glog.Errorf("Unable to create company: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create company")
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
@@ -244,7 +269,7 @@ func (g *Grant) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Compa
 			return gentypes.Company{}, &errors.ErrCompanyNotFound
 		}
 
-		glog.Errorf("Unable to find company to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find company to update with UUID: %s", input.UUID)
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
@@ -272,7 +297,7 @@ func (g *Grant) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Compa
 
 	save := database.GormDB.Save(&company)
 	if save.Error != nil {
-		glog.Errorf("Error updating company with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		g.Logger.Logf(sentry.LevelError, save.Error, "Unable to find company to update with UUID: %s", input.UUID)
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
@@ -281,7 +306,7 @@ func (g *Grant) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Compa
 }
 
 // CreateCompanyRequest creates a company and sets it to unapproved, for an admin to approve later
-func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error {
+func CreateCompanyRequest(ctx context.Context, company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error {
 	// Validate input
 	if err := company.Validate(); err != nil {
 		return err
@@ -315,7 +340,8 @@ func CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.
 	}
 	query := database.GormDB.Create(&compModel)
 	if query.Error != nil {
-		glog.Errorf("Unable to create company request: %s", query.Error.Error())
+		logger := logging.GetLoggerFromCtx(ctx)
+		logger.Log(sentry.LevelError, query.Error, "Unable to create company request")
 		return &errors.ErrWhileHandling
 	}
 
@@ -335,7 +361,7 @@ func (g *Grant) ApproveCompany(companyUUID gentypes.UUID) (gentypes.Company, err
 
 	query := database.GormDB.Model(&models.Company{}).Where("uuid = ?", companyUUID).Update("approved", true)
 	if query.Error != nil {
-		glog.Errorf("Unable to approve company: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to approve company")
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 

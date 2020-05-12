@@ -8,6 +8,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 )
 
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
@@ -17,6 +18,8 @@ type Grant struct {
 	IsAdmin    bool
 	IsManager  bool
 	IsDelegate bool
+	// contains the sentry hub
+	Logger logging.Logger
 }
 
 // Authenticate is used to verify and get access to middleware functions
@@ -105,12 +108,24 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	return query, nil
 }
 
-func getDBErrorType(query *gorm.DB) error {
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return &errors.ErrNotFound
+func filterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
+	if filter != nil {
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
 		}
-		return &errors.ErrWhileHandling
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.JobTitle != nil && *filter.JobTitle != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
+		}
+		if filter.Telephone != nil && *filter.Telephone != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.Telephone+"%%")
+		}
 	}
-	return nil
+
+	return query
 }

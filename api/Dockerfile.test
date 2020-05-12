@@ -8,5 +8,3 @@ ENV CGO_ENABLED=0
 
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv
-
-# CMD CGO_ENABLED=0 go test -v -coverprofile .testCoverage ./... && go tool cover -func=.testCoverage
