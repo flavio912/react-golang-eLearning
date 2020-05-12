@@ -106,8 +106,8 @@ func CheckErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryErro
 	sortErrors(gotTestErrors)
 	sortErrors(want)
 
-	if len(want) < len(gotTestErrors) {
-		t.Error("Got more errors than wanted:")
+	if len(want) != len(gotTestErrors) {
+		t.Error("Unequal number of errors:")
 		t.Errorf("want: %#v", want)
 		t.Error("got:")
 	}

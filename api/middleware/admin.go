@@ -3,7 +3,7 @@ package middleware
 import (
 	"fmt"
 
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -44,8 +44,10 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 	var admins []models.Admin
 	q := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins)
 	if q.Error != nil {
+		g.Logger.Log(sentry.LevelError, q.Error, "Unable to get admins by UUID")
 		return []gentypes.Admin{}, &errors.ErrWhileHandling
 	}
+
 	if len(admins) == 0 {
 		return []gentypes.Admin{}, &errors.ErrNotFound
 	}
@@ -61,7 +63,7 @@ func (g *Grant) adminExists(uuid gentypes.UUID) bool {
 			return false
 		}
 		// If some other error occurs log it
-		glog.Errorf("Unable to find admin for UUID: %s - error: %s", uuid, query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for UUID: %s", uuid)
 		return false
 	}
 
@@ -75,7 +77,7 @@ func (g *Grant) adminEmailExists(email string) bool {
 			return false
 		}
 		// If some other error occurs log it
-		glog.Errorf("Unable to find admin for Email: %s - error: %s", email, query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for Email: %s", email)
 		return false
 	}
 	return true
@@ -102,7 +104,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	var count int32
 	countErr := query.Model(&models.Admin{}).Count(&count).Error
 	if countErr != nil {
-		glog.Errorf("Unable to count records for admin. error: %s", countErr.Error())
+		g.Logger.Log(sentry.LevelError, countErr, "Unable to count records for admin")
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -111,7 +113,8 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	query, limit, offset := getPage(query, page)
 	err := query.Find(&admins).Error
 	if err != nil {
-		return []gentypes.Admin{}, gentypes.PageInfo{}, err
+		g.Logger.Log(sentry.LevelError, err, "Unable to find admins")
+		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
 	return adminsToGentypes(admins), gentypes.PageInfo{
@@ -139,11 +142,10 @@ func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, er
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 	}
-	query := database.GormDB.Create(&admin)
 
-	// Check for errors
+	query := database.GormDB.Create(&admin)
 	if query.Error != nil {
-		glog.Errorf("Unable to create admin: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create admin")
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -162,7 +164,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 			return gentypes.Admin{}, &errors.ErrAdminNotFound
 		}
 
-		glog.Errorf("Unable to find admin to update with UUID: %s - error: %s", input.UUID, query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin to update with UUID: %s", input.UUID)
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -188,7 +190,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 
 	save := database.GormDB.Save(admin)
 	if save.Error != nil {
-		glog.Errorf("Error updating Admin with UUID: %s - error: %s", input.UUID, save.Error.Error())
+		g.Logger.Logf(sentry.LevelError, save.Error, "Error updating Admin with UUID: %s", input.UUID)
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -208,7 +210,7 @@ func (g *Grant) DeleteAdmin(uuid gentypes.UUID) (bool, error) {
 
 	query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Admin{})
 	if query.Error != nil {
-		glog.Errorf("Unable to delete admin: %s", query.Error.Error())
+		g.Logger.Logf(sentry.LevelError, query.Error, "Error updating Admin with UUID: %s", uuid)
 		return false, &errors.ErrDeleteFailed
 	}
 

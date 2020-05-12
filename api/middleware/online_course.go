@@ -3,6 +3,7 @@ package middleware
 import (
 	"strconv"
 
+	"github.com/getsentry/sentry-go"
 	"github.com/jinzhu/gorm"
 
 	"github.com/asaskevich/govalidator"
@@ -45,7 +46,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 	}
 
 	// Get courseInfo model
-	infoModel, err := ComposeCourseInfo(CourseInfoInput{
+	infoModel, err := g.ComposeCourseInfo(CourseInfoInput{
 		Name:          courseInfo.Name,
 		Price:         courseInfo.Price,
 		Color:         courseInfo.Color,
@@ -74,7 +75,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 
 	query := database.GormDB.Create(&newCourse)
 	if query.Error != nil {
-		glog.Errorf("Unable to create course: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create course")
 		return gentypes.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -99,6 +100,8 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 		if query.RecordNotFound() {
 			return models.OnlineCourse{}, &errors.ErrNotFound
 		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
 		return models.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -153,6 +156,7 @@ func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gen
 
 func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[]gentypes.CourseItem) error {
 	if !g.IsAdmin {
+		g.Logger.LogMessage(sentry.LevelError, "Non admin tried to save online course structure (shouldn't be possible)")
 		return &errors.ErrWhileHandling
 	}
 
@@ -177,6 +181,7 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 	query := tx.Where("online_course_id = ?", courseUUID).Delete(models.CourseStructure{})
 	if query.Error != nil {
 		tx.Rollback()
+		g.Logger.Log(sentry.LevelError, query.Error, "Course delete before re add failed")
 		return &errors.ErrWhileHandling
 	}
 
@@ -204,12 +209,13 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 		query := tx.Create(&structureItem)
 		if query.Error != nil {
 			tx.Rollback()
+			g.Logger.Log(sentry.LevelError, query.Error, "Failed to create the structure")
 			return &errors.ErrWhileHandling
 		}
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		glog.Errorf("Commit Error: %s", err.Error())
+		g.Logger.Log(sentry.LevelError, err, "Failed to commit new course structure")
 		return &errors.ErrWhileHandling
 	}
 	return nil
@@ -270,7 +276,7 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 	// Count total that can be retrieved by the current filter
 	var total int32
 	if err := query.Model(&models.OnlineCourse{}).Count(&total).Error; err != nil {
-		glog.Errorf("Unable to get online course count: %s", err)
+		g.Logger.Log(sentry.LevelError, err, "Unable to get online course count")
 		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -278,7 +284,7 @@ func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCou
 
 	query = query.Find(&courses)
 	if query.Error != nil {
-		glog.Errorf("Unable to get courses: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, err, "Unable to get courses")
 		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 

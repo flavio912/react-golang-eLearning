@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -44,11 +44,10 @@ type CourseInfoInput struct {
 }
 
 // ComposeCourseInfo creates a courseInfo model from given info
-func ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo, error) {
-
+func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo, error) {
 	var tags []models.Tag
 	if courseInfo.Tags != nil {
-		_tags, err := CheckTagsExist(*courseInfo.Tags)
+		_tags, err := g.CheckTagsExist(*courseInfo.Tags)
 		if err != nil {
 			return models.CourseInfo{}, err
 		}
@@ -100,7 +99,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 
 	if infoChanges.Tags != nil {
 		// Check each tag exists
-		if tags, err := CheckTagsExist(*infoChanges.Tags); err == nil {
+		if tags, err := g.CheckTagsExist(*infoChanges.Tags); err == nil {
 			courseInfo.Tags = tags
 		} else {
 			return gentypes.CourseInfo{}, err
@@ -136,8 +135,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 
 	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(&courseInfo)
 	if query.Error != nil {
-		glog.Errorf("Unable to update courseInfo: %s", query.Error.Error())
-		//logging.Log(ctx, sentry.LevelError, "Unable to update courseInfo", query.Error)
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update courseInfo")
 		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -157,7 +155,8 @@ func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, err
 		if query.RecordNotFound() {
 			return courseInfoToGentype(info), &errors.ErrNotFound
 		}
-		glog.Warningf("Unable to get course info: %s", query.Error.Error())
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course info")
 		return courseInfoToGentype(info), &errors.ErrWhileHandling
 	}
 	return courseInfoToGentype(info), nil

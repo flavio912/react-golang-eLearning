@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"github.com/asaskevich/govalidator"
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"github.com/lib/pq"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -14,11 +14,11 @@ import (
 
 // CheckTagsExist returns a slice of tags if all the given tag uuids are in the database
 // If *any* are not found it returns an error and no tags
-func CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
+func (g *Grant) CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
 	var tagModels []models.Tag
 	query := database.GormDB.Where("uuid IN (?)", tags).Find(&tagModels)
 	if query.Error != nil {
-		glog.Errorf("Error while checking tags exist: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Error while checking tags exist")
 		return []models.Tag{}, &errors.ErrWhileHandling
 	}
 
@@ -62,7 +62,8 @@ func (g *Grant) CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error) {
 		if errors.CodeUniqueViolation == query.Error.(*pq.Error).Code {
 			return gentypes.Tag{}, &errors.ErrTagAlreadyExists
 		}
-		glog.Errorf("Could not create tag: %s", query.Error.Error())
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Could not create tag")
 		return gentypes.Tag{}, &errors.ErrWhileHandling
 	}
 
@@ -81,7 +82,7 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 	var links []models.CourseTagsLink
 	query := database.GormDB.Where("course_info_id IN (?)", ids).Find(&links)
 	if query.Error != nil {
-		glog.Errorf("Unable to get course tags links: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags links")
 		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
 	}
 
@@ -94,7 +95,7 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 	var tags []models.Tag
 	query = database.GormDB.Where("uuid IN (?)", tagUUIDs).Find(&tags)
 	if query.Error != nil {
-		glog.Errorf("Unable to get course tags: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags")
 		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
 	}
 

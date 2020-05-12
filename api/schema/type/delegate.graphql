@@ -1,0 +1,29 @@
+type Delegate implements User {
+  uuid: UUID!
+  createdAt: String
+  TTC_ID: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+  company: Company!
+  profileImageUrl: String
+}
+
+input CreateDelegateInput {
+  companyUUID: UUID
+  TTC_ID: String!
+  firstName: String!
+  lastName: String!
+  email: String!
+  jobTitle: String!
+  telephone: String!
+  password: String!
+}
+
+type DelegatePage implements PaginatedQuery {
+  edges: [Delegate]
+  pageInfo: PageInfo
+}

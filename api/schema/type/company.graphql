@@ -28,3 +28,14 @@ input CreateCompanyInput {
   postCode: String!
   country: String!
 }
+
+input UpdateCompanyInput {
+  uuid: UUID!
+  companyName: String
+  approved: Boolean
+  addressLine1: String
+  addressLine2: String
+  county: String
+  postCode: String
+  country: String
+}

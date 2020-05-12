@@ -5,16 +5,12 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
 func TestCreateClassroomCourse(t *testing.T) {
 	t.Run("Check classroom course created correctly", func(t *testing.T) {
-		grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
-
 		open := gentypes.Open
 		startTime := gentypes.Time{time.Now()}
 		endTime := gentypes.Time{time.Now().AddDate(0, 0, 4)}
@@ -35,7 +31,7 @@ func TestCreateClassroomCourse(t *testing.T) {
 			Location:        helpers.StringPointer("A cool new place"),
 		}
 
-		course, err := grant.CreateClassroomCourse(inp)
+		course, err := adminGrant.CreateClassroomCourse(inp)
 		assert.Nil(t, err)
 
 		assert.Equal(t, startTime, course.StartDate)
@@ -44,7 +40,7 @@ func TestCreateClassroomCourse(t *testing.T) {
 		assert.Equal(t, 12, course.MaxParticipants)
 
 		// Get course info
-		info, err := grant.GetCourseInfoFromID(course.CourseInfoID)
+		info, err := adminGrant.GetCourseInfoFromID(course.CourseInfoID)
 		assert.Nil(t, err)
 		checkCourseInfoEqual(t, inp.CourseInput, info)
 	})

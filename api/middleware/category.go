@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"github.com/lib/pq"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -38,7 +38,8 @@ func (g *Grant) CreateCategory(ctx context.Context, input gentypes.CreateCategor
 		if errors.CodeUniqueViolation == query.Error.(*pq.Error).Code {
 			return gentypes.Category{}, &errors.ErrCategoryAlreadyExists
 		}
-		glog.Errorf("Could not create category: %s", query.Error.Error())
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Could not create category")
 		return gentypes.Category{}, &errors.ErrWhileHandling
 	}
 
@@ -52,7 +53,7 @@ func (g *Grant) GetCategoryByUUID(uuid gentypes.UUID) (gentypes.Category, error)
 			return gentypes.Category{}, &errors.ErrNotFound
 		}
 
-		glog.Errorf("Unable to get UUID: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get by UUID")
 		return gentypes.Category{}, &errors.ErrWhileHandling
 	}
 

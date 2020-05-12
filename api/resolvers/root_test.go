@@ -9,102 +9,64 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/gqltest"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/testhelpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/go-testfixtures/testfixtures/v3"
 	graphql "github.com/graph-gophers/graphql-go"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/resolvers"
 	s "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/schema"
 )
 
 var (
-	db       *sql.DB
-	fixtures *testfixtures.Loader
-	schema   *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	db                 *sql.DB
+	fixtures           *testfixtures.Loader
+	schema             *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
+	baseAdminContext   context.Context
+	baseManagerContext context.Context
 )
 
 func TestMain(m *testing.M) {
 	var err error
 
 	// Load in the config.yaml file
-	if err := helpers.LoadConfig("../dev_env/test_config.yml"); err != nil {
-		panic(err)
-	}
-	errDb := database.SetupDatabase(false)
-	if errDb != nil {
-		panic(errDb)
-	}
-	migration.InitMigrations()
-
-	db, err = sql.Open("postgres", "host=test_db port=5432 user=test dbname=testdb password=test sslmode=disable")
+	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
 	if err != nil {
-		fmt.Printf("Unable to connect to test DB: %s", err.Error())
-		return
+		panic("Failed to init test db")
 	}
-
-	fixtures, err = testfixtures.New(
-		testfixtures.Database(db), // Your database connection
-		testfixtures.Dialect("postgres"),
-		testfixtures.Directory("../middleware/fixtures"), // the directory containing the YAML files
-	)
-
-	if err != nil {
-		fmt.Printf("Unable get fixtures: %s", err.Error())
-		return
-	}
-
 	prepareTestDatabase()
 
-	// loaders := loader.Init()
-	// defaultContext = loaders.Attach(defaultContext)
-
-	// adminContext = loaders.Attach(adminContext)
-	// adminContext, err = addAdminCreds(adminContext)
-	// if err != nil {
-	// 	return
-	// }
-
-	// managerContext = loaders.Attach(managerContext)
-	// managerContext, err = addManagerCreds(managerContext)
-	// if err != nil {
-	// 	return
-	// }
+	baseAdminContext, err = addAdminCreds(context.Background())
+	if err != nil {
+		return
+	}
+	baseManagerContext, err = addManagerCreds(context.Background())
+	if err != nil {
+		return
+	}
 
 	os.Exit(m.Run())
 }
 
-func defaultContext() context.Context {
-	defaultContext := context.Background()
+func attachLoaders(ctx context.Context) context.Context {
 	loaders := loader.Init()
-	defaultContext = loaders.Attach(defaultContext)
-	return defaultContext
+	ctx = loaders.Attach(ctx)
+	return ctx
+}
+
+func defaultContext() context.Context {
+	return attachLoaders(context.Background())
 }
 
 func adminContext() context.Context {
-	cont := context.Background()
-	loaders := loader.Init()
-	cont = loaders.Attach(cont)
-	cont, err := addAdminCreds(cont)
-	if err != nil {
-		panic(err)
-	}
-	return cont
+	return attachLoaders(baseAdminContext)
 }
 
 func managerContext() context.Context {
-	adminContext := context.Background()
-	loaders := loader.Init()
-	adminContext = loaders.Attach(adminContext)
-	adminContext, err := addManagerCreds(adminContext)
-	if err != nil {
-		panic(err)
-	}
-	return adminContext
+	return attachLoaders(baseManagerContext)
 }
 
 // adds admin 1 to context
@@ -146,6 +108,7 @@ func addManagerCreds(ctx context.Context) (context.Context, error) {
 func prepareTestDatabase() {
 	if err := fixtures.Load(); err != nil {
 		fmt.Printf("Unable to load fixtures for test: %s", err.Error())
+		panic(err)
 	}
 }
 

@@ -5,7 +5,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -13,8 +12,6 @@ import (
 
 func TestCreateAdmin(t *testing.T) {
 	prepareTestDatabase()
-	// fake grant
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 
 	newAdmin := gentypes.CreateAdminInput{
 		Email:     "admi1n@admin.com",
@@ -24,13 +21,12 @@ func TestCreateAdmin(t *testing.T) {
 	}
 
 	t.Run("Must be admin to add user", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.CreateAdmin(newAdmin)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Check Admin is created", func(t *testing.T) {
-		createdAdmin, err := grant.CreateAdmin(newAdmin)
+		createdAdmin, err := adminGrant.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Admin{
 			UUID:      createdAdmin.UUID,
@@ -42,9 +38,9 @@ func TestCreateAdmin(t *testing.T) {
 
 	newAdmin.Email = "email2@admin.com"
 	t.Run("Check email must be unique", func(t *testing.T) {
-		_, err := grant.CreateAdmin(newAdmin)
+		_, err := adminGrant.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
-		a, err := grant.CreateAdmin(newAdmin)
+		a, err := adminGrant.CreateAdmin(newAdmin)
 		assert.Equal(t, gentypes.Admin{}, a, "should return blank")
 		assert.Equal(t, &errors.ErrUserExists, err)
 	})
@@ -53,20 +49,17 @@ func TestCreateAdmin(t *testing.T) {
 func TestUpdateAdmin(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
-
 	updateAdmin := gentypes.UpdateAdminInput{
 		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000001999"), // non-existant uuid
 	}
 
 	t.Run("Must be admin to update", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.UpdateAdmin(updateAdmin)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := grant.UpdateAdmin(updateAdmin)
+		_, err := adminGrant.UpdateAdmin(updateAdmin)
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
@@ -83,7 +76,7 @@ func TestUpdateAdmin(t *testing.T) {
 		updateAdmin.LastName = &testAdmin.LastName
 		updateAdmin.Email = &testAdmin.Email
 
-		updatedAdmin, err := grant.UpdateAdmin(updateAdmin)
+		updatedAdmin, err := adminGrant.UpdateAdmin(updateAdmin)
 		assert.Nil(t, err)
 		assert.Equal(t, testAdmin, updatedAdmin)
 	})
@@ -92,26 +85,23 @@ func TestUpdateAdmin(t *testing.T) {
 func TestDeleteAdmin(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
-
 	t.Run("Must be admin to delete", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999"))
+		_, err := adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
 	t.Run("Check it deletes the admin", func(t *testing.T) {
-		out, err := grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
+		out, err := adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Nil(t, err)
 		assert.True(t, out)
 
 		// trying to delete again then causes not found
-		_, err = grant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
+		_, err = adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 }
@@ -119,16 +109,13 @@ func TestDeleteAdmin(t *testing.T) {
 func TestGetAdmins(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
-
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetAdmins(nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 	t.Run("Should return all admins", func(t *testing.T) {
-		admins, _, err := grant.GetAdmins(nil, nil)
+		admins, _, err := adminGrant.GetAdmins(nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 4)
 	})
@@ -154,7 +141,7 @@ func TestGetAdmins(t *testing.T) {
 
 		for _, test := range filterTests {
 			t.Run(test.name, func(t *testing.T) {
-				admins, _, err := grant.GetAdmins(nil, &test.filter)
+				admins, _, err := adminGrant.GetAdmins(nil, &test.filter)
 				assert.Nil(t, err)
 				require.Len(t, admins, 1)
 				assert.Equal(t, admin, admins[0])
@@ -163,7 +150,7 @@ func TestGetAdmins(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			filter := middleware.AdminFilter{Email: ".com"}
-			admins, _, err := grant.GetAdmins(nil, &filter)
+			admins, _, err := adminGrant.GetAdmins(nil, &filter)
 			assert.Nil(t, err)
 			require.Len(t, admins, 4)
 		})
@@ -172,7 +159,7 @@ func TestGetAdmins(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(2)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		admins, pageinfo, err := grant.GetAdmins(&page, nil)
+		admins, pageinfo, err := adminGrant.GetAdmins(&page, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 2)
 		assert.Equal(t, gentypes.PageInfo{
@@ -187,10 +174,7 @@ func TestGetAdmins(t *testing.T) {
 func TestGetAdminsByUUID(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
-
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.GetAdminsByUUID([]string{""})
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -201,20 +185,20 @@ func TestGetAdminsByUUID(t *testing.T) {
 	}
 
 	t.Run("Should get admins", func(t *testing.T) {
-		admins, err := grant.GetAdminsByUUID(uuids)
+		admins, err := adminGrant.GetAdminsByUUID(uuids)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 2)
 	})
 
 	t.Run("Should return errs", func(t *testing.T) {
 		t.Run("not found", func(t *testing.T) {
-			admins, err := grant.GetAdminsByUUID([]string{"00000000-0000-0000-0000-000000000000"})
+			admins, err := adminGrant.GetAdminsByUUID([]string{"00000000-0000-0000-0000-000000000000"})
 			assert.Equal(t, &errors.ErrNotFound, err)
 			assert.Len(t, admins, 0)
 		})
 		t.Run("err while handling", func(t *testing.T) {
 			// fake non validated uuid will cause db to bug out
-			admins, err := grant.GetAdminsByUUID([]string{"asdfasdf-asdfasdf"})
+			admins, err := adminGrant.GetAdminsByUUID([]string{"asdfasdf-asdfasdf"})
 			assert.Equal(t, &errors.ErrWhileHandling, err)
 			assert.Len(t, admins, 0)
 		})
