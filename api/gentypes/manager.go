@@ -12,11 +12,7 @@ type Manager struct {
 }
 
 type ManagersFilter struct {
-	Email     *string `valid:"-"`
-	Name      *string `valid:"-"`
-	JobTitle  *string `valid:"-"`
-	Telephone *string `valid:"numeric"`
-	UUID      *string `valid:"uuidv4"`
+	UserFilter
 }
 
 func (m *ManagersFilter) Validate() error {

@@ -1,0 +1,45 @@
+type Manager implements User {
+  uuid: UUID!
+  createdAt: String
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+  company: Company!
+  profileImageUrl: String
+}
+
+type ManagerPage implements PaginatedQuery {
+  edges: [Manager]
+  pageInfo: PageInfo
+}
+
+input ManagerLogin {
+  email: String!
+  password: String!
+}
+
+input CreateManagerInput {
+  companyUUID: UUID # For admins when creating managers of different companies
+  firstName: String!
+  lastName: String!
+  email: String!
+  jobTitle: String!
+  telephone: String!
+  password: String!
+}
+
+input DeleteManagerInput {
+  uuid: UUID!
+}
+
+input UpdateManagerInput {
+  uuid: UUID!
+  email: String
+  firstName: String
+  lastName: String
+  telephone: String
+  jobTitle: String
+}

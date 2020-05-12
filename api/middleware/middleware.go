@@ -107,3 +107,25 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
 	return query, nil
 }
+
+func filterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
+	if filter != nil {
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
+		}
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.UUID != nil && *filter.UUID != "" {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+		if filter.JobTitle != nil && *filter.JobTitle != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.JobTitle+"%%")
+		}
+		if filter.Telephone != nil && *filter.Telephone != "" {
+			query = query.Where("job_title ILIKE ?", "%%"+*filter.Telephone+"%%")
+		}
+	}
+
+	return query
+}
