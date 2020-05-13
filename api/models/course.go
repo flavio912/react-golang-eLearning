@@ -37,19 +37,19 @@ func (CourseTagsLink) TableName() string {
 }
 
 type Category struct {
-	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name  string        `gorm:"unique"`
+	Base
+	Name  string `gorm:"unique"`
 	Color string
 }
 
 type Tag struct {
-	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name  string        `gorm:"unique"`
-	Color string        // A hex color for the tag
+	Base
+	Name  string `gorm:"unique"`
+	Color string // A hex color for the tag
 }
 
 type OnlineCourse struct {
-	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Base
 	CourseInfo   CourseInfo
 	CourseInfoID uint // FKEY
 	Structure    []CourseStructure
@@ -64,7 +64,7 @@ type CourseStructure struct {
 }
 
 type ClassroomCourse struct {
-	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Base
 	CourseInfo   CourseInfo
 	CourseInfoID uint
 	//Tutor      Tutor // The tutor user running this course

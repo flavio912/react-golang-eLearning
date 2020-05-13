@@ -81,30 +81,30 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 In no circumstances is "allowedFields" to be given by the user
 */
 func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
-	if orderBy == nil {
-		query = query.Order(defaultOrdering)
-		return query, nil
-	}
-
-	var allowed bool
-	for _, field := range allowedFields {
-		if orderBy.Field == field {
-			allowed = true
-			break
+	if orderBy != nil {
+		var allowed bool
+		for _, field := range allowedFields {
+			if orderBy.Field == field {
+				allowed = true
+				break
+			}
 		}
+
+		if !allowed {
+			glog.Infof("Ordering unauthorized: %s", orderBy.Field)
+			return query, &errors.ErrOrderUnauthorized
+		}
+
+		ordering := "DESC"
+		if orderBy.Ascending != nil && *orderBy.Ascending {
+			ordering = "ASC"
+		}
+		// fmt.Sprintf is fine here as fields are checked against allowed ones.
+		query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
 	}
 
-	if !allowed {
-		glog.Infof("Ordering unauthorized: %s", orderBy.Field)
-		return query, &errors.ErrOrderUnauthorized
-	}
-
-	ordering := "DESC"
-	if orderBy.Ascending != nil && *orderBy.Ascending {
-		ordering = "ASC"
-	}
-	// fmt.Sprintf is fine here as fields are checked against allowed ones.
-	query = query.Order(fmt.Sprintf("%s %s", orderBy.Field, ordering))
+	// should order by the chosen field first, and then the default field
+	query = query.Order(defaultOrdering)
 	return query, nil
 }
 

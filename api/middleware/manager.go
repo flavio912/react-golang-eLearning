@@ -17,25 +17,25 @@ import (
 func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	profileURL := uploads.GetImgixURL(manager.ProfileKey)
 	// Admins and managers themselves can get all info
-	if g.IsAdmin || (g.IsManager && g.Claims.Company.UUID == manager.CompanyID) {
+	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyUUID) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
 			User: gentypes.User{
 				CreatedAt: &createdAt,
-				UUID:      gentypes.UUID{UUID: manager.UUID},
+				UUID:      manager.UUID,
 				Email:     manager.Email,
 				FirstName: manager.FirstName,
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 				Telephone: manager.Telephone,
 			},
-			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
+			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
 	}
 
 	// Delegates can only get a subset of their manager's info
-	if g.IsCompanyDelegate(gentypes.UUID{UUID: manager.CompanyID}) {
+	if g.IsCompanyDelegate(manager.CompanyUUID) {
 		return gentypes.Manager{
 			User: gentypes.User{
 				Email:     manager.Email,
@@ -43,7 +43,7 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 			},
-			CompanyID:       gentypes.UUID{UUID: manager.CompanyID},
+			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
 	}
@@ -231,7 +231,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
-		CompanyID: inputUUID.UUID,
+		CompanyUUID: inputUUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error
 	if createErr != nil {

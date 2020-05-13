@@ -8,7 +8,7 @@ import (
 type Manager struct {
 	User
 	ProfileImageURL *string
-	CompanyID       UUID
+	CompanyUUID       UUID
 }
 
 type ManagersFilter struct {

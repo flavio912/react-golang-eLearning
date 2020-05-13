@@ -3,17 +3,17 @@ package models
 import (
 	"errors"
 
-	"github.com/google/uuid"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 // Delegate - DB model for delegates
 type Delegate struct {
 	User
 	TtcId       string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
-	CompanyUUID uuid.UUID
+	CompanyUUID gentypes.UUID
 }
 
 /*GenerateToken - Create a JWT token for delegates
@@ -24,9 +24,9 @@ circumstances be given without the password - @temmerson
 */
 func (delegate *Delegate) GenerateToken(password string) (string, error) {
 	claims := auth.UserClaims{
-		UUID:    gentypes.UUID{UUID: delegate.UUID},
+		UUID:    delegate.UUID,
 		Role:    auth.DelegateRole,
-		Company: gentypes.UUID{UUID: delegate.CompanyUUID},
+		Company: delegate.CompanyUUID,
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err

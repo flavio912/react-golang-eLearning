@@ -122,7 +122,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -357,7 +357,7 @@ func TestCreateCompanyRequest(t *testing.T) {
 				LastLogin: manager.LastLogin,
 			},
 			ProfileImageURL: manager.ProfileImageURL,
-			CompanyID:       company.UUID,
+			CompanyUUID:       company.UUID,
 		}, manager)
 	})
 }

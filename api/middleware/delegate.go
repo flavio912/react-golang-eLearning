@@ -16,14 +16,14 @@ func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 	return gentypes.Delegate{
 		User: gentypes.User{
 			CreatedAt: &createdAt,
-			UUID:      gentypes.UUID{UUID: delegate.UUID},
+			UUID:      delegate.UUID,
 			Email:     delegate.Email,
 			FirstName: delegate.FirstName,
 			LastName:  delegate.LastName,
 			JobTitle:  delegate.JobTitle,
 			Telephone: delegate.Telephone,
 		},
-		CompanyUUID: gentypes.UUID{UUID: delegate.CompanyUUID},
+		CompanyUUID: delegate.CompanyUUID,
 		TTC_ID:      delegate.TtcId,
 	}
 }
@@ -64,8 +64,8 @@ func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error)
 	}
 
 	if !g.IsAdmin &&
-		!(g.IsManager && g.Claims.Company.UUID == delegate.CompanyUUID) &&
-		!(g.IsDelegate && g.Claims.UUID.UUID == delegate.UUID) {
+		!(g.IsManager && g.Claims.Company == delegate.CompanyUUID) &&
+		!(g.IsDelegate && g.Claims.UUID == delegate.UUID) {
 		return gentypes.Delegate{}, &errors.ErrUnauthorized
 	}
 
@@ -164,7 +164,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 			Telephone: delegateDetails.Telephone,
 			Password:  delegateDetails.Password,
 		},
-		CompanyUUID: companyUUID.UUID,
+		CompanyUUID: companyUUID,
 		TtcId:       delegateDetails.TTC_ID,
 	}
 	createErr := database.GormDB.Create(&delegate).Error

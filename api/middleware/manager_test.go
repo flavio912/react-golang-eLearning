@@ -51,7 +51,7 @@ func TestCreateManager(t *testing.T) {
 			"Should use manager's company",
 			managerGrant,
 			nil,
-			gentypes.Manager{CompanyID: managerGrant.Claims.Company},
+			gentypes.Manager{CompanyUUID: managerGrant.Claims.Company},
 			gentypes.CreateManagerInput{},
 		},
 	}
@@ -316,7 +316,7 @@ func TestGetManagers(t *testing.T) {
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -384,7 +384,7 @@ func TestUpdateManager(t *testing.T) {
 				LastLogin: manager.LastLogin,
 			},
 			ProfileImageURL: manager.ProfileImageURL,
-			CompanyID:       manager.CompanyID,
+			CompanyUUID:       manager.CompanyUUID,
 		}
 
 		assert.Nil(t, err)

@@ -7,7 +7,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
@@ -74,7 +73,7 @@ func (admin *Admin) GenerateToken(password string) (string, error) {
 		return "", ErrPasswordInvalid
 	}
 	claims := auth.UserClaims{
-		UUID: gentypes.UUID{UUID: admin.UUID},
+		UUID: admin.UUID,
 		Role: auth.AdminRole,
 	}
 	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.AdminExpirationHours)

@@ -14,7 +14,7 @@ import (
 // Take in a model, retuns the gentype for it
 func adminToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
-		UUID:      gentypes.UUID{UUID: modAdmin.UUID},
+		UUID:      modAdmin.UUID,
 		Email:     modAdmin.Email,
 		FirstName: modAdmin.FirstName,
 		LastName:  modAdmin.LastName,

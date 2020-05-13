@@ -15,20 +15,20 @@ import (
 
 //companyToGentype converts a company model to gentype.
 func (g *Grant) companyToGentype(company models.Company) gentypes.Company {
-	if g.ManagesCompany(gentypes.UUID{UUID: company.UUID}) {
+	if g.ManagesCompany(company.UUID) {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
 			CreatedAt: &createdAt,
 			Approved:  &company.Approved,
-			UUID:      gentypes.UUID{UUID: company.UUID},
+			UUID:      company.UUID,
 			Name:      company.Name,
 			AddressID: company.AddressID,
 		}
 	}
 
-	if g.IsCompanyDelegate(gentypes.UUID{UUID: company.UUID}) {
+	if g.IsCompanyDelegate(company.UUID) {
 		return gentypes.Company{
-			UUID: gentypes.UUID{UUID: company.UUID},
+			UUID: company.UUID,
 			Name: company.Name,
 		}
 	}
@@ -138,7 +138,7 @@ func (g *Grant) GetManagerIDsByCompany(
 		managers     []models.Manager
 	)
 
-	query := database.GormDB.Select("uuid").Where("company_id = ?", companyUUID)
+	query := database.GormDB.Select("uuid").Where("company_uuid = ?", companyUUID)
 	query = filterManager(query, filter)
 
 	var count int32
@@ -165,7 +165,7 @@ func (g *Grant) GetManagerIDsByCompany(
 	}
 
 	for _, manager := range managers {
-		managerUUIDs = append(managerUUIDs, gentypes.UUID{UUID: manager.UUID})
+		managerUUIDs = append(managerUUIDs, manager.UUID)
 	}
 
 	return managerUUIDs, gentypes.PageInfo{
@@ -214,7 +214,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 
 	var uuids = make([]gentypes.UUID, len(companies))
 	for i, comp := range companies {
-		uuids[i] = gentypes.UUID{UUID: comp.UUID}
+		uuids[i] = comp.UUID
 	}
 	return uuids, gentypes.PageInfo{
 		Total:  count,
