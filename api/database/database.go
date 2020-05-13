@@ -46,7 +46,6 @@ func SetupDatabase(logMode bool) error {
 		return errConnect
 	}
 
-	// TODO: Create debug config option
 	db.LogMode(logMode)
 	GormDB = db
 	return nil

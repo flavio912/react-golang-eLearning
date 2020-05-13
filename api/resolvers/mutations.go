@@ -202,6 +202,25 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 	return NewCompanyResolver(ctx, NewCompanyArgs{Company: company})
 }
 
+func (m *MutationResolver) UpdateCompany(ctx context.Context, args struct{ Input gentypes.UpdateCompanyInput }) (*CompanyResolver, error) {
+	// Validate the company input
+	if err := args.Input.Validate(); err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CompanyResolver{}, &errors.ErrUnauthorized
+	}
+
+	company, err := grant.UpdateCompany(args.Input)
+	if err != nil {
+		return &CompanyResolver{}, err
+	}
+
+	return NewCompanyResolver(ctx, NewCompanyArgs{Company: company})
+}
+
 type companyRequestInput struct {
 	Company   gentypes.CreateCompanyInput
 	Manager   gentypes.CreateManagerInput
@@ -212,7 +231,7 @@ type companyRequestInput struct {
 func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args companyRequestInput) (bool, error) {
 	// TODO: Check recaptcha token
 
-	err := middleware.CreateCompanyRequest(args.Company, args.Manager)
+	err := middleware.CreateCompanyRequest(ctx, args.Company, args.Manager)
 	if err != nil {
 		return false, err
 	}
@@ -258,6 +277,46 @@ func (m *MutationResolver) SaveOnlineCourse(
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
 	Input gentypes.SaveClassroomCourseInput
-}) (*string, error) {
-	return nil, nil
+}) (*ClassroomCourseResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ClassroomCourseResolver{}, &errors.ErrUnauthorized
+	}
+
+	course, err := grant.SaveClassroomCourse(args.Input)
+	if err != nil {
+		return &ClassroomCourseResolver{}, err
+	}
+
+	return NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{
+		ClassroomCourse: course,
+	})
+}
+
+func (m *MutationResolver) CreateTag(ctx context.Context, args struct{ Input gentypes.CreateTagInput }) (*TagResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &TagResolver{}, &errors.ErrUnauthorized
+	}
+
+	tag, err := grant.CreateTag(args.Input)
+	return &TagResolver{
+		Tag: tag,
+	}, err
+}
+
+func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Input gentypes.CreateCategoryInput }) (*CategoryResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CategoryResolver{}, &errors.ErrUnauthorized
+	}
+
+	category, err := grant.CreateCategory(ctx, args.Input)
+	if err != nil {
+		return &CategoryResolver{}, err
+	}
+
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		Category: category,
+	})
 }

@@ -16,6 +16,13 @@ enum ModuleElement {
 
 type CourseInfo {
   name: String
+  backgroundCheck: Boolean
+  price: Float
+  color: String
+  excerpt: String
+  introduction: String
+  specificTerms: String
+  category: Category
 }
 
 type OnlineCourse {
@@ -23,9 +30,19 @@ type OnlineCourse {
   info: CourseInfo!
 }
 
+type OnlineCoursePage implements PaginatedQuery {
+  edges: [OnlineCourse]
+  pageInfo: PageInfo
+}
+
 type ClassroomCourse {
-  uuid: UUID
-  info: CourseInfo
+  uuid: UUID!
+  info: CourseInfo!
+}
+
+type ClassroomCoursePage implements PaginatedQuery {
+  edges: [ClassroomCourse]
+  pageInfo: PageInfo
 }
 
 input SaveClassroomCourseInput {
@@ -38,11 +55,14 @@ input SaveClassroomCourseInput {
   accessType: AccessType
   price: Float
   color: String
-  tags: [String]
+  tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
   tutorUUID: UUID # UUID of the Tutor (classroom course only)
   maxParticipants: Int
+  startDate: Time
+  endDate: Time
+  location: String
 }
 
 input SaveOnlineCourseInput {
@@ -55,7 +75,7 @@ input SaveOnlineCourseInput {
   accessType: AccessType
   price: Float
   color: String
-  tags: [String!]
+  tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
   structure: [CourseItem!] # Only for online courses
@@ -70,6 +90,28 @@ input CourseItem {
 input ModuleItem {
   type: ModuleElement!
   uuid: UUID!
+}
+
+input CreateTagInput {
+  name: String!
+  color: String!
+}
+
+type Tag {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+input CreateCategoryInput {
+  name: String!
+  color: String!
 }
 
 # [ EXAMPLE COURSE STRUCTURE

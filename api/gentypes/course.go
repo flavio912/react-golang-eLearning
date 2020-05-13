@@ -25,20 +25,9 @@ type CourseInput struct {
 	AccessType         *AccessType
 	Price              *float64
 	Color              *string `valid:"hexcolor"`
-	Tags               *[]*string
+	Tags               *[]UUID
 	SpecificTerms      *string `valid:"json"`
 	BannerImageSuccess *string
-}
-
-type SaveClassroomCourseInput struct {
-	CourseInput
-	TutorUUID       *UUID
-	MaxParticipants *int
-}
-
-type SaveOnlineCourseInput struct {
-	CourseInput
-	Structure *[]CourseItem
 }
 
 type CourseItem struct {
@@ -53,8 +42,17 @@ type ModuleItem struct {
 }
 
 type CourseInfo struct {
-	ID   uint
-	Name string
+	ID              uint
+	Name            string
+	AccessType      AccessType
+	BackgroundCheck bool
+	Price           float64
+	Tags            []Tag
+	Color           string `valid:"hexcolor"`
+	Introduction    string `valid:"json"`
+	Excerpt         string `valid:"json"`
+	SpecificTerms   string `valid:"json"`
+	CategoryUUID    *UUID
 }
 
 type Course struct {
@@ -62,10 +60,9 @@ type Course struct {
 	CourseInfoID uint
 }
 
-type OnlineCourse struct {
-	Course
-}
-
-type ClassroomCourse struct {
-	Course
+type CourseInfoFilter struct {
+	Name            *string
+	AccessType      *AccessType
+	BackgroundCheck *bool
+	Price           *float64
 }

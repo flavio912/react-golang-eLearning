@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 
 	"github.com/getsentry/sentry-go"
@@ -61,5 +63,6 @@ func GrantFromContext(ctx context.Context) *middleware.Grant {
 	}
 
 	v := val.(*middleware.Grant)
+	v.Logger = logging.GetLoggerFromCtx(ctx)
 	return v
 }

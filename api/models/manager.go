@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/google/uuid"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -13,8 +12,8 @@ import (
 // Manager - DB model for managers
 type Manager struct {
 	User
-	CompanyID  uuid.UUID
-	ProfileKey string
+	CompanyUUID gentypes.UUID
+	ProfileKey  string
 }
 
 func (manager *Manager) getHash() string {
@@ -64,9 +63,9 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 	database.GormDB.Save(manager)
 
 	claims := auth.UserClaims{
-		UUID:    gentypes.UUID{UUID: manager.UUID},
+		UUID:    manager.UUID,
 		Role:    auth.ManagerRole,
-		Company: gentypes.UUID{UUID: manager.CompanyID},
+		Company: manager.CompanyUUID,
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err

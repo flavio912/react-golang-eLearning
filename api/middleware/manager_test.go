@@ -10,6 +10,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -50,7 +51,7 @@ func TestCreateManager(t *testing.T) {
 			"Should use manager's company",
 			managerGrant,
 			nil,
-			gentypes.Manager{CompanyID: managerGrant.Claims.Company},
+			gentypes.Manager{CompanyUUID: managerGrant.Claims.Company},
 			gentypes.CreateManagerInput{},
 		},
 	}
@@ -144,7 +145,7 @@ func TestGetManagersByUUID(t *testing.T) {
 			"Managers cannot see other managers",
 			managerGrant,
 			[]string{"00000000-0000-0000-0000-000000000002"},
-			nil,
+			&errors.ErrUnauthorized,
 			0,
 		},
 		{
@@ -173,6 +174,7 @@ func TestGetManagersByUUID(t *testing.T) {
 	// these only check the uuid returned is correct
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			prepareTestDatabase()
 			m, err := test.grant.GetManagersByUUID(test.uuids)
 			assert.Equal(t, test.wantErr, err)
 			assert.Len(t, m, test.wantLen)
@@ -191,7 +193,7 @@ func TestGetManagerSelf(t *testing.T) {
 	}{
 		{
 			"Must be manager",
-			middleware.Grant{auth.UserClaims{}, true, false, true},
+			middleware.Grant{auth.UserClaims{}, true, false, true, logging.Logger{}},
 			"",
 			&errors.ErrUnauthorized,
 		},
@@ -219,7 +221,6 @@ func TestGetManagerSelf(t *testing.T) {
 }
 
 func TestDeleteManager(t *testing.T) {
-	prepareTestDatabase()
 
 	tests := []struct {
 		name    string
@@ -256,6 +257,7 @@ func TestDeleteManager(t *testing.T) {
 	// these only check the uuid returned is correct
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
+			prepareTestDatabase()
 			ret, err := test.grant.DeleteManager(test.uuid)
 			assert.Equal(t, test.wantErr, err)
 			if test.wantErr == nil {
@@ -275,7 +277,6 @@ func TestGetManagers(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetManagers(nil, nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -283,7 +284,7 @@ func TestGetManagers(t *testing.T) {
 	t.Run("Should return all managers", func(t *testing.T) {
 		managers, _, err := adminGrant.GetManagers(nil, nil, nil)
 		assert.Nil(t, err)
-		assert.Len(t, managers, 4)
+		assert.Len(t, managers, 5)
 	})
 
 	t.Run("Should page", func(t *testing.T) {
@@ -292,7 +293,7 @@ func TestGetManagers(t *testing.T) {
 		managers, pageInfo, err := adminGrant.GetManagers(&page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, managers, 2)
-		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit})
+		assert.Equal(t, gentypes.PageInfo{Total: 5, Given: 2, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should order", func(t *testing.T) {
@@ -301,7 +302,7 @@ func TestGetManagers(t *testing.T) {
 
 		managers, _, err := adminGrant.GetManagers(nil, nil, &order)
 		assert.Nil(t, err)
-		assert.Len(t, managers, 4)
+		assert.Len(t, managers, 5)
 		assert.Equal(t, "Jimothy", managers[0].FirstName)
 	})
 
@@ -315,7 +316,7 @@ func TestGetManagers(t *testing.T) {
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -325,13 +326,13 @@ func TestGetManagers(t *testing.T) {
 			name   string
 			filter gentypes.ManagersFilter
 		}{
-			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
-			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
-			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
-			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
-			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
-			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
-			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+			{"Email", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &manager.Email}}},
+			{"FirstName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.FirstName}}},
+			{"LastName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.LastName}}},
+			{"First and Last", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
+			{"JobTitle", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{JobTitle: &manager.JobTitle}}},
+			{"uuid", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
+			{"Full", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName, Email: &manager.Email}}},
 		}
 
 		for _, test := range filterTests {
@@ -347,10 +348,10 @@ func TestGetManagers(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.ManagersFilter{Email: &email}
+			filter := gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &email}}
 			managers, _, err := adminGrant.GetManagers(nil, &filter, nil)
 			assert.Nil(t, err)
-			require.Len(t, managers, 4)
+			require.Len(t, managers, 5)
 		})
 	})
 }
@@ -383,7 +384,7 @@ func TestUpdateManager(t *testing.T) {
 				LastLogin: manager.LastLogin,
 			},
 			ProfileImageURL: manager.ProfileImageURL,
-			CompanyID:       manager.CompanyID,
+			CompanyUUID:       manager.CompanyUUID,
 		}
 
 		assert.Nil(t, err)

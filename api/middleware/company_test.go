@@ -1,6 +1,7 @@
 package middleware_test
 
 import (
+	"context"
 	"fmt"
 	"testing"
 
@@ -10,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -20,13 +20,12 @@ var fakeCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999
 func TestCompanyExists(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, true, true}
 	t.Run("Company should exist", func(t *testing.T) {
-		assert.True(t, grant.CompanyExists(realCompany))
+		assert.True(t, adminGrant.CompanyExists(realCompany))
 	})
 
 	t.Run("Company should not exist", func(t *testing.T) {
-		assert.False(t, grant.CompanyExists(fakeCompany))
+		assert.False(t, adminGrant.CompanyExists(fakeCompany))
 	})
 }
 
@@ -84,8 +83,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 	company1 := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
 	t.Run("Must be admin", func(t *testing.T) {
-		grant := middleware.Grant{auth.UserClaims{}, false, true, true}
-		ids, _, err := grant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
+		ids, _, err := nonAdminGrant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
 		assert.Len(t, ids, 0)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -124,7 +122,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 				Telephone: "7912938287",
 				JobTitle:  "In Charge",
 			},
-			CompanyID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
 		fullName := fmt.Sprintf("%s %s", manager.FirstName, manager.LastName)
@@ -134,13 +132,13 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 			name   string
 			filter gentypes.ManagersFilter
 		}{
-			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
-			{"FirstName", gentypes.ManagersFilter{Name: &manager.FirstName}},
-			{"LastName", gentypes.ManagersFilter{Name: &manager.LastName}},
-			{"First and Last", gentypes.ManagersFilter{Name: &fullName}},
-			{"JobTitle", gentypes.ManagersFilter{JobTitle: &manager.JobTitle}},
-			{"uuid", gentypes.ManagersFilter{UUID: &uuidString}},
-			{"Full", gentypes.ManagersFilter{Name: &fullName, Email: &manager.Email}},
+			{"Email", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &manager.Email}}},
+			{"FirstName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.FirstName}}},
+			{"LastName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.LastName}}},
+			{"First and Last", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
+			{"JobTitle", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{JobTitle: &manager.JobTitle}}},
+			{"uuid", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
+			{"Full", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName, Email: &manager.Email}}},
 		}
 
 		for _, test := range filterTests {
@@ -154,7 +152,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.ManagersFilter{Email: &email}
+			filter := gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &email}}
 			managers, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, managers, 2)
@@ -165,9 +163,8 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 func TestGetCompaniesByUUID(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Admin can get companies", func(t *testing.T) {
-		comp, err := grant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
+		comp, err := adminGrant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
 		assert.Nil(t, err)
 		assert.Len(t, comp, 1)
 		assert.Equal(t, realCompany, comp[0].UUID)
@@ -179,15 +176,14 @@ func TestGetCompaniesByUUID(t *testing.T) {
 func TestGetCompanyByUUID(t *testing.T) {
 	prepareTestDatabase()
 
-	grant := &middleware.Grant{auth.UserClaims{}, true, false, false}
 	t.Run("Admin can get company", func(t *testing.T) {
-		company, err := grant.GetCompanyByUUID(realCompany)
+		company, err := adminGrant.GetCompanyByUUID(realCompany)
 		assert.Nil(t, err)
 		assert.Equal(t, realCompany, company.UUID)
 	})
 
 	t.Run("Get non-existant company", func(t *testing.T) {
-		company, err := grant.GetCompanyByUUID(fakeCompany)
+		company, err := adminGrant.GetCompanyByUUID(fakeCompany)
 		assert.Equal(t, &errors.ErrCompanyNotFound, err)
 		assert.Equal(t, gentypes.Company{}, company)
 	})
@@ -199,7 +195,6 @@ func TestGetCompanyUUIDs(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, _, err := nonAdminGrant.GetCompanyUUIDs(nil, nil, nil)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -267,7 +262,6 @@ func TestCreateCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Must be admin", func(t *testing.T) {
-		nonAdminGrant := &middleware.Grant{auth.UserClaims{}, false, true, true}
 		_, err := nonAdminGrant.CreateCompany(gentypes.CreateCompanyInput{})
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
@@ -317,7 +311,7 @@ func TestCreateCompanyRequest(t *testing.T) {
 	}
 
 	t.Run("Should create company, address, and manager", func(t *testing.T) {
-		err := middleware.CreateCompanyRequest(newCompInput, managerInput)
+		err := middleware.CreateCompanyRequest(context.Background(), newCompInput, managerInput)
 		assert.Nil(t, err)
 
 		// get the latest company
@@ -363,7 +357,7 @@ func TestCreateCompanyRequest(t *testing.T) {
 				LastLogin: manager.LastLogin,
 			},
 			ProfileImageURL: manager.ProfileImageURL,
-			CompanyID:       company.UUID,
+			CompanyUUID:       company.UUID,
 		}, manager)
 	})
 }
@@ -380,7 +374,7 @@ func TestApproveCompany(t *testing.T) {
 	}{
 		{
 			"Must be admin",
-			middleware.Grant{auth.UserClaims{}, false, true, true},
+			nonAdminGrant,
 			"00000000-0000-0000-0000-000000000000",
 			false,
 			&errors.ErrUnauthorized,
