@@ -3,18 +3,23 @@ import { createUseStyles, useTheme } from "react-jss";
 import Button from "sharedComponents/core/Button";
 import TitleWrapper from "components/Overview/TitleWrapper";
 import Summary from "components/Overview/Summary";
+import Attempt from "components/Delegate/Attempt";
+import ActiveType from "components/Delegate/ActiveType";
+
 import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import theme, { Theme } from "helpers/theme";
 import PageHeader from "components/PageHeader";
 import Table from "components/core/Table";
 import Text from "components/core/Table/Text/Text";
 import Status from "components/core/Table/Status";
-import Icon from "sharedComponents/core/Icon";
+import Action from "components/core/Table/Action";
 import CourseCompletion from "components/core/Table/CourseCompletion";
 import Dropdown, { DropdownOption } from "components/core/Dropdown";
 import Spacer from "components/core/Spacers/Spacer";
 import Paginator from "components/Paginator";
 import CheckboxSingle from "components/core/CheckboxSingle";
+import TimeSpent from "components/Delegate/TimeSpent";
+import ActivityName from "components/Delegate/ActivityName";
 
 type Props = {};
 
@@ -49,14 +54,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   search: {
     flex: 0.4,
   },
-  actionsRow: {
-    borderLeft: "1px solid #ededed",
-    paddingLeft: 23,
-    height: 38,
-    display: "flex",
-    /* justify-content: center; */
-    alignItems: "center",
-  },
+
   quickOverview: {
     gridArea: "overvw",
   },
@@ -113,41 +111,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
       marginLeft: 10,
     },
   },
-  titleActivity: {
-    display: "flex",
-  },
-  userName: {
-    color: theme.colors.textNavyBlue,
-    fontSize: theme.fontSizes.tiny,
-    marginRight: 16,
-    fontWeight: "bold",
-    width: 29,
-    height: 29,
-    background: theme.colors.textSolitude,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 30,
-    letterSpacing: -0.28,
-  },
-  attemptText: {
-    display: "flex",
-    alignItems: "center",
-    "& div": {
-      fontSize: theme.fontSizes.large,
-    },
-  },
-  stText: {
-    fontSize: theme.fontSizes.tiny,
-    marginBottom: 5,
-  },
+
   headerActions: {},
-  timeSpent: {
-    display: "flex",
-    "& div": {
-      marginLeft: 7,
-    },
-  },
 }));
 
 const courseRow = (
@@ -190,25 +155,13 @@ const courseRow = (
       ),
     },
     {
-      component: () => (
-        <div className={classes.attemptText}>
-          <Text text={attempt} color={theme.colors.secondaryBlack} />
-          <span className={classes.stText}>st</span>
-        </div>
-      ),
+      component: () => <Attempt attempt={attempt} />,
     },
     { component: () => <Status isComplete={status} expires={expires} /> },
     {
-      component: () => (
-        <div className={classes.actionsRow}>
-          <Icon name={"Card_SecondaryActon_Dots"} />
-        </div>
-      ),
+      component: () => <Action />,
     },
   ],
-  onClick: () => {
-    console.log("hello word");
-  },
 });
 const activityRow = (
   key: string | number,
@@ -252,45 +205,15 @@ const activityRow = (
       },
     },
     {
-      component: () => {
-        const nameArr = userName.split(" ");
-        const shortName = nameArr.map((item: string) => item.charAt(0));
-        return (
-          <div className={classes.titleActivity}>
-            <span className={classes.userName}>{shortName}</span>
-            <Text text={title} color={theme.colors.secondaryBlack}></Text>
-          </div>
-        );
-      },
-    },
-    {
-      component: () => {
-        const colorActiveTypes = {
-          CourseCertificates: theme.colors.secondaryGreen,
-          CourseFailed: theme.colors.secondaryDanger,
-          CourseNewCourse: theme.colors.primaryBlack,
-        };
-        return (
-          <span className={classes.activeType}>
-            <Icon name={activeType.icon} size={25} />
-            <Text
-              text={activeType.text}
-              color={colorActiveTypes[activeType.icon]}
-            />
-          </span>
-        );
-      },
+      component: () => <ActivityName userName={userName} title={title} />,
     },
     {
       component: () => (
-        <span className={classes.timeSpent}>
-          <Icon name={"CourseStatus_Completed"} size={25} />
-          <Text
-            text={`${timeSpent.h}hr ${timeSpent.m}mins`}
-            color={theme.colors.secondaryBlack}
-          />
-        </span>
+        <ActiveType icon={activeType.icon} text={activeType.text} />
       ),
+    },
+    {
+      component: () => <TimeSpent {...timeSpent} />,
     },
     { component: () => null },
     {
