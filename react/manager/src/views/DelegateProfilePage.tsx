@@ -315,6 +315,7 @@ const DelegateProfilePage = (props: any) => {
               coursesDone={0}
               courseNewCourseIcon={"CourseNewCourseGrey"}
               courseTimeTrackedIcon={"CourseTimeTrackedGrey"}
+              courseTitle="Modules done"
               timeTracked={"n/a"}
               title="Weekly"
             />
