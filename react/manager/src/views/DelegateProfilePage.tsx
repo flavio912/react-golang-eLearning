@@ -5,7 +5,7 @@ import TitleWrapper from "components/Overview/TitleWrapper";
 import Summary from "components/Overview/Summary";
 import Attempt from "components/Delegate/Attempt";
 import ActiveType from "components/Delegate/ActiveType";
-
+import ActiveCoursesEmpty from "components/Delegate/ActiveCoursesEmpty";
 import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import theme, { Theme } from "helpers/theme";
 import PageHeader from "components/PageHeader";
@@ -65,23 +65,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
   },
   grid: {
-    display: "grid",
-    gridTemplateRows: "40px auto auto",
-    gridGap: 38,
-    gridTemplateAreas: `
-      "search search search search search .      .      .      .      .      .     "
-      "overvw overvw overvw overvw overvw .      traini traini traini traini traini"
-      "profle profle profle profle profle actvty actvty actvty actvty actvty actvty"
-    `,
-    "@media (max-width: 1350px)": {
-      gridTemplateAreas: `
-      "search"
-      "overvw"
-      "traini"
-      "profle"
-      "actvty"
-    `,
-    },
+    marginTop: 19,
+    display: "flex",
+    justifyContent: "space-between",
   },
   sectionTitleWrapper: {
     display: "flex",
@@ -90,11 +76,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     "& h2": {
       fontSize: 15,
       color: theme.colors.primaryBlack,
+      fontWeight: 400,
     },
     marginBottom: 16,
   },
   courseDropdown: {
     marginLeft: 49,
+    background: theme.colors.primaryWhite,
   },
   courseButton: {
     display: "flex",
@@ -114,7 +102,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
   headerActions: {},
 }));
-
+const courseRowEmpty = () => ({
+  key: "1",
+  cells: [
+    {
+      component: () => <ActiveCoursesEmpty />,
+      colspan: 6,
+    },
+    {
+      component: () => <Action />,
+    },
+  ],
+});
 const courseRow = (
   key: string | number,
   title: string,
@@ -174,10 +173,12 @@ const activityRow = (
     icon: any;
     text: string;
   },
-  timeSpent: {
-    h: number;
-    m: number;
-  },
+  timeSpent:
+    | string
+    | {
+        h: number;
+        m: number;
+      },
   userName: string,
   classes?: any
 ): any => ({
@@ -213,7 +214,7 @@ const activityRow = (
       ),
     },
     {
-      component: () => <TimeSpent {...timeSpent} />,
+      component: () => <TimeSpent timeSpent={timeSpent} />,
     },
     { component: () => null },
     {
@@ -311,17 +312,19 @@ const DelegateProfilePage = (props: any) => {
         >
           <div className={classes.cardFlex}>
             <TrainingProgressCard
-              coursesDone={20}
-              coursesPercent={300}
-              timeTracked={{ h: 20, m: 15 }}
-              timePercent={-40}
+              coursesDone={0}
+              courseNewCourseIcon={"CourseNewCourseGrey"}
+              courseTimeTrackedIcon={"CourseTimeTrackedGrey"}
+              timeTracked={"n/a"}
               title="Weekly"
             />
             <Spacer spacing={3} horizontal />
             <TrainingProgressCard
               coursesDone={20}
               coursesPercent={300}
-              timeTracked={{ h: 20, m: 15 }}
+              courseNewCourseIcon={"CourseNewCourseGreen"}
+              courseTimeTrackedIcon={"CourseTimeTrackedGreen"}
+              timeTracked={{ h: 30, m: 10 }}
               timePercent={100}
               title="Monthly"
             />
@@ -377,6 +380,7 @@ const DelegateProfilePage = (props: any) => {
             "20/02/2022",
             classes
           ),
+          courseRowEmpty(),
         ]}
       />
       <div className={classes.courseButton}>
@@ -457,6 +461,21 @@ const DelegateProfilePage = (props: any) => {
               h: 3,
               m: 15,
             },
+            "Bruce Willis",
+            classes
+          ),
+          activityRow(
+            1,
+            {
+              time: "10:29",
+              date: "01/02/2020",
+            },
+            "Bruce failed the Dangerous Goods by Road Awareness Course",
+            {
+              icon: "CourseAccountActivated",
+              text: "Account active",
+            },
+            "n/a",
             "Bruce Willis",
             classes
           ),

@@ -8,5 +8,5 @@ export default {
 };
 
 export const normal = () => {
-  return <TimeSpent h={number("h", 1)} m={number("m", 2)} />;
+  return <TimeSpent timeSpent={{ h: number("h", 1), m: number("m", 2) }} />;
 };

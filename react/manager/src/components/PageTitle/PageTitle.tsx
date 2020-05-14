@@ -80,7 +80,7 @@ function PageTitle({
             className={classes.backTitle}
             onClick={() => backProps.onClick()}
           >
-            <Icon name="ArrowLeft" size={12} />
+            <Icon name="ArrowLeftBlue" size={9} />
             <span className={classes.backText}>{backProps.text}</span>
           </div>
         )}

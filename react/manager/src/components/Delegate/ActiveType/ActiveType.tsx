@@ -28,7 +28,7 @@ function ActiveType({ icon, text }: Props) {
 
   return (
     <span className={classes.root}>
-      <Icon name={icon} size={25} />
+      <Icon name={icon} size={18} />
       <Text text={text} color={colorActiveTypes[icon]} />
     </span>
   );

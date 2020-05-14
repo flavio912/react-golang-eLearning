@@ -80,6 +80,7 @@ type TableRow = {
 type TableCell = {
   component: (() => JSX.Element) | string;
   sort?: string | boolean | number;
+  colspan?: number;
 };
 
 type Sort = {
@@ -161,8 +162,8 @@ function Table({ header, rows, sort, filter }: Props) {
           .map(({ key, cells, onClick }) => {
             return (
               <tr key={key} className={classes.row} onClick={onClick}>
-                {cells.map(({ component: Cell, sort }) => (
-                  <td className={classes.cell}>
+                {cells.map(({ component: Cell, sort, colspan }) => (
+                  <td className={classes.cell} colSpan={colspan}>
                     {typeof Cell === "string" ? (
                       <p className={classes.defaultCell} key={`${key}-${sort}`}>
                         {Cell}
