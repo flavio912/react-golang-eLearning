@@ -100,7 +100,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
   },
 
-  headerActions: {},
+  headerActions: {
+    "& div": {
+      background: theme.colors.primaryWhite,
+    },
+  },
 }));
 const courseRowEmpty = () => ({
   key: "1",
