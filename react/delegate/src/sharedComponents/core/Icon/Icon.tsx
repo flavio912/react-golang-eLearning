@@ -3,6 +3,7 @@ import * as React from "react";
 export type IconNames =
   | "AddDelegateRepeater"
   | "ArrowLeft"
+  | "ArrowLeftBlue"
   | "ArrowRight"
   | "Card_SecondaryActon_Dots"
   | "CloseCourseManagementTray_X"
@@ -12,10 +13,13 @@ export type IconNames =
   | "CourseFailed"
   | "CourseNewCourse"
   | "CourseNewCourseGreen"
+  | "CourseNewCourseGrey"
   | "CourseStatus_Completed"
   | "CourseStatus_Incomplete"
   | "CourseStatus_NotStarted"
   | "CourseTimeTracked"
+  | "CourseTimeTrackedGreen"
+  | "CourseTimeTrackedGrey"
   | "Course_Calendar"
   | "DownloadCSV"
   | "EditDelegateProfilePic_Default"
@@ -39,6 +43,7 @@ export type IconNames =
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
   ArrowLeft: require("../../../assets/ArrowLeft.svg"),
+  ArrowLeftBlue: require("../../../assets/ArrowLeftBlue.svg"),
   ArrowRight: require("../../../assets/ArrowRight.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
@@ -48,10 +53,13 @@ const iconNameMap = {
   CourseFailed: require("../../../assets/CourseFailed.svg"),
   CourseNewCourse: require("../../../assets/CourseNewCourse.svg"),
   CourseNewCourseGreen: require("../../../assets/CourseNewCourseGreen.svg"),
+  CourseNewCourseGrey: require("../../../assets/CourseNewCourseGrey.svg"),
   CourseStatus_Completed: require("../../../assets/CourseStatus_Completed.svg"),
   CourseStatus_Incomplete: require("../../../assets/CourseStatus_Incomplete.svg"),
   CourseStatus_NotStarted: require("../../../assets/CourseStatus_NotStarted.svg"),
   CourseTimeTracked: require("../../../assets/CourseTimeTracked.svg"),
+  CourseTimeTrackedGreen: require("../../../assets/CourseTimeTrackedGreen.svg"),
+  CourseTimeTrackedGrey: require("../../../assets/CourseTimeTrackedGrey.svg"),
   Course_Calendar: require("../../../assets/Course_Calendar.svg"),
   DownloadCSV: require("../../../assets/DownloadCSV.svg"),
   EditDelegateProfilePic_Default: require("../../../assets/EditDelegateProfilePic_Default.png"),
