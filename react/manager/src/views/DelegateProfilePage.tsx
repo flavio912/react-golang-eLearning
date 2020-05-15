@@ -110,7 +110,9 @@ const courseRowEmpty = () => ({
   key: "1",
   cells: [
     {
-      component: () => <ActiveCoursesEmpty />,
+      component: () => (
+        <ActiveCoursesEmpty title="Book John on their first Course" />
+      ),
       colspan: 6,
     },
     {
