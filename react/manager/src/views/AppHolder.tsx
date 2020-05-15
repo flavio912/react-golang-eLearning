@@ -60,12 +60,12 @@ export const AppHolder = ({ children }: Props) => {
     <div>
       <HeaderMenu
         logo={
-          "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png"
+          "https://i.pinimg.com/originals/e3/a5/19/e3a5199fde5caf756884d99fc60178de.png"
         }
         user={{
           name: "Test",
           url:
-            "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
+            "https://i.pinimg.com/originals/e3/a5/19/e3a5199fde5caf756884d99fc60178de.png",
         }}
       />
       <SideMenu
