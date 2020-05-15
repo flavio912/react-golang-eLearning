@@ -4,16 +4,20 @@ import { Theme } from "helpers/theme";
 import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
 import Card from "sharedComponents/core/Card";
+import Spacer from "components/core/Spacers/Spacer";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     color: theme.colors.textBlue,
-    minWidth: 278,
+    padding: "20px 33px",
   },
   infoItems: {
     display: "flex",
     justifyContent: "space-between",
     marginTop: theme.spacing(2),
+  },
+  progressTitle: {
+    fontWeight: 300,
   },
 }));
 
@@ -29,13 +33,14 @@ function TrainingProgressCard({ coursesDone, timeTracked, title }: Props) {
 
   return (
     <Card padding="medium" className={classes.root}>
-      <div>{title}</div>
+      <div className={classes.progressTitle}>{title}</div>
       <div className={classes.infoItems}>
         <QuickInfo
           icon="CourseNewCourseGreen"
           text="Courses done"
           value={coursesDone}
         />
+        <Spacer horizontal spacing={3} />
         <QuickInfo
           icon="CourseTimeTracked"
           text="Time Tracked"

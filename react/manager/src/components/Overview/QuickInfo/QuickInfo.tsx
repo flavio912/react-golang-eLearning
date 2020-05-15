@@ -17,7 +17,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   value: {
     fontWeight: 800,
     color: "black",
-    fontSize: 20,
+    fontSize: 18,
     margin: 0,
     "& span": {
       fontWeight: 400,
