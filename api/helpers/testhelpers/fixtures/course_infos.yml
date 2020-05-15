@@ -1,0 +1,55 @@
+- id: 1
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Handling of goods
+  price: 65.01
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: open
+  background_check: false
+  specific_terms: {}
+- id: 2
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Classroom course test
+  price: 12.01
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: open
+  background_check: false
+  specific_terms: {}
+- id: 3
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Course with tags
+  price: 12.04
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: restricted
+  background_check: false
+  specific_terms: {}
+- id: 4
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Online Course test
+  price: 12.06
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: restricted
+  background_check: false
+  specific_terms: {}
+- id: 5
+  created_at: 2020-04-08 13:53:37.338775+00
+  updated_at: 2020-04-08 13:53:37.338775+00
+  name: Fun online Course
+  price: 41.45
+  color: ""
+  excerpt: {}
+  introduction: {}
+  access_type: restricted
+  background_check: false
+  specific_terms: {}

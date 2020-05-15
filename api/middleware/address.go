@@ -1,7 +1,7 @@
 package middleware
 
 import (
-	"github.com/golang/glog"
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -37,7 +37,7 @@ func (g *Grant) GetAddressesByIDs(ids []uint) ([]gentypes.Address, error) {
 	var addresses []models.Address
 	query := database.GormDB.Where("id IN (?)", ids).Find(&addresses)
 	if query.Error != nil {
-		glog.Errorf("Unable to load addresses: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to load addresses")
 		return []gentypes.Address{}, &errors.ErrWhileHandling
 	}
 

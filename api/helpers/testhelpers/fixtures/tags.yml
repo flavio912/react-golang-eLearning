@@ -1,0 +1,9 @@
+- uuid: 00000000-0000-0000-0000-000000000001
+  name: "existing tag"
+  color: "#123"
+- uuid: 00000000-0000-0000-0000-000000000002
+  name: "Handling cool things"
+  color: "#123"
+- uuid: 00000000-0000-0000-0000-000000000003
+  name: "Fancy tag for cool people"
+  color: "#123"

@@ -1,5 +1,9 @@
 package helpers
 
+import (
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+)
+
 // StringNotNilOrEmpty returns true of a string pointer is not nil or ""
 func StringNotNilOrEmpty(item *string) bool {
 	if item != nil && *item != "" {
@@ -37,4 +41,24 @@ func FloatPointer(flo float64) *float64 {
 func BoolPointer(boolean bool) *bool {
 	_boolean := boolean
 	return &_boolean
+}
+
+func IntPointer(integer int) *int {
+	_integer := integer
+	return &_integer
+}
+
+func Int32Pointer(integer int32) *int32 {
+	_integer := integer
+	return &_integer
+}
+
+func UintPointer(unsignedInt uint) *uint {
+	_unsignedInt := unsignedInt
+	return &_unsignedInt
+}
+
+func UUIDPointer(uuid gentypes.UUID) *gentypes.UUID {
+	_uuid := uuid
+	return &_uuid
 }

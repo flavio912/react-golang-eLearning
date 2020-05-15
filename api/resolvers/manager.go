@@ -90,7 +90,7 @@ func (m *ManagerResolver) LastLogin() string        { return m.manager.LastLogin
 func (m *ManagerResolver) ProfileImageURL() *string { return m.manager.ProfileImageURL }
 func (m *ManagerResolver) Company(ctx context.Context) (*CompanyResolver, error) {
 	return NewCompanyResolver(ctx, NewCompanyArgs{
-		UUID: m.manager.CompanyID.String(),
+		UUID: m.manager.CompanyUUID.String(),
 	})
 }
 

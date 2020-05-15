@@ -37,6 +37,22 @@ func (c *CreateCompanyInput) Validate() error {
 	return err
 }
 
+type UpdateCompanyInput struct {
+	UUID         UUID
+	CompanyName  *string
+	Approved     *bool
+	AddressLine1 *string
+	AddressLine2 *string
+	County       *string `valid:"optional,alpha"`
+	PostCode     *string `valid:"optional,alphanum,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
+	Country      *string `valid:"optional,alpha"`
+}
+
+func (c *UpdateCompanyInput) Validate() error {
+	_, err := govalidator.ValidateStruct(c)
+	return err
+}
+
 type CreateCompanyRequestManager struct {
 	FirstName string `valid:"required"`
 	LastName  string `valid:"required"`

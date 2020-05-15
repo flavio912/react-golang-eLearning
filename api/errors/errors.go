@@ -1,5 +1,7 @@
 package errors
 
+import "fmt"
+
 // SimpleError - A less complex error
 type SimpleError struct {
 	Type    string // Error type
@@ -7,7 +9,7 @@ type SimpleError struct {
 }
 
 func (e *SimpleError) Error() string {
-	return e.Message
+	return fmt.Sprintf("%s: %s", e.Type, e.Message)
 }
 
 // Extensions - Add resolver extensions to show error details on responses
@@ -27,7 +29,7 @@ type FullError struct {
 }
 
 func (e *FullError) Error() string {
-	return e.Type
+	return fmt.Sprintf("%s: %s", e.Type, e.Message)
 }
 
 // Extensions - Add resolver extensions to show error details on responses

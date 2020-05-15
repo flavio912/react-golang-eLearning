@@ -3,15 +3,18 @@ package middleware
 import (
 	"strconv"
 
+	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
+
+/* Online Course CRUD */
 
 func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	return gentypes.OnlineCourse{
@@ -22,87 +25,12 @@ func onlineCourseToGentype(course models.OnlineCourse) gentypes.OnlineCourse {
 	}
 }
 
-func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
-	return gentypes.CourseInfo{
-		ID:   courseInfo.ID,
-		Name: courseInfo.Name,
+func onlineCoursesToGentypes(courses []models.OnlineCourse) []gentypes.OnlineCourse {
+	var _courses = make([]gentypes.OnlineCourse, len(courses))
+	for i, course := range courses {
+		_courses[i] = onlineCourseToGentype(course)
 	}
-}
-
-// UpdateCourseInfo updates the courseInfo for a given courseInfoID
-func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges UpdateCourseInfoInput) error {
-	if !g.IsAdmin {
-		return &errors.ErrUnauthorized
-	}
-
-	// Validate input
-	_, err := govalidator.ValidateStruct(infoChanges)
-	if err != nil {
-		return err
-	}
-
-	var courseInfo models.CourseInfo
-	courseInfo.ID = courseInfoID
-	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
-		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
-		if err != nil {
-			return err
-		}
-		courseInfo.ImageKey = &key
-	}
-	// if infoChanges.Tags != nil {
-	// 	courseInfo.Tags = infoChanges.Tags
-	// }
-	if infoChanges.Name != nil {
-		courseInfo.Name = *infoChanges.Name
-	}
-	if infoChanges.Price != nil {
-		courseInfo.Price = *infoChanges.Price
-	}
-	if infoChanges.Color != nil {
-		courseInfo.Color = *infoChanges.Color
-	}
-	if infoChanges.CategoryUUID != nil {
-		courseInfo.CategoryUUID = infoChanges.CategoryUUID
-	}
-	if infoChanges.Excerpt != nil {
-		courseInfo.Excerpt = *infoChanges.Excerpt
-	}
-	if infoChanges.Introduction != nil {
-		courseInfo.Introduction = *infoChanges.Introduction
-	}
-	if infoChanges.AccessType != nil {
-		courseInfo.AccessType = *infoChanges.AccessType
-	}
-	if infoChanges.BackgroundCheck != nil {
-		courseInfo.BackgroundCheck = *infoChanges.BackgroundCheck
-	}
-	if infoChanges.SpecificTerms != nil {
-		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
-	}
-
-	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(courseInfo)
-	if query.Error != nil {
-		glog.Errorf("Unable to update courseInfo: %s", query.Error.Error())
-		//logging.Log(ctx, sentry.LevelError, "Unable to update courseInfo", query.Error)
-		return &errors.ErrWhileHandling
-	}
-
-	return nil
-}
-
-// GetCourseInfoFromID -
-func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, error) {
-	var info models.CourseInfo
-	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return courseInfoToGentype(info), &errors.ErrNotFound
-		}
-		glog.Warningf("Unable to get course info: %s", query.Error.Error())
-		return courseInfoToGentype(info), &errors.ErrWhileHandling
-	}
-	return courseInfoToGentype(info), nil
+	return _courses
 }
 
 // CreateOnlineCourse creates a new online course
@@ -117,16 +45,22 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 		return gentypes.OnlineCourse{}, err
 	}
 
+	// Get courseInfo model
+	infoModel, err := g.ComposeCourseInfo(CourseInfoInput{
+		Name:          courseInfo.Name,
+		Price:         courseInfo.Price,
+		Color:         courseInfo.Color,
+		Tags:          courseInfo.Tags,
+		Excerpt:       courseInfo.Excerpt,
+		Introduction:  courseInfo.Introduction,
+		SpecificTerms: courseInfo.SpecificTerms,
+	})
+	if err != nil {
+		return gentypes.OnlineCourse{}, err
+	}
+
 	newCourse := models.OnlineCourse{
-		CourseInfo: models.CourseInfo{
-			Name:  helpers.NilStringToEmpty(courseInfo.Name),
-			Price: helpers.NilFloatToZero(courseInfo.Price),
-			Color: helpers.NilStringToEmpty(courseInfo.Color),
-			//TAGS
-			Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
-			Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
-			SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
-		},
+		CourseInfo: infoModel,
 	}
 
 	if courseInfo.CategoryUUID != nil {
@@ -141,7 +75,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 
 	query := database.GormDB.Create(&newCourse)
 	if query.Error != nil {
-		glog.Errorf("Unable to create course: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create course")
 		return gentypes.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -166,11 +100,13 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 		if query.RecordNotFound() {
 			return models.OnlineCourse{}, &errors.ErrNotFound
 		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
 		return models.OnlineCourse{}, &errors.ErrWhileHandling
 	}
 
 	// TODO: think about putting these two in a transaction
-	err := g.UpdateCourseInfo(onlineCourse.CourseInfoID, UpdateCourseInfoInput{
+	_, err := g.UpdateCourseInfo(onlineCourse.CourseInfoID, CourseInfoInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
@@ -220,6 +156,7 @@ func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gen
 
 func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[]gentypes.CourseItem) error {
 	if !g.IsAdmin {
+		g.Logger.LogMessage(sentry.LevelError, "Non admin tried to save online course structure (shouldn't be possible)")
 		return &errors.ErrWhileHandling
 	}
 
@@ -244,6 +181,7 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 	query := tx.Where("online_course_id = ?", courseUUID).Delete(models.CourseStructure{})
 	if query.Error != nil {
 		tx.Rollback()
+		g.Logger.Log(sentry.LevelError, query.Error, "Course delete before re add failed")
 		return &errors.ErrWhileHandling
 	}
 
@@ -271,23 +209,89 @@ func (g *Grant) saveOnlineCourseStructure(courseUUID gentypes.UUID, structure *[
 		query := tx.Create(&structureItem)
 		if query.Error != nil {
 			tx.Rollback()
+			g.Logger.Log(sentry.LevelError, query.Error, "Failed to create the structure")
 			return &errors.ErrWhileHandling
 		}
 	}
 
+	if err := tx.Commit().Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Failed to commit new course structure")
+		return &errors.ErrWhileHandling
+	}
 	return nil
 }
 
-type UpdateCourseInfoInput struct {
-	Name              *string
-	Price             *float64
-	Color             *string `valid:"hexcolor"`
-	CategoryUUID      *gentypes.UUID
-	Tags              *[]gentypes.UUID
-	Excerpt           *string `valid:"json"`
-	Introduction      *string `valid:"json"`
-	AccessType        *gentypes.AccessType
-	ImageSuccessToken *string
-	BackgroundCheck   *bool
-	SpecificTerms     *string `valid:"json"`
+// filterCoursesFromInfo takes a join of course_infos and online_courses or classroom_courses
+// and filters by course info
+func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInfoFilter) *gorm.DB {
+	// Non-admins can only see published courses
+	if !g.IsAdmin {
+		query = query.Where("course_infos.published = ?", true)
+	}
+
+	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
+	// Filter out restricted courses
+	if !g.HasFullRestrictedAccess() {
+		query = query.Not("course_infos.access_type = ?", gentypes.Restricted)
+	}
+
+	// Filter course info
+	if filter != nil {
+		if filter.Name != nil {
+			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.AccessType != nil {
+			query = query.Where("course_infos.access_type = ?", *filter.AccessType)
+		}
+		if filter.BackgroundCheck != nil {
+			query = query.Where("course_infos.background_check = ?", *filter.BackgroundCheck)
+		}
+		if filter.Price != nil {
+			query = query.Where("course_infos.price = ?", *filter.Price)
+		}
+	}
+	return query
+}
+
+func (g *Grant) GetOnlineCourses(page *gentypes.Page, filter *gentypes.OnlineCourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.OnlineCourse, gentypes.PageInfo, error) {
+	// TODO: allow delegates access to their assigned courses
+	if !g.IsAdmin && !g.IsManager {
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	var courses []models.OnlineCourse
+	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = online_courses.course_info_id")
+
+	if filter != nil {
+		query = g.filterCoursesFromInfo(query, filter.CourseInfo)
+	} else {
+		query = g.filterCoursesFromInfo(query, nil)
+	}
+
+	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"}, "created_at DESC")
+	if err != nil {
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, err
+	}
+
+	// Count total that can be retrieved by the current filter
+	var total int32
+	if err := query.Model(&models.OnlineCourse{}).Count(&total).Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to get online course count")
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := getPage(query, page)
+
+	query = query.Find(&courses)
+	if query.Error != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to get courses")
+		return []gentypes.OnlineCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return onlineCoursesToGentypes(courses), gentypes.PageInfo{
+		Total:  total,
+		Given:  int32(len(courses)),
+		Offset: offset,
+		Limit:  limit,
+	}, nil
 }

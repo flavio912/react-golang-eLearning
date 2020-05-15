@@ -30,7 +30,7 @@ func TestAdmin(t *testing.T) {
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -71,7 +71,7 @@ func TestAdmins(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all admins",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -109,7 +109,7 @@ func TestAdmins(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -165,7 +165,7 @@ func TestManager(t *testing.T) {
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -203,7 +203,7 @@ func TestManager(t *testing.T) {
 			Query:           `{manager(uuid: "00000000-0000-0000-0000-000000000002") { uuid }}`,
 			Path:            []interface{}{"manager"},
 			MustAuth:        true,
-			AdminAllowed:    false,
+			AdminAllowed:    true,
 			ManagerAllowed:  false,
 			DelegateAllowed: false,
 		},
@@ -216,7 +216,7 @@ func TestManagers(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all managers",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -240,13 +240,14 @@ func TestManagers(t *testing.T) {
 							{"uuid":"00000000-0000-0000-0000-000000000004"},
 							{"uuid":"00000000-0000-0000-0000-000000000003"},
 							{"uuid":"00000000-0000-0000-0000-000000000002"},
-							{"uuid":"00000000-0000-0000-0000-000000000001"}
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000005"}
 						],
 						"pageInfo": {
-							"given": 4,
+							"given": 5,
 							"limit": 100,
 							"offset": 0,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -254,7 +255,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should order",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -279,15 +280,16 @@ func TestManagers(t *testing.T) {
 					"managers":{
 						"edges":[
 							{"firstName":"Jimothy"},
-							{"firstName":"Steve"},
+							{"firstName":"Manager"},
 							{"firstName":"Slim"},
-							{"firstName":"Manager"}
+							{"firstName":"Steve"},
+							{"firstName":"Tony"}
 						],
 						"pageInfo": {
-							"given": 4,
+							"given": 5,
 							"limit": 100,
 							"offset": 0,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -295,7 +297,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should filter",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -321,13 +323,14 @@ func TestManagers(t *testing.T) {
 						"edges":[
 							{"firstName": "Jimothy", "lastName": "Bobnes"},
 							{"firstName": "Steve", "lastName": "Person"},
-							{"firstName": "Slim", "lastName":"Shady"}
+							{"firstName": "Slim", "lastName":"Shady"},
+							{"firstName": "Tony", "lastName":"NicePerson"}
 						],
 						"pageInfo": {
-							"given": 3,
+							"given": 4,
 							"limit": 100,
 							"offset": 0,
-							"total": 3
+							"total": 4
 						}
 					}
 				}
@@ -335,7 +338,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -366,7 +369,7 @@ func TestManagers(t *testing.T) {
 							"given": 2,
 							"limit": 2,
 							"offset": 1,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -374,7 +377,7 @@ func TestManagers(t *testing.T) {
 		},
 		{
 			Name:    "filter must validate",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -390,7 +393,7 @@ func TestManagers(t *testing.T) {
 			ExpectedResult: `{"managers":null}`,
 			ExpectedErrors: []gqltest.TestQueryError{
 				{
-					Message: helpers.StringPointer("Telephone: sa#q345654sdf does not validate as numeric"),
+					Message: helpers.StringPointer("UserFilter.Telephone: sa#q345654sdf does not validate as numeric"),
 					Path:    []interface{}{"managers"},
 				},
 			},
@@ -409,12 +412,265 @@ func TestManagers(t *testing.T) {
 	)
 }
 
+func TestDelegate(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegate(uuid: "00000000-0000-0000-0000-000000000001") {
+						uuid
+						TTC_ID
+						email
+						firstName
+						lastName
+						telephone
+						jobTitle
+						company {
+							uuid
+							name
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegate":{
+						"TTC_ID":"delegate-test-1",
+						"company":{
+							"name":"TestCompany",
+							"uuid":"00000000-0000-0000-0000-000000000001"
+						},
+						"email":"del@delegates.com",
+						"firstName":"Delegate",
+						"jobTitle":"Doer",
+						"lastName":"Man",
+						"telephone":"7912935287",
+						"uuid":"00000000-0000-0000-0000-000000000001"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{delegate(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"delegate"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  true, // the deafult manager can see itself
+			DelegateAllowed: false,
+		},
+	)
+}
+
+func TestDelegates(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all delegates",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000004"},
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"},
+							{"uuid":"00000000-0000-0000-0000-000000000001"}
+						],
+						"pageInfo":{
+							"given":4,
+							"limit":100,
+							"offset":0,
+							"total":4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should order",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (orderBy: {
+						ascending: true
+						field: "first_name"
+					}) {
+						edges {
+							firstName
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates": {
+						"edges": [
+							{"firstName": "David"},
+							{"firstName": "Delegate"},
+							{"firstName": "James"},
+							{"firstName": "Person"}
+						],
+						"pageInfo": {
+							"given": 4,
+							"limit": 100,
+							"offset": 0,
+							"total": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should filter",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (filter: {
+						name: "S"
+					}) {
+						edges {
+							firstName
+							lastName
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates": {
+						"edges": [
+							{"firstName": "James","lastName": "Bay"},
+							{"firstName": "Person","lastName": "Pearson"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 100,
+							"offset": 0,
+							"total": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should page",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (page: {
+						offset: 1
+						limit: 2
+					}) {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"delegates":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 2,
+							"offset": 1,
+							"total": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "filter must validate",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					delegates (filter: {
+						telephone: "sa#q345654sdf"
+					}) {
+						edges {
+							uuid
+						}
+					}
+				}
+			`,
+			ExpectedResult: `{"delegates":null}`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					Message: helpers.StringPointer("UserFilter.Telephone: sa#q345654sdf does not validate as numeric"),
+					Path:    []interface{}{"delegates"},
+				},
+			},
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{delegates { edges { uuid } }}`,
+			Path:            []interface{}{"delegates"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  true,
+			DelegateAllowed: false,
+		},
+	)
+}
 func TestCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
@@ -447,7 +703,17 @@ func TestCompany(t *testing.T) {
 			Path:            []interface{}{"company"},
 			MustAuth:        true,
 			AdminAllowed:    true,
-			ManagerAllowed:  false,
+			ManagerAllowed:  true,
+			DelegateAllowed: false,
+		},
+	)
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{company(uuid:"00000000-0000-0000-0000-000000000002") { uuid }}`,
+			Path:            []interface{}{"company"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false, // manager can only see it's own company
 			DelegateAllowed: false,
 		},
 	)
@@ -459,7 +725,7 @@ func TestCompanies(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all companies",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -497,7 +763,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should order",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -537,7 +803,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should filter",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -576,7 +842,7 @@ func TestCompanies(t *testing.T) {
 		},
 		{
 			Name:    "Should page",
-			Context: adminContext,
+			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 					{
@@ -625,4 +891,129 @@ func TestCompanies(t *testing.T) {
 			DelegateAllowed: false,
 		},
 	)
+}
+
+func TestOnlineCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all online courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						onlineCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"onlineCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000001"},
+								{"uuid":"00000000-0000-0000-0000-000000000002"},
+								{"uuid":"00000000-0000-0000-0000-000000000003"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+		{
+			Name:    "Should return unrestricted courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						onlineCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"onlineCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000001"},
+								{"uuid":"00000000-0000-0000-0000-000000000002"},
+								{"uuid":"00000000-0000-0000-0000-000000000003"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+	})
+}
+
+func TestClassroomCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all classroom courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+					{
+						classroomCourses {
+							edges {
+								uuid
+							}
+							pageInfo {
+								total
+								offset
+								limit
+								given
+							}
+						}
+					}
+				`,
+			ExpectedResult: `
+					{
+						"classroomCourses":{
+							"edges":[
+								{"uuid":"00000000-0000-0000-0000-000000000014"},
+								{"uuid":"00000000-0000-0000-0000-000000000013"},
+								{"uuid":"00000000-0000-0000-0000-000000000012"}
+							],
+							"pageInfo": {
+								"given": 3,
+								"limit": 100,
+								"offset": 0,
+								"total": 3
+							}
+						}
+					}
+				`,
+		},
+	})
 }

@@ -51,7 +51,56 @@ func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UU
 	return &AdminResolver{admin: admin}, err
 }
 
-// Manager gets a single manager
+func (q *QueryResolver) Delegate(ctx context.Context, args struct{ UUID gentypes.UUID }) (*DelegateResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &DelegateResolver{}, &errors.ErrUnauthorized
+	}
+
+	res, err := NewDelegateResolver(ctx, NewDelegateArgs{UUID: &args.UUID})
+
+	return res, err
+}
+
+func (q *QueryResolver) Delegates(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.DelegatesFilter
+	OrderBy *gentypes.OrderBy
+}) (*DelegatePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &DelegatePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	if args.Filter != nil {
+		err := (*args.Filter).Validate()
+		if err != nil {
+			return &DelegatePageResolver{}, err
+		}
+	}
+
+	delegates, pageInfo, err := grant.GetDelegates(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &DelegatePageResolver{}, err
+	}
+
+	var delegateResolvers []*DelegateResolver
+	for _, delegate := range delegates {
+		resolver, err := NewDelegateResolver(ctx, NewDelegateArgs{Delegate: delegate})
+		if err != nil {
+			return &DelegatePageResolver{}, err
+		}
+		delegateResolvers = append(delegateResolvers, resolver)
+	}
+
+	return &DelegatePageResolver{
+		edges: &delegateResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, nil
+}
+
 func (q *QueryResolver) Manager(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*ManagerResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
@@ -127,4 +176,67 @@ func (q *QueryResolver) Company(ctx context.Context, args struct{ UUID string })
 	return NewCompanyResolver(ctx, NewCompanyArgs{
 		UUID: args.UUID,
 	})
+}
+
+func (q *QueryResolver) OnlineCourses(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.OnlineCourseFilter
+	OrderBy *gentypes.OrderBy
+}) (*OnlineCoursePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &OnlineCoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, pageInfo, err := grant.GetOnlineCourses(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &OnlineCoursePageResolver{}, err
+	}
+
+	var courseResolvers []*OnlineCourseResolver
+	for _, course := range courses {
+		resolver, err := NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{OnlineCourse: course})
+		if err != nil {
+			return &OnlineCoursePageResolver{}, err
+		}
+		courseResolvers = append(courseResolvers, resolver)
+	}
+
+	return &OnlineCoursePageResolver{
+		edges: &courseResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		}}, nil
+
+}
+
+func (q *QueryResolver) ClassroomCourses(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.ClassroomCourseFilter
+	OrderBy *gentypes.OrderBy
+}) (*ClassroomCoursePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &ClassroomCoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, pageInfo, err := grant.GetClassroomCourses(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &ClassroomCoursePageResolver{}, err
+	}
+
+	var courseResolvers []*ClassroomCourseResolver
+	for _, course := range courses {
+		resolver, err := NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{ClassroomCourse: course})
+		if err != nil {
+			return &ClassroomCoursePageResolver{}, err
+		}
+		courseResolvers = append(courseResolvers, resolver)
+	}
+
+	return &ClassroomCoursePageResolver{
+		edges: &courseResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		}}, nil
 }

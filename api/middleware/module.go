@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -11,7 +12,7 @@ import (
 
 // duplicateModule copys a module and its stucture
 // TODO: This really isn't nice, make more efficient
-func duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
+func (g *Grant) duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
 	newModule := models.Module{
 		Template:   template,
 		TemplateID: &module.UUID,
@@ -19,7 +20,7 @@ func duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicate
 
 	query := tx.Create(&newModule)
 	if query.Error != nil {
-		glog.Error("Unable to save duplicated module")
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to save duplicated module")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
@@ -36,7 +37,7 @@ func duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicate
 		}
 		query := tx.Create(&structure)
 		if query.Error != nil {
-			glog.Error("Unable to save module structure while duplicating")
+			g.Logger.Log(sentry.LevelError, query.Error, "Unable to save module structure while duplicating")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}
@@ -52,7 +53,8 @@ func (g *Grant) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 		if query.RecordNotFound() {
 			return module, &errors.ErrNotFound
 		}
-		glog.Errorf("Error getting module by UUID: %s", query.Error.Error())
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Error getting module by UUID")
 		return module, &errors.ErrWhileHandling
 	}
 
@@ -67,7 +69,7 @@ func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseIte
 		Find(&moduleChildren)
 
 	if query.Error != nil {
-		glog.Errorf("Unable to get module structure: %s", query.Error.Error())
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get module structure")
 		return gentypes.CourseItem{}, &errors.ErrWhileHandling
 	}
 
@@ -84,7 +86,7 @@ func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseIte
 				UUID: *child.TestUUID,
 			})
 		} else {
-			glog.Error("Blank Module structure item found")
+			g.Logger.LogMessage(sentry.LevelError, "Blank Module structure item found")
 		}
 	}
 
@@ -104,7 +106,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 
 	// Check it is actually a module
 	if moduleItem.Type != gentypes.ModuleType {
-		glog.Warning("UpdateModule given type other than ModuleItem")
+		g.Logger.LogMessage(sentry.LevelWarning, "UpdateModule given type other than ModuleItem")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
@@ -115,13 +117,14 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 			glog.Infof("Could not find uuid: %s", moduleItem.UUID)
 			return models.Module{}, &errors.ErrNotFound
 		}
-		glog.Errorf("Unable to get module: %s", moduleItem.UUID)
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get module")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
 	// Module templates should be duplicated
 	if duplicateTemplates && moduleModel.Template {
-		newmod, err := duplicateModule(tx, moduleModel, false, false)
+		newmod, err := g.duplicateModule(tx, moduleModel, false, false)
 		if err != nil {
 			return models.Module{}, err
 		}
@@ -130,6 +133,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 	} else {
 		query = tx.Where("module_uuid = ?", moduleItem.UUID).Delete(models.ModuleStructure{})
 		if query.Error != nil {
+			g.Logger.Log(sentry.LevelError, query.Error, "Error deleting old module")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}
@@ -148,7 +152,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 		}
 
 		if err := tx.Save(&structureItem).Error; err != nil {
-			glog.Errorf("Unable to save structure item: %s", err)
+			g.Logger.Log(sentry.LevelError, err, "Unable to save structure item")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}

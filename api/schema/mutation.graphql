@@ -25,7 +25,9 @@ type Mutation {
   createAdmin(input: CreateAdminInput!): Admin
   updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
+  createDelegate(input: CreateDelegateInput!): Delegate
   createCompany(input: CreateCompanyInput!): Company
+  updateCompany(input: UpdateCompanyInput!): Company
   createCompanyRequest(
     company: CreateCompanyInput!
     manager: CreateManagerInput!
@@ -33,5 +35,7 @@ type Mutation {
   ): Boolean!
   approveCompany(uuid: UUID!): Company
   saveOnlineCourse(input: SaveOnlineCourseInput!): OnlineCourse
-  saveClassroomCourse(input: SaveClassroomCourseInput!): String
+  saveClassroomCourse(input: SaveClassroomCourseInput!): ClassroomCourse
+  createTag(input: CreateTagInput!): Tag
+  createCategory(input: CreateCategoryInput!): Category
 }

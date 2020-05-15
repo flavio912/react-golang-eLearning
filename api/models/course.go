@@ -22,21 +22,34 @@ type CourseInfo struct {
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
 	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
+	Published       bool                // If not published users can't see this course
+}
+
+// CourseTagsLink is not needed to create the table, but
+// is used to extract information about the course_tags_link table
+type CourseTagsLink struct {
+	CourseInfoID uint
+	TagUUID      gentypes.UUID
+}
+
+func (CourseTagsLink) TableName() string {
+	return "course_tags_link"
 }
 
 type Category struct {
-	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name string
+	Base
+	Name  string `gorm:"unique"`
+	Color string
 }
 
 type Tag struct {
-	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name  string        `gorm:"unique"`
-	Color string        // A hex color for the tag
+	Base
+	Name  string `gorm:"unique"`
+	Color string // A hex color for the tag
 }
 
 type OnlineCourse struct {
-	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Base
 	CourseInfo   CourseInfo
 	CourseInfoID uint // FKEY
 	Structure    []CourseStructure
@@ -51,13 +64,14 @@ type CourseStructure struct {
 }
 
 type ClassroomCourse struct {
-	UUID       gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	CourseInfo CourseInfo
+	Base
+	CourseInfo   CourseInfo
+	CourseInfoID uint
 	//Tutor      Tutor // The tutor user running this course
-	StartDate time.Time
-	EndDate   time.Time
-	Location  string // e.g The Ritz, London.
-
+	StartDate       gentypes.Time
+	EndDate         gentypes.Time
+	Location        string // e.g The Ritz, London.
+	MaxParticipants int
 	// Classroom courses can require you to take some online courses first
 	OnlineCourses []OnlineCourse `gorm:"many2many:online_classroom_link;"`
 }
