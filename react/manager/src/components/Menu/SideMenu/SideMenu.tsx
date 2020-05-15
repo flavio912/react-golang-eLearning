@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: "fixed",
     height: "100%",
     flexDirection: "row",
-    boxShadow: theme.shadows.primary,
+    boxShadow: "2px 12px 10px rgba(0,0,0,0.07)",
   },
   menu: {
     display: "flex",
