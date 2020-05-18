@@ -10,7 +10,7 @@ import Status from "components/core/Table/Status";
 import Action from "components/core/Table/Action";
 import CourseCompletion from "components/core/Table/CourseCompletion";
 import Dropdown, { DropdownOption } from "components/core/Dropdown";
-import CheckboxSingle from "components/core/CheckboxSingle";
+// import CheckboxSingle from "components/core/CheckboxSingle";
 
 type Props = {};
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -46,7 +46,7 @@ const courseRowEmpty = () => ({
       component: () => (
         <ActiveCoursesEmpty title="Book John on their first Course" />
       ),
-      colspan: 6,
+      colspan: 5,
     },
     {
       component: () => <Action />,
@@ -66,17 +66,17 @@ const courseRow = (
 ): any => ({
   key,
   cells: [
-    {
-      component: () => (
-        <CheckboxSingle
-          box={{
-            label: "",
-            checked: false,
-          }}
-          setBox={() => {}}
-        />
-      ),
-    },
+    // {
+    //   component: () => (
+    //     <CheckboxSingle
+    //       box={{
+    //         label: "",
+    //         checked: false,
+    //       }}
+    //       setBox={() => {}}
+    //     />
+    //   ),
+    // },
     {
       component: () => (
         <Text text={title} color={theme.colors.secondaryBlack} />
@@ -138,10 +138,10 @@ const CourseTable = (props: any) => {
       </div>
       <Table
         header={[
-          <CheckboxSingle
-            box={{ label: "", checked: false }}
-            setBox={() => {}}
-          />,
+          //   <CheckboxSingle
+          //     box={{ label: "", checked: false }}
+          //     setBox={() => {}}
+          //   />,
           "COURSE TITLE",
           "CATEGORY",
           "PROGRESS",

@@ -58,17 +58,17 @@ const activityRow = (
 ): any => ({
   key,
   cells: [
-    {
-      component: () => (
-        <CheckboxSingle
-          box={{
-            label: "",
-            checked: false,
-          }}
-          setBox={() => {}}
-        />
-      ),
-    },
+    // {
+    //   component: () => (
+    //     <CheckboxSingle
+    //       box={{
+    //         label: "",
+    //         checked: false,
+    //       }}
+    //       setBox={() => {}}
+    //     />
+    //   ),
+    // },
     {
       component: () => {
         return (
