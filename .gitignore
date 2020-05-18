@@ -17,3 +17,4 @@ tmp
 api/.testCoverage
 api/cover_report.html
 debug.test
+api/schema/bindata.go
