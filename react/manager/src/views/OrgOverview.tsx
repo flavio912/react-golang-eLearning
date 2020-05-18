@@ -35,6 +35,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   cardFlex: {
     display: "flex",
+    justifyContent: "space-between",
   },
   breaker: {
     width: theme.spacing(2),
@@ -139,7 +140,7 @@ export const OrgOverview = () => {
               timeTracked={{ h: 20, m: 15 }}
               title="Weekly"
             />
-            <Spacer spacing={3} horizontal />
+            <Spacer spacing={2} horizontal />
             <TrainingProgressCard
               coursesDone={20}
               timeTracked={{ h: 20, m: 15 }}

@@ -5,16 +5,19 @@ import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
 import Card from "sharedComponents/core/Card";
 import { IconNames } from "sharedComponents/core/Icon/Icon";
-
+import Spacer from "components/core/Spacers/Spacer";
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     color: theme.colors.textBlue,
-    minWidth: 278,
+    padding: "20px 33px",
   },
   infoItems: {
     display: "flex",
     justifyContent: "space-between",
     marginTop: theme.spacing(2),
+  },
+  progressTitle: {
+    fontWeight: 300,
   },
 }));
 
@@ -43,7 +46,7 @@ function TrainingProgressCard({
 
   return (
     <Card padding="medium" className={classes.root}>
-      <div>{title}</div>
+      <div className={classes.progressTitle}>{title}</div>
       <div className={classes.infoItems}>
         <QuickInfo
           icon={courseNewCourseIcon as IconNames}
@@ -51,6 +54,7 @@ function TrainingProgressCard({
           value={coursesDone}
           percentValue={coursesPercent}
         />
+        <Spacer horizontal spacing={3} />
         <QuickInfo
           icon={courseTimeTrackedIcon as IconNames}
           text="Time Tracked"
