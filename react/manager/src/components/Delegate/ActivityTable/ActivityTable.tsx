@@ -113,15 +113,7 @@ const ActivityTable = (props: any) => {
         </div>
       </div>
       <Table
-        header={[
-          "",
-          "ACTIVITY TIME",
-          "NAME",
-          "ACTIVE TYPE",
-          "TIME SPENT",
-          "",
-          "",
-        ]}
+        header={["ACTIVITY TIME", "NAME", "ACTIVE TYPE", "TIME SPENT", "", ""]}
         rows={[
           activityRow(
             1,
