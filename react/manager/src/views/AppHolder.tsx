@@ -4,6 +4,7 @@ import SideMenu from "components/Menu/SideMenu";
 import { Tab } from "components/Menu/SideMenu/SideMenu";
 import { createUseStyles, useTheme } from "react-jss";
 import { useRouter } from "found";
+import { useRouteMatch } from "react-router-dom";
 
 type Props = {
   children?: React.ReactChildren;
@@ -44,12 +45,16 @@ export const AppHolder = ({ children }: Props) => {
   ];
 
   const selected = () => {
-    switch (match.location.pathname) {
-      case "/app":
+    const { routes } = match;
+    const currentRouter = routes[routes.length - 1];
+    switch (currentRouter.path) {
+      case "/":
         return tabs[0];
-      case "/app/delegates":
+      case "/delegates":
         return tabs[1];
-      case "/app/courses":
+      case "/delegates/:id":
+        return tabs[1];
+      case "/courses":
         return tabs[2];
       default:
         return tabs[0];

@@ -4,8 +4,8 @@ import { Theme } from "helpers/theme";
 import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
 import Card from "sharedComponents/core/Card";
+import { IconNames } from "sharedComponents/core/Icon/Icon";
 import Spacer from "components/core/Spacers/Spacer";
-
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     color: theme.colors.textBlue,
@@ -23,11 +23,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   coursesDone: number;
-  timeTracked: { h: number; m: number };
+  timeTracked: { h: number; m: number } | string;
   title: string;
+  coursesPercent?: number;
+  timePercent?: number;
+  courseTimeTrackedIcon?: IconNames;
+  courseNewCourseIcon?: IconNames;
+  courseTitle?: string;
 };
-
-function TrainingProgressCard({ coursesDone, timeTracked, title }: Props) {
+function TrainingProgressCard({
+  coursesDone,
+  timeTracked,
+  title,
+  coursesPercent,
+  timePercent,
+  courseTitle = "Courses done",
+  courseTimeTrackedIcon = "CourseTimeTracked",
+  courseNewCourseIcon = "CourseNewCourseGreen",
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -36,15 +49,17 @@ function TrainingProgressCard({ coursesDone, timeTracked, title }: Props) {
       <div className={classes.progressTitle}>{title}</div>
       <div className={classes.infoItems}>
         <QuickInfo
-          icon="CourseNewCourseGreen"
-          text="Courses done"
+          icon={courseNewCourseIcon as IconNames}
+          text={courseTitle}
           value={coursesDone}
+          percentValue={coursesPercent}
         />
         <Spacer horizontal spacing={3} />
         <QuickInfo
-          icon="CourseTimeTracked"
+          icon={courseTimeTrackedIcon as IconNames}
           text="Time Tracked"
           value={timeTracked}
+          percentValue={timePercent}
         />
       </div>
     </Card>

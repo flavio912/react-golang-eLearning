@@ -28,6 +28,10 @@ export type Theme = {
     textGrey: string;
     searchHoverGrey: string;
     progressGrey: string;
+    secondaryDanger: string;
+    hoverDanger: string;
+    textNavyBlue: string;
+    textSolitude: string;
   };
   shadows: {
     primary: string;
@@ -40,6 +44,7 @@ export type Theme = {
     large: number;
     default: number;
     small: number;
+    xSmall: number;
     tiny: number;
   };
 };
@@ -57,7 +62,9 @@ const theme: Theme = {
     primaryGreen: "#10b73b",
     secondaryBlack: "#34373A",
     secondaryGreen: "#15C324",
+    secondaryDanger: "#DB5C5D",
     hoverGreen: "#E7F8E6",
+    hoverDanger: "#FBC7C5",
     primaryRed: "#CB463A",
     secondaryGrey: "#9ea2ad",
     primaryWhite: "#FFFFFF",
@@ -67,6 +74,8 @@ const theme: Theme = {
     textBlue: "#1081AA",
     textGrey: "#737988",
     progressGrey: "#d2d6db",
+    textNavyBlue: "#6BAAE7",
+    textSolitude: "#DFEEFD",
   },
   shadows: {
     primary: "2px 2px 10px rgba(0,0,0,0.07)",
@@ -79,6 +88,7 @@ const theme: Theme = {
     large: 16,
     default: 14,
     small: 13,
+    xSmall: 12,
     tiny: 11,
   },
 };
