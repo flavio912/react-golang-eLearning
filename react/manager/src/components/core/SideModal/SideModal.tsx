@@ -8,12 +8,13 @@ const modalWidth = 750;
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    width: "100%",
+    width: "100vw",
     height: "100vh",
     overflow: "hidden",
     position: "fixed",
     zIndex: 45,
     top: 0,
+    left: 0
   },
   background: {
     zIndex: 50,
@@ -31,6 +32,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "stretch",
+    overflowY: "auto"
   },
   header: {
     height: 76,
