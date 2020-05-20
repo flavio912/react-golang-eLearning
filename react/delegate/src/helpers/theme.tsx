@@ -28,6 +28,7 @@ export type Theme = {
     textGrey: string;
     searchHoverGrey: string;
     progressGrey: string;
+    navyBlue: string;
   };
   shadows: {
     primary: string;
@@ -67,6 +68,7 @@ const theme: Theme = {
     textBlue: "#1081AA",
     textGrey: "#737988",
     progressGrey: "#d2d6db",
+    navyBlue: "#0E66E0"
   },
   shadows: {
     primary: "2px 2px 10px rgba(0,0,0,0.07)",
