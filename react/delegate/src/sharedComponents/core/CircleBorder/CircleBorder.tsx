@@ -15,8 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite
   },
   profileBorder: {
-    backgroundImage: `linear-gradient(45deg,
-        ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    backgroundColor: `${theme.colors.primaryWhite}`,
     boxShadow: theme.shadows.primary
   },
 }));
@@ -41,11 +40,11 @@ function CircleBorder({ user, text, size = 45, fontSize = 18, colour, className 
   return (
     <div
         className={classNames(classes.center, classes.profileBorder, className)}
-        style={{ height: size + 4, width: size + 4, borderRadius: size + 4, backgroundImage: colour && `linear-gradient(45deg, ${colour}, ${colour})` }}
+        style={{ height: size + 8, width: size + 8, borderRadius: size + 8, backgroundImage: colour && `linear-gradient(45deg, ${colour}, ${colour})` }}
     >
         <div
             className={classNames(classes.center, classes.profileCircle)}
-            style={{ height: size + 2, width: size + 2, borderRadius: size + 2 }}
+            style={{ height: size, width: size, borderRadius: size }}
         >
             {user && (
                 <ProfileIcon
