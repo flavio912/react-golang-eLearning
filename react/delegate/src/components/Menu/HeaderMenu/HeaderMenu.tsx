@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Icon from "../../../sharedComponents/core/Icon/Icon";
 import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
-import Spacer from "components/core/Spacers/Spacer";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
 import CoreInput from "sharedComponents/core/CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -12,9 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     flexDirection: "column",
     borderBottom: [1, "solid", theme.colors.borderGrey],
-    top: 0,
-    width: "100%",
-    position: "fixed",
+    gridArea: "1 / 2",
     zIndex: 10,
   },
   menu: {
@@ -64,12 +62,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   user: User;
-  children?: React.ReactNode;
   onProfileClick?: Function;
   className?: string;
 };
 
-function HeaderMenu({ user, children, onProfileClick, className }: Props) {
+function HeaderMenu({ user, onProfileClick, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -82,9 +79,8 @@ function HeaderMenu({ user, children, onProfileClick, className }: Props) {
             type="search"
             placeholder="Search"
             className={classes.searchInput}
-
+            onChange={(text: string) => {}}
             /*
-            onChange={onChange}
             onFocus={onFocus}
             onBlur={onBlur}
             value={input}
@@ -100,7 +96,6 @@ function HeaderMenu({ user, children, onProfileClick, className }: Props) {
           <CircleBorder user={user} colour="#FFF" />
         </div>
       </div>
-      <div className={classes.body}>{children}</div>
     </div>
   );
 }

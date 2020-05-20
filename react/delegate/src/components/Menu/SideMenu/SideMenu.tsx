@@ -8,29 +8,30 @@ import Icon, { IconNames } from "../../../sharedComponents/core/Icon/Icon";
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: "flex",
-    zIndex: 10,
-    top: 89,
-    position: "fixed",
+    zIndex: 100,
+    top: 0,
+    gridRow: "1 / span 2",
+    position: "relative",
     height: "100%",
     flexDirection: "column",
     alignItems: "center",
-    boxShadow: theme.shadows.primary,
+    boxShadow: "1px 0px 0px rgba(0,0,0,0.03)",
+    background: theme.colors.primaryWhite,
   },
   menu: {
     display: "flex",
     flexDirection: "column",
     justifyContent: "flex-start",
     alignItems: "center",
-    backgroundColor: theme.colors.primaryWhite,
   },
   tab: {
     width: "274px",
+    height: 72,
     cursor: "pointer",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "flex-start",
-    padding: "25px 0",
     opacity: 0.3,
     transition: "background-color 0.3s linear, opacity 0.3s linear",
   },
@@ -40,12 +41,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: "background-color 0.3s linear, opacity 0.3s linear",
   },
   fold: {
-    height: "40px",
-    width: "5px",
-    borderRadius: "0 9px 9px 0",
-    backgroundColor: theme.colors.secondaryGreen,
+    width: 17,
+    height: 40,
+    position: "absolute",
+    left: "-13px",
     opacity: 1,
     transition: "opacity 1s linear",
+    borderRadius: 13,
+    backgroundColor: theme.colors.secondaryGreen,
   },
   noFold: {
     height: "40px",
@@ -101,7 +104,7 @@ type Props = {
   logo: string;
   tabs: Array<Tab>;
   selected: Tab;
-  onClick: (tab: Tab) => void;
+  onClick?: (tab: Tab) => void;
   onLogoClick?: Function;
   className?: string;
 };
@@ -128,14 +131,14 @@ function SideMenu({
       className={classNames(classes.root, className)}
       style={{ left }}
     >
-      <div className={classes.arrowCont}>
+      {/* <div className={classes.arrowCont}>
         <Icon
           name={isOpen ? "ArrowLeft" : "ArrowRight"}
           className={classes.arrow}
           size={15}
           onClick={() => setIsOpen(!isOpen)}
         />
-      </div>
+      </div> */}
 
       <img
         className={classNames(classes.logo)}
@@ -152,7 +155,9 @@ function SideMenu({
                 classes.tab,
                 selected && selected.id === tab.id && classes.selected
               )}
-              onClick={() => onClick(tab)}
+              onClick={() => {
+                if (onClick) onClick(tab);
+              }}
             >
               <div
                 className={classNames(
