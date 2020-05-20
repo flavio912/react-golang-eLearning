@@ -4,7 +4,8 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Icon from "../../../sharedComponents/core/Icon/Icon";
 import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
-import CoreInput from "../../core/CoreInput";
+import Spacer from "components/core/Spacers/Spacer";
+import CoreInput from "sharedComponents/core/CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -19,7 +20,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   menu: {
     display: "flex",
     flexDirection: "row",
-    justfiyContent: 'flex-start',
+    justfiyContent: "flex-start",
     backgroundImage: `linear-gradient(90deg,
       ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
     padding: "17px 25px",
@@ -35,16 +36,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: 300,
     paddingLeft: theme.spacing(1),
-    backgroundColor: 'transparent'
+    backgroundColor: "transparent",
+    "&::placeholder": {
+      color: theme.colors.primaryWhite,
+    },
   },
   profile: {
     display: "flex",
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
   name: {
     fontSize: theme.fontSizes.tinyHeading,
     fontWeight: 800,
-    color: theme.colors.primaryWhite
+    color: theme.colors.primaryWhite,
   },
   row: {
     display: "flex",
@@ -65,12 +69,7 @@ type Props = {
   className?: string;
 };
 
-function HeaderMenu({
-  user,
-  children,
-  onProfileClick,
-  className,
-}: Props) {
+function HeaderMenu({ user, children, onProfileClick, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -83,6 +82,7 @@ function HeaderMenu({
             type="search"
             placeholder="Search"
             className={classes.searchInput}
+
             /*
             onChange={onChange}
             onFocus={onFocus}
@@ -96,12 +96,11 @@ function HeaderMenu({
           onClick={() => onProfileClick && onProfileClick()}
         >
           <div className={classes.name}>{user.name}</div>
+          <Spacer horizontal spacing={2} />
           <CircleBorder user={user} colour="#FFF" />
         </div>
       </div>
-      <div className={classes.body}>
-        {children}
-      </div>
+      <div className={classes.body}>{children}</div>
     </div>
   );
 }

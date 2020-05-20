@@ -57,22 +57,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
     cursor: "pointer",
     height: "50px",
     width: "140px",
-    margin: '25px 0'
+    margin: "25px 0",
   },
-  arrow: {
-    position: 'absolute',
+  arrow: {},
+  arrowCont: {
     top: 30,
-    left: 265,
-    backgroundColor: theme.colors.primaryWhite,
+    right: -15,
+    width: 20,
+    height: 20,
+    padding: 5,
+    position: "absolute",
+    boxShadow: "6px 2px 10px rgba(0,0,0,0.07)",
     borderRadius: 20,
-    padding: '5px',
-    boxShadow: theme.shadows.primary
+    backgroundColor: "#FFFFFF",
   },
   title: {
     fontSize: theme.fontSizes.large,
-    fontWeight: '700',
+    fontWeight: "700",
     color: theme.colors.textBlue,
-    margin: '0 25px'
+    margin: "0 25px",
   },
   body: {
     padding: "30px 30px",
@@ -83,8 +86,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   row: {
     display: "flex",
     flexDirection: "row",
-    marginLeft: '30px'
-  }
+    marginLeft: "30px",
+  },
 }));
 
 export interface Tab {
@@ -103,10 +106,17 @@ type Props = {
   className?: string;
 };
 
-function SideMenu({ logo, tabs, selected, onClick, onLogoClick, className }: Props) {
+function SideMenu({
+  logo,
+  tabs,
+  selected,
+  onClick,
+  onLogoClick,
+  className,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const [ isOpen, setIsOpen ] = React.useState(true);
+  const [isOpen, setIsOpen] = React.useState(true);
   const { left, opacity } = useSpring({
     left: isOpen ? 0 : -274,
     opacity: isOpen ? 1 : 0,
@@ -118,18 +128,21 @@ function SideMenu({ logo, tabs, selected, onClick, onLogoClick, className }: Pro
       className={classNames(classes.root, className)}
       style={{ left }}
     >
-      <Icon
-        name={isOpen ? "ArrowLeft" : "ArrowRight"}
-        className={classes.arrow}
-        size={20}
-        onClick={() => setIsOpen(!isOpen)}
-      />
-      <img
-          className={classNames(classes.logo)}
-          onClick={() => onLogoClick && onLogoClick()}
-          src={logo}
-          alt="Logo"
+      <div className={classes.arrowCont}>
+        <Icon
+          name={isOpen ? "ArrowLeft" : "ArrowRight"}
+          className={classes.arrow}
+          size={15}
+          onClick={() => setIsOpen(!isOpen)}
         />
+      </div>
+
+      <img
+        className={classNames(classes.logo)}
+        onClick={() => onLogoClick && onLogoClick()}
+        src={logo}
+        alt="Logo"
+      />
       <animated.div className={classNames(classes.menu)} style={{ opacity }}>
         {tabs &&
           tabs.map((tab) => (
