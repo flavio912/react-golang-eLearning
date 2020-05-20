@@ -58,36 +58,6 @@ export const AppHolder = ({ children }: Props) => {
 
   return (
     <div>
-      <HeaderMenu
-        logo={
-          "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png"
-        }
-        user={{
-          name: "Test",
-          url:
-            "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
-        }}
-      />
-      <SideMenu
-        tabs={tabs}
-        selected={selected()}
-        onClick={(tab) => {
-          console.log("tab", tab);
-          switch (tab.id) {
-            case 0:
-              router.push("/app");
-              break;
-            case 1:
-              router.push("/app/delegates");
-              break;
-            case 2:
-              router.push("/app/courses");
-              break;
-            default:
-              break;
-          }
-        }}
-      />
       <div className={classes.appHolder}>{children}</div>
     </div>
   );
