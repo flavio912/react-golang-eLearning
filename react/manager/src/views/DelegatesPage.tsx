@@ -21,9 +21,9 @@ import UserLabel from "components/core/Table/UserLabel";
 import Text from "components/core/Table/Text/Text";
 import Icon from "sharedComponents/core/Icon";
 import CourseCompletion from "components/core/Table/CourseCompletion";
-import Dropdown from "components/core/Dropdown";
-import Spacer from "components/core/Spacers/Spacer";
-import Paginator from "components/Paginator";
+import Dropdown from "sharedComponents/core/Dropdown";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
+import Paginator from "sharedComponents/Paginator";
 
 type Props = {};
 

@@ -16,7 +16,7 @@ import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import { Theme } from "helpers/theme";
 import ProfileCard from "components/Overview/ProfileCard";
 import PageHeader from "components/PageHeader";
-import Spacer from "components/core/Spacers/Spacer";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
 
 type Props = {};
 

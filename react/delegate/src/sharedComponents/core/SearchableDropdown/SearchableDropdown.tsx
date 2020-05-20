@@ -4,7 +4,7 @@ import ThemeObject, { Theme } from "helpers/theme";
 import classNames from "classnames";
 import Icon from "../../../sharedComponents/core/Icon";
 import { ScaleLoader } from "react-spinners";
-import CoreInput from "../CoreInput";
+import CoreInput from "sharedComponents/core/CoreInput";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   tagContainer: {

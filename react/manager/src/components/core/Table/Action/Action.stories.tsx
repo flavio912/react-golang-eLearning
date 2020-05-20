@@ -3,7 +3,7 @@ import Action from "./Action";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Table/Action",
+  title: "Core/Table/Action",
   decorators: [withKnobs],
 };
 

@@ -3,7 +3,7 @@ import Text from "./Text";
 import { withKnobs, text, boolean } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Table/Text",
+  title: "Core/Table/Text",
   decorators: [withKnobs],
 };
 

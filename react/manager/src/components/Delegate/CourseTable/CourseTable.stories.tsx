@@ -3,7 +3,7 @@ import CourseTable from "./CourseTable";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/CourseTable",
+  title: "Delegate/CourseTable",
   decorators: [withKnobs],
 };
 

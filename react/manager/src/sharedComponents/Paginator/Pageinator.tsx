@@ -2,8 +2,8 @@ import * as React from "react";
 import { createUseStyles } from "react-jss";
 
 import { Theme } from "helpers/theme";
-import Dropdown, { DropdownOption } from "components/core/Dropdown";
-import PageNumbers from "components/core/PageNumbers";
+import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
+import PageNumbers from "sharedComponents/core/PageNumbers";
 import { update } from "relay-runtime/lib/handlers/connection/ConnectionHandler";
 
 const useStyles = createUseStyles((theme: Theme) => ({

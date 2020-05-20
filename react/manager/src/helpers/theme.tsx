@@ -40,6 +40,7 @@ export type Theme = {
   fontSizes: {
     heading: number;
     smallHeading: number;
+    tinyHeading: number;
     extraLarge: number;
     large: number;
     default: number;
@@ -84,6 +85,7 @@ const theme: Theme = {
   fontSizes: {
     heading: 25,
     smallHeading: 24,
+    tinyHeading: 20,
     extraLarge: 18,
     large: 16,
     default: 14,
