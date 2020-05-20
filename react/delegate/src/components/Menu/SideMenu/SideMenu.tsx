@@ -10,6 +10,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: "flex",
     zIndex: 100,
     top: 0,
+    overflow: "hidden",
+    width: 274,
     gridRow: "1 / span 2",
     position: "relative",
     height: "100%",

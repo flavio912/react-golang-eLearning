@@ -3,7 +3,7 @@ import TimeSpent from "./TimeSpent";
 import { withKnobs, number } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/ActiveType",
+  title: "Delegate/ActiveType",
   decorators: [withKnobs],
 };
 

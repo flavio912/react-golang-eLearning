@@ -3,7 +3,7 @@ import ActiveType from "./ActiveType";
 import { withKnobs, text } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/ActiveType",
+  title: "Delegate/ActiveType",
   decorators: [withKnobs],
 };
 

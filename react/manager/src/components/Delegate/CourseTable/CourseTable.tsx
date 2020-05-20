@@ -9,7 +9,7 @@ import Text from "components/core/Table/Text/Text";
 import Status from "components/core/Table/Status";
 import Action from "components/core/Table/Action";
 import CourseCompletion from "components/core/Table/CourseCompletion";
-import Dropdown, { DropdownOption } from "components/core/Dropdown";
+import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
 // import CheckboxSingle from "components/core/CheckboxSingle";
 
 type Props = {};

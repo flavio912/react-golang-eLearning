@@ -3,7 +3,7 @@ import ActiveCoursesEmpty from "./ActiveCoursesEmpty";
 import { withKnobs, text } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/ActiveCoursesEmpty",
+  title: "Delegate/ActiveCoursesEmpty",
   decorators: [withKnobs],
 };
 

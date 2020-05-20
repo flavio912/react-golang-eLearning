@@ -3,7 +3,7 @@ import { withKnobs, number } from "@storybook/addon-knobs";
 import CourseCompletion from ".";
 
 export default {
-  title: "/CourseCompletion",
+  title: "Core/Table/CourseCompletion",
   decorators: [withKnobs],
 };
 

@@ -5,7 +5,7 @@ import ActiveType from "components/Delegate/ActiveType";
 import theme, { Theme } from "helpers/theme";
 import Table from "components/core/Table";
 import Text from "components/core/Table/Text/Text";
-import Paginator from "components/Paginator";
+import Paginator from "sharedComponents/Paginator";
 import CheckboxSingle from "components/core/CheckboxSingle";
 import TimeSpent from "components/Delegate/TimeSpent";
 import ActivityName from "components/Delegate/ActivityName";

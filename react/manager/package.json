@@ -72,7 +72,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents"
+      "pre-commit": "lint-staged && git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents"
     }
   },
   "lint-staged": {
