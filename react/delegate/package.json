@@ -28,7 +28,6 @@
     "postcss-normalize": "7.0.1",
     "postcss-preset-env": "6.7.0",
     "postcss-safe-parser": "4.0.1",
-    "prettier-eslint": "^9.0.1",
     "react": "^16.13.1",
     "react-app-polyfill": "^1.0.3",
     "react-circular-progressbar": "^2.0.3",
@@ -66,13 +65,14 @@
     "startProd": "node server.js",
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
-    "lint": "tsc --noEmit && eslint '*/**/*.{js,ts,tsx}' --quiet --fix",
+    "lint": "eslint . --ext .ts,.tsx",
+    "precom": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
     "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__",
     "relayWatch": "nodemon --exec 'yarn run relay' --ignore 'server.js' -e ts,tsx,graphql"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged && git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents"
+      "pre-commit": "yarn run precom"
     }
   },
   "lint-staged": {

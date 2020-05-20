@@ -61,7 +61,7 @@ const colourMap = {
  */
 function toInitials(name: string) {
   if (name.length > 2) {
-    let initials: RegExpMatchArray = name.match(/\b\w/g) || [];
+    const initials: RegExpMatchArray = name.match(/\b\w/g) || [];
     return ((initials.shift() || '') + (initials.pop() || '')).toUpperCase();
   }
   return name.toUpperCase();

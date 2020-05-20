@@ -32,7 +32,7 @@ function PageNumbers({ currentPage, setCurrentPage, range = 4, numberOfPages }: 
     const classes = useStyles({ theme });
 
     const [pageRange, setPageRange] = React.useState<number>(range);
-    const changeRange = (change : number) => {
+    const changeRange = (change: number) => {
         if (pageRange + change < range) {
             setPageRange(range);
         } else if (pageRange + change > numberOfPages) {
