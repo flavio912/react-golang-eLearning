@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import moment from 'moment';
 import { Theme } from 'helpers/theme';
-import ProfileIcon from 'components/core/ProfileIcon';
+import ProfileIcon from 'sharedComponents/core/ProfileIcon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
