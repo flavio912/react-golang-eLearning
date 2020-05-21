@@ -139,7 +139,7 @@ export interface Course {
   expiring: number;
   date: string;
   location: string;
-  lecture: CourseLecture;
+  lecture?: CourseLecture;
 }
 
 export interface CourseLecture {

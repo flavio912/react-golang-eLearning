@@ -1,6 +1,6 @@
 import * as React from 'react';
-import CourseCard, { Course, SizeOptions, Completion } from './CourseCard';
-import { withKnobs, select, text, object, number } from '@storybook/addon-knobs';
+import CourseCard, { Course, SizeOptions, Completion, CourseLecture } from './CourseCard';
+import { withKnobs, select, text, object } from '@storybook/addon-knobs';
 
 export default {
   title: 'Overview/CourseCard',
@@ -9,7 +9,13 @@ export default {
 
 const sizeOptions: SizeOptions[] = ["small", "large"];
 
-const defaultCourse = {
+const lectureValue: CourseLecture = {
+  module: 16, 
+  lesson: 144, 
+  video: 4 
+}
+
+const defaultCourse: Course = {
   type: "DANGEROUS GOODS AIR",
   colour: "#8C1CB4",
   url: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
@@ -20,7 +26,7 @@ const defaultCourse = {
   expiring: 9,
   date: "MAR 3rd 2020",
   location: "TTC at Hilton T4",  
-  lecture: { module: 16, lesson: 144, video: 4 },
+  lecture: lectureValue,
 };
 
 const defaultColor = "#8C1CB4";
