@@ -1,9 +1,80 @@
 import * as React from "react";
 import SideModal from "components/core/SideModal";
 import Tabs, { TabContent, Body, Heading, Footer } from "components/core/SideModal/Tabs";
-import FancyInput from "components/LoginDialogue/FancyInput";
 import Button from "sharedComponents/core/Button";
 import Icon from "sharedComponents/core/Icon";
+import EasyInput from "components/core/EasyInput";
+import { createUseStyles, useTheme } from "react-jss";
+import { Theme } from "helpers/theme";
+
+const useStyles = createUseStyles((theme: Theme) => ({
+  personalContainer:{
+    display: "flex",
+    marginTop: theme.spacing(2),
+    marginBottom: 35
+  },
+  heading:{
+    marginBottom: theme.spacing(2),
+    color: theme.colors.primaryBlack,
+    fontSize: theme.fontSizes.heading,
+    fontWeight: 800,
+  },
+  profilePicContainer:{
+    display: "flex",
+    flexDirection: "column",
+    width: "30%",
+    alignItems: "center",
+    justifyContent: "center", 
+    marginRight: theme.spacing(3) //"5%"
+  },
+  editPicPencilIcon:{
+    marginBottom: -30,
+    marginRight: -65,
+    zIndex: 15
+  },
+  editPhotoBtn:{
+    marginTop: theme.spacing(1),
+  },
+  personalDetailContainer:{
+    display: "flex",
+    flexDirection: "column"
+  },
+  namesContainer:{
+    display: "flex",
+    flexDirection: "row",
+    marginBottom: theme.spacing(2)
+  },
+  firstName:{
+    marginRight: theme.spacing(2)
+  },
+  contactContainer:{
+    display: "flex" ,
+    marginTop: theme.spacing(0),
+    marginBottom: 35
+  },
+  emailInput:{
+    marginRight: "7.5%",
+    width: "40%"
+  },
+  phoneInput:{
+    width: "40%"
+  },
+  ttcInput:{
+    width: "50%"
+  },
+  ttcLabel:{
+    fontSize: theme.fontSizes.heading,
+    fontWeight: 800,
+    marginLeft: 1
+  },
+  footerBtnsContainer:{
+    display: "flex",
+  },
+  submitBtn:{
+    marginLeft: theme.spacing(2)
+  }
+}));
+
 
 type Props = {
   isOpen: boolean;
@@ -23,23 +94,22 @@ type Props = {
 const delegateDetails: TabContent[] = [
   {
     key: "Delegate Details",
-    component: ({ state, setState, setTab, closeModal}) => (
+    component: ({ state, setState, setTab, closeModal}) => {
+      const theme = useTheme();
+      const classes = useStyles({ theme });
+
+      return (
       <>
         <Body>
-          <Heading>
+          <span className={classes.heading}>
             Personal
-          </Heading>
-          <div style= {{ display: "flex", marginTop: 25, marginBottom: 35}}>
-            <div style={{ display: "flex", 
-                        flexDirection: "column",
-                        width: "30%",
-                        alignItems: "center",
-                        justifyContent: "center", 
-                        marginRight: "5%"}}>
+          </span>
+          <div className={classes.personalContainer}>
+            <div className={classes.profilePicContainer}>
               <Icon
                 name="EditPicPencil"
                 size={30}
-                style={{marginBottom: -30, marginRight: -65, zIndex: 15}}
+                className={classes.editPicPencilIcon}
               />
               <Icon
                 name="EditDelegateProfilePic_Default"
@@ -47,14 +117,14 @@ const delegateDetails: TabContent[] = [
                 size={100}
                 onClick={() => alert("ratta tatta!")}
               />
-              <Button archetype="default" style={{marginTop: 10}}>
+              <Button archetype="grey" className={classes.editPhotoBtn}>
                 Edit Photo
               </Button>
             </div>
-            <div style={{ display: "flex", flexDirection: "column"}}>
-              <div style={{ display: "flex", flexDirection: "row", marginBottom: 10}}>
-                <div style={{ marginRight: 20 }}>
-                  <FancyInput
+            <div className={classes.personalDetailContainer}>
+              <div className={classes.namesContainer}>
+                <div className={classes.firstName}>
+                  <EasyInput
                     label="First Name"
                     placeholder="e.g. John"
                     onChange={(firstName) => 
@@ -62,7 +132,7 @@ const delegateDetails: TabContent[] = [
                     }
                   />
                 </div>
-                <FancyInput
+                <EasyInput
                   label="Last Name"
                   placeholder="e.g. Smith"
                   onChange={(lastName) => 
@@ -70,7 +140,7 @@ const delegateDetails: TabContent[] = [
                   }
                 />
               </div>
-              <FancyInput
+              <EasyInput
                 label="Job Title"
                 placeholder="e.g. Mechanical Engineer"
                 onChange={(jobTitle) => 
@@ -79,12 +149,12 @@ const delegateDetails: TabContent[] = [
               />
             </div>
           </div>
-          <Heading>
+          <span className={classes.heading}>
             Contact
-          </Heading>
-          <div style={{ display: "flex" , marginTop: 5, marginBottom: 35}}>
-            <div style={{ marginRight: "7.5%", width: "40%"}}>
-              <FancyInput
+          </span>
+          <div className={classes.contactContainer}>
+            <div className={classes.emailInput}>
+              <EasyInput
                 label="Email" 
                 type="email"
                 placeholder="e.g. example@fedex.com"
@@ -93,8 +163,8 @@ const delegateDetails: TabContent[] = [
                 }
               />
             </div>
-            <div style={{ width: "40%"}}>
-              <FancyInput
+            <div className={classes.phoneInput}>
+              <EasyInput
                 label="Phone number"
                 type="tel"
                 placeholder="e.g. +44 1234 567890"
@@ -104,13 +174,13 @@ const delegateDetails: TabContent[] = [
               />
             </div>
           </div>
-          <Heading>
+          {/* <Heading>
             TTC ID
-          </Heading>
-
-          <div style={{ width: "50%"}}>
-            <FancyInput
-              label=""
+          </Heading> */}
+          <div className={classes.ttcInput}>
+            <EasyInput
+              label="TTC ID"
+              labelClassName={classes.ttcLabel}
               onChange={(ttcId) => 
                 setState((s: object) => ({ ...s, ttcId}))
               }
@@ -119,7 +189,7 @@ const delegateDetails: TabContent[] = [
         </Body>
         <Footer>
           <div />
-          <div style={{ display: "flex" }}>
+          <div className={classes.footerBtnsContainer}>
             <Button archetype="default" onClick={() => closeModal()}>
               Cancel
             </Button>
@@ -135,14 +205,15 @@ const delegateDetails: TabContent[] = [
                 state.ttcId,
                 (err : string) => alert(err)
               )}
-              style={{ marginLeft: 20 }}
+              className={classes.submitBtn}
             >
               Confirm {"&"} Save
             </Button>
           </div>
         </Footer>
       </>
-    )
+      );
+    }
   }
 ];
 
