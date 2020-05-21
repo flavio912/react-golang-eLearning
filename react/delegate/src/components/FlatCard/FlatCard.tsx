@@ -9,7 +9,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 6,
     border: `1px solid ${theme.colors.borderGrey}`,
     height: 170,
-    width: 682,
+    width: '100%',
     display: 'flex',
     boxSizing: 'border-box',
     alignItems: 'center',
