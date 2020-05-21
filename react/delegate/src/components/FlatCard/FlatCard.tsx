@@ -1,20 +1,20 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
-  root: {
+  flatCardRoot: {
     backgroundColor: theme.colors.primaryWhite,
     borderRadius: 6,
-    border: `1px solid #EDEDED`,
+    border: `1px solid ${theme.colors.borderGrey}`,
     height: 170,
     width: 682,
-    display: "flex",
-    boxSizing: "border-box",
-    alignItems: "center",
-    justifyContent: "center",
-  },
+    display: 'flex',
+    boxSizing: 'border-box',
+    alignItems: 'center',
+    justifyContent: 'center'
+  }
 }));
 
 type Props = {
@@ -29,10 +29,10 @@ function FlatCard({ className, style, children, backgroundColor }: Props) {
   const classes = useStyles({ theme });
   style = {
     ...style,
-    backgroundColor,
+    backgroundColor
   };
   return (
-    <div className={classNames(classes.root, className)} style={style}>
+    <div className={classNames(classes.flatCardRoot, className)} style={style}>
       {children}
     </div>
   );
