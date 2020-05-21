@@ -93,7 +93,7 @@ function HeaderMenu({ user, onProfileClick, className }: Props) {
         >
           <div className={classes.name}>{user.name}</div>
           <Spacer horizontal spacing={2} />
-          <CircleBorder user={user} colour="#FFF" />
+          <CircleBorder user={user} userMode="delegate" colour="#FFF" />
         </div>
       </div>
     </div>
