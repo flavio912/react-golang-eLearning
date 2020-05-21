@@ -5,7 +5,7 @@ import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
 import Card from "sharedComponents/core/Card";
 import { IconNames } from "sharedComponents/core/Icon/Icon";
-import Spacer from "components/core/Spacers/Spacer";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     color: theme.colors.textBlue,

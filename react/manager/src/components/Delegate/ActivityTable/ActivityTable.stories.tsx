@@ -3,7 +3,7 @@ import ActivityTable from "./ActivityTable";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/ActivityTable",
+  title: "Delegate/ActivityTable",
   decorators: [withKnobs],
 };
 

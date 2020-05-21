@@ -3,12 +3,12 @@ import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import CourseCard, { SizeOptions } from "sharedComponents/Overview/CourseCard";
-import Dropdown, { DropdownOption } from "components/core/Dropdown";
+import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
 import PageHeader from "components/PageHeader";
 import SelectButton from "components/core/SelectButton";
-import CircleBorder from "components/core/CircleBorder";
-import Paginator from "components/Paginator";
-import Spacer from "components/core/Spacers/Spacer";
+import CircleBorder from "sharedComponents/core/CircleBorder";
+import Paginator from "sharedComponents/Paginator";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
 
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",

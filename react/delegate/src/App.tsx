@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 //@ts-ignore
-import { BrowserProtocol, queryMiddleware } from 'farce';
+import { BrowserProtocol, queryMiddleware } from "farce";
 import {
   createFarceRouter,
   createRender,
@@ -9,16 +9,17 @@ import {
   RouteRenderArgs,
   RenderErrorArgs,
   RedirectException,
-} from 'found';
+} from "found";
 //@ts-ignore
-import { Resolver } from 'found-relay';
-import environment from './api/environment';
-import { graphql, createFragmentContainer } from 'react-relay';
-import LoginPage from 'views/Login';
-import { ThemeProvider } from 'react-jss';
-import theme from './helpers/theme';
-import { AppHolder } from 'views/AppHolder';
-import { Redirect } from 'react-router-dom';
+import { Resolver } from "found-relay";
+import environment from "./api/environment";
+import { graphql, createFragmentContainer } from "react-relay";
+import LoginPage from "views/Login";
+import { ThemeProvider } from "react-jss";
+import theme from "./helpers/theme";
+import { AppHolder } from "views/AppHolder";
+import { Redirect } from "react-router-dom";
+import Dashboard from "views/Dashboard";
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -35,9 +36,9 @@ const Router = createFarceRouter({
   historyMiddlewares: [queryMiddleware],
   routeConfig: makeRouteConfig(
     <Route>
-      <Route path='/(login)?' Component={LoginPage} />
+      <Route path="/(login)?" Component={LoginPage} />
       <Route
-        path='/app'
+        path="/app"
         Component={AppHolder}
         //query={ExamplePageQuery}
         render={({ props, error }: any) => {
@@ -49,7 +50,9 @@ const Router = createFarceRouter({
           // return undefined;
           return <AppHolder {...props} />;
         }}
-      ></Route>
+      >
+        <Route path="/" Component={Dashboard} />
+      </Route>
     </Route>
   ),
   render: createRender({}),

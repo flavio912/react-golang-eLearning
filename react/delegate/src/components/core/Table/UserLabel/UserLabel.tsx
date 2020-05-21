@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { Theme } from "helpers/theme";
-import ProfileIcon from "components/core/ProfileIcon";
+import ProfileIcon from "sharedComponents/core/ProfileIcon";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   userLabelRoot: {

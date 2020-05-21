@@ -3,7 +3,7 @@ import Attempt from "./Attempt";
 import { withKnobs, text } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Delegate/Attempt",
+  title: "Delegate/Attempt",
   decorators: [withKnobs],
 };
 

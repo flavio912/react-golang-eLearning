@@ -13,9 +13,12 @@ const useStyles = createUseStyles(() => ({
   appHolder: {
     display: "flex",
     padding: "42px 60px",
-    marginLeft: 93,
-    marginTop: 87,
-    justifyContent: "center",
+  },
+  appHolderRoot: {
+    display: "grid",
+    height: "100vh",
+    gridTemplateColumns: "auto 1fr",
+    gridTemplateRows: "82px auto",
   },
 }));
 
@@ -23,24 +26,8 @@ export const AppHolder = ({ children }: Props) => {
   const classes = useStyles();
   const { match, router } = useRouter();
   const tabs: Tab[] = [
-    {
-      id: 0,
-      icon: "LeftNav_Icon_Dashboard",
-      size: 20,
-      children: <div></div>,
-    },
-    {
-      id: 1,
-      icon: "LeftNav_Icon_Delegates",
-      size: 28,
-      children: <div></div>,
-    },
-    {
-      id: 2,
-      icon: "LeftNav_Icon_Courses",
-      size: 22,
-      children: <div></div>,
-    },
+    { id: 0, icon: "LeftNav_Icon_Dashboard", title: "Dashboard" },
+    { id: 1, icon: "LeftNav_Icon_Courses", title: "Online Courses", size: 23 },
   ];
 
   const selected = () => {
@@ -57,37 +44,13 @@ export const AppHolder = ({ children }: Props) => {
   };
 
   return (
-    <div>
-      <HeaderMenu
-        logo={
-          "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png"
-        }
-        user={{
-          name: "Test",
-          url:
-            "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
-        }}
-      />
+    <div className={classes.appHolderRoot}>
       <SideMenu
         tabs={tabs}
         selected={selected()}
-        onClick={(tab) => {
-          console.log("tab", tab);
-          switch (tab.id) {
-            case 0:
-              router.push("/app");
-              break;
-            case 1:
-              router.push("/app/delegates");
-              break;
-            case 2:
-              router.push("/app/courses");
-              break;
-            default:
-              break;
-          }
-        }}
+        logo={require("../assets/logo/ttc-logo.svg")}
       />
+      <HeaderMenu user={{ name: "James Smith", url: "" }} />
       <div className={classes.appHolder}>{children}</div>
     </div>
   );

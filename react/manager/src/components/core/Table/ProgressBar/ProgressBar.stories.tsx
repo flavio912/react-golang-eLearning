@@ -3,7 +3,7 @@ import { withKnobs, number } from "@storybook/addon-knobs";
 import ProgressBar from ".";
 
 export default {
-  title: "/ProgressBar",
+  title: "Core/Table/ProgressBar",
   decorators: [withKnobs],
 };
 

@@ -52,6 +52,48 @@ build-admin:
     paths:
       - react/admin/build/
 
+build-delegate-storybook:
+  stage: build
+  image: node:10.16.2
+  script:
+    - cd react/delegate
+    - yarn
+    - yarn run storybook-build
+  cache:
+    paths:
+      - node_modules/
+  only:
+    changes:
+      - react/delegate/**/*
+      - .gitlab-ci.yml
+  tags:
+    - big
+  artifacts:
+    expire_in: 3d
+    paths:
+      - react/delegate/storybook_build
+
+build-delegate-webpack:
+  stage: build
+  image: node:10.16.2
+  script:
+    - cd react/delegate
+    - yarn
+    - yarn run build
+  only:
+    changes:
+      - react/delegate/**/*
+      - .gitlab-ci.yml
+  cache:
+    paths:
+      - node_modules/
+  tags:
+    - big
+  artifacts:
+    expire_in: 3d
+    paths:
+      - react/delegate/build/
+
 build-manager-storybook:
   stage: build
   image: node:10.16.2
@@ -94,7 +136,7 @@ build-manager-webpack:
     paths:
       - react/manager/build/
 
-deploy-manager-storybook:
+deploy-storybooks:
   stage: deploy-staging
   image: python:3.8-slim-buster
   only:
@@ -102,6 +144,7 @@ deploy-manager-storybook:
       - dev
     changes:
       - react/manager/**/*
+      - react/delegate/**/*
       - .gitlab-ci.yml
   cache:
     paths:
@@ -112,6 +155,8 @@ deploy-manager-storybook:
     - apt-get install -y zip
     - cd ./react/manager
     - aws s3 sync ./storybook_build s3://ttc-manager-storybook/ --acl=public-read
+    - cd ../delegate
+    - aws s3 sync ./storybook_build s3://ttc-delegate-storybook/ --acl=public-read
 
 deploy-manager-staging:
   stage: deploy-staging
@@ -126,12 +171,34 @@ deploy-manager-staging:
       - react/manager/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: "react-manager"
+    EB_ENV: 'react-manager'
   script:
     - pip install awscli
     - apt-get update
     - apt-get install -y zip
     - cd ./react/manager
+    - chmod +x ./bin/deploy.sh
+    - ./bin/deploy.sh
+
+deploy-delegate-staging:
+  stage: deploy-staging
+  image: python:3.8-slim-buster
+  environment:
+    name: delegate-staging
+    url: http://ttc-delegate.devserver.london
+  only:
+    refs:
+      - dev
+    changes:
+      - react/delegate/**/*
+      - .gitlab-ci.yml
+  variables:
+    EB_ENV: 'react-delegate-1'
+  script:
+    - pip install awscli
+    - apt-get update
+    - apt-get install -y zip
+    - cd ./react/delegate
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
 
@@ -147,7 +214,7 @@ deploy-admin-staging:
     changes:
       - react/admin/**/*
   variables:
-    EB_ENV: "react-admin"
+    EB_ENV: 'react-admin'
   script:
     - pip install awscli
     - apt-get update

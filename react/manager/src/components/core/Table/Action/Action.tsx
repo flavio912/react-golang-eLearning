@@ -13,9 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-type Props = {};
-
-function Action({}: Props) {
+function Action() {
   const classes = useStyles();
 
   return (

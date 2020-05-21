@@ -48,8 +48,8 @@ export type BorderOptions = "none" | "left" | "right";
 export type ColorOptions = "green" | "red" | "grey";
 
 type Props = {
-  heading: String;
-  value: Number;
+  heading: string;
+  value: number;
   border?: BorderOptions;
   color?: ColorOptions;
   className?: string;
