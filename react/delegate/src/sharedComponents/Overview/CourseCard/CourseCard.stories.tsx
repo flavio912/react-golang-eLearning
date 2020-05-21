@@ -15,11 +15,12 @@ const defaultCourse = {
   url: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   title: "Dangerous goods by air category 7",
   price: 60,
-  description: "This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage",
+  description: "This course is for those involved in the handling, storage and loading of cargo or mail and baggage.",
   assigned: 40,
   expiring: 9,
   date: "MAR 3rd 2020",
-  location: "TTC at Hilton T4"
+  location: "TTC at Hilton T4",  
+  lecture: { module: 16, lesson: 144, vidoe: 4 },
 };
 
 const defaultColor = "#8C1CB4";
