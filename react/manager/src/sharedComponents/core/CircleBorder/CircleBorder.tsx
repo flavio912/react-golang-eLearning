@@ -15,8 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite
   },
   profileBorder: {
-    backgroundImage: `linear-gradient(45deg,
-        ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    backgroundColor: `${theme.colors.primaryWhite}`,
     boxShadow: theme.shadows.primary
   },
 }));
