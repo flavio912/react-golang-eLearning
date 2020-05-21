@@ -145,7 +145,7 @@ export interface Course {
 export interface CourseLecture {
   module: number;
   lesson: number;
-  vidoe: number;
+  video: number;
 }
 
 type Props = {
@@ -189,7 +189,7 @@ function CourseCard({ course, filterColour, onClick, size = 'small', progress, c
           <div className={classNames(classes.lecture)}>
             <span>{`${course.lecture.module} modules`}</span>
             <span className={classNames(classes.lectureItem)}>{`${course.lecture.lesson} lessons`}</span>
-            <span className={classNames(classes.lectureItem)}>{`${course.lecture.vidoe} hours of video`}</span>
+            <span className={classNames(classes.lectureItem)}>{`${course.lecture.video} hours of video`}</span>
           </div>
         </div>
         <div className={classNames(classes.row)}>

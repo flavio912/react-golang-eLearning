@@ -20,7 +20,7 @@ const defaultCourse = {
   expiring: 9,
   date: "MAR 3rd 2020",
   location: "TTC at Hilton T4",  
-  lecture: { module: 16, lesson: 144, vidoe: 4 },
+  lecture: { module: 16, lesson: 144, video: 4 },
 };
 
 const defaultColor = "#8C1CB4";
