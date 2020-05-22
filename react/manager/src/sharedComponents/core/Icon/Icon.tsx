@@ -82,7 +82,7 @@ const iconNameMap = {
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
   Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
-  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg')
 };
 
 type Props = {
