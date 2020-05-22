@@ -38,7 +38,9 @@ export type IconNames =
   | "RemoveSelectedCourse_X"
   | "SampleImage_ClassroomCoursesDetail_Feat"
   | "SearchGlass"
-  | "TTC_Logo_Icon";
+  | "TTC_Logo_Icon"
+  | "Mp3_Pause"
+  | "Mp3_Speaker";
 
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
@@ -79,6 +81,8 @@ const iconNameMap = {
   SampleImage_ClassroomCoursesDetail_Feat: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
+  Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
+  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg')
 };
 
 type Props = {

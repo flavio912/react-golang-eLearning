@@ -12,7 +12,7 @@ export const plain = () => {
     <FlatCard
       className={text("className", "flat-card")}
       children={<div>This is a test</div>}
-      backgroundColor={"red"}
+      backgroundColor={"#fff"}
       style={{
         boxShadow: `2px 2px 10px 0 rgba(0,0,0,0.07)`,
       }}
