@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { withKnobs, text, boolean } from '@storybook/addon-knobs';
+import { withKnobs, text, boolean, select } from '@storybook/addon-knobs';
 import FlatCard from './FlatCard';
 
 export default {
@@ -14,7 +14,11 @@ export const plain = () => {
       children={<div>This is a test</div>}
       backgroundColor={'white'}
       shadow={boolean('Shadow', false)}
-      style={{}}
+      padding={select('Padding', ['small', 'medium', 'large', 'none'], 'small')}
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
     />
   );
 };
