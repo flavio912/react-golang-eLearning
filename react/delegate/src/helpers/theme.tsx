@@ -29,6 +29,7 @@ export type Theme = {
     searchHoverGrey: string;
     progressGrey: string;
     navyBlue: string;
+    secondaryDanger: string;
   };
   shadows: {
     primary: string;
@@ -69,7 +70,8 @@ const theme: Theme = {
     textBlue: "#1081AA",
     textGrey: "#737988",
     progressGrey: "#d2d6db",
-    navyBlue: "#0E66E0"
+    navyBlue: "#0E66E0",
+    secondaryDanger: "#DB5C5D",
   },
   shadows: {
     primary: "2px 2px 10px rgba(0,0,0,0.07)",
