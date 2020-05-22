@@ -1,31 +1,31 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
-import Icon from "../../../sharedComponents/core/Icon/Icon";
-import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
-import Spacer from "sharedComponents/core/Spacers/Spacer";
-import CoreInput from "sharedComponents/core/CoreInput";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
+import Icon from '../../../sharedComponents/core/Icon/Icon';
+import CircleBorder, { User } from 'sharedComponents/core/CircleBorder';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import CoreInput from 'sharedComponents/core/CoreInput';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
-    borderBottom: [1, "solid", theme.colors.borderGrey],
-    gridArea: "1 / 2",
+    display: 'flex',
+    flexDirection: 'column',
+    borderBottom: [1, 'solid', theme.colors.borderGrey],
+    gridArea: '1 / 2',
     zIndex: 10,
   },
   menu: {
-    display: "flex",
-    flexDirection: "row",
-    justfiyContent: "flex-start",
+    display: 'flex',
+    flexDirection: 'row',
+    justfiyContent: 'flex-start',
     backgroundImage: `linear-gradient(90deg,
       ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
-    padding: "17px 25px",
+    padding: '17px 25px',
   },
   search: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     flex: 1,
     padding: theme.spacing(1),
   },
@@ -34,14 +34,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: 300,
     paddingLeft: theme.spacing(1),
-    backgroundColor: "transparent",
-    "&::placeholder": {
+    backgroundColor: 'transparent',
+    '&::placeholder': {
       color: theme.colors.primaryWhite,
     },
   },
   profile: {
-    display: "flex",
-    alignSelf: "flex-end",
+    display: 'flex',
+    alignSelf: 'flex-end',
   },
   name: {
     fontSize: theme.fontSizes.tinyHeading,
@@ -49,10 +49,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryWhite,
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
@@ -74,10 +74,10 @@ function HeaderMenu({ user, onProfileClick, className }: Props) {
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
         <div className={classes.search}>
-          <Icon name="SearchGlass" size={15} />
+          <Icon name='SearchGlass' size={15} />
           <CoreInput
-            type="search"
-            placeholder="Search"
+            type='search'
+            placeholder='Search'
             className={classes.searchInput}
             onChange={(text: string) => {}}
             /*
@@ -93,7 +93,7 @@ function HeaderMenu({ user, onProfileClick, className }: Props) {
         >
           <div className={classes.name}>{user.name}</div>
           <Spacer horizontal spacing={2} />
-          <CircleBorder user={user} colour="#FFF" />
+          <CircleBorder user={user} borderType='plain' />
         </div>
       </div>
     </div>
