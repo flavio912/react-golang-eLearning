@@ -4,10 +4,6 @@
     {
       "ContainerPort": 4000,
       "HostPort": 80
-    },
-    {
-      "ContainerPort": 4001,
-      "HostPort": 81
     }
   ],
   "Volumes": []

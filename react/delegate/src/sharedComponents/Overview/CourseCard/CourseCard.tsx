@@ -116,7 +116,7 @@ type Props = {
   filterColour: string;
   size?: SizeOptions;
   progress?: Completion;
-  onClick: Function,
+  onClick: Function;
   padding?: PaddingOptions;
   className?: string;
 };

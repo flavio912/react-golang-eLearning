@@ -193,7 +193,7 @@ deploy-delegate-staging:
       - react/delegate/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-delegate'
+    EB_ENV: 'react-delegate-1'
   script:
     - pip install awscli
     - apt-get update

@@ -55,11 +55,11 @@ export interface Statistic {
   innerRing: {
     name: string;
     value: number;
-  },
+  };
   outerRing: {
     name: string;
     value: number;
-  }
+  };
 }
 
 type Props = {
