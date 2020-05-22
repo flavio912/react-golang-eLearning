@@ -31,6 +31,7 @@ export type Theme = {
     navyBlue: string;
     blueRibbon: string;
     approxIron: string;
+    approxZircon: string;
   };
   shadows: {
     primary: string;
@@ -73,7 +74,8 @@ const theme: Theme = {
     progressGrey: '#d2d6db',
     navyBlue: '#0E66E0',
     blueRibbon: '#0E5AF9',
-    approxIron: '#CCCDCD'
+    approxIron: '#CCCDCD',
+    approxZircon: '#E9EBEB'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
