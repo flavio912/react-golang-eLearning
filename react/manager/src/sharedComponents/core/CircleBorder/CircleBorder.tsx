@@ -1,7 +1,7 @@
-import * as React from "react";
+import * as React from 'react';
 import classNames from 'classnames';
 import { createUseStyles, useTheme } from 'react-jss';
-import { Theme } from "helpers/theme";
+import { Theme } from 'helpers/theme';
 import ProfileIcon from 'sharedComponents/core/ProfileIcon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -9,74 +9,89 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    fontWeight: '900'
+    fontWeight: '900',
   },
   profileCircle: {
-    backgroundColor: theme.colors.primaryWhite
+    backgroundColor: theme.colors.primaryWhite,
   },
   profileBorder: {
     backgroundColor: `${theme.colors.primaryWhite}`,
-    boxShadow: theme.shadows.primary
+    boxShadow: `rgba(0, 0, 0, 0.24) 0px 0px 3px`,
+    backgroundImage: ({ type }: { type: BorderType }) =>
+      type == 'fancy'
+        ? `linear-gradient(45deg, ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`
+        : '',
   },
 }));
 
 export interface User {
   name?: string;
   url?: string;
-  }
+}
+
+export type BorderType = 'fancy' | 'plain' | undefined;
 
 type Props = {
   user?: User;
   text?: string | number;
   size?: number;
   fontSize?: number;
-  userMode?: string; 
-  colour?: string;
-  borderSize?: number;
+  borderType?: BorderType;
   className?: string;
 };
 
-function CircleBorder({ user, text, size = 44, fontSize = 18, userMode = 'manager', borderSize = 6, colour, className }: Props) {
+function CircleBorder({
+  user,
+  text,
+  size = 44,
+  fontSize = 18,
+  borderType = 'fancy',
+  className,
+}: Props) {
   const theme = useTheme();
-  const classes = useStyles({ theme });
-
-  const profileBorderSize = (userMode.toLowerCase() === "manager" ? size + borderSize + 2 : size + borderSize);
-  const pofileCircleSize = (userMode.toLowerCase() === "manager" ? size + 2 : size);
-
-  let profileBackImg = {};
-  if (colour && userMode.toLowerCase() !== "manager")
-    profileBackImg['backgroundImage'] = `linear-gradient(45deg, ${colour}, ${colour})`;
+  const classes = useStyles({ type: borderType, theme });
+  const borderTypes = {
+    fancy: {
+      borderSize: size + 4,
+      circleSize: size + 2,
+    },
+    plain: {
+      borderSize: size + 6,
+      circleSize: size,
+    },
+  };
 
   return (
     <div
       className={classNames(classes.center, classes.profileBorder, className)}
-      style={{ 
-        height: profileBorderSize, width: profileBorderSize, 
-        borderRadius: profileBorderSize, 
-        ...profileBackImg
+      style={{
+        height: borderTypes[borderType].borderSize,
+        width: borderTypes[borderType].borderSize,
+        borderRadius: borderTypes[borderType].borderSize,
       }}
     >
-        <div
-          className={classNames(classes.center, classes.profileCircle)}
-          style={{ width: pofileCircleSize, height: pofileCircleSize, borderRadius: pofileCircleSize }}
-        >
-          {user && (
-            <ProfileIcon
-              name={user?.name}
-              url={user?.url}
-              size={size}
-              fontSize={fontSize}
-            />
-          )}
-          {text && (
-            <div
-              className={classes.center}
-              style={{ fontSize }}
-            >
-              {text}
-            </div>
-          )}
-        </div>
+      <div
+        className={classNames(classes.center, classes.profileCircle)}
+        style={{
+          width: borderTypes[borderType].circleSize,
+          height: borderTypes[borderType].circleSize,
+          borderRadius: borderTypes[borderType].circleSize,
+        }}
+      >
+        {user && (
+          <ProfileIcon
+            name={user?.name}
+            url={user?.url}
+            size={size}
+            fontSize={fontSize}
+          />
+        )}
+        {text && (
+          <div className={classes.center} style={{ fontSize }}>
+            {text}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
