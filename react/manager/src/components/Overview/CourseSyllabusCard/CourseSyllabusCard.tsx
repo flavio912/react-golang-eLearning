@@ -41,8 +41,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 	listContainer: {
 		display: 'flex',
 		flexDirection: 'column',
-    marginTop: '7px',
-    boxSizing: 'border-box',
+		marginTop: '7px',		
+		boxSizing: 'border-box',
 		overflowY: 'auto',
 	},
 	listItem: {
@@ -52,8 +52,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 		borderBottom: `1px solid #F4F5F7`,		
 		fontWeight: 'bold',
 		position: 'relative',
-    padding: '0 24px',
-    boxSizing: 'border-box',
+		padding: '0 24px',
+		boxSizing: 'border-box',
 		'& p': {
 			margin: 0,
 			padding: 0,
@@ -89,12 +89,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
 			fontWeight: 'bold',
 			margin: '0 9.5px',
 		}
-  },
-  	
+	},
+
 }));
 
 export interface CourseSyllabus {
-	completePercentage: number;
+  completePercentage: number;
   modules: (ModulesEntity)[];
 }
 export interface ModulesEntity {
@@ -107,7 +107,7 @@ export interface SectionsEntity {
 }
 
 type Props = {
-  courseSyllabus: CourseSyllabus,
+	courseSyllabus: CourseSyllabus,
 	countPerPage?: number,
 };
 
@@ -115,17 +115,17 @@ function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
 	const theme = useTheme();
 	const classes = useStyles({ theme });
 	const [curPage, setCurpage] = React.useState(0);
- 
-  const onClickPrev = () => {
+
+	const onClickPrev = () => {
 		if (curPage === 0)
 			return;
-    else setCurpage(curPage-1)
+		else setCurpage(curPage-1)
 	}
 
 	const onClickNext = () => {
 		if (curPage+1 >= courseSyllabus.modules.length)
 			return
-    else setCurpage(curPage + 1)
+		else setCurpage(curPage + 1)
 	}
 
 	const renderList = () => {
@@ -144,25 +144,25 @@ function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
 			)
 		}
 		return renderComp;
-  }
-  
+	}
+
 	return (
 		<div className={classes.card}>
 			<div className={classes.header}>
 				Course Syllabus
 				<div className={classes.completeDiv}>
-          {`${courseSyllabus.completePercentage}% Complete`}
+					{`${courseSyllabus.completePercentage}% Complete`}
 				</div>
 			</div>
 			<div className={classes.listContainer} style={{maxHeight: `${40 * countPerPage}px`}}>
 				{renderList()}
 			</div>
 			<div className={classes.footer}>
-        <PaginateButton 
-            iconName={curPage === 0 ? 'ArrowLeft' : 'ArrowLeftNavyBlue'}
-            disabled={curPage === 0}
-            onArrowClick={onClickPrev}
-          />
+				<PaginateButton 
+					iconName={curPage === 0 ? 'ArrowLeft' : 'ArrowLeftNavyBlue'}
+					disabled={curPage === 0}
+					onArrowClick={onClickPrev}
+				/>
 				<p>{`Module ${courseSyllabus.modules.length > 0 ? curPage + 1 : curPage} of ${courseSyllabus.modules.length}`}</p>
 				<PaginateButton 
 					iconName={curPage+1 >= courseSyllabus.modules.length ? 'ArrowRight' : 'ArrowRightNavyBlue'}
