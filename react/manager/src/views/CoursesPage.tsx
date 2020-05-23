@@ -10,12 +10,6 @@ import CircleBorder from "sharedComponents/core/CircleBorder";
 import Paginator from "sharedComponents/Paginator";
 import Spacer from "sharedComponents/core/Spacers/Spacer";
 
-export interface CourseLecture {
-  module: number;
-  lesson: number;
-  video: number;
-}
-
 const defaultCourse = {
   type: "DANGEROUS GOODS AIR",
   colour: "#8C1CB4",
@@ -28,11 +22,9 @@ const defaultCourse = {
   expiring: 9,
   date: "MAR 3rd 2020",
   location: "TTC at Hilton T4",
-  lecture: {
-    module: 5,
-    lesson: 5,
-    video: 5,
-  }
+  modules: 5,
+  lessons: 5,
+  vidoe_time: 5
 };
 
 const filterColour = "#AAAAAA90";

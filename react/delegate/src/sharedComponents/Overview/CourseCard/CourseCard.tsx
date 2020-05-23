@@ -31,7 +31,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   column: {
     display: 'flex',
-    flexDirection: 'column',      
+    flexDirection: 'column',
   },
   heading: {
     alignSelf: 'flex-start',
@@ -65,9 +65,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     lineHeight: '1.5em',
     margin: `${theme.spacing(2)}px ${theme.spacing(2)}px 0`,
     color: theme.colors.textGrey,
-    padding: 0,    
+    padding: 0,
   },
-  lectureItem: {    
+  lectureItem: {
     position: "relative",
     marginLeft: "16px",
     '&:after': {
@@ -79,8 +79,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
       width: "4px",
       height: "4px",
       backgroundColor: theme.colors.textGrey,
-      borderRadius: "4px",        
-    }  
+      borderRadius: "4px",
+    },
+    "&:first-child": {
+      marginLeft: 0,
+      '&:after': {
+        display: "none"        
+      }
+    }
   },
   description: {
     flex: 3,
@@ -133,19 +139,15 @@ export interface Course {
   colour: string;
   url: string;
   title: string;
-  price: number;
+  price?: number;
   description: string;
   assigned: number;
   expiring: number;
   date: string;
   location: string;
-  lecture: CourseLecture;
-}
-
-export interface CourseLecture {
-  module: number;
-  lesson: number;
-  video: number;
+  modules?: number;
+  lessons?: number;
+  video_time?: number;
 }
 
 type Props = {
@@ -179,21 +181,29 @@ function CourseCard({ course, filterColour, onClick, size = 'small', progress, c
           </div>
           <Icon className={classNames(classes.icon)} name="Card_SecondaryActon_Dots" size={18} />
         </div>
-
-        <div className={classNames(classes.price)}>£{course.price.toFixed(2)}</div>
-        <div className={classNames(classes.title)}>{course.title}</div>
+        {course.price && <div className={classNames(classes.price)}>£{course.price?.toFixed(2)}</div>}
+        <div className={classNames(classes.title)} style={{ marginTop: (course.price ? 0 : '45px') }}>
+          {course.title}
+        </div>
       </ div>
 
       <div className={classNames(classes.column)}>
+        {
+          (course.modules || course.lessons || course.video_time) && (
+            <div className={classNames(classes.row)}>
+              <div className={classNames(classes.lecture)}>
+                {course.modules && <span className={classNames(classes.lectureItem)}>{`${course.modules} modules`}</span>}
+                {course.lessons && <span className={classNames(classes.lectureItem)}>{`${course.lessons} lessons`}</span>}
+                {course.video_time && <span className={classNames(classes.lectureItem)}>{`${course.video_time} hours of video`}</span>}
+              </div>
+            </div>
+          )
+        }
         <div className={classNames(classes.row)}>
-          <div className={classNames(classes.lecture)}>
-            <span>{`${course.lecture.module} modules`}</span>
-            <span className={classNames(classes.lectureItem)}>{`${course.lecture.lesson} lessons`}</span>
-            <span className={classNames(classes.lectureItem)}>{`${course.lecture.video} hours of video`}</span>
-          </div>
-        </div>
-        <div className={classNames(classes.row)}>
-          <div className={classNames(classes.description)}>
+          <div 
+            className={classNames(classes.description)}
+            style={{marginTop: (course.modules || course.lessons || course.video_time) ? '10px' : '22px'}}
+          >
             {course.description}
           </div>
           {size === 'large' && (
