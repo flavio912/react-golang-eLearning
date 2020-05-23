@@ -86,7 +86,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       '&:after': {
         display: "none"        
       }
-    } 
+    }
   },
   description: {
     flex: 3,
