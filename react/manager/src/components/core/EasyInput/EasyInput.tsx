@@ -18,7 +18,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   input:{
     flex: 2,
-    border: '1px solid #08080814',
+    border: `1px solid ${theme.colors.borderBlack}`,
     borderRadius: 5,
     padding: '15px 10px'
   }
