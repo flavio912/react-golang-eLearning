@@ -60,12 +60,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: "40%"
   },
   ttcInput:{
-    width: "50%"
+    width: "50%",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start'
   },
   ttcLabel:{
     fontSize: theme.fontSizes.heading,
     fontWeight: 800,
-    marginLeft: 1
+    marginLeft: 1,
+    marginBottom: theme.spacing(1),
+    flex: 1
+  },
+  ttcId:{
+    flex: 2,
+    border: `1px solid ${theme.colors.borderBlack}`,
+    borderRadius: 5,
+    padding: '20px 10px'
   },
   footerBtnsContainer:{
     display: "flex",
@@ -178,13 +189,8 @@ const delegateDetails: TabContent[] = [
             TTC ID
           </Heading> */}
           <div className={classes.ttcInput}>
-            <EasyInput
-              label="TTC ID"
-              labelClassName={classes.ttcLabel}
-              onChange={(ttcId) => 
-                setState((s: object) => ({ ...s, ttcId}))
-              }
-            />
+            <span className={classes.ttcLabel}>TTC ID</span>
+            <span className={classes.ttcId}>{state.ttcId}</span>
           </div>
         </Body>
         <Footer>
