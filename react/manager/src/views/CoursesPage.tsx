@@ -1,30 +1,33 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
-import CourseCard, { SizeOptions } from "sharedComponents/Overview/CourseCard";
-import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
-import PageHeader from "components/PageHeader";
-import SelectButton from "components/core/SelectButton";
-import CircleBorder from "sharedComponents/core/CircleBorder";
-import Paginator from "sharedComponents/Paginator";
-import Spacer from "sharedComponents/core/Spacers/Spacer";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
+import CourseCard, { SizeOptions } from 'sharedComponents/Overview/CourseCard';
+import Dropdown, { DropdownOption } from 'sharedComponents/core/Dropdown';
+import PageHeader from 'components/PageHeader';
+import SelectButton from 'components/core/SelectButton';
+import CircleBorder from 'sharedComponents/core/CircleBorder';
+import Paginator from 'sharedComponents/Paginator';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const defaultCourse = {
-  type: "DANGEROUS GOODS AIR",
-  colour: "#8C1CB4",
-  url: "https://www.stickpng.com/assets/images/58428e7da6515b1e0ad75ab5.png",
-  title: "Dangerous goods by air category 7",
+  type: 'DANGEROUS GOODS AIR',
+  colour: '#8C1CB4',
+  url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
+  title: 'Dangerous goods by air category 7',
   price: 60,
   description:
-    "This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage",
+    'This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage',
   assigned: 40,
   expiring: 9,
-  date: "MAR 3rd 2020",
-  location: "TTC at Hilton T4",
+  date: 'MAR 3rd 2020',
+  location: 'TTC at Hilton T4',
+  modules: 5,
+  lessons: 5,
+  vidoe_time: 5
 };
 
-const filterColour = "#AAAAAA90";
+const filterColour = '#AAAAAA90';
 const courses = [
   defaultCourse,
   defaultCourse,
@@ -33,15 +36,15 @@ const courses = [
   defaultCourse,
   defaultCourse,
   defaultCourse,
-  defaultCourse,
+  defaultCourse
 ];
 
 const defaultComponent = () => <div>PlaceHolder Name</div>;
 
 const defaultOption: DropdownOption = {
   id: 1,
-  title: "Test Option",
-  component: defaultComponent(),
+  title: 'Test Option',
+  component: defaultComponent()
 };
 
 const defaultOptions = [defaultOption, defaultOption, defaultOption];
@@ -50,31 +53,31 @@ type Props = {};
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
-    maxWidth: 1275,
+    maxWidth: 1275
   },
   course: {
-    margin: "15px 0px",
+    margin: '15px 0px'
   },
   dropdown: {
     width: 177,
     marginLeft: 15,
-    backgroundColor: theme.colors.primaryWhite,
+    backgroundColor: theme.colors.primaryWhite
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    flexWrap: "wrap",
+    display: 'flex',
+    flexDirection: 'row',
+    flexWrap: 'wrap'
   },
   spaceEvenly: {
-    justifyContent: "space-between",
+    justifyContent: 'space-between'
   },
   filterRow: {
-    margin: "30px 0px",
-    justifyContent: "space-between",
-  },
+    margin: '30px 0px',
+    justifyContent: 'space-between'
+  }
 }));
 
 const CoursesPage = () => {
@@ -82,8 +85,8 @@ const CoursesPage = () => {
   const classes = useStyles({ theme });
 
   // Card size state
-  const sizeOptions: SizeOptions[] = ["small", "large"];
-  const options = ["Online Courses", "Classroom Courses"];
+  const sizeOptions: SizeOptions[] = ['small', 'large'];
+  const options = ['Online Courses', 'Classroom Courses'];
   const [cardSize, setCardSize] = React.useState(options[0]);
 
   // Dropdown states
@@ -133,8 +136,7 @@ const CoursesPage = () => {
             <CourseCard
               className={classes.course}
               course={course}
-              filterColour={filterColour}
-              onClick={() => console.log("Pressed")}
+              onClick={() => console.log('Pressed')}
               size={sizeOptions[options.indexOf(cardSize)]}
             />
           ))}

@@ -12,6 +12,7 @@ export const normal = () => {
     <ProgressBar
       percent={number("Percent", 30)}
       width={number("Width (px)", 200)}
+      height={number("Height", 7)}
     />
   );
 };
