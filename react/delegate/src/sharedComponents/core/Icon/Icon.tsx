@@ -40,7 +40,9 @@ export type IconNames =
   | "SearchGlass"
   | "TTC_Logo_Icon"
   | "Mp3_Pause"
-  | "Mp3_Speaker";
+  | "Mp3_Speaker"
+  | "Payments_Method"
+  | "Stripe";
 
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
@@ -82,7 +84,9 @@ const iconNameMap = {
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
   Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
-  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg')
+  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Payments_Method: require("../../../assets/Payments_Method.svg"),
+  Stripe: require("../../../assets/Stripe.svg")
 };
 
 type Props = {

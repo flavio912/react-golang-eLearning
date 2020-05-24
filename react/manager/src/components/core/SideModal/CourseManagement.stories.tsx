@@ -1,7 +1,7 @@
-import * as React from "react";
-import SideModal from "./SideModal";
-import { withKnobs, boolean } from "@storybook/addon-knobs";
-import Button from "sharedComponents/core/Button";
+import * as React from 'react';
+import SideModal from './SideModal';
+import { withKnobs, boolean } from '@storybook/addon-knobs';
+import Button from 'sharedComponents/core/Button';
 import Tabs, {
   TabContent,
   Footer,
@@ -12,95 +12,96 @@ import Tabs, {
   Text,
   CourseList,
   CurrentTotal,
-} from "./Tabs";
+  Payment
+} from './Tabs';
 import SearchableDropdown, {
   CourseCategory,
-  Course,
-} from "../SearchableDropdown";
-import { ResultItem } from "components/UserSearch";
-import MultiUserSearch from "components/UserSearch/MultiUserSearch";
-import Checkbox from "../Checkbox";
+  Course
+} from '../SearchableDropdown';
+import { ResultItem } from 'components/UserSearch';
+import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
+import Checkbox from '../Checkbox';
 
 export default {
-  title: "Core/Course Management",
-  decorators: [withKnobs],
+  title: 'Core/Course Management',
+  decorators: [withKnobs]
 };
 
 const trainingInitialValue = [
   {
     label:
-      "I Fred Eccs can confirm that the above delegates have undergone the necessary 5-year background checks for this Training Programme",
-    checked: false,
-  },
+      'I Fred Eccs can confirm that the above delegates have undergone the necessary 5-year background checks for this Training Programme',
+    checked: false
+  }
 ];
 
 const ToBInitialValue = [
   {
     label:
-      "I Fred Eccs can confirm that I have read and understood the TTC Terms of Business",
-    checked: false,
-  },
+      'I Fred Eccs can confirm that I have read and understood the TTC Terms of Business',
+    checked: false
+  }
 ];
 
 const categories: CourseCategory[] = [
   {
-    title: "Dangerous Goods - Air",
+    title: 'Dangerous Goods - Air',
     courses: [
       {
         id: 1,
-        name: "Cargo Operative Screener (COS) – VC, HS, XRY, ETD",
+        name: 'Cargo Operative Screener (COS) – VC, HS, XRY, ETD',
         price: 200,
-        trainingReq: true,
+        trainingReq: true
       },
       {
         id: 2,
-        name: "Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD",
+        name: 'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
         price: 65,
-        trainingReq: true,
-      },
-    ],
+        trainingReq: true
+      }
+    ]
   },
   {
-    title: "Known Consignor",
+    title: 'Known Consignor',
     courses: [
       {
         id: 3,
-        name: "Known Consignor Responsible Person",
+        name: 'Known Consignor Responsible Person',
         price: 70,
-        trainingReq: true,
+        trainingReq: true
       },
       {
         id: 4,
-        name: "Known Consignor (Modules 1-7)",
+        name: 'Known Consignor (Modules 1-7)',
         price: 55,
-        trainingReq: false,
+        trainingReq: false
       },
       {
         id: 5,
-        name: "Manual Handling Awareness",
+        name: 'Manual Handling Awareness',
         price: 25,
-        trainingReq: false,
+        trainingReq: false
       },
       {
         id: 6,
-        name: "Fire Safety Awareness",
+        name: 'Fire Safety Awareness',
         price: 25,
-        trainingReq: false,
+        trainingReq: false
       },
       {
         id: 7,
-        name: "Noise and Vibration Awareness",
+        name: 'Noise and Vibration Awareness',
         price: 25,
-        trainingReq: false,
+        trainingReq: false
       },
       {
         id: 8,
-        name: "Seat Belt Misuse Awareness",
+        name: 'Seat Belt Misuse Awareness',
         price: 300,
-        trainingReq: true,
-      },
-    ],
-  },
+        trainingReq: true
+      }
+    ]
+  }
 ];
 
 const courseSearchFunction = async (query: string) => {
@@ -113,7 +114,7 @@ const courseSearchFunction = async (query: string) => {
               title,
               courses: courses.filter(({ name }) =>
                 name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-              ),
+              )
             }))
             .filter(({ courses }) => courses.length > 0)
         ),
@@ -124,17 +125,17 @@ const courseSearchFunction = async (query: string) => {
 
 const items: ResultItem[] = [
   {
-    key: "Jim Smith",
-    value: "uuid-1",
+    key: 'Jim Smith',
+    value: 'uuid-1'
   },
   {
-    key: "Bruce Willis",
-    value: "uuid-2",
+    key: 'Bruce Willis',
+    value: 'uuid-2'
   },
   {
-    key: "Tony Stark",
-    value: "uuid-3",
-  },
+    key: 'Tony Stark',
+    value: 'uuid-3'
+  }
 ];
 
 const userSearchFunction = async (query: string) => {
@@ -145,14 +146,14 @@ const userSearchFunction = async (query: string) => {
 
 const tabs: TabContent[] = [
   {
-    key: "Courses",
+    key: 'Courses',
     component: ({ state, setState, setTab, closeModal }) => (
       <>
         <Body>
           <Heading>
-            Start a Quick Booking{" "}
+            Start a Quick Booking{' '}
             {state.users.filter(Boolean).length > 0 && (
-              <span style={{ color: "#1081AA" }}>
+              <span style={{ color: '#1081AA' }}>
                 for {state.users.filter(Boolean).length} Delegates
               </span>
             )}
@@ -162,7 +163,7 @@ const tabs: TabContent[] = [
             selected={state.course ? [state.course] : []}
             searchQuery={courseSearchFunction}
             setSelected={(selected) =>
-              setState((s: object) => ({ ...s, course: selected[0] }))
+              setState((s: object) => ({ ...s, courses: selected }))
             }
           />
           <MultiUserSearch
@@ -173,25 +174,30 @@ const tabs: TabContent[] = [
           />
         </Body>
         <Footer>
-          <div />
-          <div style={{ display: "flex" }}>
+          <CurrentTotal
+            total={
+              state.courses &&
+              state.courses[0].price * state.users.filter(Boolean).length
+            }
+          />
+          <div style={{ display: 'flex' }}>
             <Button archetype="default" onClick={() => closeModal()}>
               Cancel
             </Button>
             <Button
               archetype="submit"
-              onClick={() => setTab("Terms of Business")}
+              onClick={() => setTab('Terms of Business')}
               style={{ marginLeft: 20 }}
             >
-              Next
+              Continue to Terms
             </Button>
           </div>
         </Footer>
       </>
-    ),
+    )
   },
   {
-    key: "Terms of Business",
+    key: 'Terms of Business',
     component: ({ state, setState, closeModal, setTab }) => (
       <>
         <Body>
@@ -225,7 +231,7 @@ const tabs: TabContent[] = [
             <>
               <Heading>Background Check</Heading>
               <LargeText>
-                The following Course require you to validate that the above
+                The following Courses require you to validate that the above
                 delegates have recently completed a 5-year background check to
                 comply with Civil Aviation Authority standards.
               </LargeText>
@@ -246,17 +252,17 @@ const tabs: TabContent[] = [
         <Footer>
           <CurrentTotal
             total={
-              state.course &&
-              state.course.price * state.users.filter(Boolean).length
+              state.courses &&
+              state.courses[0].price * state.users.filter(Boolean).length
             }
           />
-          <div style={{ display: "flex" }}>
+          <div style={{ display: 'flex' }}>
             <Button archetype="default" onClick={() => closeModal()}>
               Cancel
             </Button>
             <Button
               archetype="submit"
-              onClick={() => setTab("Payment")}
+              onClick={() => setTab('Payment')}
               style={{ marginLeft: 20 }}
             >
               Continue to Payment
@@ -264,21 +270,47 @@ const tabs: TabContent[] = [
           </div>
         </Footer>
       </>
-    ),
+    )
   },
   {
-    key: "Payment",
+    key: 'Payment',
     component: ({ state }) => (
-      <div style={{ margin: "30px 40px" }}>
-        <pre>{JSON.stringify(state, null, 2)}</pre>
+      <div style={{ margin: '30px 40px' }}>
+        <Heading>Payment</Heading>
+        <LargeText>
+          You have opted to book {state.users.filter(Boolean).length} Delegates
+          on the following Course
+        </LargeText>
+        <Payment
+          courses={[
+            {
+              id: 1,
+              name:
+                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
+              price: 55,
+              sku: '082739428374',
+              qty: 2,
+              subtotal: 110
+            },
+            {
+              id: 2,
+              name:
+                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
+              price: 55,
+              sku: '082739428374',
+              qty: 3,
+              subtotal: 165
+            }
+          ]}
+        />
       </div>
-    ),
-  },
+    )
+  }
 ];
 
 const tabs2: TabContent[] = [
   {
-    key: "Courses",
+    key: 'Courses',
     component: ({ state, setState, setTab, closeModal }) => (
       <>
         <Body>
@@ -294,25 +326,29 @@ const tabs2: TabContent[] = [
           />
         </Body>
         <Footer>
-          <div />
-          <div style={{ display: "flex" }}>
+          <CurrentTotal
+            total={state.courses
+              .map(({ price }: { price: number }) => price)
+              .reduce((a: number, b: number) => a + b, 0)}
+          />
+          <div style={{ display: 'flex' }}>
             <Button archetype="default" onClick={() => closeModal()}>
               Cancel
             </Button>
             <Button
               archetype="submit"
-              onClick={() => setTab("Terms of Business")}
+              onClick={() => setTab('Terms of Business')}
               style={{ marginLeft: 20 }}
             >
-              Next
+              Continue to Terms
             </Button>
           </div>
         </Footer>
       </>
-    ),
+    )
   },
   {
-    key: "Terms of Business",
+    key: 'Terms of Business',
     component: ({ state, setState, closeModal, setTab }) => {
       const trainingReqCourses = state.courses.filter(
         (course: Course) => !!course.trainingReq
@@ -373,13 +409,13 @@ const tabs2: TabContent[] = [
                 .map(({ price }: { price: number }) => price)
                 .reduce((a: number, b: number) => a + b, 0)}
             />
-            <div style={{ display: "flex" }}>
+            <div style={{ display: 'flex' }}>
               <Button archetype="default" onClick={() => closeModal()}>
                 Cancel
               </Button>
               <Button
                 archetype="submit"
-                onClick={() => setTab("Payment")}
+                onClick={() => setTab('Payment')}
                 style={{ marginLeft: 20 }}
               >
                 Continue to Payment
@@ -388,33 +424,54 @@ const tabs2: TabContent[] = [
           </Footer>
         </>
       );
-    },
+    }
   },
   {
-    key: "Payment",
+    key: 'Payment',
     component: ({ state }) => (
-      <div style={{ margin: "30px 40px" }}>
-        <pre>{JSON.stringify(state, null, 2)}</pre>
+      <div style={{ margin: '30px 40px' }}>
+        <Payment
+          courses={[
+            {
+              id: 1,
+              name:
+                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
+              price: 55,
+              sku: '082739428374',
+              qty: 2,
+              subtotal: 110
+            },
+            {
+              id: 2,
+              name:
+                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
+              price: 55,
+              sku: '082739428374',
+              qty: 3,
+              subtotal: 165
+            }
+          ]}
+        />
       </div>
-    ),
-  },
+    )
+  }
 ];
 
 export const multipleUsers = () => {
   return (
     <SideModal
-      isOpen={boolean("Open", true)}
+      isOpen={boolean('Open', true)}
       title="Course Management"
-      closeModal={() => alert("Close Function called")}
+      closeModal={() => alert('Close Function called')}
     >
       <Tabs
         content={tabs}
-        closeModal={() => alert("Close Function called")}
+        closeModal={() => alert('Close Function called')}
         initialState={{
           course: undefined,
           users: [undefined],
           training: trainingInitialValue,
-          ToB: ToBInitialValue,
+          ToB: ToBInitialValue
         }}
       />
     </SideModal>
@@ -424,17 +481,17 @@ export const multipleUsers = () => {
 export const singleUser = () => {
   return (
     <SideModal
-      isOpen={boolean("Open", true)}
+      isOpen={boolean('Open', true)}
       title="Course Management"
-      closeModal={() => alert("Close Function called")}
+      closeModal={() => alert('Close Function called')}
     >
       <Tabs
         content={tabs2}
-        closeModal={() => alert("Close Function called")}
+        closeModal={() => alert('Close Function called')}
         initialState={{
           courses: [],
           training: trainingInitialValue,
-          ToB: ToBInitialValue,
+          ToB: ToBInitialValue
         }}
       />
     </SideModal>
