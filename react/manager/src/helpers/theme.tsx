@@ -23,6 +23,7 @@ export type Theme = {
     secondaryGrey: string;
     primaryWhite: string;
     borderGrey: string;
+    borderBlack: string;
     backgroundGrey: string;
     textBlue: string;
     textGrey: string;
@@ -70,6 +71,7 @@ const theme: Theme = {
     secondaryGrey: "#9ea2ad",
     primaryWhite: "#FFFFFF",
     borderGrey: "#ededed",
+    borderBlack: "#08080814",
     backgroundGrey: "#f7f9fb",
     searchHoverGrey: "#F5FAFC",
     textBlue: "#1081AA",
