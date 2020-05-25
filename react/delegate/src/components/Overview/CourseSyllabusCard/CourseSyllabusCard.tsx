@@ -3,6 +3,7 @@ import { createUseStyles, useTheme } from "react-jss";
 import Icon from "sharedComponents/core/Icon";
 import { Theme } from "helpers/theme";
 import PaginateButton from './PaginateButton';
+import classNames from "classnames";
 
 const useStyles = createUseStyles((theme: Theme) => ({
 	card: {
@@ -13,11 +14,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
 		borderRadius: theme.primaryBorderRadius,
 		border: `1px solid ${theme.colors.borderGrey}`,		
 		maxWidth: '311px',
-		overflow: 'hidden'
+		overflow: 'hidden',
 	},
 	header: {
 		display: 'flex',		
-		margin: '9px 10px 0 23px',
 		lineHeight: '37px',
 		letterSpacing: '-0.45px',
 		fontSize: theme.fontSizes.extraLarge,
@@ -52,7 +52,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 		borderBottom: `1px solid #F4F5F7`,		
 		fontWeight: 'bold',
 		position: 'relative',
-    padding: '0 24px',
+    padding: '0',
     boxSizing: 'border-box',
 		'& p': {
 			margin: 0,
@@ -68,13 +68,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
 	completedIcon: {
 		position: 'absolute',
 		right: 0,
-		transform: `translateX(-50%)`
+		transform: `translateX(-100%)`
 	},
 	footer: {
 		display: 'flex',
 		backgroundColor: '#F7F9FB',
-		padding: '15px 24px',
 		justifyContent: 'center',
+		padding: '5px 0',
 		'& p': {
 			display: 'flex',
 			alignItems: 'center',
@@ -90,8 +90,44 @@ const useStyles = createUseStyles((theme: Theme) => ({
 			margin: '0 9.5px',
 		}
   },
-  	
+	
+
+	headerSamllPading: {
+		margin: '5px 10px 0 10px',
+	},
+	headerMediumPadding: {
+		margin: '9px 20px 0 20px',
+	},
+	headerLargePadding: {
+		margin: '20px 20px 0 30px',
+	},
+
+	listItemSamllPadding: {
+		padding: '0 10px',
+	},
+
+	listItemMediumPadding: {
+		padding: '0 20px',
+	},
+
+	listItemLaqrgePadding: {
+		padding: '0 30px',
+	},
+
+	smallFooterPadding: {
+		padding: '5px 10px',
+	},
+	mediumFooterPadding: {
+		padding: '15px 24px',
+	},
+	largeFooterPadding: {
+		padding: '20px 30px',
+	},
+
 }));
+
+export type PaddingOptions = "none" | "small" | "medium" | "large";
+
 
 export interface CourseSyllabus {
 	completePercentage: number;
@@ -107,15 +143,51 @@ export interface SectionsEntity {
 }
 
 type Props = {
-  courseSyllabus: CourseSyllabus,
-	countPerPage?: number,
+	courseSyllabus: CourseSyllabus,
+	padding?: PaddingOptions,
 };
 
-function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
+function CourseSyllabusCard({ courseSyllabus, padding = "large" }: Props) {
+
+	const getMaxRows = (syllabusData:CourseSyllabus): number => {
+		if (!syllabusData || syllabusData.modules.length === 0)
+			return 0;
+		else {
+			return Math.max.apply(Math, courseSyllabus.modules.map(item => {
+				return item.sections.length;
+			}))
+		}
+	}
+
 	const theme = useTheme();
 	const classes = useStyles({ theme });
 	const [curPage, setCurpage] = React.useState(0);
- 
+	const [countPerPage, setCountPerPage] = React.useState(getMaxRows(courseSyllabus));
+
+	const paddingHeader = {
+		none: "",
+		small: classes.headerSamllPading,
+		medium: classes.headerMediumPadding,
+		large: classes.headerLargePadding,
+	};
+
+	const paddingListItem = {
+		none: "",
+		small: classes.listItemSamllPadding,
+		medium: classes.listItemMediumPadding,
+		large: classes.listItemLaqrgePadding,
+	}
+
+	const paddingFooter = {
+		none: "",
+		small: classes.smallFooterPadding,
+		medium: classes.mediumFooterPadding,
+		large: classes.largeFooterPadding,
+	}	
+	React.useEffect(() => {
+		setCountPerPage(getMaxRows(courseSyllabus))
+	}, [courseSyllabus]);
+
   const onClickPrev = () => {
 		if (curPage === 0)
 			return;
@@ -132,14 +204,14 @@ function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
 		const renderComp : React.ReactElement[] = [];
 		for(let i=0; i<countPerPage; i++) {			
 			renderComp.push(
-				<div className={classes.listItem} key={i}>
+				<div className={classNames(classes.listItem, paddingListItem[padding])} key={i}>
 					{
 						(i < courseSyllabus.modules[curPage].sections.length ) &&
 						<>
-							<p>{courseSyllabus.modules[curPage].sections[i].name}</p>
+							<p style={{paddingRight: `${courseSyllabus.modules[curPage].sections[i].complete ? '20px' : 0}`}}>{courseSyllabus.modules[curPage].sections[i].name}</p>
 							{courseSyllabus.modules[curPage].sections[i].complete && <Icon size={21} name={'CourseStatus_Completed'} className={classes.completedIcon} />}
 						</>
-					}					
+					}
 				</div>
 			)
 		}
@@ -147,8 +219,8 @@ function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
   }
   
 	return (
-		<div className={classes.card}>
-			<div className={classes.header}>
+		<div className={classNames(classes.card)}>
+			<div className={classNames(classes.header, paddingHeader[padding])}>
 				Course Syllabus
 				<div className={classes.completeDiv}>
           {`${courseSyllabus.completePercentage}% Complete`}
@@ -157,7 +229,7 @@ function CourseSyllabusCard({ countPerPage = 15, courseSyllabus }: Props) {
 			<div className={classes.listContainer} style={{maxHeight: `${40 * countPerPage}px`}}>
 				{renderList()}
 			</div>
-			<div className={classes.footer}>
+			<div className={classNames(classes.footer, paddingFooter[padding])}>
         <PaginateButton 
             iconName={curPage === 0 ? 'ArrowLeft' : 'ArrowLeftNavyBlue'}
             disabled={curPage === 0}

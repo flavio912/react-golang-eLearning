@@ -2,7 +2,6 @@ import * as React from "react";
 import CourseSyllabusCard, { CourseSyllabus } from "./CourseSyllabusCard";
 import {
   withKnobs,
-  number,
 	object,
 } from "@storybook/addon-knobs";
 
@@ -47,7 +46,7 @@ const defaultSyllabus: CourseSyllabus = {
 					name: "Lesson 3-1",
 					uuid: "00000-0000-00000-0000",
 					complete: false,
-				},
+				},				
 				{
 					name: "Lesson 3-2",
 					uuid: "00000-0000-00000-0000",
@@ -62,6 +61,6 @@ const defaultSyllabus: CourseSyllabus = {
 export const normal = () => {
   const syllabus = object("CourseSyllabus", {...defaultSyllabus});
 	return (
-    <CourseSyllabusCard countPerPage={number('Count Per page', 15)} courseSyllabus={syllabus} />
+		<CourseSyllabusCard courseSyllabus={syllabus} />
 	)
 }
