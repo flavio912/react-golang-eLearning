@@ -6,17 +6,17 @@ import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    backgroundColor: theme.colors.navyBlue,
-    borderRadius: 6,
+    backgroundColor: theme.colors.backgroundGrey,
+    borderRadius: 4,
     borderColor: 'transparent',
     cursor: 'pointer',
     height: 'auto'
   },
   buttonText: {
-    fontSize: 19.5,
+    fontSize: theme.fontSizes.xSmall,
     fontWeight: 'bold',
     color: theme.colors.primaryWhite,
-    letterSpacing: -0.49
+    letterSpacing: -0.33
   },
   smallPadding: {
     padding: '5px 20px'

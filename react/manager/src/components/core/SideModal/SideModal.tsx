@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     width: "100vw",
     height: "100vh",
-    overflow: "hidden",
+    overflowX: "hidden",
     position: "fixed",
     zIndex: 45,
     top: 0,
