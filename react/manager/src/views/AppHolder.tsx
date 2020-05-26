@@ -6,13 +6,11 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import { createFragmentContainer, graphql } from 'react-relay';
 
+import type { AppHolder_manager } from './__generated__/AppHolder_manager.graphql';
+
 type Props = {
   children?: React.ReactChildren;
-  manager: {
-    firstName: string;
-    lastName: string;
-    profileImageUrl: string | undefined;
-  };
+  manager: AppHolder_manager;
 };
 
 const useStyles = createUseStyles(() => ({
@@ -71,7 +69,7 @@ const AppHolder = ({ children, manager }: Props) => {
         }
         user={{
           name: `${manager.firstName} ${manager.lastName}`,
-          url: manager.profileImageUrl
+          url: manager?.profileImageUrl || undefined
         }}
       />
       <SideMenu
@@ -101,7 +99,7 @@ const AppHolder = ({ children, manager }: Props) => {
 
 export default createFragmentContainer(AppHolder, {
   manager: graphql`
-    fragment OrgOverview_manager on Manager {
+    fragment AppHolder_manager on Manager {
       firstName
       lastName
       profileImageUrl

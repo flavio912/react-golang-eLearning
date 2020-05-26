@@ -12,18 +12,8 @@ import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
 import OrgOverview from 'views/OrgOverview';
 import DelegatesPage from 'views/DelegatesPage';
-import CoursesPage from 'views/CoursesPage';
+import { OnlineCoursesPage } from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
-
-const ExamplePageQuery = graphql`
-  query App_Query {
-    manager {
-      uuid
-      firstName
-      lastName
-    }
-  }
-`;
 
 const Router = createFarceRouter({
   historyProtocol: new BrowserProtocol(),
@@ -35,7 +25,7 @@ const Router = createFarceRouter({
         path="/app"
         Component={AppHolder}
         query={graphql`
-          query App_Org_Query {
+          query App_Holder_Query {
             manager {
               ...AppHolder_manager
             }
@@ -55,7 +45,46 @@ const Router = createFarceRouter({
         />
         <Route path="/delegates" Component={DelegatesPage} />
         <Route path="/delegates/:id" Component={DelegateProfilePage} />
-        <Route path="/courses" Component={CoursesPage} />
+        <Route
+          path="/courses"
+          Component={OnlineCoursesPage}
+          query={graphql`
+            query App_OnlineCourses_Query($page: Page) {
+              onlineCourses(page: $page) {
+                ...CoursesPage_onlineCourses
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            console.log(params);
+            console.log(location);
+            const { pageNum, type } = location.query;
+            return {
+              page: {
+                offset: pageNum,
+                limit: 10
+              }
+            };
+          }}
+        />
+        {/* <Route
+          path="/courses/classroom"
+          Component={CoursesPage}
+          query={graphql`
+            query App_ClassroomCourses_Query {
+
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            console.log(params);
+            console.log(location);
+            const { page, type } = location.query;
+            return {
+              page,
+
+            };
+          }}
+        /> */}
       </Route>
     </Route>
   ),

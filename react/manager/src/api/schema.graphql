@@ -8,6 +8,16 @@ schema {
 type Query {
   info: String!
   manager(uuid: UUID): Manager
+  onlineCourses(
+    page: Page
+    filter: OnlineCourseFilter
+    orderBy: OrderBy
+  ): OnlineCoursePage
+  classroomCourses(
+    page: Page
+    filter: ClassroomCourseFilter
+    orderBy: OrderBy
+  ): ClassroomCoursePage
 }
 
 type Mutation {
@@ -101,4 +111,82 @@ input ManagerLogin {
 
 type AuthToken {
   token: String!
+}
+
+enum AccessType {
+  restricted
+  open
+}
+
+enum StructureElement {
+  module
+  test
+  lesson
+}
+
+enum ModuleElement {
+  test
+  lesson
+}
+
+type CourseInfo {
+  name: String
+  backgroundCheck: Boolean
+  price: Float
+  color: String
+  excerpt: String
+  introduction: String
+  specificTerms: String
+  category: Category
+}
+
+input OnlineCourseFilter {
+  courseInfo: CourseInfoFilter
+}
+
+input ClassroomCourseFilter {
+  courseInfo: CourseInfoFilter
+}
+
+type OnlineCourse {
+  uuid: UUID!
+  info: CourseInfo!
+}
+
+type OnlineCoursePage implements PaginatedQuery {
+  edges: [OnlineCourse]!
+  pageInfo: PageInfo
+}
+
+type ClassroomCourse {
+  uuid: UUID!
+  info: CourseInfo!
+}
+
+type ClassroomCoursePage implements PaginatedQuery {
+  edges: [ClassroomCourse]!
+  pageInfo: PageInfo
+}
+
+input CourseItem {
+  type: StructureElement!
+  uuid: UUID!
+  items: [ModuleItem!]!
+}
+
+input ModuleItem {
+  type: ModuleElement!
+  uuid: UUID!
+}
+
+type Tag {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
 }

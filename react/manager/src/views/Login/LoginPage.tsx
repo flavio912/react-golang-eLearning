@@ -7,10 +7,6 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { commitMutation, graphql } from 'react-relay';
 import { GraphError } from 'types/general';
 
-type Props = {
-  data: any;
-};
-
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     background: theme.loginBackgroundGradient,
@@ -61,7 +57,7 @@ const AttemptLogin = (
   });
 };
 
-const LoginPage = ({ data }: Props) => {
+const LoginPage = () => {
   const theme = useTheme();
   const classes = useStyles({ theme });
 

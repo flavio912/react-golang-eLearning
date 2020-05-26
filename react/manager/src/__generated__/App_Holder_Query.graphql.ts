@@ -1,34 +1,33 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 4e56818444fbf202858a38d689429f79 */
+/* @relayHash 5b146788fa68940c630c24d2249aa186 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type App_Org_QueryVariables = {};
-export type App_Org_QueryResponse = {
+export type App_Holder_QueryVariables = {};
+export type App_Holder_QueryResponse = {
     readonly manager: {
-        readonly " $fragmentRefs": FragmentRefs<"OrgOverview_manager">;
+        readonly " $fragmentRefs": FragmentRefs<"AppHolder_manager">;
     } | null;
 };
-export type App_Org_Query = {
-    readonly response: App_Org_QueryResponse;
-    readonly variables: App_Org_QueryVariables;
+export type App_Holder_Query = {
+    readonly response: App_Holder_QueryResponse;
+    readonly variables: App_Holder_QueryVariables;
 };
 
 
 
 /*
-query App_Org_Query {
+query App_Holder_Query {
   manager {
-    ...OrgOverview_manager
+    ...AppHolder_manager
   }
 }
 
-fragment OrgOverview_manager on Manager {
+fragment AppHolder_manager on Manager {
   firstName
   lastName
-  email
-  telephone
+  profileImageUrl
 }
 */
 
@@ -36,7 +35,7 @@ const node: ConcreteRequest = ({
     "kind": "Request",
     "fragment": {
         "kind": "Fragment",
-        "name": "App_Org_Query",
+        "name": "App_Holder_Query",
         "type": "Query",
         "metadata": null,
         "argumentDefinitions": [],
@@ -52,7 +51,7 @@ const node: ConcreteRequest = ({
                 "selections": [
                     {
                         "kind": "FragmentSpread",
-                        "name": "OrgOverview_manager",
+                        "name": "AppHolder_manager",
                         "args": null
                     }
                 ]
@@ -61,7 +60,7 @@ const node: ConcreteRequest = ({
     },
     "operation": {
         "kind": "Operation",
-        "name": "App_Org_Query",
+        "name": "App_Holder_Query",
         "argumentDefinitions": [],
         "selections": [
             {
@@ -90,14 +89,7 @@ const node: ConcreteRequest = ({
                     {
                         "kind": "ScalarField",
                         "alias": null,
-                        "name": "email",
-                        "args": null,
-                        "storageKey": null
-                    },
-                    {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "telephone",
+                        "name": "profileImageUrl",
                         "args": null,
                         "storageKey": null
                     }
@@ -107,11 +99,11 @@ const node: ConcreteRequest = ({
     },
     "params": {
         "operationKind": "query",
-        "name": "App_Org_Query",
+        "name": "App_Holder_Query",
         "id": null,
-        "text": "query App_Org_Query {\n  manager {\n    ...OrgOverview_manager\n  }\n}\n\nfragment OrgOverview_manager on Manager {\n  firstName\n  lastName\n  email\n  telephone\n}\n",
+        "text": "query App_Holder_Query {\n  manager {\n    ...AppHolder_manager\n  }\n}\n\nfragment AppHolder_manager on Manager {\n  firstName\n  lastName\n  profileImageUrl\n}\n",
         "metadata": {}
     }
 } as any);
-(node as any).hash = 'f3bdd6ff4674f9f0f2b1e33b22045368';
+(node as any).hash = 'ae1f32a58cdf66e3f2f3dc9abd5b102d';
 export default node;

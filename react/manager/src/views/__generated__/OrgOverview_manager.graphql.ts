@@ -6,7 +6,8 @@ import { FragmentRefs } from "relay-runtime";
 export type OrgOverview_manager = {
     readonly firstName: string;
     readonly lastName: string;
-    readonly uuid: unknown;
+    readonly email: string;
+    readonly telephone: string;
     readonly " $refType": "OrgOverview_manager";
 };
 export type OrgOverview_manager$data = OrgOverview_manager;
@@ -41,11 +42,18 @@ const node: ReaderFragment = ({
         {
             "kind": "ScalarField",
             "alias": null,
-            "name": "uuid",
+            "name": "email",
+            "args": null,
+            "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "telephone",
             "args": null,
             "storageKey": null
         }
     ]
 } as any);
-(node as any).hash = 'f1de603aa606898b1b9e80fb88159bbc';
+(node as any).hash = '21c373022f7bc45be520a4bfcfa2418f';
 export default node;

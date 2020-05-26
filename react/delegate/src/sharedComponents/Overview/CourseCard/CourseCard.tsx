@@ -143,8 +143,8 @@ export interface Course {
   description: string;
   assigned: number;
   expiring: number;
-  date: string;
-  location: string;
+  date?: string;
+  location?: string;
   modules?: number;
   lessons?: number;
   video_time?: number;
@@ -199,7 +199,7 @@ function CourseCard({
             size={18}
           />
         </div>
-        {course.price && (
+        {course.price !== undefined && (
           <div className={classNames(classes.price)}>
             £{course.price?.toFixed(2)}
           </div>

@@ -70,7 +70,7 @@
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "eslint . --ext .ts,.tsx",
     "precom": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
-    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__",
+    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript",
     "relayWatch": "nodemon --exec 'yarn run relay' --ignore 'server.js' -e ts,tsx,graphql"
   },
   "husky": {
@@ -152,12 +152,7 @@
       "react-app"
     ],
     "plugins": [
-      [
-        "relay",
-        {
-          "artifactDirectory": "./src/__generated__"
-        }
-      ]
+      "relay"
     ]
   },
   "devDependencies": {
