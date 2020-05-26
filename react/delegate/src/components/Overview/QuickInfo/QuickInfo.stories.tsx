@@ -57,6 +57,8 @@ export const normal = () => {
       icon={select("Icon", iconNames, "CourseExpiringSoon")}
       text={text("Text", "Expiring Soon")}
       value={boolean("UseTime", false) ? value : valueTime}
+      footer={text("FooterText", "in March 2020")}
+      valueArrow={text("ValueArrow", "up")}
     />
   );
 };
