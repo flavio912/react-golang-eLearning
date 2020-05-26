@@ -1,93 +1,83 @@
-import * as React from "react";
-import HeaderMenu from "components/Menu/HeaderMenu";
-import SideMenu from "components/Menu/SideMenu";
-import { Tab } from "components/Menu/SideMenu/SideMenu";
-import ActvityCard from "components/Overview/ActivityCard";
-import { createUseStyles, useTheme } from "react-jss";
-import classes from "*.module.css";
-import classNames from "classnames";
-import Button from "sharedComponents/core/Button";
-import UserSearch from "components/UserSearch";
-import PageTitle from "components/PageTitle";
-import TitleWrapper from "components/Overview/TitleWrapper";
-import QuickInfo from "components/Overview/QuickInfo";
-import QuickOverview from "components/Overview/QuickOverview";
-import TrainingProgressCard from "components/Overview/TrainingProgressCard";
-import { Theme } from "helpers/theme";
-import ProfileCard from "components/Overview/ProfileCard";
-import PageHeader from "components/PageHeader";
-import Spacer from "sharedComponents/core/Spacers/Spacer";
-
-type Props = {};
+import * as React from 'react';
+import ActvityCard from 'components/Overview/ActivityCard';
+import { createUseStyles, useTheme } from 'react-jss';
+import UserSearch from 'components/UserSearch';
+import TitleWrapper from 'components/Overview/TitleWrapper';
+import QuickOverview from 'components/Overview/QuickOverview';
+import TrainingProgressCard from 'components/Overview/TrainingProgressCard';
+import { Theme } from 'helpers/theme';
+import ProfileCard from 'components/Overview/ProfileCard';
+import PageHeader from 'components/PageHeader';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
-    maxWidth: 1275,
+    maxWidth: 1275
   },
   activity: {},
   statsRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap'
   },
   cardFlex: {
-    display: "flex",
-    justifyContent: "space-between",
+    display: 'flex',
+    justifyContent: 'space-between'
   },
   breaker: {
-    width: theme.spacing(2),
+    width: theme.spacing(2)
   },
   searchRow: {
-    display: "flex",
-    flexWrap: "wrap",
-    height: 40,
+    display: 'flex',
+    flexWrap: 'wrap',
+    height: 40
   },
   bottomRow: {
-    display: "flex",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
+    display: 'flex',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap'
   },
   spacer: {
-    minWidth: 770,
+    minWidth: 770
   },
   grid: {
-    display: "grid",
-    gridTemplateRows: "40px auto auto",
+    display: 'grid',
+    gridTemplateRows: '40px auto auto',
     gridGap: 38,
     gridTemplateAreas: `
       "search search search search search .      .      .      .      .      .     "
       "overvw overvw overvw overvw overvw .      traini traini traini traini traini"
       "profle profle profle profle profle actvty actvty actvty actvty actvty actvty"
     `,
-    "@media (max-width: 1350px)": {
+    '@media (max-width: 1350px)': {
       gridTemplateAreas: `
       "search"
       "overvw"
       "traini"
       "profle"
       "actvty"
-    `,
-    },
+    `
+    }
   },
   search: {
     flex: 1,
-    gridArea: "search",
+    gridArea: 'search'
   },
   quickOverview: {
-    gridArea: "overvw",
+    gridArea: 'overvw'
   },
   trainingProgress: {
-    gridArea: "traini",
+    gridArea: 'traini'
   },
   yourInfo: {
-    gridArea: "profle",
+    gridArea: 'profle'
   },
   activityWrapper: {
-    gridArea: "actvty",
-  },
+    gridArea: 'actvty'
+  }
 }));
 
 export const OrgOverview = () => {
@@ -107,17 +97,17 @@ export const OrgOverview = () => {
             searchFunction={async (query: string) => {
               return [
                 {
-                  key: "Jim Smith",
-                  value: "uuid-1",
+                  key: 'Jim Smith',
+                  value: 'uuid-1'
                 },
                 {
-                  key: "Bruce Willis",
-                  value: "uuid-2",
+                  key: 'Bruce Willis',
+                  value: 'uuid-2'
                 },
                 {
-                  key: "Tony Stark",
-                  value: "uuid-3",
-                },
+                  key: 'Tony Stark',
+                  value: 'uuid-3'
+                }
               ];
             }}
           />
@@ -152,32 +142,32 @@ export const OrgOverview = () => {
           <ProfileCard
             heading="Profile"
             fields={[
-              { fieldName: "Name", value: "Fred Eccleston" },
-              { fieldName: "Role", value: "Group Leader" },
-              { fieldName: "Email", value: "Group Leader" },
-              { fieldName: "Tel Contact", value: "Group Leader" },
-              { fieldName: "Active since", value: "Group Leader" },
+              { fieldName: 'Name', value: 'Fred Eccleston' },
+              { fieldName: 'Role', value: 'Group Leader' },
+              { fieldName: 'Email', value: 'Group Leader' },
+              { fieldName: 'Tel Contact', value: 'Group Leader' },
+              { fieldName: 'Active since', value: 'Group Leader' }
             ]}
             padding="medium"
           />
         </TitleWrapper>
-        <TitleWrapper title={"Activity"} className={classes.activityWrapper}>
+        <TitleWrapper title={'Activity'} className={classes.activityWrapper}>
           <ActvityCard
             className={classes.activity}
-            padding={"medium"}
-            leftHeading={"Delegates activity"}
-            rightHeading={"Recent Updates"}
-            options={["This month", "All Time"]}
+            padding={'medium'}
+            leftHeading={'Delegates activity'}
+            rightHeading={'Recent Updates'}
+            options={['This month', 'All Time']}
             updates={[]}
             data={{
               outerRing: {
-                name: "Active",
-                value: 154,
+                name: 'Active',
+                value: 154
               },
               innerRing: {
-                name: "Inactive",
-                value: 64,
-              },
+                name: 'Inactive',
+                value: 64
+              }
             }}
           />
         </TitleWrapper>

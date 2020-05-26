@@ -69,7 +69,7 @@
     "storybook": "start-storybook -p 4001",
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "eslint . --ext .ts,.tsx",
-    "precom": "yarn run lint && git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
+    "precom": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
     "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__",
     "relayWatch": "nodemon --exec 'yarn run relay' --ignore 'server.js' -e ts,tsx,graphql"
   },

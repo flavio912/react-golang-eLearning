@@ -6,7 +6,6 @@ import environment from 'api/environment';
 import { createUseStyles, useTheme } from 'react-jss';
 import { commitMutation, graphql } from 'react-relay';
 import { GraphError } from 'types/general';
-import { Redirect, RedirectException } from 'found';
 
 type Props = {
   data: any;
