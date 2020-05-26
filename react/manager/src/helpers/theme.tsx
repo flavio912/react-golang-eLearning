@@ -94,9 +94,8 @@ const theme: Theme = {
     textIron: '#CCCDCD',
     textNavyBlue2: '#0E63E8',
     textGrey2: '#5C7487',
-    textGrey3: '#E3E3E3'
-    textSolitude: "#DFEEFD",
-    textNavyBlue: "#6BAAE7",
+    textGrey3: '#E3E3E3',
+    borderBlack: '#08080814'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',

@@ -76,8 +76,8 @@ const theme: Theme = {
     navyBlue: '#0E66E0',
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
-    approxZircon: '#E9EBEB'
-    secondaryDanger: "#DB5C5D",
+    approxZircon: '#E9EBEB',
+    secondaryDanger: '#DB5C5D'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
