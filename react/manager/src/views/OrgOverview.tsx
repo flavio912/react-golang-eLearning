@@ -9,6 +9,7 @@ import { Theme } from 'helpers/theme';
 import ProfileCard from 'components/Overview/ProfileCard';
 import PageHeader from 'components/PageHeader';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { createFragmentContainer, graphql } from 'react-relay';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -80,7 +81,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-export const OrgOverview = () => {
+type Props = {
+  manager: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    telephone: string;
+  };
+};
+
+const OrgOverview = ({ manager }: Props) => {
+  console.log(manager);
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
@@ -142,10 +153,13 @@ export const OrgOverview = () => {
           <ProfileCard
             heading="Profile"
             fields={[
-              { fieldName: 'Name', value: 'Fred Eccleston' },
+              {
+                fieldName: 'Name',
+                value: `${manager.firstName} ${manager.lastName}`
+              },
               { fieldName: 'Role', value: 'Group Leader' },
-              { fieldName: 'Email', value: 'Group Leader' },
-              { fieldName: 'Tel Contact', value: 'Group Leader' },
+              { fieldName: 'Email', value: manager.email },
+              { fieldName: 'Tel Contact', value: manager.telephone },
               { fieldName: 'Active since', value: 'Group Leader' }
             ]}
             padding="medium"
@@ -175,3 +189,14 @@ export const OrgOverview = () => {
     </div>
   );
 };
+
+export default createFragmentContainer(OrgOverview, {
+  manager: graphql`
+    fragment OrgOverview_manager on Manager {
+      firstName
+      lastName
+      email
+      telephone
+    }
+  `
+});
