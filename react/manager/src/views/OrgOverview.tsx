@@ -91,7 +91,6 @@ type Props = {
 };
 
 const OrgOverview = ({ manager }: Props) => {
-  console.log(manager);
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
