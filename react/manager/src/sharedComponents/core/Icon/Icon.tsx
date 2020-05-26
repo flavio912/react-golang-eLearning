@@ -4,7 +4,9 @@ export type IconNames =
   | "AddDelegateRepeater"
   | "ArrowLeft"
   | "ArrowLeftBlue"
+  | "ArrowLeftNavyBlue"
   | "ArrowRight"
+  | "ArrowRightNavyBlue"
   | "Card_SecondaryActon_Dots"
   | "CloseCourseManagementTray_X"
   | "CourseAccountActivated"
@@ -48,7 +50,9 @@ const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
   ArrowLeft: require("../../../assets/ArrowLeft.svg"),
   ArrowLeftBlue: require("../../../assets/ArrowLeftBlue.svg"),
+  ArrowLeftNavyBlue: require("../../../assets/ArrowLeftNavyBlue.svg"),
   ArrowRight: require("../../../assets/ArrowRight.svg"),
+  ArrowRightNavyBlue: require("../../../assets/ArrowRightNavyBlue.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
   CourseAccountActivated: require("../../../assets/CourseAccountActivated.svg"),
