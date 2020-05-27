@@ -28,6 +28,7 @@ type Props = {
   label: string;
   labelClassName?: string;
   placeholder?: string;
+  value?: string;
   type?: InputTypes;
   onChange?: (text: string) => string | void;
 };
@@ -36,6 +37,7 @@ const EasyInput = ({
   label,
   labelClassName,
   placeholder = '',
+  value = '',
   type = 'text',
   onChange = () => {}
 }: Props) => {
@@ -53,6 +55,8 @@ const EasyInput = ({
         placeholder={placeholder}
         type={type}
         onChange={onTextChange}
+        value={value}
+        setValue={onTextChange}
         className={classes.input}
       />
     </div>
