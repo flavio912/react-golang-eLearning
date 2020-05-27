@@ -1,10 +1,17 @@
 import * as React from 'react';
 //@ts-ignore
 import { BrowserProtocol, queryMiddleware } from 'farce';
-import { createFarceRouter, createRender, makeRouteConfig, Route } from 'found';
+import {
+  createFarceRouter,
+  createRender,
+  makeRouteConfig,
+  Route,
+  useRouter,
+  RouteRenderArgs
+} from 'found';
 //@ts-ignore
 import { Resolver } from 'found-relay';
-import environment from './api/environment';
+import environment, { FetchError } from './api/environment';
 import { graphql } from 'react-relay';
 import LoginPage from 'views/Login';
 import { ThemeProvider } from 'react-jss';
@@ -14,6 +21,22 @@ import OrgOverview from 'views/OrgOverview';
 import DelegatesPage from 'views/DelegatesPage';
 import { OnlineCoursesPage } from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
+
+import type { AppHolder_manager } from './views/__generated__/AppHolder_manager.graphql';
+import { Redirect } from 'react-router-dom';
+
+const protectedRenderer = (Comp: React.ReactNode) => (
+  args: RouteRenderArgs
+) => {
+  // Sadly found-relay has no types...
+  //@ts-ignore
+  if (args?.error && args?.error.type == 'ErrUnauthorized') {
+    args.match.router.push('/login');
+    return;
+  }
+  //@ts-ignore
+  return <Comp {...args.props} />;
+};
 
 const Router = createFarceRouter({
   historyProtocol: new BrowserProtocol(),
@@ -31,6 +54,7 @@ const Router = createFarceRouter({
             }
           }
         `}
+        render={protectedRenderer(AppHolder)}
       >
         <Route
           path="/"
@@ -43,8 +67,28 @@ const Router = createFarceRouter({
             }
           `}
         />
-        <Route path="/delegates" Component={DelegatesPage} />
-        <Route path="/delegates/:id" Component={DelegateProfilePage} />
+        <Route
+          path="/delegates"
+          Component={DelegatesPage}
+          query={graphql`
+            query App_Holder_Query {
+              manager {
+                ...AppHolder_manager
+              }
+            }
+          `}
+        />
+        <Route
+          path="/delegates/:id"
+          Component={DelegateProfilePage}
+          query={graphql`
+            query App_Holder_Query {
+              manager {
+                ...AppHolder_manager
+              }
+            }
+          `}
+        />
         <Route
           path="/courses"
           Component={OnlineCoursesPage}
