@@ -58,12 +58,29 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginTop: 0
   },
   trans: {
-    backgroundColor: `rgba(21,195,36,0.05)`,
+    // backgroundColor: `rgba(21,195,36,0.05)`,
+    background: `linear-gradient(#fff, #fff) padding-box,linear-gradient(to left, #15C324, #16C127, #0D57FF) border-box`,
     borderRadius: 3,
     display: 'inline-flex',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: [5, 8]
+    padding: [5, 8],
+    borderColor: 'transparent',
+    borderWidth: 1,
+    borderStyle: 'solid',
+    position: 'relative',
+    '&:after': {
+      content: "''",
+      display: 'block',
+      backgroundColor: `rgba(21,195,36,0.05)`,
+      width: `100%`,
+      height: `100%`,
+      position: 'absolute',
+      left: 0,
+      right: 0,
+      top: 0,
+      bottom: 0
+    }
   },
   transTag: {
     height: 16,
