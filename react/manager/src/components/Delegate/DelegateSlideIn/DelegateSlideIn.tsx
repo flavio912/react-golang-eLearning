@@ -89,6 +89,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   isOpen: boolean;
+  delegateUUID?: string;
   onClose: () => void;
   submitDelegate: (
     profileUrl: string,
@@ -138,6 +139,7 @@ const delegateDetails: TabContent[] = [
                   <EasyInput
                     label="First Name"
                     placeholder="e.g. John"
+                    value={state.firstName}
                     onChange={(firstName) => 
                       setState((s: object) => ({ ...s, firstName}))
                     }
@@ -146,6 +148,7 @@ const delegateDetails: TabContent[] = [
                 <EasyInput
                   label="Last Name"
                   placeholder="e.g. Smith"
+                  value={state.lastName}
                   onChange={(lastName) => 
                     setState((s: object) => ({ ...s, lastName}))
                   }
@@ -154,6 +157,7 @@ const delegateDetails: TabContent[] = [
               <EasyInput
                 label="Job Title"
                 placeholder="e.g. Mechanical Engineer"
+                value={state.jobTitle}
                 onChange={(jobTitle) => 
                   setState((s: object) => ({ ...s, jobTitle}))
                 }
@@ -169,6 +173,7 @@ const delegateDetails: TabContent[] = [
                 label="Email" 
                 type="email"
                 placeholder="e.g. example@fedex.com"
+                value={state.email}
                 onChange={(email) => 
                   setState((s: object) => ({ ...s, email}))
                 }
@@ -178,6 +183,7 @@ const delegateDetails: TabContent[] = [
               <EasyInput
                 label="Phone number"
                 type="tel"
+                value={state.phone}
                 placeholder="e.g. +44 1234 567890"
                 onChange={(phone) => 
                   setState((s: object) => ({ ...s, phone}))
@@ -213,7 +219,7 @@ const delegateDetails: TabContent[] = [
               )}
               className={classes.submitBtn}
             >
-              Confirm {"&"} Save
+              {state.update ? "Update" : "Confirm & Save"}
             </Button>
           </div>
         </Footer>
@@ -223,25 +229,47 @@ const delegateDetails: TabContent[] = [
   }
 ];
 
+const defaultDelegate = (delegateUUID: string | undefined) => {
+  return delegateUUID ? {
+    firstName: "Bruce",
+    lastName: "Willis",
+    jobTitle: "Mechanical Engineer",
+    email: "bruce.willis@fedex.com",
+    phone: "01234567890",
+    ttcId: "Fedex_BruceWillis"
+  }: {
+    firstName: "",
+    lastName: "",
+    jobTitle: "",
+    email: "",
+    phone: "",
+    ttcId: "",
+  };
+};
+
 const DelegateSlideIn = ({ 
    isOpen,
+   delegateUUID,
    onClose,
    submitDelegate
   }: Props) => {
+  
+  const delegate = defaultDelegate(delegateUUID);
 
   return (
-    <SideModal title="Add New Delegate" closeModal={onClose} isOpen={isOpen}>
+    <SideModal title={delegateUUID ? `${delegate.firstName} ${delegate.lastName}` : "Add New Delegate"} closeModal={onClose} isOpen={isOpen}>
       <Tabs
         content={delegateDetails}
         closeModal={onClose}
         initialState={{
           profileUrl: "https://i.imgur.com/C0RGBYP.jpg",
-          firstName: "",
-          lastName: "",
-          jobTitle: "",
-          email: "",
-          phone: "",
-          ttcId: "",
+          firstName: delegate.firstName,
+          lastName: delegate.lastName,
+          jobTitle: delegate.jobTitle,
+          email: delegate.email,
+          phone: delegate.phone,
+          ttcId: delegate.ttcId,
+          update: delegateUUID !== undefined,
           onSubmit: submitDelegate
         }}
         />
