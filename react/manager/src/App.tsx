@@ -67,28 +67,8 @@ const Router = createFarceRouter({
             }
           `}
         />
-        <Route
-          path="/delegates"
-          Component={DelegatesPage}
-          query={graphql`
-            query App_Holder_Query {
-              manager {
-                ...AppHolder_manager
-              }
-            }
-          `}
-        />
-        <Route
-          path="/delegates/:id"
-          Component={DelegateProfilePage}
-          query={graphql`
-            query App_Holder_Query {
-              manager {
-                ...AppHolder_manager
-              }
-            }
-          `}
-        />
+        <Route path="/delegates" Component={DelegatesPage} />
+        <Route path="/delegates/:id" Component={DelegateProfilePage} />
         <Route
           path="/courses"
           Component={OnlineCoursesPage}

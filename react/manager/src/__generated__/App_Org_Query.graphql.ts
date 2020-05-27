@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 4e56818444fbf202858a38d689429f79 */
+/* @relayHash 14c128ae8aec4e6c8f1732665a3b4722 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -29,6 +29,7 @@ fragment OrgOverview_manager on Manager {
   lastName
   email
   telephone
+  createdAt
 }
 */
 
@@ -100,6 +101,13 @@ const node: ConcreteRequest = ({
                         "name": "telephone",
                         "args": null,
                         "storageKey": null
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "createdAt",
+                        "args": null,
+                        "storageKey": null
                     }
                 ]
             }
@@ -109,7 +117,7 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_Org_Query",
         "id": null,
-        "text": "query App_Org_Query {\n  manager {\n    ...OrgOverview_manager\n  }\n}\n\nfragment OrgOverview_manager on Manager {\n  firstName\n  lastName\n  email\n  telephone\n}\n",
+        "text": "query App_Org_Query {\n  manager {\n    ...OrgOverview_manager\n  }\n}\n\nfragment OrgOverview_manager on Manager {\n  firstName\n  lastName\n  email\n  telephone\n  createdAt\n}\n",
         "metadata": {}
     }
 } as any);

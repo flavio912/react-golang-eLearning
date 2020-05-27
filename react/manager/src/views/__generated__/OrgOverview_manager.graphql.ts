@@ -8,6 +8,7 @@ export type OrgOverview_manager = {
     readonly lastName: string;
     readonly email: string;
     readonly telephone: string;
+    readonly createdAt: string | null;
     readonly " $refType": "OrgOverview_manager";
 };
 export type OrgOverview_manager$data = OrgOverview_manager;
@@ -52,8 +53,15 @@ const node: ReaderFragment = ({
             "name": "telephone",
             "args": null,
             "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "createdAt",
+            "args": null,
+            "storageKey": null
         }
     ]
 } as any);
-(node as any).hash = '21c373022f7bc45be520a4bfcfa2418f';
+(node as any).hash = '12e21416a68d12eccb5d1cc3f1f45df2';
 export default node;

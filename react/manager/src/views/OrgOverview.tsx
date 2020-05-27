@@ -10,6 +10,7 @@ import ProfileCard from 'components/Overview/ProfileCard';
 import PageHeader from 'components/PageHeader';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import { createFragmentContainer, graphql } from 'react-relay';
+import { OrgOverview_manager } from './__generated__/OrgOverview_manager.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -82,12 +83,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  manager: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    telephone: string;
-  };
+  manager: OrgOverview_manager;
 };
 
 const OrgOverview = ({ manager }: Props) => {
@@ -159,7 +155,10 @@ const OrgOverview = ({ manager }: Props) => {
               { fieldName: 'Role', value: 'Group Leader' },
               { fieldName: 'Email', value: manager.email },
               { fieldName: 'Tel Contact', value: manager.telephone },
-              { fieldName: 'Active since', value: 'Group Leader' }
+              {
+                fieldName: 'Active since',
+                value: new Date(manager.createdAt || '').toDateString()
+              }
             ]}
             padding="medium"
           />
@@ -196,6 +195,7 @@ export default createFragmentContainer(OrgOverview, {
       lastName
       email
       telephone
+      createdAt
     }
   `
 });
