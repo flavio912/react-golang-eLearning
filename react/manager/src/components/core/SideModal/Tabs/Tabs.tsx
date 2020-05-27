@@ -1,134 +1,134 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Theme } from 'helpers/theme';
 // @ts-ignore
-import useDimensions from "react-use-dimensions";
-import { useSpring, animated, config } from "react-spring";
-import classNames from "classnames";
-import { Course } from "../../SearchableDropdown";
+import useDimensions from 'react-use-dimensions';
+import { useSpring, animated, config } from 'react-spring';
+import classNames from 'classnames';
+import { Course } from '../../SearchableDropdown';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    width: "100%",
-    height: "100%",
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
+    width: '100%',
+    height: '100%',
+    overflowX: 'hidden',
+    display: 'flex',
+    flexDirection: 'column'
   },
   heading: {
-    width: "calc(100% - 30px)",
+    width: 'calc(100% - 30px)',
     height: 70,
     borderBottom: `2px solid ${theme.colors.borderGrey}`,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "flex-end",
-    paddingLeft: 30,
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-end',
+    paddingLeft: 30
   },
   tabName: {
     margin: [0, 0, 0, 10],
     padding: [5, 10],
-    position: "relative",
+    position: 'relative',
     bottom: -2,
-    cursor: "pointer",
-    borderBottom: "2px solid transparent",
+    cursor: 'pointer',
+    borderBottom: '2px solid transparent',
     color: theme.colors.textGrey,
-    fontSize: theme.fontSizes.large,
+    fontSize: theme.fontSizes.large
   },
   active: {
-    color: "black",
-    borderBottomColor: theme.colors.primaryGreen,
+    color: 'black',
+    borderBottomColor: theme.colors.primaryGreen
   },
   body: {
     flexGrow: 1,
-    display: "flex",
-    flexDirection: "row",
-    position: "relative",
+    display: 'flex',
+    flexDirection: 'row',
+    position: 'relative'
   },
   content: {
     flexShrink: 0,
-    height: "100%",
-    display: "flex",
-    flexDirection: "column",
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column'
   },
   pagebody: {
     flexGrow: 1,
-    display: "flex",
-    flexDirection: "column",
-    padding: [30, 40],
+    display: 'flex',
+    flexDirection: 'column',
+    padding: [30, 40]
   },
   footer: {
     height: 120,
     borderTop: `2px solid ${theme.colors.borderGrey}`,
     backgroundColor: theme.colors.backgroundGrey,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: [0, 40],
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: [0, 40]
   },
   smallHeading: {
     fontSize: theme.fontSizes.smallHeading,
-    fontWeight: 900,
+    fontWeight: 900
   },
   largeText: {
     fontSize: 15,
-    maxWidth: 500,
+    maxWidth: 500
   },
   text: {
-    fontSize: theme.fontSizes.default,
+    fontSize: theme.fontSizes.default
   },
   termsBox: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: [0, 0, 3, 3],
-    margin: [theme.spacing(1), 0],
+    margin: [theme.spacing(1), 0]
   },
   termsTitle: {
     backgroundColor: theme.colors.primaryBlue,
-    color: "white",
+    color: 'white',
     fontSize: theme.fontSizes.default,
     fontWeight: 900,
-    padding: [10, 15],
+    padding: [10, 15]
   },
   termsContent: {
     maxHeight: 180,
     padding: [0, theme.spacing(1)],
-    overflowY: "auto",
+    overflowY: 'auto'
   },
   courseContainer: {
     border: `1px solid ${theme.colors.borderGrey}`,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 4,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
-    margin: [theme.spacing(1), 0, theme.spacing(2)],
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    margin: [theme.spacing(1), 0, theme.spacing(2)]
   },
   course: {
     height: 40,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
-    "&:last-child": {
-      borderBottom: "none",
-    },
+    '&:last-child': {
+      borderBottom: 'none'
+    }
   },
   currentTotal: {
     fontSize: 15,
-    fontWeight: "bold",
+    fontWeight: 'bold'
   },
   money: {
-    color: "#1081AA",
-    marginLeft: theme.spacing(1),
-  },
+    color: '#1081AA',
+    marginLeft: theme.spacing(1)
+  }
 }));
 
 type ComponentProps = {
@@ -144,7 +144,7 @@ export type TabContent = {
     state,
     setState,
     setTab,
-    closeModal,
+    closeModal
   }: ComponentProps) => JSX.Element;
 };
 
@@ -157,15 +157,15 @@ type Props = {
 function Tabs({ content, closeModal, initialState }: Props) {
   const classes = useStyles();
   const [state, setState] = React.useState<any>(initialState);
-  const [active, setActive] = React.useState<string>(content[0].key || "");
+  const [active, setActive] = React.useState<string>(content[0].key || '');
   const [ref, { width }] = useDimensions();
   const [{ right }, set] = useSpring(() => ({
     right: 0,
-    config: config.default,
+    config: config.default
   }));
 
   const throwErr = () => {
-    throw new Error("Invalid Tab error");
+    throw new Error('Invalid Tab error');
   };
 
   React.useEffect(() => {
@@ -243,7 +243,7 @@ export function Text({ children }: SimpleProps) {
 
 export function TermsBox({
   children,
-  title,
+  title
 }: {
   children: React.ReactNode;
   title: string;
@@ -262,7 +262,9 @@ export function CourseList({ courses }: { courses: Course[] }) {
   return (
     <div className={classes.courseContainer}>
       {courses.map((course: Course) => (
-        <div className={classes.course} key={course.id}>{course.name}</div>
+        <div className={classes.course} key={course.id}>
+          {course.name}
+        </div>
       ))}
     </div>
   );

@@ -4,7 +4,9 @@ export type IconNames =
   | "AddDelegateRepeater"
   | "ArrowLeft"
   | "ArrowLeftBlue"
+  | "ArrowLeftNavyBlue"
   | "ArrowRight"
+  | "ArrowRightNavyBlue"
   | "Card_SecondaryActon_Dots"
   | "CloseCourseManagementTray_X"
   | "CourseAccountActivated"
@@ -38,13 +40,19 @@ export type IconNames =
   | "RemoveSelectedCourse_X"
   | "SampleImage_ClassroomCoursesDetail_Feat"
   | "SearchGlass"
-  | "TTC_Logo_Icon";
+  | "TTC_Logo_Icon"
+  | "Mp3_Pause"
+  | "Mp3_Speaker"
+  | "Payments_Method"
+  | "Stripe";
 
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
   ArrowLeft: require("../../../assets/ArrowLeft.svg"),
   ArrowLeftBlue: require("../../../assets/ArrowLeftBlue.svg"),
+  ArrowLeftNavyBlue: require("../../../assets/ArrowLeftNavyBlue.svg"),
   ArrowRight: require("../../../assets/ArrowRight.svg"),
+  ArrowRightNavyBlue: require("../../../assets/ArrowRightNavyBlue.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
   CourseAccountActivated: require("../../../assets/CourseAccountActivated.svg"),
@@ -79,6 +87,10 @@ const iconNameMap = {
   SampleImage_ClassroomCoursesDetail_Feat: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
+  Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
+  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Payments_Method: require("../../../assets/Payments_Method.svg"),
+  Stripe: require("../../../assets/Stripe.svg")
 };
 
 type Props = {

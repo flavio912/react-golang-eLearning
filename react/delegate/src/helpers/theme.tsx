@@ -2,7 +2,7 @@ const spacing = {
   0: 5,
   1: 10,
   2: 20,
-  3: 50,
+  3: 50
 };
 
 export type Theme = {
@@ -29,6 +29,10 @@ export type Theme = {
     searchHoverGrey: string;
     progressGrey: string;
     navyBlue: string;
+    blueRibbon: string;
+    approxIron: string;
+    approxZircon: string;
+    secondaryDanger: string;
   };
   shadows: {
     primary: string;
@@ -51,29 +55,33 @@ const theme: Theme = {
   primaryBorderRadius: 5,
   secondaryBorderRadius: 10,
   buttonBorderRadius: 4,
-  primaryGradient: "linear-gradient(50deg, #0b57ff 0%,#16C225 100%)",
-  loginBackgroundGradient: "linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)",
+  primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
+  loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
   colors: {
-    primaryBlack: "#0C152E",
-    primaryBlue: "#0b57ff",
-    primaryGreen: "#10b73b",
-    secondaryBlack: "#34373A",
-    secondaryGreen: "#15C324",
-    hoverGreen: "#E7F8E6",
-    primaryRed: "#CB463A",
-    secondaryGrey: "#9ea2ad",
-    primaryWhite: "#FFFFFF",
-    borderGrey: "#ededed",
-    backgroundGrey: "#f7f9fb",
-    searchHoverGrey: "#F5FAFC",
-    textBlue: "#1081AA",
-    textGrey: "#737988",
-    progressGrey: "#d2d6db",
-    navyBlue: "#0E66E0"
+    primaryBlack: '#0C152E',
+    primaryBlue: '#0b57ff',
+    primaryGreen: '#10b73b',
+    secondaryBlack: '#34373A',
+    secondaryGreen: '#15C324',
+    hoverGreen: '#E7F8E6',
+    primaryRed: '#CB463A',
+    secondaryGrey: '#9ea2ad',
+    primaryWhite: '#FFFFFF',
+    borderGrey: '#ededed',
+    backgroundGrey: '#f7f9fb',
+    searchHoverGrey: '#F5FAFC',
+    textBlue: '#1081AA',
+    textGrey: '#737988',
+    progressGrey: '#d2d6db',
+    navyBlue: '#0E66E0',
+    blueRibbon: '#0E5AF9',
+    approxIron: '#CCCDCD',
+    approxZircon: '#E9EBEB',
+    secondaryDanger: '#DB5C5D'
   },
   shadows: {
-    primary: "2px 2px 10px rgba(0,0,0,0.07)",
-    body: "inset 0px -2px 10px 0px #0000001f",
+    primary: '2px 2px 10px rgba(0,0,0,0.07)',
+    body: 'inset 0px -2px 10px 0px #0000001f'
   },
   fontSizes: {
     heading: 25,
@@ -83,8 +91,8 @@ const theme: Theme = {
     large: 16,
     default: 14,
     small: 13,
-    tiny: 11,
-  },
+    tiny: 11
+  }
 };
 
 export default theme;

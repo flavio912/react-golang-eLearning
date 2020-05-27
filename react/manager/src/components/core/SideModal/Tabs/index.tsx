@@ -7,8 +7,9 @@ import Tabs, {
   Text,
   TermsBox,
   CourseList,
-  CurrentTotal,
-} from "./Tabs";
+  CurrentTotal
+} from './Tabs';
+import Payment from './Payment';
 export {
   Footer,
   Body,
@@ -18,6 +19,7 @@ export {
   LargeText,
   CourseList,
   CurrentTotal,
+  Payment
 };
 export type TabContent = _TabContent;
 export default Tabs;

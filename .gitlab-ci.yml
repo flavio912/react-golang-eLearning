@@ -82,6 +82,7 @@ build-delegate-webpack:
     - yarn run build
   only:
     changes:
+      - react/manager/**/*
       - react/delegate/**/*
       - .gitlab-ci.yml
   cache:
@@ -107,6 +108,7 @@ build-manager-storybook:
   only:
     changes:
       - react/manager/**/*
+      - react/delegate/**/*
       - .gitlab-ci.yml
   tags:
     - big
