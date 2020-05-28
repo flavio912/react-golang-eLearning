@@ -44,6 +44,7 @@ export type Theme = {
     tinyHeading: number;
     extraLarge: number;
     large: number;
+    xLarge: number;
     default: number;
     small: number;
     tiny: number;
@@ -89,6 +90,7 @@ const theme: Theme = {
     tinyHeading: 20,
     extraLarge: 18,
     large: 16,
+    xLarge: 15,
     default: 14,
     small: 13,
     tiny: 11
