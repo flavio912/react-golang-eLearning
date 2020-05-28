@@ -18,11 +18,55 @@ type Query {
     filter: ClassroomCourseFilter
     orderBy: OrderBy
   ): ClassroomCoursePage
+  delegate(uuid: UUID!): Delegate
+  delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
 }
 
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
+  createDelegate(input: CreateDelegateInput!): Delegate
 }
+
+
+# Delegate 
+
+type Delegate implements User {
+  uuid: UUID!
+  createdAt: String
+  TTC_ID: String!
+  email: String!
+  firstName: String!
+  lastName: String!
+  telephone: String!
+  lastLogin: String!
+  jobTitle: String!
+  company: Company!
+  profileImageUrl: String
+}
+
+input CreateDelegateInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  jobTitle: String!
+  telephone: String!
+}
+
+input DelegateFilter {
+  uuid: UUID
+  ttc_id: String
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
+}
+
+type DelegatePage implements PaginatedQuery {
+  edges: [Delegate]
+  pageInfo: PageInfo
+}
+
+# Pagination
 
 type PageInfo {
   total: Int! # Number of pages after this one
@@ -34,14 +78,6 @@ type PageInfo {
 input Page {
   offset: Int
   limit: Int
-}
-
-input ManagerFilter {
-  name: String
-  email: String
-  jobTitle: String
-  uuid: UUID
-  telephone: String
 }
 
 input CompanyFilter {
@@ -75,10 +111,7 @@ type Address {
   country: String!
 }
 
-type ManagerPage implements PaginatedQuery {
-  edges: [Manager]
-  pageInfo: PageInfo
-}
+
 
 interface User {
   uuid: UUID!
@@ -90,6 +123,8 @@ interface User {
   lastLogin: String!
   jobTitle: String!
 }
+
+# Manager
 
 type Manager implements User {
   uuid: UUID!
@@ -104,10 +139,24 @@ type Manager implements User {
   profileImageUrl: String
 }
 
+type ManagerPage implements PaginatedQuery {
+  edges: [Manager]
+  pageInfo: PageInfo
+}
+
 input ManagerLogin {
   email: String!
   password: String!
 }
+
+input ManagerFilter {
+  name: String
+  email: String
+  jobTitle: String
+  uuid: UUID
+  telephone: String
+}
+
 
 type AuthToken {
   token: String!
@@ -190,3 +239,4 @@ type Category {
   name: String!
   color: String!
 }
+
