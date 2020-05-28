@@ -26,3 +26,8 @@ type DelegatePage implements PaginatedQuery {
   edges: [Delegate]
   pageInfo: PageInfo
 }
+
+input DelegateLogin {
+  TTC_ID: String!
+  password: String!
+}

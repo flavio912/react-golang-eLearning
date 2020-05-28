@@ -15,9 +15,10 @@ import (
 type Grant struct {
 	Claims auth.UserClaims
 	// Convenience fields for checking auth
-	IsAdmin    bool
-	IsManager  bool
-	IsDelegate bool
+	IsAdmin      bool
+	IsManager    bool
+	IsDelegate   bool
+	IsIndividual bool
 	// contains the sentry hub
 	Logger logging.Logger
 }
@@ -31,9 +32,10 @@ func Authenticate(jwt string) (*Grant, error) {
 	}
 
 	var (
-		isAdmin    bool
-		isManager  bool
-		isDelegate bool
+		isAdmin      bool
+		isManager    bool
+		isDelegate   bool
+		isIndividual bool
 	)
 
 	switch claims.Role {
@@ -43,13 +45,16 @@ func Authenticate(jwt string) (*Grant, error) {
 		isManager = true
 	case auth.DelegateRole:
 		isDelegate = true
+	case auth.IndividualRole:
+		isIndividual = true
 	}
 
 	return &Grant{
-		Claims:     claims,
-		IsAdmin:    isAdmin,
-		IsManager:  isManager,
-		IsDelegate: isDelegate,
+		Claims:       claims,
+		IsAdmin:      isAdmin,
+		IsManager:    isManager,
+		IsDelegate:   isDelegate,
+		IsIndividual: isIndividual,
 	}, nil
 }
 

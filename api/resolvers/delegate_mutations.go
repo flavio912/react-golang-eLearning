@@ -6,7 +6,16 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
+
+func (m *MutationResolver) DelegateLogin(args struct{ Input gentypes.DelegateLoginInput }) (*gentypes.AuthToken, error) {
+	token, err := middleware.GetDelegateAccessToken(args.Input.TTC_ID, args.Input.Password)
+	if err != nil {
+		return nil, err
+	}
+	return &gentypes.AuthToken{Token: token}, nil
+}
 
 func (m *MutationResolver) CreateDelegate(ctx context.Context, args struct{ Input gentypes.CreateDelegateInput }) (*DelegateResolver, error) {
 	if err := args.Input.Validate(); err != nil {

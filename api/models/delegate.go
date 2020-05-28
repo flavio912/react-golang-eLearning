@@ -24,11 +24,16 @@ This function purposely takes in and verifies the password
 circumstances be given without the password - @temmerson
 */
 func (delegate *Delegate) GenerateToken(password string) (string, error) {
+	if err := delegate.ValidatePassword(delegate.TtcId, password); err != nil {
+		return "", ErrPasswordInvalid
+	}
+
 	claims := auth.UserClaims{
 		UUID:    delegate.UUID,
 		Role:    auth.DelegateRole,
 		Company: delegate.CompanyUUID,
 	}
+
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err
 }

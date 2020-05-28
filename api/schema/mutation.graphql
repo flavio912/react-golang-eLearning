@@ -17,6 +17,7 @@ input UploadFileSuccess {
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
+  delegateLogin(input: DelegateLogin!): AuthToken
   createManager(input: CreateManagerInput!): Manager
   updateManager(input: UpdateManagerInput!): Manager
   managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp

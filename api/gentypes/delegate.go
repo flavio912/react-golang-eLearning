@@ -33,3 +33,8 @@ func (m *CreateDelegateInput) Validate() error {
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }
+
+type DelegateLoginInput struct {
+	TTC_ID   string
+	Password string
+}
