@@ -12,7 +12,7 @@ import (
 // Delegate - DB model for delegates
 type Delegate struct {
 	User
-	Email       string 
+	Email       string
 	TtcId       string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
 	CompanyUUID gentypes.UUID
 }

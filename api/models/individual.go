@@ -2,15 +2,15 @@ package models
 
 import (
 	"time"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
 type Individual struct {
 	User
-	Email       string  `gorm:"unique"`
-
+	Email string `gorm:"unique"`
 }
 
 func (individual *Individual) getHash() string {
@@ -59,8 +59,8 @@ func (individual *Individual) GenerateToken(password string) (string, error) {
 	database.GormDB.Save(individual)
 
 	claims := auth.UserClaims{
-		UUID:    individual.UUID,
-		Role:    auth.IndividualRole,
+		UUID: individual.UUID,
+		Role: auth.IndividualRole,
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err
