@@ -1,14 +1,15 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
-
 	"github.com/getsentry/sentry-go"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"github.com/gosimple/slug"
 )
 
 func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
@@ -128,15 +129,42 @@ func (g *Grant) GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilt
 	}, nil
 }
 
+func generateTTCID(tx *gorm.DB, g *Grant, companyName string, delegateFName string, delegateLName string) (string, error) {
+	
+	var (
+		baseID = fmt.Sprintf("%s-%s%s", slug.Make(companyName), slug.Make(delegateFName), slug.Make(delegateLName))
+	 newID = baseID
+	iter = 0)
+
+	for iter < 20 {
+		// Check if ttcID created already exists
+		var delegate models.Delegate
+		err := tx.Where("ttc_id = ?", newID).First(&delegate)
+		if err.Error != nil {
+			g.Logger.Log(sentry.LevelError, err.Error, "TTC_ID find error")
+			return "", &errors.ErrWhileHandling
+		}
+
+		// If record doesn't exist return TTCID
+		if err.RecordNotFound() {
+			return newID, nil
+		}
+
+		// If not found keep trying new ones
+		newID = fmt.Sprintf("%s-%d", baseID, iter)
+		iter = iter + 1
+	}
+
+	g.Logger.LogMessage(sentry.LevelError, "Iteration exceeded max")
+	return "", &errors.ErrWhileHandling
+}
+
 func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, error) {
 	if !g.IsAdmin && !g.IsManager {
 		return gentypes.Delegate{}, &errors.ErrUnauthorized
 	}
 
-	// check delegate does not exist
-	if g.delegateExists(delegateDetails.Email, delegateDetails.TTC_ID) {
-		return gentypes.Delegate{}, &errors.ErrUserExists
-	}
+	// TODO: Generate and populate TTC_ID
 
 	var companyUUID gentypes.UUID
 	// If you're an admin you need to provide the company UUID
@@ -155,17 +183,38 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		return gentypes.Delegate{}, &errors.ErrCompanyNotFound
 	}
 
+	// Get company
+	comp, err := g.GetCompanyByUUID(companyUUID)
+	if err != nil {
+		return gentypes.Delegate{}, err
+	}
+
+	// Create a transaction to ensure that a new TTC_ID isn't created before 
+	// we insert ours
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	ttcId, err := generateTTCID(tx, g, comp.Name, delegateDetails.FirstName, delegateDetails.LastName)
+	if err != nil {
+		return gentypes.Delegate{}, err
+	}
+
 	delegate := models.Delegate{
 		User: models.User{
 			FirstName: delegateDetails.FirstName,
 			LastName:  delegateDetails.LastName,
-			Email:     delegateDetails.Email,
 			JobTitle:  delegateDetails.JobTitle,
 			Telephone: delegateDetails.Telephone,
 			Password:  delegateDetails.Password,
 		},
+		Email:     delegateDetails.Email,
 		CompanyUUID: companyUUID,
-		TtcId:       delegateDetails.TTC_ID,
+		TtcId:       ttcId,
 	}
 	createErr := database.GormDB.Create(&delegate).Error
 	if createErr != nil {

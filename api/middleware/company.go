@@ -332,10 +332,10 @@ func CreateCompanyRequest(ctx context.Context, company gentypes.CreateCompanyInp
 					LastName:  manager.LastName,
 					JobTitle:  manager.JobTitle,
 					Telephone: manager.Telephone,
-					Email:     manager.Email,
 					Password:  manager.Password,
 					LastLogin: time.Now(),
 				},
+				Email:     manager.Email,
 			}},
 	}
 	query := database.GormDB.Create(&compModel)

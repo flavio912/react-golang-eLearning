@@ -226,11 +226,11 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 		User: models.User{
 			FirstName: managerDetails.FirstName,
 			LastName:  managerDetails.LastName,
-			Email:     managerDetails.Email,
 			JobTitle:  managerDetails.JobTitle,
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
+		Email:     managerDetails.Email,
 		CompanyUUID: inputUUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error

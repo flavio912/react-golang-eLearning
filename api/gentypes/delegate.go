@@ -23,7 +23,6 @@ func (d *DelegatesFilter) Validate() error {
 
 type CreateDelegateInput struct {
 	CreateUserInput
-	TTC_ID      string
 	CompanyUUID *UUID
 }
 

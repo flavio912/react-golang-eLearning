@@ -12,6 +12,7 @@ import (
 // Manager - DB model for managers
 type Manager struct {
 	User
+	Email     string `gorm:"unique"`
 	CompanyUUID gentypes.UUID
 	ProfileKey  string
 }

@@ -17,7 +17,6 @@ type User struct {
 	Telephone string
 	LastLogin time.Time
 	Password  string
-	Email     string `gorm:"unique"`
 }
 
 var (

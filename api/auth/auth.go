@@ -49,6 +49,8 @@ const (
 	ManagerRole Role = "manager"
 	// DelegateRole - The delegate role jwt mapping
 	DelegateRole Role = "delegate"
+	// IndividualRole - The individual role jwt mapping
+	IndividualRole Role = "individual"
 )
 
 // RoleToString gets the string representation of a role
@@ -60,6 +62,8 @@ func RoleToString(role Role) string {
 		return "manager"
 	case DelegateRole:
 		return "delegate"
+	case IndividualRole:
+		return "individual"
 	default:
 		return ""
 	}

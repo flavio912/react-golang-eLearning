@@ -14,7 +14,6 @@ type Delegate implements User {
 
 input CreateDelegateInput {
   companyUUID: UUID
-  TTC_ID: String!
   firstName: String!
   lastName: String!
   email: String!
