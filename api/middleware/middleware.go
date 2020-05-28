@@ -110,9 +110,6 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 
 func filterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
 	if filter != nil {
-		if filter.Email != nil && *filter.Email != "" {
-			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
-		}
 		if filter.Name != nil && *filter.Name != "" {
 			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
 		}

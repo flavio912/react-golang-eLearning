@@ -7,12 +7,14 @@ import (
 type Delegate struct {
 	User
 	TTC_ID          string
+	Email           string
 	CompanyUUID     UUID
 	ProfileImageURL *string
 }
 
 type DelegatesFilter struct {
 	UserFilter
+	Email  *string
 	TTC_ID *string
 }
 
@@ -23,6 +25,7 @@ func (d *DelegatesFilter) Validate() error {
 
 type CreateDelegateInput struct {
 	CreateUserInput
+	Email       string `valid:"email"`
 	CompanyUUID *UUID
 }
 

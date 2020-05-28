@@ -496,15 +496,16 @@ func TestDelegates(t *testing.T) {
 					"delegates":{
 						"edges":[
 							{"uuid":"00000000-0000-0000-0000-000000000004"},
+							{"uuid":"00000000-0000-0000-0000-000000000005"},
 							{"uuid":"00000000-0000-0000-0000-000000000003"},
 							{"uuid":"00000000-0000-0000-0000-000000000002"},
 							{"uuid":"00000000-0000-0000-0000-000000000001"}
 						],
 						"pageInfo":{
-							"given":4,
+							"given":5,
 							"limit":100,
 							"offset":0,
-							"total":4
+							"total":5
 						}
 					}
 				}
@@ -539,13 +540,14 @@ func TestDelegates(t *testing.T) {
 							{"firstName": "David"},
 							{"firstName": "Delegate"},
 							{"firstName": "James"},
-							{"firstName": "Person"}
+							{"firstName": "Person"},
+							{"firstName": "Smelly"}
 						],
 						"pageInfo": {
-							"given": 4,
+							"given": 5,
 							"limit": 100,
 							"offset": 0,
-							"total": 4
+							"total": 5
 						}
 					}
 				}
@@ -577,14 +579,15 @@ func TestDelegates(t *testing.T) {
 				{
 					"delegates": {
 						"edges": [
+							{"firstName": "Smelly","lastName": "Joe"},
 							{"firstName": "James","lastName": "Bay"},
 							{"firstName": "Person","lastName": "Pearson"}
 						],
 						"pageInfo": {
-							"given": 2,
+							"given": 3,
 							"limit": 100,
 							"offset": 0,
-							"total": 2
+							"total": 3
 						}
 					}
 				}
@@ -616,14 +619,14 @@ func TestDelegates(t *testing.T) {
 				{
 					"delegates":{
 						"edges":[
-							{"uuid":"00000000-0000-0000-0000-000000000003"},
-							{"uuid":"00000000-0000-0000-0000-000000000002"}
+							{"uuid":"00000000-0000-0000-0000-000000000005"},
+							{"uuid":"00000000-0000-0000-0000-000000000003"}
 						],
 						"pageInfo": {
 							"given": 2,
 							"limit": 2,
 							"offset": 1,
-							"total": 4
+							"total": 5
 						}
 					}
 				}

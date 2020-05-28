@@ -85,7 +85,7 @@ func TestGetDelegates(t *testing.T) {
 	t.Run("Should return all delegates for admins", func(t *testing.T) {
 		delegates, _, err := adminGrant.GetDelegates(nil, nil, nil)
 		assert.Nil(t, err)
-		assert.Len(t, delegates, 4)
+		assert.Len(t, delegates, 5)
 	})
 
 	t.Run("Should return only delegates of manager's company", func(t *testing.T) {
@@ -103,7 +103,7 @@ func TestGetDelegates(t *testing.T) {
 		delegates, pageInfo, err := adminGrant.GetDelegates(&page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, delegates, 2)
-		assert.Equal(t, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit}, pageInfo)
+		assert.Equal(t, gentypes.PageInfo{Total: 5, Given: 2, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should order", func(t *testing.T) {
@@ -112,7 +112,7 @@ func TestGetDelegates(t *testing.T) {
 
 		delegates, _, err := adminGrant.GetDelegates(nil, nil, &order)
 		assert.Nil(t, err)
-		assert.Len(t, delegates, 4)
+		assert.Len(t, delegates, 5)
 		assert.Equal(t, "David", delegates[0].FirstName)
 	})
 
@@ -120,12 +120,12 @@ func TestGetDelegates(t *testing.T) {
 		delegate := gentypes.Delegate{
 			User: gentypes.User{
 				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				Email:     "del@delegates.com",
 				FirstName: "Delegate",
 				LastName:  "Man",
 				Telephone: "7912935287",
 				JobTitle:  "Doer",
 			},
+			Email:       "del@delegates.com",
 			TTC_ID:      "delegate-test-1",
 			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
@@ -137,14 +137,14 @@ func TestGetDelegates(t *testing.T) {
 			name   string
 			filter gentypes.DelegatesFilter
 		}{
-			{"Email", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Email: &delegate.Email}}},
+			{"Email", gentypes.DelegatesFilter{Email: &delegate.Email}},
 			{"FirstName", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &delegate.FirstName}}},
 			{"LastName", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &delegate.LastName}}},
 			{"First and Last", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
 			{"JobTitle", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{JobTitle: &delegate.JobTitle}}},
 			{"uuid", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
 			{"ttc_id", gentypes.DelegatesFilter{TTC_ID: &delegate.TTC_ID}},
-			{"Full", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName, Email: &delegate.Email}}},
+			{"Full", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName}, Email: &delegate.Email}},
 		}
 
 		for _, test := range filterTests {
@@ -160,7 +160,7 @@ func TestGetDelegates(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Email: &email}}
+			filter := gentypes.DelegatesFilter{Email: &email}
 			delegates, _, err := adminGrant.GetDelegates(nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, delegates, 2)
@@ -205,15 +205,39 @@ func TestCreateDelegate(t *testing.T) {
 			"Should use manager's company",
 			managerGrant,
 			nil,
-			gentypes.Delegate{CompanyUUID: managerGrant.Claims.Company},
-			gentypes.CreateDelegateInput{},
+			gentypes.Delegate{
+				TTC_ID:      "testcompany-angrytim",
+				CompanyUUID: managerGrant.Claims.Company,
+				User: gentypes.User{
+					FirstName: "Angry",
+					LastName:  "Tim",
+				},
+			},
+			gentypes.CreateDelegateInput{
+				CreateUserInput: gentypes.CreateUserInput{
+					FirstName: "Angry",
+					LastName:  "Tim",
+				},
+			},
 		},
 		{
-			"TTCID should be unique",
+			"TTCID should be generated uniquely",
 			managerGrant,
-			&errors.ErrUserExists,
-			gentypes.Delegate{},
-			gentypes.CreateDelegateInput{TTC_ID: "delegate-test-1"},
+			nil,
+			gentypes.Delegate{
+				TTC_ID:      "testcompany-smellyjoe-1",
+				CompanyUUID: managerGrant.Claims.Company,
+				User: gentypes.User{
+					FirstName: "Smelly",
+					LastName:  "Joe",
+				},
+			},
+			gentypes.CreateDelegateInput{
+				CreateUserInput: gentypes.CreateUserInput{
+					FirstName: "Smelly",
+					LastName:  "Joe",
+				},
+			},
 		},
 	}
 	for _, test := range tests {

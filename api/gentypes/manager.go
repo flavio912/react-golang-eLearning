@@ -7,12 +7,14 @@ import (
 // Manager - CompanyManager graphQL type
 type Manager struct {
 	User
+	Email           string
 	ProfileImageURL *string
-	CompanyUUID       UUID
+	CompanyUUID     UUID
 }
 
 type ManagersFilter struct {
 	UserFilter
+	Email *string
 }
 
 func (m *ManagersFilter) Validate() error {

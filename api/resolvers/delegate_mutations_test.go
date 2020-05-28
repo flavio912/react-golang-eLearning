@@ -20,7 +20,6 @@ func TestCreateDelegate(t *testing.T) {
 				mutation {
 					createDelegate(input: {
 						companyUUID: "00000000-0000-0000-0000-000000000001"
-						TTC_ID: "ttc-test-1"
 						email:     "ttc@test.com"
 						firstName: "Harry"
 						lastName:  "Styles"
@@ -40,7 +39,7 @@ func TestCreateDelegate(t *testing.T) {
 			ExpectedResult: `
 				{
 					"createDelegate":{
-						"TTC_ID":"ttc-test-1",
+						"TTC_ID":"testcompany-harrystyles",
 						"email":"ttc@test.com",
 						"firstName":"Harry",
 						"jobTitle":"Dev",
@@ -52,7 +51,7 @@ func TestCreateDelegate(t *testing.T) {
 		}})
 
 		// check you can auth with the new creds
-		_, err := middleware.GetDelegateAccessToken("ttc-test-1", "realpassword")
+		_, err := middleware.GetDelegateAccessToken("testcompany-harrystyles", "realpassword")
 		assert.Nil(t, err)
 	})
 }

@@ -25,13 +25,13 @@ func TestSortManagers(t *testing.T) {
 		managers = append(managers, gentypes.Manager{
 			User: gentypes.User{
 				UUID:      gentypes.UUID{UUID: ident},
-				Email:     "test@test.com",
 				FirstName: "Test",
 				LastName:  "Person",
 				Telephone: "074153232323",
 				JobTitle:  "Dev",
 				LastLogin: "10/11/2020",
 			},
+			Email: "test@test.com",
 		})
 	}
 

@@ -19,12 +19,12 @@ func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 		User: gentypes.User{
 			CreatedAt: &createdAt,
 			UUID:      delegate.UUID,
-			Email:     delegate.Email,
 			FirstName: delegate.FirstName,
 			LastName:  delegate.LastName,
 			JobTitle:  delegate.JobTitle,
 			Telephone: delegate.Telephone,
 		},
+		Email:       delegate.Email,
 		CompanyUUID: delegate.CompanyUUID,
 		TTC_ID:      delegate.TtcId,
 	}
@@ -77,8 +77,13 @@ func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error)
 func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
 	if filter != nil {
 		query = filterUser(query, &filter.UserFilter)
+
 		if filter.TTC_ID != nil && *filter.TTC_ID != "" {
 			query = query.Where("ttc_id ILIKE ?", "%%"+*filter.TTC_ID+"%%")
+		}
+
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
 		}
 	}
 
@@ -135,14 +140,15 @@ func generateTTCID(tx *gorm.DB, g *Grant, companyName string, delegateFName stri
 	var (
 		baseID = fmt.Sprintf("%s-%s%s", slug.Make(companyName), slug.Make(delegateFName), slug.Make(delegateLName))
 		newID  = baseID
-		iter   = 0
+		iter   = 1 // Starts at 1 because company-fnamelname-0 looks funny
 	)
 
+	// TODO: Could use a LIKE query to speed this up
 	for iter < 20 {
 		// Check if ttcID created already exists
 		var delegate models.Delegate
 		err := tx.Where("ttc_id = ?", newID).First(&delegate)
-		if err.Error != nil {
+		if !err.RecordNotFound() && err.Error != nil {
 			g.Logger.Log(sentry.LevelError, err.Error, "TTC_ID find error")
 			return "", &errors.ErrWhileHandling
 		}
@@ -218,9 +224,14 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		CompanyUUID: companyUUID,
 		TtcId:       ttcId,
 	}
-	createErr := database.GormDB.Create(&delegate).Error
+	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
 		g.Logger.Log(sentry.LevelError, createErr, "Unable to create delegate")
+		return gentypes.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Error commiting create delegate transaction")
 		return gentypes.Delegate{}, &errors.ErrWhileHandling
 	}
 

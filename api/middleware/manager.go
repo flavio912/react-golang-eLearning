@@ -23,12 +23,12 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 			User: gentypes.User{
 				CreatedAt: &createdAt,
 				UUID:      manager.UUID,
-				Email:     manager.Email,
 				FirstName: manager.FirstName,
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 				Telephone: manager.Telephone,
 			},
+			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
@@ -38,11 +38,11 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	if g.IsCompanyDelegate(manager.CompanyUUID) {
 		return gentypes.Manager{
 			User: gentypes.User{
-				Email:     manager.Email,
 				FirstName: manager.FirstName,
 				LastName:  manager.LastName,
 				JobTitle:  manager.JobTitle,
 			},
+			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
@@ -112,6 +112,10 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	if filter != nil {
 		query = filterUser(query, &filter.UserFilter)
+
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
+		}
 	}
 
 	return query
@@ -230,7 +234,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 			Telephone: managerDetails.Telephone,
 			Password:  managerDetails.Password,
 		},
-		Email:     managerDetails.Email,
+		Email:       managerDetails.Email,
 		CompanyUUID: inputUUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error
