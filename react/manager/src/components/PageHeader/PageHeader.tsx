@@ -3,7 +3,7 @@ import PageTitle from "components/PageTitle";
 import Button from "sharedComponents/core/Button";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
-import DelegateSlideIn from "components/DelegateSlideIn";
+import DelegateSlideIn from "components/Delegate/DelegateSlideIn";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
