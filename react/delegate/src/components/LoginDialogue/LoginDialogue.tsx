@@ -45,7 +45,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: 3
   },
   links: {
-    marginTop: 11,
+    marginTop: 8,
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -57,6 +57,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     lineHeight: '25px',
     color: theme.colors.textBlue,
     textDecoration: 'none'
+  },
+  helpIcon: {
+    color: theme.colors.textBlue,
+    fontWeight: 'bold',
+    fontSize: theme.fontSizes.xSmallHeading,
+    lineHeight: `25px`,
+    width: 32,
+    height: 32,
+    border: `1px solid rgba(16,129,170,0.17)`,
+    marginRight: 14.5,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 50
   }
 }));
 
@@ -110,7 +124,7 @@ function LoginDialogue({ onSubmit }: Props) {
       </Card>
       <div className={classes.links}>
         <a href="/help" className={classes.linkText}>
-          Need Help?
+          <span className={classes.helpIcon}>?</span>Need Help?
         </a>
         <a href="/forgot-password" className={classes.linkText}>
           Forgot password
