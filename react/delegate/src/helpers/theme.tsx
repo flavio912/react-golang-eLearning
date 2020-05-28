@@ -46,6 +46,7 @@ export type Theme = {
     large: number;
     default: number;
     small: number;
+    xSmall: number;
     tiny: number;
   };
 };
@@ -91,6 +92,7 @@ const theme: Theme = {
     large: 16,
     default: 14,
     small: 13,
+    xSmall: 12,
     tiny: 11
   }
 };
