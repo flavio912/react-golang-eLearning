@@ -31,7 +31,7 @@ func (g *Grant) CreateLesson(lesson gentypes.CreateLessonInput) (gentypes.Lesson
 	}
 
 	// Get tags if they exist
-	tags, err := g.CheckTagsExist(*lesson.Tags)
+	tags, _ := g.CheckTagsExist(*lesson.Tags)
 	// if err != nil {
 	// 	g.Logger.Log(sentry.LevelError, err, "Unable to create lesson due to lack of tags existence")
 	// 	return gentypes.Lesson{}, &errors.ErrTagsNotFound

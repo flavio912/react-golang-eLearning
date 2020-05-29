@@ -1,12 +1,12 @@
 type Lesson {
   uuid: UUID!
   title: String!
-  tags: [Tag!]
+  tags: [Tag!]!
   text: String!
 }
 
 input CreateLessonInput {
   title: String!
-  tags: [UUID]
+  tags: [UUID!]
   text: String!
 }
