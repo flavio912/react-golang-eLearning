@@ -81,6 +81,11 @@ type trueClaims struct {
 	Claims UserClaims `json:"claims"`
 }
 
+type trueFinaliseDelegateClaims struct {
+	jwt.StandardClaims
+	Claims FinaliseDelegateClaims `json:"claims"`
+}
+
 // ValidateToken - Checks the signature on a token and returns claims
 func ValidateToken(token string) (UserClaims, error) {
 
@@ -119,19 +124,34 @@ func GenerateToken(claims UserClaims, expiresInHours float64) (string, error) {
 	return tokenString, nil
 }
 
-type NewDelegateClaims struct {
-	UUID: gentypes.UUID
+type FinaliseDelegateClaims struct {
+	UUID gentypes.UUID
+}
+
+func ValidateFinaliseDelegateToken(token string) (FinaliseDelegateClaims, error) {
+	claims := &trueFinaliseDelegateClaims{}
+
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(helpers.Config.Jwt.DelegateFinaliseSecret), nil
+	})
+
+	if err != nil {
+		return FinaliseDelegateClaims{}, err
+	}
+
+	if !tkn.Valid {
+		return FinaliseDelegateClaims{}, errors.New("Token invalid")
+	}
+
+	return claims.Claims, nil
 }
 
 // Generates a token that allows a delegate to set their password, finalising their account
-func GenerateDelegateFinaliseToken(claims NewDelegateClaims) (string, error) {
-	finalClaims := struct {
-		jwt.StandardClaims
-		Claims NewDelegateClaims `json:"claims"`
-	} {
+func GenerateFinaliseDelegateToken(claims FinaliseDelegateClaims) (string, error) {
+	finalClaims := trueFinaliseDelegateClaims{
 		Claims: claims,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(168) * time.Hour).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(168) * time.Hour).Unix(), // Expires in one week
 			IssuedAt:  time.Now().Unix(),
 		},
 	}

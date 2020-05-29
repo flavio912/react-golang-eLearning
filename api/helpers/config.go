@@ -22,9 +22,10 @@ type yamlConfig struct {
 		Password  string `yaml:"password"`
 	} `yaml:"devAdmin"`
 	Jwt struct {
-		Secret               string  `yaml:"secret"`
-		UploadsSecret        string  `yaml:"uploadsSecret"`
-		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
+		Secret                 string  `yaml:"secret"`
+		UploadsSecret          string  `yaml:"uploadsSecret"`
+		DelegateFinaliseSecret string  `yaml:"delegateFinaliseSecret"`
+		AdminExpirationHours   float64 `yaml:"adminExpirationHours"`
 	} `yaml:"jwt"`
 	AWS struct {
 		UploadsBucket  string `yaml:"uploadsBucket"`
