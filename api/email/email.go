@@ -27,6 +27,7 @@ func Initialize() {
 	Session = sess
 }
 
+// Sends a html + text email to one or more recipients
 func SendMail(recipients []*string, subject string, htmlBody string, textBody string) error {
 	var (
 		charSet = "UTF-8"

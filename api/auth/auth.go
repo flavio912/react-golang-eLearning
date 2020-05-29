@@ -119,6 +119,31 @@ func GenerateToken(claims UserClaims, expiresInHours float64) (string, error) {
 	return tokenString, nil
 }
 
+type NewDelegateClaims struct {
+	UUID: gentypes.UUID
+}
+
+// Generates a token that allows a delegate to set their password, finalising their account
+func GenerateDelegateFinaliseToken(claims NewDelegateClaims) (string, error) {
+	finalClaims := struct {
+		jwt.StandardClaims
+		Claims NewDelegateClaims `json:"claims"`
+	} {
+		Claims: claims,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Duration(168) * time.Hour).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, finalClaims)
+	tokenString, errToken := token.SignedString([]byte(helpers.Config.Jwt.DelegateFinaliseSecret))
+	if errToken != nil {
+		return "", errors.New("jwt error: " + errToken.Error())
+	}
+
+	return tokenString, nil
+}
+
 func GenerateRandomBytes(n int) ([]byte, error) {
 	b := make([]byte, n)
 	_, err := rand.Read(b)
