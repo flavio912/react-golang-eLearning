@@ -8,9 +8,12 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-// lessonToGenType converts a Lesson model to gentype.
-func (g *Grant) lessonToGenType(lesson models.Lesson) gentypes.Lesson {
-	tags := tagsToGentypes(lesson.Tags)
+// lessonToGentype converts a Lesson model to gentype.
+func (g *Grant) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
+	var tags []gentypes.Tag
+	if lesson.Tags != nil {
+		tags = tagsToGentypes(lesson.Tags)
+	}
 	return gentypes.Lesson{
 		UUID:  lesson.UUID,
 		Title: lesson.Title,
@@ -52,5 +55,5 @@ func (g *Grant) CreateLesson(lesson gentypes.CreateLessonInput) (gentypes.Lesson
 		return gentypes.Lesson{}, &errors.ErrWhileHandling
 	}
 
-	return g.lessonToGenType(lessonModel), nil
+	return g.lessonToGentype(lessonModel), nil
 }

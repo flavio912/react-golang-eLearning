@@ -8,12 +8,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
-var newLesonInput = gentypes.CreateLessonInput{
-	Title: "Test lesson",
-	Text:  "{}",
-	Tags:  nil,
-}
-
 func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
@@ -22,26 +16,51 @@ func TestCreateLesson(t *testing.T) {
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
-	//TODO
-	// t.Run("Must validate input", {
+	t.Run("Must validate input", func(t *testing.T) {
+		invalidInput := gentypes.CreateLessonInput{
+			Title: "",
+			Text:  "",
+			Tags:  nil,
+		}
 
-	// })
+		_, err := adminGrant.CreateLesson(invalidInput)
+		val_err := invalidInput.Validate()
 
-	//TODO
-	// t.Run("Tags must exist", {
+		assert.Equal(t, err, val_err)
+	})
 
-	// })
+	var newLessonInput = gentypes.CreateLessonInput{
+		Title: "Test lesson",
+		Text:  "{}",
+		Tags:  nil,
+	}
 
-	t.Run("Check lesson is created", func(t *testing.T) {
-		lesson, err := adminGrant.CreateLesson(newLesonInput)
+	t.Run("Check non-tagged lesson is created with no tags", func(t *testing.T) {
+		lesson, err := adminGrant.CreateLesson(newLessonInput)
 
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Lesson{
 			UUID:  lesson.UUID,
-			Title: newLesonInput.Title,
-			Text:  newLesonInput.Text,
-			Tags:  lesson.Tags,
+			Title: newLessonInput.Title,
+			Text:  newLessonInput.Text,
+			Tags:  nil,
 		}, lesson)
 
+	})
+	tag, _ := adminGrant.CreateTag(gentypes.CreateTagInput{
+		Name:  "Go",
+		Color: "#fff",
+	})
+	newLessonInput.Tags = &[]gentypes.UUID{tag.UUID}
+
+	t.Run("Check tagged lesson is created with tags", func(t *testing.T) {
+		lesson, err := adminGrant.CreateLesson(newLessonInput)
+
+		assert.Nil(t, err)
+		assert.Equal(t, newLessonInput.Title, lesson.Title)
+		assert.Equal(t, newLessonInput.Text, lesson.Text)
+
+		assert.NotNil(t, lesson.Tags)
+		assert.Equal(t, tag, lesson.Tags[0])
 	})
 }
