@@ -20,7 +20,10 @@ type ModuleStructure struct {
 }
 
 type Lesson struct {
-	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	UUID  gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Title string
+	Tags  []Tag
+	Text  string `sql:"json"`
 }
 
 type Test struct {

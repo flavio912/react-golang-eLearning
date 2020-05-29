@@ -1,0 +1,12 @@
+type Lesson {
+  uuid: UUID!
+  title: String!
+  tags: [Tag!]
+  text: String!
+}
+
+input CreateLessonInput {
+  title: String!
+  tags: [UUID]
+  text: String!
+}

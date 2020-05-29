@@ -38,4 +38,5 @@ type Mutation {
   saveClassroomCourse(input: SaveClassroomCourseInput!): ClassroomCourse
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
+  createLesson(input: CreateLessonInput!): Lesson
 }
