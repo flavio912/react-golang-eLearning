@@ -15,6 +15,7 @@ jwt:
   adminExpirationHours: 3 # How many hours until the admin auth token expires
 aws:
   uploadsBucket: ttc-platform-uploads
+  sesSendAddress: ttc-noreply@devserver.london
 imgix:
   baseUrl: https://ttc-dev.imgix.net/ # Trailing slash is important as its joined with s3 keys (without a starting slash)
 sentry:

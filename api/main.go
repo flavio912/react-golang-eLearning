@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -93,6 +95,7 @@ func main() {
 	setupDatabase()
 
 	uploads.Initialize()
+	email.Initialize()
 
 	loaders := loader.Init()
 

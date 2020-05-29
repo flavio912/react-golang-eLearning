@@ -27,7 +27,8 @@ type yamlConfig struct {
 		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
 	} `yaml:"jwt"`
 	AWS struct {
-		UploadsBucket string `yaml:"uploadsBucket"`
+		UploadsBucket  string `yaml:"uploadsBucket"`
+		SESSendAddress string `yaml:"sesSendAddress"`
 	} `yaml:"aws"`
 	Imgix struct {
 		BaseURL string `yaml:"baseUrl"`
