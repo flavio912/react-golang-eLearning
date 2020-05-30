@@ -315,6 +315,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		err = email.SendFinaliseAccountEmail(token, delegate.FirstName, *delegate.Email)
 		if err != nil {
 			tx.Rollback()
+			g.Logger.Log(sentry.LevelWarning, err, "Unable to send finalise account email")
 			return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
 		}
 

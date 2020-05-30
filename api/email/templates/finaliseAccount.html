@@ -19,11 +19,11 @@
               style="border-bottom: 1px solid #f0f3f7; padding-bottom: 20px;"
               height="100px"
             >
-              <td>
+              <td align="center">
                 <!-- TODO: Change the link below to be more static (an s3 bucket or something) -->
                 <img
                   src="http://ttc-manager.devserver.london/static/media/ttc-logo-icon.555d61c4.svg"
-                  style="height: 45; width: 100%;"
+                  style="height: 45px;"
                   alt="ttc logo"
                 />
               </td>
@@ -37,7 +37,9 @@
                   Hi {{.FName}}, </br> </br>
                   
                   Welcome to TTC – we’re thrilled to have you on board. 
-                  To finalise your account please follow the link below and set a password
+                  To finalise your account please follow the link below and set a password. </br></br>
+
+                  <a href="https://ttc-delegate.devserver.london/finalise/{{.Token}}">Finalise my account</a>
                 </p>
               </td>
             </tr>
