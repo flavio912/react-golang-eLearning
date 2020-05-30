@@ -1,16 +1,5 @@
 package gentypes
 
-// User - User graphQL interface
-type User struct {
-	CreatedAt *string
-	UUID      UUID
-	FirstName string
-	LastName  string
-	Telephone string
-	JobTitle  string
-	LastLogin string
-}
-
 type UserFilter struct {
 	UUID      *string `valid:"uuidv4"`
 	Name      *string

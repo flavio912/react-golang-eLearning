@@ -50,6 +50,7 @@ input CreateDelegateInput {
   email: String!
   jobTitle: String!
   telephone: String!
+  generatePassword: Bool
 }
 
 input DelegateFilter {

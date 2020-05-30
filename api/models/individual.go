@@ -3,14 +3,21 @@ package models
 import (
 	"time"
 
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
 type Individual struct {
-	User
-	Email string `gorm:"unique"`
+	Base
+	FirstName string
+	LastName  string
+	JobTitle  string
+	Telephone string
+	LastLogin time.Time
+	Password  string
+	Email     string `gorm:"unique"`
 }
 
 func (individual *Individual) getHash() string {
@@ -18,7 +25,7 @@ func (individual *Individual) getHash() string {
 }
 
 // FindUser - Find the user by their email address
-func (*Individual) FindUser(email string) (IUser, error) {
+func (*Individual) FindUser(email string) (*Individual, error) {
 	var individual Individual
 	if err := database.GormDB.Where("email = ?", email).First(&individual).Error; err != nil {
 		return &individual, err
@@ -31,11 +38,12 @@ func (*Individual) ValidatePassword(email string, password string) error {
 
 	// Find the user
 	m := &Individual{}
-	manager, err := m.FindUser(email)
+	individual, err := m.FindUser(email)
 	if err != nil {
 		return err
 	}
-	if err := auth.ValidatePassword(manager.getHash(), password); err == nil {
+
+	if err := auth.ValidatePassword(individual.getHash(), password); err == nil {
 		// Success
 		return nil
 	}
@@ -51,7 +59,7 @@ circumstances be given without the password - @temmerson
 */
 func (individual *Individual) GenerateToken(password string) (string, error) {
 	if err := individual.ValidatePassword(individual.Email, password); err != nil {
-		return "", ErrPasswordInvalid
+		return "", &errors.ErrUnauthorized
 	}
 
 	// Update last login time
@@ -64,4 +72,12 @@ func (individual *Individual) GenerateToken(password string) (string, error) {
 	}
 	token, err := auth.GenerateToken(claims, 24)
 	return token, err
+}
+
+// BeforeCreate - Hash the given password
+func (individual *Individual) BeforeCreate(scope *gorm.Scope) (err error) {
+	if pw, err := auth.HashPassword(individual.Password); err == nil {
+		scope.SetColumn("Password", pw)
+	}
+	return
 }

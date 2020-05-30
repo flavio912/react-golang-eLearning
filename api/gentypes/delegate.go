@@ -2,12 +2,19 @@ package gentypes
 
 import (
 	"github.com/asaskevich/govalidator"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
 type Delegate struct {
-	User
+	CreatedAt       *string
+	UUID            UUID
+	FirstName       string
+	LastName        string
+	Telephone       *string
+	JobTitle        string
+	LastLogin       string
 	TTC_ID          string
-	Email           string
+	Email           *string
 	CompanyUUID     UUID
 	ProfileImageURL *string
 }
@@ -24,12 +31,28 @@ func (d *DelegatesFilter) Validate() error {
 }
 
 type CreateDelegateInput struct {
-	CreateUserInput
-	Email       string `valid:"email"`
-	CompanyUUID *UUID
+	FirstName        string  `valid:"required,alpha"`
+	LastName         string  `valid:"required,alpha"`
+	JobTitle         string  `valid:"required"`
+	Telephone        *string `valid:"numeric"`
+	Email            *string `valid:"email"`
+	CompanyUUID      *UUID
+	GeneratePassword *bool
 }
 
 func (m *CreateDelegateInput) Validate() error {
+
+	// If no email, user must specify 'generatePassword' = true
+	if m.Email == nil {
+		if m.GeneratePassword != nil {
+			if !*m.GeneratePassword {
+				return &errors.ErrNoEmailProvided
+			}
+		} else {
+			return &errors.ErrNoEmailProvided
+		}
+	}
+
 	_, err := govalidator.ValidateStruct(m)
 	return err
 }

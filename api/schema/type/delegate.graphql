@@ -1,11 +1,11 @@
-type Delegate implements User {
+type Delegate  {
   uuid: UUID!
   createdAt: String
   TTC_ID: String!
-  email: String!
+  email: String
   firstName: String!
   lastName: String!
-  telephone: String!
+  telephone: String
   lastLogin: String!
   jobTitle: String!
   company: Company!
@@ -16,10 +16,15 @@ input CreateDelegateInput {
   companyUUID: UUID
   firstName: String!
   lastName: String!
-  email: String!
+  email: String
   jobTitle: String!
-  telephone: String!
-  password: String!
+  telephone: String
+  generatePassword: Boolean
+}
+
+type CreateDelegateResponse {
+  delegate: Delegate!,
+  generatedPassword: String
 }
 
 type DelegatePage implements PaginatedQuery {

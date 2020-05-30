@@ -30,7 +30,7 @@ func updateOrCreateDevAdmin() {
 	adminUser := database.GormDB.Where("email = ?", helpers.Config.DevAdmin.Email).First(&models.Admin{})
 	newAdmin := &models.Admin{
 		Email:     helpers.Config.DevAdmin.Email,
-		Password:  helpers.Config.DevAdmin.Password,
+		Password:  &helpers.Config.DevAdmin.Password,
 		FirstName: helpers.Config.DevAdmin.FirstName,
 		LastName:  helpers.Config.DevAdmin.LastName,
 	}

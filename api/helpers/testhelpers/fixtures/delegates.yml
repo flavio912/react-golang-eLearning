@@ -25,7 +25,7 @@
   updated_at: 2020-03-08 13:53:37.338775+00
   ttc_id: ttc-1
   email: del@ttc.com
-  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  password: null # unfinalised user
   first_name: James
   last_name: Bay
   telephone: 07912968287

@@ -138,7 +138,7 @@ func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, er
 
 	admin := models.Admin{
 		Email:     input.Email,
-		Password:  input.Password,
+		Password:  &input.Password,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 	}

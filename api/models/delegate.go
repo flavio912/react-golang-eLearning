@@ -1,8 +1,11 @@
 package models
 
 import (
-	"errors"
+	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -11,8 +14,14 @@ import (
 
 // Delegate - DB model for delegates
 type Delegate struct {
-	User
-	Email       string
+	Base
+	FirstName   string
+	LastName    string
+	JobTitle    string
+	Telephone   *string
+	LastLogin   time.Time
+	Password    *string
+	Email       *string
 	TtcId       string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
 	CompanyUUID gentypes.UUID
 }
@@ -25,7 +34,7 @@ circumstances be given without the password - @temmerson
 */
 func (delegate *Delegate) GenerateToken(password string) (string, error) {
 	if err := delegate.ValidatePassword(delegate.TtcId, password); err != nil {
-		return "", ErrPasswordInvalid
+		return "", &errors.ErrUnauthorized
 	}
 
 	claims := auth.UserClaims{
@@ -38,12 +47,12 @@ func (delegate *Delegate) GenerateToken(password string) (string, error) {
 	return token, err
 }
 
-func (delegate *Delegate) getHash() string {
+func (delegate *Delegate) getHash() *string {
 	return delegate.Password
 }
 
 func (*Delegate) ValidatePassword(ttcId string, password string) error {
-	failedError := errors.New("Incorrect TTC id or password")
+	failedError := &errors.ErrUnauthorized
 
 	// Find the user
 	d := &Delegate{}
@@ -51,7 +60,12 @@ func (*Delegate) ValidatePassword(ttcId string, password string) error {
 	if err != nil {
 		return err
 	}
-	if err := auth.ValidatePassword(delegate.getHash(), password); err == nil {
+
+	if delegate.getHash() == nil {
+		return failedError
+	}
+
+	if err := auth.ValidatePassword(*delegate.getHash(), password); err == nil {
 		// Success
 		return nil
 	}
@@ -60,10 +74,20 @@ func (*Delegate) ValidatePassword(ttcId string, password string) error {
 }
 
 // FindUser - Find the user by their ttc id
-func (*Delegate) FindUser(ttcId string) (IUser, error) {
+func (*Delegate) FindUser(ttcId string) (*Delegate, error) {
 	var delegate Delegate
 	if err := database.GormDB.Where("ttc_id = ?", ttcId).First(&delegate).Error; err != nil {
 		return &delegate, err
 	}
 	return &delegate, nil
+}
+
+// BeforeCreate - Hash the given password
+func (delegate *Delegate) BeforeCreate(scope *gorm.Scope) (err error) {
+	if delegate.Password != nil {
+		if pw, err := auth.HashPassword(*delegate.Password); err == nil {
+			scope.SetColumn("Password", pw)
+		}
+	}
+	return
 }

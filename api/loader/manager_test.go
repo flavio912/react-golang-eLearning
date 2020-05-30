@@ -23,15 +23,13 @@ func TestSortManagers(t *testing.T) {
 		ident := uuid.New()
 		keys = append(keys, dataloader.StringKey(ident.String()))
 		managers = append(managers, gentypes.Manager{
-			User: gentypes.User{
-				UUID:      gentypes.UUID{UUID: ident},
-				FirstName: "Test",
-				LastName:  "Person",
-				Telephone: "074153232323",
-				JobTitle:  "Dev",
-				LastLogin: "10/11/2020",
-			},
-			Email: "test@test.com",
+			UUID:      gentypes.UUID{UUID: ident},
+			FirstName: "Test",
+			LastName:  "Person",
+			Telephone: "074153232323",
+			JobTitle:  "Dev",
+			LastLogin: "10/11/2020",
+			Email:     "test@test.com",
 		})
 	}
 

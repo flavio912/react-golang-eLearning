@@ -174,6 +174,18 @@ func GenerateRandomBytes(n int) ([]byte, error) {
 	return b, nil
 }
 
+func GenerateSecurePassword(s int) (string, error) {
+	const letters = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz$%&*'"
+	bytes, err := GenerateRandomBytes(s)
+	if err != nil {
+		return "", err
+	}
+	for i, b := range bytes {
+		bytes[i] = letters[b%byte(len(letters))]
+	}
+	return string(bytes), nil
+}
+
 func GenerateRandomString(s int) (string, error) {
 	b, err := GenerateRandomBytes(s)
 	return base64.URLEncoding.EncodeToString(b), err

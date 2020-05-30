@@ -26,7 +26,7 @@ type Mutation {
   createAdmin(input: CreateAdminInput!): Admin
   updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
-  createDelegate(input: CreateDelegateInput!): Delegate
+  createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
   createCompany(input: CreateCompanyInput!): Company
   updateCompany(input: UpdateCompanyInput!): Company
   createCompanyRequest(

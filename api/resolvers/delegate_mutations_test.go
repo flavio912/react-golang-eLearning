@@ -93,8 +93,28 @@ func TestDelegateLogin(t *testing.T) {
 					},
 				},
 			},
+			{
+				Name:    "no password on unfinalised delegate",
+				Context: defaultContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						delegateLogin(input:{TTC_ID: "ttc-1", password: ""}) {
+							token
+						}
+					}
+				`,
+				ExpectedResult: `{"delegateLogin":null}`,
+				ExpectedErrors: []gqltest.TestQueryError{
+					{
+						Path:          []interface{}{"delegateLogin"},
+						ResolverError: &errors.ErrAuthFailed,
+					},
+				},
+			},
 		})
 	})
+
 }
 
 func TestCreateDelegate(t *testing.T) {
@@ -102,7 +122,7 @@ func TestCreateDelegate(t *testing.T) {
 
 	t.Run("should successfully create a delegate", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{{
-			Name:    "create delegate",
+			Name:    "create delegate, don't generate password",
 			Context: adminContext(),
 			Schema:  schema,
 			Query: `
@@ -114,33 +134,32 @@ func TestCreateDelegate(t *testing.T) {
 						lastName:  "Styles"
 						telephone: "07894561230"
 						jobTitle:  "Dev"
-						password: "realpassword"
 					}) {
-						TTC_ID
-						firstName
-						lastName
-						email
-						jobTitle
-						telephone
+						delegate {
+							TTC_ID
+							firstName
+							lastName
+							email
+							jobTitle
+							telephone
+						}
 					}
 				}
 			`,
 			ExpectedResult: `
 				{
 					"createDelegate":{
-						"TTC_ID":"testcompany-harrystyles",
-						"email":"ttc@test.com",
-						"firstName":"Harry",
-						"jobTitle":"Dev",
-						"lastName":"Styles",
-						"telephone":"07894561230"
+						"delegate":{
+							"TTC_ID":"testcompany-harrystyles",
+							"email":"ttc@test.com",
+							"firstName":"Harry",
+							"jobTitle":"Dev",
+							"lastName":"Styles",
+							"telephone":"07894561230"
+						}
 					}
 				}
 			`,
 		}})
-
-		// check you can auth with the new creds
-		_, err := middleware.GetDelegateAccessToken("testcompany-harrystyles", "realpassword")
-		assert.Nil(t, err)
 	})
 }

@@ -327,14 +327,12 @@ func CreateCompanyRequest(ctx context.Context, company gentypes.CreateCompanyInp
 		Approved: false,
 		Managers: []models.Manager{
 			models.Manager{
-				User: models.User{
-					FirstName: manager.FirstName,
-					LastName:  manager.LastName,
-					JobTitle:  manager.JobTitle,
-					Telephone: manager.Telephone,
-					Password:  manager.Password,
-					LastLogin: time.Now(),
-				},
+				FirstName: manager.FirstName,
+				LastName:  manager.LastName,
+				JobTitle:  manager.JobTitle,
+				Telephone: manager.Telephone,
+				Password:  manager.Password,
+				LastLogin: time.Now(),
 				Email:     manager.Email,
 			}},
 	}

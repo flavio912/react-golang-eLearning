@@ -17,16 +17,16 @@ func (m *MutationResolver) DelegateLogin(args struct{ Input gentypes.DelegateLog
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
-func (m *MutationResolver) CreateDelegate(ctx context.Context, args struct{ Input gentypes.CreateDelegateInput }) (*DelegateResolver, error) {
+func (m *MutationResolver) CreateDelegate(ctx context.Context, args struct{ Input gentypes.CreateDelegateInput }) (*CreateDelegateResponse, error) {
 	if err := args.Input.Validate(); err != nil {
 		return nil, err
 	}
 
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &DelegateResolver{}, &errors.ErrUnauthorized
+		return &CreateDelegateResponse{}, &errors.ErrUnauthorized
 	}
 
-	delegate, err := grant.CreateDelegate(args.Input)
-	return &DelegateResolver{delegate}, err
+	delegate, password, err := grant.CreateDelegate(args.Input)
+	return &CreateDelegateResponse{delegate: delegate, generatedPassword: password}, err
 }

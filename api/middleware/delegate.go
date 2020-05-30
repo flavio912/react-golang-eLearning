@@ -7,6 +7,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -16,14 +17,12 @@ import (
 func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 	createdAt := delegate.CreatedAt.Format(time.RFC3339)
 	return gentypes.Delegate{
-		User: gentypes.User{
-			CreatedAt: &createdAt,
-			UUID:      delegate.UUID,
-			FirstName: delegate.FirstName,
-			LastName:  delegate.LastName,
-			JobTitle:  delegate.JobTitle,
-			Telephone: delegate.Telephone,
-		},
+		CreatedAt:   &createdAt,
+		UUID:        delegate.UUID,
+		FirstName:   delegate.FirstName,
+		LastName:    delegate.LastName,
+		JobTitle:    delegate.JobTitle,
+		Telephone:   delegate.Telephone,
 		Email:       delegate.Email,
 		CompanyUUID: delegate.CompanyUUID,
 		TTC_ID:      delegate.TtcId,
@@ -167,12 +166,14 @@ func generateTTCID(tx *gorm.DB, g *Grant, companyName string, delegateFName stri
 	return "", &errors.ErrWhileHandling
 }
 
-func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, error) {
+func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, *string, error) {
 	if !g.IsAdmin && !g.IsManager {
-		return gentypes.Delegate{}, &errors.ErrUnauthorized
+		return gentypes.Delegate{}, nil, &errors.ErrUnauthorized
 	}
 
-	// TODO: Generate and populate TTC_ID
+	if err := delegateDetails.Validate(); err != nil {
+		return gentypes.Delegate{}, nil, err
+	}
 
 	var companyUUID gentypes.UUID
 	// If you're an admin you need to provide the company UUID
@@ -180,7 +181,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		if delegateDetails.CompanyUUID != nil {
 			companyUUID = *delegateDetails.CompanyUUID
 		} else {
-			return gentypes.Delegate{}, &errors.ErrCompanyNotFound
+			return gentypes.Delegate{}, nil, &errors.ErrCompanyNotFound
 		}
 	} else {
 		companyUUID = g.Claims.Company
@@ -188,18 +189,33 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 
 	// Check if company exists
 	if !g.CompanyExists(companyUUID) {
-		return gentypes.Delegate{}, &errors.ErrCompanyNotFound
+		return gentypes.Delegate{}, nil, &errors.ErrCompanyNotFound
 	}
 
 	// Get company
 	comp, err := g.GetCompanyByUUID(companyUUID)
 	if err != nil {
-		return gentypes.Delegate{}, err
+		return gentypes.Delegate{}, nil, err
 	}
 
-	// Create a transaction to ensure that a new TTC_ID isn't created before
-	// we insert ours
+	var (
+		password *string
+		realPass *string
+	)
 
+	// Check if autogenerating password is required
+	if delegateDetails.GeneratePassword != nil && *delegateDetails.GeneratePassword {
+		pass, err := auth.GenerateSecurePassword(10)
+		if err != nil {
+			g.Logger.Log(sentry.LevelError, err, "Unable to generate secure password")
+			return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+		}
+		password = &pass
+		newPass := pass
+		realPass = &newPass // So that this pointer is not altered later on (by BeforeCreate)
+	}
+
+	// Create a transaction to ensure that a new TTC_ID isn't created before we insert ours
 	tx := database.GormDB.Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -209,17 +225,15 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 
 	ttcId, err := generateTTCID(tx, g, comp.Name, delegateDetails.FirstName, delegateDetails.LastName)
 	if err != nil {
-		return gentypes.Delegate{}, err
+		return gentypes.Delegate{}, nil, err
 	}
 
 	delegate := models.Delegate{
-		User: models.User{
-			FirstName: delegateDetails.FirstName,
-			LastName:  delegateDetails.LastName,
-			JobTitle:  delegateDetails.JobTitle,
-			Telephone: delegateDetails.Telephone,
-			Password:  delegateDetails.Password,
-		},
+		FirstName:   delegateDetails.FirstName,
+		LastName:    delegateDetails.LastName,
+		JobTitle:    delegateDetails.JobTitle,
+		Telephone:   delegateDetails.Telephone,
+		Password:    password,
 		Email:       delegateDetails.Email,
 		CompanyUUID: companyUUID,
 		TtcId:       ttcId,
@@ -227,13 +241,13 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
 		g.Logger.Log(sentry.LevelError, createErr, "Unable to create delegate")
-		return gentypes.Delegate{}, &errors.ErrWhileHandling
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		g.Logger.Log(sentry.LevelError, err, "Error commiting create delegate transaction")
-		return gentypes.Delegate{}, &errors.ErrWhileHandling
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
 	}
 
-	return g.delegateToGentype(delegate), nil
+	return g.delegateToGentype(delegate), realPass, nil
 }

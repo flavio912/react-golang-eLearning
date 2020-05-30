@@ -308,13 +308,11 @@ func TestGetManagers(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
-			User: gentypes.User{
-				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				FirstName: "Manager",
-				LastName:  "Man",
-				Telephone: "7912938287",
-				JobTitle:  "In Charge",
-			},
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			FirstName:   "Manager",
+			LastName:    "Man",
+			Telephone:   "7912938287",
+			JobTitle:    "In Charge",
 			Email:       "man@managers.com",
 			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
@@ -373,15 +371,13 @@ func TestUpdateManager(t *testing.T) {
 		manager, err := adminGrant.UpdateManager(input)
 
 		outputWant := gentypes.Manager{
-			User: gentypes.User{
-				UUID:      input.UUID,
-				FirstName: *input.FirstName,
-				LastName:  *input.LastName,
-				Telephone: *input.Telephone,
-				JobTitle:  *input.JobTitle,
-				CreatedAt: manager.CreatedAt,
-				LastLogin: manager.LastLogin,
-			},
+			UUID:            input.UUID,
+			FirstName:       *input.FirstName,
+			LastName:        *input.LastName,
+			Telephone:       *input.Telephone,
+			JobTitle:        *input.JobTitle,
+			CreatedAt:       manager.CreatedAt,
+			LastLogin:       manager.LastLogin,
 			Email:           *input.Email,
 			ProfileImageURL: manager.ProfileImageURL,
 			CompanyUUID:     manager.CompanyUUID,

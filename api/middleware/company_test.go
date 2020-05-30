@@ -114,13 +114,11 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
-			User: gentypes.User{
-				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				FirstName: "Manager",
-				LastName:  "Man",
-				Telephone: "7912938287",
-				JobTitle:  "In Charge",
-			},
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			FirstName:   "Manager",
+			LastName:    "Man",
+			Telephone:   "7912938287",
+			JobTitle:    "In Charge",
 			Email:       "man@managers.com",
 			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
@@ -346,15 +344,13 @@ func TestCreateCompanyRequest(t *testing.T) {
 		manager, err := adminGrant.GetManagerByUUID(managers[0])
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Manager{
-			User: gentypes.User{
-				CreatedAt: manager.CreatedAt,
-				UUID:      manager.UUID,
-				FirstName: managerInput.FirstName,
-				LastName:  managerInput.LastName,
-				Telephone: managerInput.Telephone,
-				JobTitle:  managerInput.JobTitle,
-				LastLogin: manager.LastLogin,
-			},
+			CreatedAt:       manager.CreatedAt,
+			UUID:            manager.UUID,
+			FirstName:       managerInput.FirstName,
+			LastName:        managerInput.LastName,
+			Telephone:       managerInput.Telephone,
+			JobTitle:        managerInput.JobTitle,
+			LastLogin:       manager.LastLogin,
 			Email:           managerInput.Email,
 			ProfileImageURL: manager.ProfileImageURL,
 			CompanyUUID:     company.UUID,

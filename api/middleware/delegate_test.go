@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -118,14 +120,12 @@ func TestGetDelegates(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		delegate := gentypes.Delegate{
-			User: gentypes.User{
-				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				FirstName: "Delegate",
-				LastName:  "Man",
-				Telephone: "7912935287",
-				JobTitle:  "Doer",
-			},
-			Email:       "del@delegates.com",
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			FirstName:   "Delegate",
+			LastName:    "Man",
+			Telephone:   helpers.StringPointer("7912935287"),
+			JobTitle:    "Doer",
+			Email:       helpers.StringPointer("del@delegates.com"),
 			TTC_ID:      "delegate-test-1",
 			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
@@ -137,14 +137,14 @@ func TestGetDelegates(t *testing.T) {
 			name   string
 			filter gentypes.DelegatesFilter
 		}{
-			{"Email", gentypes.DelegatesFilter{Email: &delegate.Email}},
+			{"Email", gentypes.DelegatesFilter{Email: delegate.Email}},
 			{"FirstName", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &delegate.FirstName}}},
 			{"LastName", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &delegate.LastName}}},
 			{"First and Last", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
 			{"JobTitle", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{JobTitle: &delegate.JobTitle}}},
 			{"uuid", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
 			{"ttc_id", gentypes.DelegatesFilter{TTC_ID: &delegate.TTC_ID}},
-			{"Full", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName}, Email: &delegate.Email}},
+			{"Full", gentypes.DelegatesFilter{UserFilter: gentypes.UserFilter{Name: &fullName}, Email: delegate.Email}},
 		}
 
 		for _, test := range filterTests {
@@ -169,36 +169,44 @@ func TestGetDelegates(t *testing.T) {
 }
 
 func TestCreateDelegate(t *testing.T) {
-	prepareTestDatabase()
 
 	tests := []struct {
-		name    string
-		grant   middleware.Grant
-		wantErr interface{}
-		want    gentypes.Delegate
-		input   gentypes.CreateDelegateInput
+		name           string
+		grant          middleware.Grant
+		wantErr        interface{}
+		want           gentypes.Delegate
+		shouldHavePass bool
+		input          gentypes.CreateDelegateInput
 	}{
 		{
 			"Users cannot create",
 			delegateGrant,
 			&errors.ErrUnauthorized,
 			gentypes.Delegate{},
-			gentypes.CreateDelegateInput{},
+			false,
+			gentypes.CreateDelegateInput{
+				Email: helpers.StringPointer("testemail@devserver.london"),
+			},
 		},
 		{
 			"Admin must supply company uuid",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Delegate{},
-			gentypes.CreateDelegateInput{},
+			false,
+			gentypes.CreateDelegateInput{
+				Email: helpers.StringPointer("testemail@devserver.london"),
+			},
 		},
 		{
 			"Admin supplied company must exist",
 			adminGrant,
 			&errors.ErrCompanyNotFound,
 			gentypes.Delegate{},
+			false,
 			gentypes.CreateDelegateInput{
 				CompanyUUID: &uuidZero,
+				Email:       helpers.StringPointer("testemail@devserver.london"),
 			},
 		},
 		{
@@ -208,16 +216,15 @@ func TestCreateDelegate(t *testing.T) {
 			gentypes.Delegate{
 				TTC_ID:      "testcompany-angrytim",
 				CompanyUUID: managerGrant.Claims.Company,
-				User: gentypes.User{
-					FirstName: "Angry",
-					LastName:  "Tim",
-				},
+				FirstName:   "Angry",
+				LastName:    "Tim",
+				Email:       helpers.StringPointer("testemail@devserver.london"),
 			},
+			false,
 			gentypes.CreateDelegateInput{
-				CreateUserInput: gentypes.CreateUserInput{
-					FirstName: "Angry",
-					LastName:  "Tim",
-				},
+				FirstName: "Angry",
+				LastName:  "Tim",
+				Email:     helpers.StringPointer("testemail@devserver.london"),
 			},
 		},
 		{
@@ -227,24 +234,61 @@ func TestCreateDelegate(t *testing.T) {
 			gentypes.Delegate{
 				TTC_ID:      "testcompany-smellyjoe-1",
 				CompanyUUID: managerGrant.Claims.Company,
-				User: gentypes.User{
-					FirstName: "Smelly",
-					LastName:  "Joe",
-				},
+				FirstName:   "Smelly",
+				LastName:    "Joe",
+				Email:       helpers.StringPointer("testemail@devserver.london"),
 			},
+			false,
 			gentypes.CreateDelegateInput{
-				CreateUserInput: gentypes.CreateUserInput{
-					FirstName: "Smelly",
-					LastName:  "Joe",
-				},
+				FirstName: "Smelly",
+				LastName:  "Joe",
+				Email:     helpers.StringPointer("testemail@devserver.london"),
+			},
+		},
+		{
+			"Passwords are generated when required",
+			managerGrant,
+			nil,
+			gentypes.Delegate{
+				TTC_ID:      "testcompany-smellyjoe-1",
+				CompanyUUID: managerGrant.Claims.Company,
+				FirstName:   "Smelly",
+				LastName:    "Joe",
+			},
+			true,
+			gentypes.CreateDelegateInput{
+				FirstName:        "Smelly",
+				LastName:         "Joe",
+				GeneratePassword: helpers.BoolPointer(true),
+			},
+		},
+		{
+			"Cannot give no email and not set generatePassword",
+			managerGrant,
+			&errors.ErrNoEmailProvided,
+			gentypes.Delegate{},
+			false,
+			gentypes.CreateDelegateInput{
+				FirstName: "Smelly",
+				LastName:  "Joe",
 			},
 		},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			d, err := test.grant.CreateDelegate(test.input)
+			prepareTestDatabase()
+			d, pass, err := test.grant.CreateDelegate(test.input)
 			assert.Equal(t, test.wantErr, err)
+
+			if test.shouldHavePass {
+				assert.NotNil(t, pass)
+				assert.Len(t, *pass, 10)
+			} else {
+				assert.Nil(t, pass)
+			}
+
 			// generated fields
+			// TODO: these look to be useless
 			test.want.UUID = d.UUID
 			test.want.ProfileImageURL = d.ProfileImageURL
 			test.want.CreatedAt = d.CreatedAt

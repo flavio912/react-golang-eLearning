@@ -20,14 +20,12 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyUUID) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
-			User: gentypes.User{
-				CreatedAt: &createdAt,
-				UUID:      manager.UUID,
-				FirstName: manager.FirstName,
-				LastName:  manager.LastName,
-				JobTitle:  manager.JobTitle,
-				Telephone: manager.Telephone,
-			},
+			CreatedAt:       &createdAt,
+			UUID:            manager.UUID,
+			FirstName:       manager.FirstName,
+			LastName:        manager.LastName,
+			JobTitle:        manager.JobTitle,
+			Telephone:       manager.Telephone,
 			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
@@ -37,11 +35,9 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	// Delegates can only get a subset of their manager's info
 	if g.IsCompanyDelegate(manager.CompanyUUID) {
 		return gentypes.Manager{
-			User: gentypes.User{
-				FirstName: manager.FirstName,
-				LastName:  manager.LastName,
-				JobTitle:  manager.JobTitle,
-			},
+			FirstName:       manager.FirstName,
+			LastName:        manager.LastName,
+			JobTitle:        manager.JobTitle,
 			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
@@ -227,13 +223,11 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 
 	// TODO: Validate input better and return useful details
 	manager := models.Manager{
-		User: models.User{
-			FirstName: managerDetails.FirstName,
-			LastName:  managerDetails.LastName,
-			JobTitle:  managerDetails.JobTitle,
-			Telephone: managerDetails.Telephone,
-			Password:  managerDetails.Password,
-		},
+		FirstName:   managerDetails.FirstName,
+		LastName:    managerDetails.LastName,
+		JobTitle:    managerDetails.JobTitle,
+		Telephone:   managerDetails.Telephone,
+		Password:    managerDetails.Password,
 		Email:       managerDetails.Email,
 		CompanyUUID: inputUUID,
 	}

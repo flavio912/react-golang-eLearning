@@ -1,4 +1,4 @@
-type Manager implements User {
+type Manager  {
   uuid: UUID!
   createdAt: String
   email: String!

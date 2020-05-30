@@ -6,7 +6,13 @@ import (
 
 // Manager - CompanyManager graphQL type
 type Manager struct {
-	User
+	CreatedAt       *string
+	UUID            UUID
+	FirstName       string
+	LastName        string
+	Telephone       string
+	JobTitle        string
+	LastLogin       string
 	Email           string
 	ProfileImageURL *string
 	CompanyUUID     UUID
