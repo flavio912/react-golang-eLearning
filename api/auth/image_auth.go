@@ -24,7 +24,7 @@ func GenerateUploadToken(key string, uploadType string) (string, error) {
 		Key:        key,
 		UploadType: uploadType,
 		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Duration(2) * time.Minute).Unix(),
+			ExpiresAt: time.Now().Add(time.Duration(10) * time.Minute).Unix(),
 			IssuedAt:  time.Now().Unix(),
 		},
 	}
