@@ -8,7 +8,8 @@ import (
 )
 
 type yamlConfig struct {
-	Database struct {
+	IsTesting bool `yaml:"isTesting"`
+	Database  struct {
 		Host         string `yaml:"host"`
 		User         string `yaml:"user"`
 		Password     string `yaml:"password"`

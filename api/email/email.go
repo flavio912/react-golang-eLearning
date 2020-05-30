@@ -28,7 +28,7 @@ func Initialize() {
 }
 
 // Sends a html + text email to one or more recipients
-func SendMail(recipients []*string, subject string, htmlBody string, textBody string) error {
+func SendRawMail(recipients []*string, subject string, htmlBody string, textBody string) error {
 	var (
 		charSet = "UTF-8"
 		sender  = helpers.Config.AWS.SESSendAddress
@@ -64,6 +64,11 @@ func SendMail(recipients []*string, subject string, htmlBody string, textBody st
 			},
 		},
 		Source: aws.String(sender),
+	}
+
+	// If testing don't actually send emails
+	if !helpers.Config.IsTesting {
+		return nil
 	}
 
 	// Attempt to send the email.

@@ -96,6 +96,10 @@ func main() {
 
 	uploads.Initialize()
 	email.Initialize()
+	err := email.SendFinaliseAccountEmail("COOLTOKEn", "Jim", "tom.e.j.emmerson@gmail.com")
+	if err != nil {
+		glog.Error(err.Error())
+	}
 
 	loaders := loader.Init()
 
