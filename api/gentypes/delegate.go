@@ -31,13 +31,14 @@ func (d *DelegatesFilter) Validate() error {
 }
 
 type CreateDelegateInput struct {
-	FirstName        string  `valid:"required,alpha"`
-	LastName         string  `valid:"required,alpha"`
-	JobTitle         string  `valid:"required"`
-	Telephone        *string `valid:"numeric"`
-	Email            *string `valid:"email"`
-	CompanyUUID      *UUID
-	GeneratePassword *bool
+	FirstName               string  `valid:"required,alpha"`
+	LastName                string  `valid:"required,alpha"`
+	JobTitle                string  `valid:"required"`
+	Telephone               *string `valid:"numeric"`
+	Email                   *string `valid:"email"`
+	ProfileImageUploadToken *string
+	CompanyUUID             *UUID
+	GeneratePassword        *bool
 }
 
 func (m *CreateDelegateInput) Validate() error {

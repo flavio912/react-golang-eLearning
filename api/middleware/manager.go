@@ -300,8 +300,9 @@ func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	return false, &errors.ErrUnauthorized
 }
 
-// ManagerProfileUploadRequest generates a link that lets users upload a profile image to S3 directly
-func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+// ProfileUploadRequest generates a link that lets users upload a profile image to S3 directly
+// Used by all user types
+func (g *Grant) ProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
 	if !g.IsManager && !g.IsAdmin {
 		return "", "", &errors.ErrUnauthorized
 	}
@@ -312,7 +313,7 @@ func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (
 		[]string{"jpg", "png"},  // Allowed file types
 		int32(20000000),         // Max file size = 20MB
 		"profile",               // Save files in the "profile" s3 directory
-		"managerProfile",        // Unique identifier for this type of upload request
+		"profileImage",          // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err
@@ -324,7 +325,7 @@ func (g *Grant) ManagerProfileUploadSuccess(token string) error {
 		return &errors.ErrUnauthorized
 	}
 
-	s3Key, err := uploads.VerifyUploadSuccess(token, "managerProfile")
+	s3Key, err := uploads.VerifyUploadSuccess(token, "profileImage")
 	if err != nil {
 		return err
 	}

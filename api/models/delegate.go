@@ -24,6 +24,7 @@ type Delegate struct {
 	Email       *string
 	TtcId       string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
 	CompanyUUID gentypes.UUID
+	ProfileKey  *string // S3 Upload key for the profile image
 }
 
 /*GenerateToken - Create a JWT token for delegates

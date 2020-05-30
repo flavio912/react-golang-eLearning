@@ -20,6 +20,7 @@ input CreateDelegateInput {
   jobTitle: String!
   telephone: String
   generatePassword: Boolean
+  profileImageUploadToken: String
 }
 
 type CreateDelegateResponse {

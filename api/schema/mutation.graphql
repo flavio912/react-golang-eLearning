@@ -20,8 +20,8 @@ type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
   createManager(input: CreateManagerInput!): Manager
   updateManager(input: UpdateManagerInput!): Manager
-  managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp
-  managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
+  profileImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateManagerProfileImage(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
   createAdmin(input: CreateAdminInput!): Admin
   updateAdmin(input: UpdateAdminInput!): Admin

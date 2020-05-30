@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
 
 	"github.com/getsentry/sentry-go"
@@ -17,17 +19,24 @@ import (
 )
 
 func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
+	var profileURL *string
+	if delegate.ProfileKey != nil {
+		url := uploads.GetImgixURL(*delegate.ProfileKey)
+		profileURL = &url
+	}
+
 	createdAt := delegate.CreatedAt.Format(time.RFC3339)
 	return gentypes.Delegate{
-		CreatedAt:   &createdAt,
-		UUID:        delegate.UUID,
-		FirstName:   delegate.FirstName,
-		LastName:    delegate.LastName,
-		JobTitle:    delegate.JobTitle,
-		Telephone:   delegate.Telephone,
-		Email:       delegate.Email,
-		CompanyUUID: delegate.CompanyUUID,
-		TTC_ID:      delegate.TtcId,
+		CreatedAt:       &createdAt,
+		UUID:            delegate.UUID,
+		FirstName:       delegate.FirstName,
+		LastName:        delegate.LastName,
+		JobTitle:        delegate.JobTitle,
+		Telephone:       delegate.Telephone,
+		Email:           delegate.Email,
+		CompanyUUID:     delegate.CompanyUUID,
+		TTC_ID:          delegate.TtcId,
+		ProfileImageURL: profileURL,
 	}
 }
 
@@ -244,6 +253,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	}
 
 	var (
+		s3UploadKey       *string
 		password          *string
 		realPass          *string
 		needsGeneratePass = delegateDetails.GeneratePassword != nil && *delegateDetails.GeneratePassword
@@ -259,6 +269,16 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		password = &pass
 		newPass := pass
 		realPass = &newPass // So that this pointer is not altered later on (by BeforeCreate)
+	}
+
+	// Check if upload token is valid
+	if delegateDetails.ProfileImageUploadToken != nil {
+		tmpUploadKey, err := uploads.VerifyUploadSuccess(*delegateDetails.ProfileImageUploadToken, "profileImage")
+		if err != nil {
+			return gentypes.Delegate{}, nil, &errors.ErrUploadTokenInvalid
+		}
+
+		s3UploadKey = &tmpUploadKey
 	}
 
 	// Create a transaction to ensure that a new TTC_ID isn't created before we insert ours
@@ -284,6 +304,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		Email:       delegateDetails.Email,
 		CompanyUUID: companyUUID,
 		TtcId:       ttcId,
+		ProfileKey:  s3UploadKey,
 	}
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
