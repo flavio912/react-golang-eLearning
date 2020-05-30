@@ -67,7 +67,7 @@ func SendRawMail(recipients []*string, subject string, htmlBody string, textBody
 	}
 
 	// If testing don't actually send emails
-	if !helpers.Config.IsTesting {
+	if helpers.Config.IsTesting {
 		return nil
 	}
 
