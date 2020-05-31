@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
 func TestCreateLesson(t *testing.T) {
@@ -91,4 +92,65 @@ func TestGetLessonByUUID(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, uuid, lesson.UUID)
 	})
+}
+
+func TestGetLessonsByUUID(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name    string
+		grant   middleware.Grant
+		uuids   []gentypes.UUID
+		wantErr interface{}
+		wantLen int
+	}{
+		{
+			"Must be admin",
+			nonAdminGrant,
+			[]gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			},
+			&errors.ErrUnauthorized,
+			0,
+		},
+		// {
+		// 	"Must show ErrNotFound if not found *all*",
+		// 	adminGrant,
+		// 	[]gentypes.UUID{
+		// 		gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000022"),
+		// 		gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000033"),
+		// 	},
+		// 	&errors.ErrNotFound,
+		// 	0,
+		// },
+		{
+			"Must get only existed lessons",
+			adminGrant,
+			[]gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000033"),
+			},
+			nil,
+			1,
+		},
+		{
+			"Must get all managers",
+			adminGrant,
+			[]gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			},
+			nil,
+			2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			l, err := test.grant.GetLessonsByUUID(test.uuids)
+
+			assert.Equal(t, test.wantErr, err)
+			assert.Len(t, l, test.wantLen)
+		})
+	}
 }

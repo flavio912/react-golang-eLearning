@@ -78,3 +78,22 @@ func (g *Grant) GetLessonByUUID(UUID gentypes.UUID) (gentypes.Lesson, error) {
 
 	return g.lessonToGentype(lesson), nil
 }
+
+func (g *Grant) GetLessonsByUUID(uuids []gentypes.UUID) ([]gentypes.Lesson, error) {
+	var lessons []gentypes.Lesson
+	if !g.IsAdmin {
+		return lessons, &errors.ErrUnauthorized
+	}
+
+	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&lessons)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return lessons, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to find lessons")
+		return lessons, &errors.ErrWhileHandling
+	}
+
+	return lessons, nil
+}
