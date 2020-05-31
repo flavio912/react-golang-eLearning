@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -13,7 +13,6 @@ import {
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import axios from 'src/utils/axios';
 import Paginate from 'src/components/Paginate';
 import CourseCard from 'src/components/CourseCard';
 
@@ -82,7 +81,7 @@ function Projects({ className, ...rest }) {
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState('Created At');
   const [mode, setMode] = useState('grid');
-  const [courses, setCourses] = useState(test_courses);
+  const [courses] = useState(test_courses);
 
   const handleSortOpen = () => {
     setOpenSort(true);

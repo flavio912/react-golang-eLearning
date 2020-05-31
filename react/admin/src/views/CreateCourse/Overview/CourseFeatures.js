@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardHeader,
@@ -8,17 +8,11 @@ import {
   Radio,
   RadioGroup,
   FormControlLabel,
-  FormLabel,
   Divider,
   Switch
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
-
-const useStyles = makeStyles(theme => ({}));
 
 function CourseFeatures() {
-  const classes = useStyles();
-
   return (
     <Card>
       <CardHeader title={'Course Features'} />

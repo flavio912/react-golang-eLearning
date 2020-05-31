@@ -1,23 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardHeader,
-  Typography,
   CardContent,
   TextField,
   InputAdornment,
   Divider
 } from '@material-ui/core';
-import { Editor, EditorState, convertFromRaw } from 'draft-js';
-import { makeStyles } from '@material-ui/styles';
-import RichEditor from 'src/components/RichEditor';
-
-const useStyles = makeStyles(theme => ({}));
 
 function Introduction() {
-  const classes = useStyles();
-
-  const editorState = EditorState.createEmpty();
   return (
     <Card>
       <CardHeader title={'Estimated time to complete'} />

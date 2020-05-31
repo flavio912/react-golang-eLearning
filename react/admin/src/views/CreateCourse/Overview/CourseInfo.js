@@ -2,31 +2,16 @@ import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
-  Typography,
   TextField,
   CardContent,
-  Container,
   Button,
   Grid,
   Chip,
-  ButtonGroup,
-  GridList,
-  Radio,
-  RadioGroup,
-  InputLabel,
-  FormControlLabel,
-  FormLabel,
-  Divider,
-  Switch
+  Divider
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import { Autocomplete } from '@material-ui/lab';
 
-const useStyles = makeStyles(theme => ({}));
-
 function CourseInfo() {
-  const classes = useStyles();
-
   const [title, setTitle] = useState();
 
   const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];

@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Typography, Button } from '@material-ui/core';
 import KeyboardArrowRightIcon from '@material-ui/icons/KeyboardArrowRight';
-import axios from 'src/utils/axios';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -34,25 +33,6 @@ const useStyles = makeStyles(theme => ({
 
 function Projects({ className, ...rest }) {
   const classes = useStyles();
-  const [projects, setProjects] = useState([]);
-
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchProjects = () => {
-      axios.get('/api/account/projects').then(response => {
-        if (mounted) {
-          setProjects(response.data.projects);
-        }
-      });
-    };
-
-    fetchProjects();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>

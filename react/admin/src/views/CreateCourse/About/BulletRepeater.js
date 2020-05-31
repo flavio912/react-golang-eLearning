@@ -2,32 +2,16 @@ import React, { useState } from 'react';
 import {
   Card,
   CardHeader,
-  Typography,
   TextField,
   CardContent,
-  Container,
   Button,
   Grid,
-  Chip,
-  ButtonGroup,
-  GridList,
-  Radio,
-  RadioGroup,
-  InputLabel,
-  FormControlLabel,
-  FormLabel,
   Divider,
-  Switch,
   IconButton
 } from '@material-ui/core';
-import { makeStyles } from '@material-ui/styles';
 import Clear from '@material-ui/icons/Clear';
 
-const useStyles = makeStyles(theme => ({}));
-
 function BulletRepeater({ title = '' }) {
-  const classes = useStyles();
-
   const [bulletPoints, setBulletPoints] = useState([
     { text: '', key: new Date().getTime() }
   ]);
@@ -39,7 +23,7 @@ function BulletRepeater({ title = '' }) {
   };
 
   const removeRepeater = index => {
-    if (index === 0 && bulletPoints.length == 1) return;
+    if (index === 0 && bulletPoints.length === 1) return;
     const newBulletPoints = [...bulletPoints];
     newBulletPoints.splice(index, 1);
     setBulletPoints(newBulletPoints);

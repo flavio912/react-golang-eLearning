@@ -1,24 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import moment from 'moment';
 import { makeStyles } from '@material-ui/styles';
 import {
-  Avatar,
   Button,
   Card,
   CardContent,
   CardHeader,
   Divider,
   Grid,
-  IconButton,
   Link,
-  Tooltip,
   Typography,
   colors
 } from '@material-ui/core';
-import { Editor, EditorState, convertFromRaw } from 'draft-js';
 import Label from 'src/components/Label';
 
 const useStyles = makeStyles(theme => ({
@@ -57,17 +53,6 @@ const useStyles = makeStyles(theme => ({
 
 function CourseCard({ course, className, ...rest }) {
   const classes = useStyles();
-  const [liked, setLiked] = useState(course.liked);
-
-  const handleLike = () => {
-    setLiked(true);
-  };
-
-  const handleUnlike = () => {
-    setLiked(false);
-  };
-
-  const editorState = EditorState.createEmpty();
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -92,9 +77,7 @@ function CourseCard({ course, className, ...rest }) {
         }
       />
       <CardContent className={classes.content}>
-        <div className={classes.description}>
-          <Editor editorState={editorState} />
-        </div>
+        <div className={classes.description}></div>
         <div className={classes.tags}>
           {course.tags.map(tag => (
             <Label color={tag.color} key={tag.text}>
@@ -112,7 +95,7 @@ function CourseCard({ course, className, ...rest }) {
           >
             <Grid item>
               <Typography variant="h5">£{course.totalGross}</Typography>
-              <Typography variant="body2" gutterBottom variant="overline">
+              <Typography gutterBottom variant="overline">
                 TOTAL GROSS
               </Typography>
             </Grid>
@@ -120,7 +103,7 @@ function CourseCard({ course, className, ...rest }) {
               <Typography variant="h5">
                 {course.delegates.pageInfo.total}
               </Typography>
-              <Typography variant="body2" gutterBottom variant="overline">
+              <Typography gutterBottom variant="overline">
                 DELEGATES
               </Typography>
             </Grid>

@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'uuid/v1';
 import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider } from '@material-ui/core';
@@ -23,7 +22,7 @@ const useStyles = makeStyles(theme => ({
 function CreateCourse({ match, history }) {
   const classes = useStyles();
 
-  const { id, tab: currentTab } = match.params;
+  const { tab: currentTab } = match.params;
   const tabs = [
     { value: 'overview', label: 'Overview' },
     { value: 'about', label: 'About' }
