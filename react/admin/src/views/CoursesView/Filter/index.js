@@ -2,19 +2,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Checkbox,
-  Chip,
-  Divider,
-  FormControlLabel,
-  Input,
-  Card,
-  colors
-} from '@material-ui/core';
+import { Chip, Divider, Input, Card, colors } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import MultiSelect from './MultiSelect';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   keywords: {
     padding: theme.spacing(2),
@@ -48,71 +40,46 @@ const useStyles = makeStyles((theme) => ({
 
 const selects = [
   {
-    label: 'Type',
-    options: ['Freelance', 'Full Time', 'Part Time', 'Internship']
+    label: 'Primary Category',
+    options: ['Aviation']
   },
   {
-    label: 'Level',
-    options: ['Novice', 'Expert']
-  },
-  {
-    label: 'Location',
-    options: [
-      'Africa',
-      'Asia',
-      'Australia',
-      'Europe',
-      'North America',
-      'South America'
-    ]
-  },
-  {
-    label: 'Roles',
-    options: ['Android', 'Web Developer', 'iOS']
+    label: 'Filter',
+    options: []
   }
 ];
 
 function Filter({ className, ...rest }) {
   const classes = useStyles();
   const [inputValue, setInputValue] = useState('');
-  const [chips, setChips] = useState([
-    'Freelance',
-    'Full Time',
-    'Novice',
-    'Europe',
-    'Android',
-    'Web Developer'
-  ]);
+  const [chips, setChips] = useState([]);
 
-  const handleInputChange = (event) => {
+  const handleInputChange = event => {
     event.persist();
     setInputValue(event.target.value);
   };
 
-  const handleInputKeyup = (event) => {
+  const handleInputKeyup = event => {
     event.persist();
 
     if (event.keyCode === 13 && inputValue) {
       if (!chips.includes(inputValue)) {
-        setChips((prevChips) => [...prevChips, inputValue]);
+        setChips(prevChips => [...prevChips, inputValue]);
         setInputValue('');
       }
     }
   };
 
-  const handleChipDelete = (chip) => {
-    setChips((prevChips) => prevChips.filter((prevChip) => chip !== prevChip));
+  const handleChipDelete = chip => {
+    setChips(prevChips => prevChips.filter(prevChip => chip !== prevChip));
   };
 
-  const handleMultiSelectChange = (value) => {
+  const handleMultiSelectChange = value => {
     setChips(value);
   };
 
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <div className={classes.keywords}>
         <SearchIcon className={classes.searchIcon} />
         <Input
@@ -125,7 +92,7 @@ function Filter({ className, ...rest }) {
       </div>
       <Divider />
       <div className={classes.chips}>
-        {chips.map((chip) => (
+        {chips.map(chip => (
           <Chip
             className={classes.chip}
             key={chip}
@@ -136,7 +103,7 @@ function Filter({ className, ...rest }) {
       </div>
       <Divider />
       <div className={classes.selects}>
-        {selects.map((select) => (
+        {selects.map(select => (
           <MultiSelect
             key={select.label}
             label={select.label}
@@ -145,16 +112,6 @@ function Filter({ className, ...rest }) {
             value={chips}
           />
         ))}
-        <FormControlLabel
-          className={classes.inNetwork}
-          control={(
-            <Checkbox
-              color="primary"
-              defaultChecked //
-            />
-          )}
-          label="In network"
-        />
       </div>
     </Card>
   );

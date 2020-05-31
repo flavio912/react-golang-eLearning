@@ -6,7 +6,7 @@ import Header from './Header';
 import Filter from './Filter';
 import Results from './Results';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(3),
     paddingBottom: theme.spacing(3)
@@ -22,14 +22,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function ProjectList() {
+function CoursesView() {
   const classes = useStyles();
 
   return (
-    <Page
-      className={classes.root}
-      title="Projects List"
-    >
+    <Page className={classes.root} title="All Courses">
       <Container maxWidth="lg">
         <Header className={classes.header} />
         <Filter className={classes.filter} />
@@ -39,4 +36,4 @@ function ProjectList() {
   );
 }
 
-export default ProjectList;
+export default CoursesView;

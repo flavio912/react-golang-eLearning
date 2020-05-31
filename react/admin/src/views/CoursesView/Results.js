@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -13,11 +13,10 @@ import {
 import { ToggleButtonGroup, ToggleButton } from '@material-ui/lab';
 import ViewModuleIcon from '@material-ui/icons/ViewModule';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
-import axios from 'src/utils/axios';
 import Paginate from 'src/components/Paginate';
-import ProjectCard from 'src/components/ProjectCard';
+import CourseCard from 'src/components/CourseCard';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   header: {
     display: 'flex',
@@ -54,13 +53,35 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const test_courses = [
+  {
+    title: 'Fire Safety Awareness',
+    creator: {
+      firstName: 'TTC',
+      lastName: 'Admin'
+    },
+    createdAt: '12/12/12',
+    excerpt: '{}',
+    totalGross: 23000,
+    delegates: {
+      pageInfo: {
+        total: 600
+      }
+    },
+    category: {
+      name: 'Fire Safety'
+    },
+    tags: []
+  }
+];
+
 function Projects({ className, ...rest }) {
   const classes = useStyles();
   const sortRef = useRef(null);
   const [openSort, setOpenSort] = useState(false);
-  const [selectedSort, setSelectedSort] = useState('Most popular');
+  const [selectedSort, setSelectedSort] = useState('Created At');
   const [mode, setMode] = useState('grid');
-  const [projects, setProjects] = useState([]);
+  const [courses] = useState(test_courses);
 
   const handleSortOpen = () => {
     setOpenSort(true);
@@ -70,7 +91,7 @@ function Projects({ className, ...rest }) {
     setOpenSort(false);
   };
 
-  const handleSortSelect = (value) => {
+  const handleSortSelect = value => {
     setSelectedSort(value);
     setOpenSort(false);
   };
@@ -79,39 +100,11 @@ function Projects({ className, ...rest }) {
     setMode(value);
   };
 
-  useEffect(() => {
-    let mounted = true;
-
-    const fetchProjects = () => {
-      axios.get('/api/projects').then((response) => {
-        if (mounted) {
-          setProjects(response.data.projects);
-        }
-      });
-    };
-
-    fetchProjects();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <div className={classes.header}>
-        <Typography
-          className={classes.title}
-          variant="h5"
-        >
-          Showing
-          {' '}
-          {projects.length}
-          {' '}
-          projects
+        <Typography className={classes.title} variant="h5">
+          Showing {courses.length} courses
         </Typography>
         <div className={classes.actions}>
           <Button
@@ -134,19 +127,16 @@ function Projects({ className, ...rest }) {
           </ToggleButtonGroup>
         </div>
       </div>
-      <Grid
-        container
-        spacing={3}
-      >
-        {projects.map((project) => (
+      <Grid container spacing={3}>
+        {courses.map(course => (
           <Grid
             item
-            key={project.id}
+            key={course.id}
             md={mode === 'grid' ? 4 : 12}
             sm={mode === 'grid' ? 6 : 12}
             xs={12}
           >
-            <ProjectCard project={project} />
+            <CourseCard course={course} />
           </Grid>
         ))}
       </Grid>
@@ -160,17 +150,15 @@ function Projects({ className, ...rest }) {
         open={openSort}
         elevation={1}
       >
-        {['Most recent', 'Popular', 'Price high', 'Price low', 'On sale'].map(
-          (option) => (
-            <MenuItem
-              className={classes.menuItem}
-              key={option}
-              onClick={() => handleSortSelect(option)}
-            >
-              <ListItemText primary={option} />
-            </MenuItem>
-          )
-        )}
+        {['Created At', 'Price'].map(option => (
+          <MenuItem
+            className={classes.menuItem}
+            key={option}
+            onClick={() => handleSortSelect(option)}
+          >
+            <ListItemText primary={option} />
+          </MenuItem>
+        ))}
       </Menu>
     </div>
   );

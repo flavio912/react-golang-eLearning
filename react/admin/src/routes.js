@@ -7,6 +7,8 @@ import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
 import TutorsView from './views/TutorsList';
 import OverviewView from './views/Overview';
+import CoursesView from './views/CoursesView';
+import CreateCourse from './views/CreateCourse';
 
 export default [
   {
@@ -105,6 +107,21 @@ export default [
         path: '/overview',
         exact: true,
         component: OverviewView
+      },
+      {
+        path: '/courses',
+        exact: true,
+        component: CoursesView
+      },
+      {
+        path: '/courses/create',
+        exact: true,
+        component: CreateCourse
+      },
+      {
+        path: '/courses/create/:tab',
+        exact: true,
+        component: CreateCourse
       },
       {
         path: '/settings',

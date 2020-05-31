@@ -18,7 +18,7 @@ import FormatAlignCenterIcon from '@material-ui/icons/FormatAlignCenter';
 import FormatAlignRightIcon from '@material-ui/icons/FormatAlignRight';
 import FormatAlignJustifyIcon from '@material-ui/icons/FormatAlignJustify';
 
-const useStyles1 = makeStyles((theme) => ({
+const useStyles1 = makeStyles(theme => ({
   root: {},
   inner: {
     padding: theme.spacing(1),
@@ -27,7 +27,7 @@ const useStyles1 = makeStyles((theme) => ({
   }
 }));
 
-const useStyles2 = makeStyles((theme) => ({
+const useStyles2 = makeStyles(theme => ({
   button: {
     padding: 0,
     width: 32,
@@ -140,9 +140,7 @@ const INLINE_STYLES = [
   }
 ];
 
-function ButtonBase({
-  active, tooltip, children, ...rest
-}) {
+function ButtonBase({ active, tooltip, children, ...rest }) {
   const classes = useStyles2();
 
   return (
@@ -184,7 +182,7 @@ function BlockTypeButtons({ editorState, onToggle }) {
 
   return (
     <>
-      {BLOCK_TYPES.map((button) => {
+      {BLOCK_TYPES.map(button => {
         let active = false;
 
         if (['left', 'center', 'right', 'justify'].includes(button.blockType)) {
@@ -197,7 +195,7 @@ function BlockTypeButtons({ editorState, onToggle }) {
           <ButtonBase
             active={active}
             key={button.blockType}
-            onClick={(event) => handleClick(event, button.blockType)}
+            onClick={event => handleClick(event, button.blockType)}
             tooltip={button.tooltip}
           >
             {button.icon ? <button.icon /> : button.text}
@@ -213,7 +211,7 @@ BlockTypeButtons.propTypes = {
   onToggle: PropTypes.func
 };
 
-const InlineStyleButtons = (props) => {
+const InlineStyleButtons = props => {
   const { editorState, onToggle } = props;
 
   const handleClick = (event, inlineStyle) => {
@@ -225,11 +223,11 @@ const InlineStyleButtons = (props) => {
 
   return (
     <>
-      {INLINE_STYLES.map((button) => (
+      {INLINE_STYLES.map(button => (
         <ButtonBase
           active={currentStyle.has(button.inlineStyle)}
           key={button.inlineStyle}
-          onClick={(event) => handleClick(event, button.inlineStyle)}
+          onClick={event => handleClick(event, button.inlineStyle)}
           tooltip={button.tooltip}
         >
           {button.icon ? <button.icon /> : button.text}
@@ -245,25 +243,22 @@ InlineStyleButtons.propTypes = {
 };
 
 function EditorToolbar({
-  editorState, onToggle, className, ...rest
+  editorState,
+  onToggle,
+  className,
+  inlineOnly,
+  ...rest
 }) {
   const classes = useStyles1();
 
   return (
-    <div
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <div {...rest} className={clsx(classes.root, className)}>
       <PerfectScrollbar>
         <div className={classes.inner}>
-          <BlockTypeButtons
-            editorState={editorState}
-            onToggle={onToggle}
-          />
-          <InlineStyleButtons
-            editorState={editorState}
-            onToggle={onToggle}
-          />
+          {!inlineOnly && (
+            <BlockTypeButtons editorState={editorState} onToggle={onToggle} />
+          )}
+          <InlineStyleButtons editorState={editorState} onToggle={onToggle} />
         </div>
       </PerfectScrollbar>
     </div>
