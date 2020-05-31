@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider } from '@material-ui/core';
 import Page from 'src/components/Page';
 import Header from './Header';
+import About from './About';
 import Overview from './Overview';
 
 const useStyles = makeStyles(theme => ({
@@ -14,13 +15,19 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     marginBottom: theme.spacing(3)
+  },
+  tabs: {
+    marginTop: theme.spacing(3)
   }
 }));
 function CreateCourse({ match, history }) {
   const classes = useStyles();
 
   const { id, tab: currentTab } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'about', label: 'About' }
+  ];
 
   const handleTabsChange = (event, value) => {
     history.push(value);
@@ -52,6 +59,7 @@ function CreateCourse({ match, history }) {
         <Divider className={classes.divider} />
         <div className={classes.content}>
           {currentTab === 'overview' && <Overview />}
+          {currentTab === 'about' && <About />}
         </div>
       </Container>
     </Page>

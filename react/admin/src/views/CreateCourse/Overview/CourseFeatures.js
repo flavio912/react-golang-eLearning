@@ -25,7 +25,7 @@ function CourseFeatures() {
       <CardContent>
         <Grid container direction="column" spacing={2}>
           <Grid item>
-            <FormLabel component="legend">Course Type</FormLabel>
+            <Typography variant={'overline'}>COURSE TYPE</Typography>
             <RadioGroup
               aria-label="gender"
               name="gender1"
@@ -45,7 +45,7 @@ function CourseFeatures() {
             </RadioGroup>
           </Grid>
           <Grid item>
-            <FormLabel component="legend">Access Type</FormLabel>
+            <Typography variant={'overline'}>ACCESS TYPE</Typography>
             <RadioGroup
               aria-label="gender"
               name="gender1"
@@ -68,19 +68,29 @@ function CourseFeatures() {
             <Divider />
           </Grid>
           <Grid item>
-            <Typography variant={'overline'}>BACKGROUND CHECK</Typography>
-            <Typography variant={'h5'}>Background Check</Typography>
-            <Typography variant={'body2'}>
-              Do managers need to provide a 5 year background check of their
-              delegates to take this course
-            </Typography>
-            <Switch
-              checked={true}
-              onChange={() => {}}
-              color="primary"
-              name="checkedB"
-              inputProps={{ 'aria-label': 'primary checkbox' }}
-            />
+            <Grid container direction={'column'} spacing={1}>
+              <Grid item>
+                <Typography variant={'overline'}>BACKGROUND CHECK</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant={'h5'}>Background Check</Typography>
+              </Grid>
+              <Grid item>
+                <Typography variant={'body2'}>
+                  Do managers need to provide a 5 year background check of their
+                  delegates to take this course
+                </Typography>
+              </Grid>
+              <Grid item>
+                <Switch
+                  checked={true}
+                  onChange={() => {}}
+                  color="primary"
+                  name="checkedB"
+                  inputProps={{ 'aria-label': 'primary checkbox' }}
+                />
+              </Grid>
+            </Grid>
           </Grid>
         </Grid>
       </CardContent>

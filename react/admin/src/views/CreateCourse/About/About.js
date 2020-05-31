@@ -20,9 +20,9 @@ import {
   Switch
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import CourseFeatures from './CourseFeatures';
-import CourseInfo from './CourseInfo';
-import Excerpt from './Excerpt';
+import Introduction from './Introduction';
+import BulletRepeater from './BulletRepeater';
+import SideOptions from './SideOptions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,15 +44,25 @@ function Overview() {
         <Grid item={6} xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
-              <CourseInfo />
+              <Introduction />
             </Grid>
             <Grid item>
-              <Excerpt />
+              <BulletRepeater title={"What you'll learn"} />
+            </Grid>
+            <Grid item>
+              <BulletRepeater title={'Requirements'} />
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={4}>
-          <CourseFeatures />
+          <Grid container direction={'column'} spacing={2}>
+            <Grid item>
+              <SideOptions />
+            </Grid>
+            <Grid item>
+              <BulletRepeater title={'This course includes'} />
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </div>

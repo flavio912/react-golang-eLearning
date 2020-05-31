@@ -22,11 +22,10 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import Clear from '@material-ui/icons/Clear';
-import { Autocomplete } from '@material-ui/lab';
 
 const useStyles = makeStyles(theme => ({}));
 
-function Learn() {
+function BulletRepeater({ title = '' }) {
   const classes = useStyles();
 
   const [bulletPoints, setBulletPoints] = useState([
@@ -48,7 +47,7 @@ function Learn() {
 
   return (
     <Card>
-      <CardHeader title={"What they'll learn"} />
+      <CardHeader title={title} />
       <Divider />
       <CardContent>
         <Grid container spacing={2} direction={'column'}>
@@ -90,4 +89,4 @@ function Learn() {
   );
 }
 
-export default Learn;
+export default BulletRepeater;

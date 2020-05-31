@@ -24,16 +24,16 @@ import { Autocomplete } from '@material-ui/lab';
 
 const useStyles = makeStyles(theme => ({}));
 
-function About() {
+function CourseInfo() {
   const classes = useStyles();
 
   const [title, setTitle] = useState();
 
-  const categoryOptions = [];
+  const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
 
   return (
     <Card>
-      <CardHeader title={'About this course'} />
+      <CardHeader title={'Course Info'} />
       <Divider />
       <CardContent>
         <Grid container direction="column" spacing={2}>
@@ -101,7 +101,7 @@ function About() {
                     value.map((option, index) => (
                       <Chip
                         variant="outlined"
-                        label={option}
+                        label={option.title}
                         {...getTagProps({ index })}
                       />
                     ))
@@ -122,4 +122,4 @@ function About() {
   );
 }
 
-export default About;
+export default CourseInfo;
