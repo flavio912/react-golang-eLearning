@@ -57,3 +57,24 @@ func (g *Grant) CreateLesson(lesson gentypes.CreateLessonInput) (gentypes.Lesson
 
 	return g.lessonToGentype(lessonModel), nil
 }
+
+// GetLessonByUUID is an admin function that gets a lesson using it's UUID
+func (g *Grant) GetLessonByUUID(UUID gentypes.UUID) (gentypes.Lesson, error) {
+
+	if !g.IsAdmin {
+		return gentypes.Lesson{}, &errors.ErrUnauthorized
+	}
+
+	var lesson models.Lesson
+	query := database.GormDB.Where("uuid = ?", UUID).First(&lesson)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Lesson{}, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get lesson")
+		return gentypes.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	return g.lessonToGentype(lesson), nil
+}

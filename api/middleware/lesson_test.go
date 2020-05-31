@@ -64,3 +64,31 @@ func TestCreateLesson(t *testing.T) {
 		assert.Equal(t, tag, lesson.Tags[0])
 	})
 }
+
+func TestGetLessonByUUID(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
+		lesson, err := nonAdminGrant.GetLessonByUUID(uuid)
+
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+		assert.Equal(t, gentypes.Lesson{}, lesson)
+	})
+
+	t.Run("Must show ErrNotFound if not found", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("10000000-0000-0000-0000-000000000001")
+		lesson, err := adminGrant.GetLessonByUUID(uuid)
+
+		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, gentypes.Lesson{}, lesson)
+	})
+
+	t.Run("Must get correct lesson", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
+		lesson, err := adminGrant.GetLessonByUUID(uuid)
+
+		assert.Nil(t, err)
+		assert.Equal(t, uuid, lesson.UUID)
+	})
+}
