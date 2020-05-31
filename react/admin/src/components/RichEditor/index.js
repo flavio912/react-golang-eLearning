@@ -13,11 +13,11 @@ import { Paper, Divider } from '@material-ui/core';
 import EditorToolbar from './EditorToolbar';
 import { blockRenderMap } from './block';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   editorContainer: {
     padding: theme.spacing(2),
-    minHeight: 400,
+    minHeight: 200,
     '&:focus': {
       outline: 'none'
     },
@@ -80,9 +80,15 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const capitalize = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+const capitalize = string => string.charAt(0).toUpperCase() + string.slice(1);
 
-function RichEditor({ placeholder, className, ...rest }) {
+function RichEditor({
+  placeholder,
+  className,
+  inlineOnly,
+  minHeight,
+  ...rest
+}) {
   const classes = useStyles();
   const editorRef = useRef(null);
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
@@ -116,7 +122,7 @@ function RichEditor({ placeholder, className, ...rest }) {
     }
   };
 
-  const handleEditorChange = (newState) => {
+  const handleEditorChange = newState => {
     setEditorState(newState);
   };
 
@@ -131,7 +137,7 @@ function RichEditor({ placeholder, className, ...rest }) {
     return false;
   };
 
-  const mapKeyToEditorCommand = (event) => {
+  const mapKeyToEditorCommand = event => {
     if (event.keyCode === 9) {
       const newEditorState = RichUtils.onTab(event, editorState, 4);
 
@@ -145,7 +151,7 @@ function RichEditor({ placeholder, className, ...rest }) {
     return getDefaultKeyBinding(event);
   };
 
-  const blockStyleFn = (contentBlock) => {
+  const blockStyleFn = contentBlock => {
     const textAlign = contentBlock.getData().get('text-align');
 
     if (textAlign) {
@@ -156,18 +162,17 @@ function RichEditor({ placeholder, className, ...rest }) {
   };
 
   return (
-    <Paper
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Paper {...rest} className={clsx(classes.root, className)}>
       <EditorToolbar
         editorState={editorState}
+        inlineOnly={inlineOnly}
         onToggle={handleToolbarToggle}
       />
       <Divider />
       <div
         aria-label="Editor Container"
         className={classes.editorContainer}
+        style={minHeight ? { minHeight } : {}}
         role="button"
         onClick={handleContainerClick}
         tabIndex={0}

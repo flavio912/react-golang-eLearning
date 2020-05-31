@@ -34,6 +34,7 @@ function About() {
   return (
     <Card>
       <CardHeader title={'About this course'} />
+      <Divider />
       <CardContent>
         <Grid container direction="column" spacing={2}>
           <Grid item>
@@ -51,7 +52,7 @@ function About() {
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={10}>
+              <Grid item xs={11}>
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
@@ -64,14 +65,14 @@ function About() {
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={1}>
                 <Button>+ Add</Button>
               </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={10}>
+              <Grid item xs={11}>
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
@@ -84,14 +85,14 @@ function About() {
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={1}>
                 <Button>+ Add</Button>
               </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={10}>
+              <Grid item xs={11}>
                 <Autocomplete
                   multiple
                   options={categoryOptions}
@@ -110,7 +111,7 @@ function About() {
                   )}
                 />
               </Grid>
-              <Grid item xs={2}>
+              <Grid item xs={1}>
                 <Button>+ Add</Button>
               </Grid>
             </Grid>

@@ -22,6 +22,9 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import CourseFeatures from './CourseFeatures';
 import About from './About';
+import Excerpt from './Excerpt';
+import Introduction from './Introduction';
+import Learn from './Learn';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,7 +44,20 @@ function Overview() {
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid item={6} xs={8}>
-          <About />
+          <Grid container spacing={2} direction={'column'}>
+            <Grid item>
+              <About />
+            </Grid>
+            <Grid item>
+              <Excerpt />
+            </Grid>
+            <Grid item>
+              <Introduction />
+            </Grid>
+            <Grid item>
+              <Learn />
+            </Grid>
+          </Grid>
         </Grid>
         <Grid item xs={4}>
           <CourseFeatures />
