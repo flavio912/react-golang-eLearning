@@ -49,7 +49,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: 427
+    width: '100%'
   },
   linkText: {
     fontSize: 15,
