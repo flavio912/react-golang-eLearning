@@ -124,6 +124,16 @@ func TestGetLessonsByUUID(t *testing.T) {
 		// 	0,
 		// },
 		{
+			"UUIDs must be valid",
+			adminGrant,
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"yoloo",
+			},
+			&errors.ErrWhileHandling,
+			0,
+		},
+		{
 			"Must get only existed lessons",
 			adminGrant,
 			[]string{
