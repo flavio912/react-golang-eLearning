@@ -7,6 +7,7 @@ import Header from './Header';
 import About from './About';
 import Overview from './Overview';
 import Pricing from './Pricing';
+import CourseBuilder from './CourseBuilder';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,6 +28,7 @@ function CreateCourse({ match, history }) {
   const tabs = [
     { value: 'overview', label: 'Overview' },
     { value: 'about', label: 'About' },
+    { value: 'builder', label: 'Course Builder' },
     { value: 'pricing', label: 'Pricing' }
   ];
 
@@ -62,6 +64,7 @@ function CreateCourse({ match, history }) {
           {currentTab === 'overview' && <Overview />}
           {currentTab === 'about' && <About />}
           {currentTab === 'pricing' && <Pricing />}
+          {currentTab === 'builder' && <CourseBuilder />}
         </div>
       </Container>
     </Page>
