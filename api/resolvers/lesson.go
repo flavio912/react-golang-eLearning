@@ -87,3 +87,11 @@ func (l *LessonResolver) Tags() []*TagResolver {
 	}
 	return res
 }
+
+type LessonPageResolver struct {
+	edges    *[]*LessonResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *LessonPageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *LessonPageResolver) Edges() *[]*LessonResolver   { return r.edges }

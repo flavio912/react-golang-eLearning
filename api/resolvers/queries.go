@@ -251,3 +251,36 @@ func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID *gentypes.
 		UUID: args.UUID.String(),
 	})
 }
+
+func (q *QueryResolver) Lessons(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.LessonFilter
+	OrderBy *gentypes.OrderBy
+}) (*LessonPageResolver, error) {
+	if args.Filter != nil {
+		err := (*args.Filter).Validate()
+		if err != nil {
+			return &LessonPageResolver{}, err
+		}
+	}
+
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &LessonPageResolver{}, &errors.ErrUnauthorized
+	}
+
+	lessons, page, err := grant.GetLessons(args.Page, args.Filter, args.OrderBy)
+	var lessonResolvers []*LessonResolver
+	for _, lesson := range lessons {
+		lessonResolvers = append(lessonResolvers, &LessonResolver{
+			Lesson: lesson,
+		})
+	}
+
+	return &LessonPageResolver{
+		edges: &lessonResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
+}
