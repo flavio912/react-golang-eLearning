@@ -1,8 +1,7 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import CourseFeatures from './CourseFeatures';
-import CourseInfo from './CourseInfo';
+import SideOptions from './SideOptions';
 import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
@@ -16,7 +15,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Overview() {
+function Pricing() {
   const classes = useStyles();
 
   return (
@@ -25,19 +24,23 @@ function Overview() {
         <Grid item={6} xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
-              <CourseInfo />
+              <EditorCard title={'Standard Terms'} />
             </Grid>
             <Grid item>
-              <EditorCard inlineOnly title={'About this course (70 words)'} />
+              <EditorCard title={'Specific Terms'} />
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={4}>
-          <CourseFeatures />
+          <Grid container direction={'column'} spacing={2}>
+            <Grid item>
+              <SideOptions />
+            </Grid>
+          </Grid>
         </Grid>
       </Grid>
     </div>
   );
 }
 
-export default Overview;
+export default Pricing;

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Grid } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import Introduction from './Introduction';
 import BulletRepeater from './BulletRepeater';
 import SideOptions from './SideOptions';
+import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -25,7 +25,7 @@ function Overview() {
         <Grid item={6} xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
-              <Introduction />
+              <EditorCard title={'How to complete this course (500 words)'} />
             </Grid>
             <Grid item>
               <BulletRepeater title={"What you'll learn"} />

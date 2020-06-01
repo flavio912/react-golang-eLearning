@@ -8,7 +8,7 @@ import {
   Divider
 } from '@material-ui/core';
 
-function Introduction() {
+function SideOptions() {
   return (
     <Card>
       <CardHeader title={'Estimated time to complete'} />
@@ -26,4 +26,4 @@ function Introduction() {
   );
 }
 
-export default Introduction;
+export default SideOptions;
