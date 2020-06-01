@@ -1,50 +1,51 @@
 import * as React from "react";
 
 export type IconNames =
-  | "AddDelegateRepeater"
-  | "ArrowLeft"
-  | "ArrowLeftBlue"
-  | "ArrowLeftNavyBlue"
-  | "ArrowRight"
-  | "ArrowRightNavyBlue"
-  | "Card_SecondaryActon_Dots"
-  | "CloseCourseManagementTray_X"
-  | "CourseAccountActivated"
-  | "CourseCertificates"
-  | "CourseExpiringSoon"
-  | "CourseFailed"
-  | "CourseNewCourse"
-  | "CourseNewCourseGreen"
-  | "CourseNewCourseGrey"
-  | "CourseStatus_Completed"
-  | "CourseStatus_Incomplete"
-  | "CourseStatus_NotStarted"
-  | "CourseTimeTracked"
-  | "CourseTimeTrackedGreen"
-  | "CourseTimeTrackedGrey"
-  | "Course_Calendar"
-  | "DownloadCSV"
-  | "EditDelegateProfilePic_Default"
-  | "EditPicPencil"
-  | "FilterAdjust"
-  | "FormCheckbox_Checked"
-  | "FormCheckbox_states"
-  | "FormCheckbox_Unchecked"
-  | "Icon_Delegates"
-  | "LeftNav_Icon_Courses"
-  | "LeftNav_Icon_Dashboard"
-  | "LeftNav_Icon_Delegates"
-  | "Loading_Screen_Donut"
-  | "Location_Pin"
-  | "PDF_Icon"
-  | "RemoveSelectedCourse_X"
-  | "SampleImage_ClassroomCoursesDetail_Feat"
-  | "SearchGlass"
-  | "TTC_Logo_Icon"
-  | "Mp3_Pause"
-  | "Mp3_Speaker"
-  | "Payments_Method"
-  | "Stripe";
+  | 'AddDelegateRepeater'
+  | 'ArrowLeft'
+  | 'ArrowLeftBlue'
+  | 'ArrowLeftNavyBlue'
+  | 'ArrowRight'
+  | 'ArrowRightNavyBlue'
+  | 'Card_SecondaryActon_Dots'
+  | 'CloseCourseManagementTray_X'
+  | 'CourseAccountActivated'
+  | 'CourseCertificates'
+  | 'CourseExpiringSoon'
+  | 'CourseFailed'
+  | 'CourseNewCourse'
+  | 'CourseNewCourseGreen'
+  | 'CourseNewCourseGrey'
+  | 'CourseStatus_Completed'
+  | 'CourseStatus_Incomplete'
+  | 'CourseStatus_NotStarted'
+  | 'CourseTimeTracked'
+  | 'CourseTimeTrackedGreen'
+  | 'CourseTimeTrackedGrey'
+  | 'Course_Calendar'
+  | 'DownloadCSV'
+  | 'EditDelegateProfilePic_Default'
+  | 'EditPicPencil'
+  | 'FilterAdjust'
+  | 'FormCheckbox_Checked'
+  | 'FormCheckbox_states'
+  | 'FormCheckbox_Unchecked'
+  | 'Icon_Delegates'
+  | 'LeftNav_Icon_Courses'
+  | 'LeftNav_Icon_Dashboard'
+  | 'LeftNav_Icon_Delegates'
+  | 'Loading_Screen_Donut'
+  | 'Location_Pin'
+  | 'PDF_Icon'
+  | 'RemoveSelectedCourse_X'
+  | 'SampleImage_ClassroomCoursesDetail_Feat'
+  | 'SearchGlass'
+  | 'TTC_Logo_Icon'
+  | 'Mp3_Pause'
+  | 'Mp3_Speaker'
+  | 'Payments_Method'
+  | 'Stripe'
+  | 'Volume';
 
 const iconNameMap = {
   AddDelegateRepeater: require("../../../assets/AddDelegateRepeater.svg"),
@@ -90,7 +91,8 @@ const iconNameMap = {
   Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
-  Stripe: require("../../../assets/Stripe.svg")
+  Stripe: require("../../../assets/Stripe.svg"),
+  Volume: require("../../../assets/Volume.svg")
 };
 
 type Props = {

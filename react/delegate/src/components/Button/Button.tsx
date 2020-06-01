@@ -10,7 +10,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 6,
     borderColor: 'transparent',
     cursor: 'pointer',
-    height: 'auto'
+    height: 'auto',
+    whiteSpace: 'nowrap'
   },
   buttonText: {
     fontSize: 19.5,
@@ -26,9 +27,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   largePadding: {
     padding: '15px 35px'
+  },
+  massivePadding: {
+    padding: '17px 39px'
   }
 }));
-export type PaddingOptions = 'none' | 'small' | 'medium' | 'large';
+export type PaddingOptions = 'none' | 'small' | 'medium' | 'large' | 'massive';
 
 export type ButtonProps = {
   title: string;
@@ -44,7 +48,8 @@ function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
     none: '',
     small: classes.smallPadding,
     medium: classes.mediumPadding,
-    large: classes.largePadding
+    large: classes.largePadding,
+    massive: classes.massivePadding
   };
   return (
     <ButtonBase

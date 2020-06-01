@@ -4,7 +4,7 @@ import { withKnobs, text, number, select } from '@storybook/addon-knobs';
 
 export default {
   title: 'core/CircleBorder',
-  decorators: [withKnobs],
+  decorators: [withKnobs]
 };
 
 export const normal = () => {
@@ -17,7 +17,6 @@ export const normal = () => {
   const size: number = number('Size', 44);
   const fontSize: number = number('fontSize', 18);
   const type: BorderType = select('Border Type', ['fancy', 'plain'], 'fancy');
-  const borderSize: number = number('BorderSize', 6);
 
   return (
     <CircleBorder
