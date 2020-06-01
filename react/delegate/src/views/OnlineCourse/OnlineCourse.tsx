@@ -12,7 +12,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
     gridTemplateColumns: '2fr 1fr',
     gridGap: theme.spacing(3),
-    display: 'grid'
+    display: 'grid',
+    maxWidth: 1040
   },
   courseHead: {
     display: 'flex',
@@ -108,9 +109,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     }
   },
   courseSyllabus: {
-    marginTop: 52,
-    display: 'flex',
-    justifyContent: 'flex-end'
+    marginTop: 52
   }
 }));
 export type Course = {

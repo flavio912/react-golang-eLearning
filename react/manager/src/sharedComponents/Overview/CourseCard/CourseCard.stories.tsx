@@ -1,6 +1,6 @@
 import * as React from 'react';
 import CourseCard, { Course, SizeOptions, Completion } from './CourseCard';
-import { withKnobs, select, text, object } from '@storybook/addon-knobs';
+import { withKnobs, select, object } from '@storybook/addon-knobs';
 
 export default {
   title: 'Overview/CourseCard',
@@ -25,8 +25,6 @@ const defaultCourse: Course = {
   lessons: 144,
   video_time: 4
 };
-
-const defaultColor = '#8C1CB4';
 
 const defaultProgress: Completion = {
   total: 100,

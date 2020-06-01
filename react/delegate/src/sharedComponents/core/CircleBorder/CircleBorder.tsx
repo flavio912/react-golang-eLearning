@@ -9,19 +9,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    fontWeight: '900',
+    fontWeight: '900'
   },
   profileCircle: {
-    backgroundColor: theme.colors.primaryWhite,
+    backgroundColor: theme.colors.primaryWhite
   },
   profileBorder: {
     backgroundColor: `${theme.colors.primaryWhite}`,
     boxShadow: `rgba(0, 0, 0, 0.24) 0px 0px 3px`,
     backgroundImage: ({ type }: { type: BorderType }) =>
-      type == 'fancy'
+      type === 'fancy'
         ? `linear-gradient(45deg, ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`
-        : '',
-  },
+        : ''
+  }
 }));
 
 export interface User {
@@ -46,19 +46,19 @@ function CircleBorder({
   size = 44,
   fontSize = 18,
   borderType = 'fancy',
-  className,
+  className
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ type: borderType, theme });
   const borderTypes = {
     fancy: {
       borderSize: size + 4,
-      circleSize: size + 2,
+      circleSize: size + 2
     },
     plain: {
       borderSize: size + 6,
-      circleSize: size,
-    },
+      circleSize: size
+    }
   };
 
   return (
@@ -67,7 +67,7 @@ function CircleBorder({
       style={{
         height: borderTypes[borderType].borderSize,
         width: borderTypes[borderType].borderSize,
-        borderRadius: borderTypes[borderType].borderSize,
+        borderRadius: borderTypes[borderType].borderSize
       }}
     >
       <div
@@ -75,7 +75,7 @@ function CircleBorder({
         style={{
           width: borderTypes[borderType].circleSize,
           height: borderTypes[borderType].circleSize,
-          borderRadius: borderTypes[borderType].circleSize,
+          borderRadius: borderTypes[borderType].circleSize
         }}
       >
         {user && (

@@ -12,7 +12,8 @@ type Props = {
 const useStyles = createUseStyles(() => ({
   appHolder: {
     display: 'flex',
-    padding: '42px 60px'
+    padding: '42px 60px',
+    justifyContent: 'center'
   },
   appHolderRoot: {
     display: 'grid',
