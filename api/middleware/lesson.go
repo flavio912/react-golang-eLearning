@@ -79,7 +79,7 @@ func (g *Grant) GetLessonByUUID(UUID gentypes.UUID) (gentypes.Lesson, error) {
 	return g.lessonToGentype(lesson), nil
 }
 
-func (g *Grant) GetLessonsByUUID(uuids []gentypes.UUID) ([]gentypes.Lesson, error) {
+func (g *Grant) GetLessonsByUUID(uuids []string) ([]gentypes.Lesson, error) {
 	var lessons []gentypes.Lesson
 	if !g.IsAdmin {
 		return lessons, &errors.ErrUnauthorized

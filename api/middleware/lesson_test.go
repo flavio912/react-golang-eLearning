@@ -100,15 +100,15 @@ func TestGetLessonsByUUID(t *testing.T) {
 	tests := []struct {
 		name    string
 		grant   middleware.Grant
-		uuids   []gentypes.UUID
+		uuids   []string
 		wantErr interface{}
 		wantLen int
 	}{
 		{
 			"Must be admin",
 			nonAdminGrant,
-			[]gentypes.UUID{
-				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
 			},
 			&errors.ErrUnauthorized,
 			0,
@@ -126,9 +126,9 @@ func TestGetLessonsByUUID(t *testing.T) {
 		{
 			"Must get only existed lessons",
 			adminGrant,
-			[]gentypes.UUID{
-				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000033"),
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"00000000-0000-0000-0000-000000000033",
 			},
 			nil,
 			1,
@@ -136,9 +136,9 @@ func TestGetLessonsByUUID(t *testing.T) {
 		{
 			"Must get all managers",
 			adminGrant,
-			[]gentypes.UUID{
-				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"00000000-0000-0000-0000-000000000002",
 			},
 			nil,
 			2,
