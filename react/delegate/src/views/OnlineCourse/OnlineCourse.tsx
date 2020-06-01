@@ -219,9 +219,8 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
           </div>
           <div className={classes.courseHeadItem}>
             <span className={classes.labelBold}>
-              {course.percentCompleted}%:
+              {course.percentCompleted}% Completed
             </span>
-            <span className={classes.labelValue}>Completed</span>
           </div>
           <div className={classes.courseHeadItem}>
             <span className={classes.labelBold}>Enrolled:</span>
