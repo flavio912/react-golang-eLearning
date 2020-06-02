@@ -1,68 +1,69 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { animated, useSpring, config } from "react-spring";
-import { Theme } from "helpers/theme";
-import Icon, { IconNames } from "../../../sharedComponents/core/Icon/Icon";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { animated, useSpring, config } from 'react-spring';
+import { Theme } from 'helpers/theme';
+import Icon, { IconNames } from '../../../sharedComponents/core/Icon/Icon';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
+    display: 'flex',
     zIndex: 100,
     top: 0,
-    overflow: "hidden",
+    overflow: 'hidden',
     width: 274,
-    gridRow: "1 / span 2",
-    position: "relative",
-    height: "100%",
-    flexDirection: "column",
-    alignItems: "center",
-    boxShadow: "1px 0px 0px rgba(0,0,0,0.03)",
-    background: theme.colors.primaryWhite,
+    gridRow: '1 / span 2',
+    position: 'relative',
+    height: '100%',
+    flexDirection: 'column',
+    alignItems: 'center',
+    boxShadow: '1px 0px 0px rgba(0,0,0,0.03)',
+    background: theme.colors.primaryWhite
   },
   menu: {
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "flex-start",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'center'
   },
   tab: {
-    width: "274px",
+    width: '274px',
     height: 72,
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
     opacity: 0.3,
-    transition: "background-color 0.3s linear, opacity 0.3s linear",
+    transition: 'background-color 0.3s linear, opacity 0.3s linear'
   },
   selected: {
     backgroundColor: theme.colors.hoverGreen,
     opacity: 1,
-    transition: "background-color 0.3s linear, opacity 0.3s linear",
+    transition: 'background-color 0.3s linear, opacity 0.3s linear'
   },
   fold: {
     width: 17,
     height: 40,
-    position: "absolute",
-    left: "-13px",
+    position: 'absolute',
+    left: '-13px',
     opacity: 1,
-    transition: "opacity 1s linear",
+    transition: 'opacity 1s linear',
     borderRadius: 13,
-    backgroundColor: theme.colors.secondaryGreen,
+    backgroundColor: theme.colors.secondaryGreen
   },
   noFold: {
-    height: "40px",
-    width: "5px",
+    height: '40px',
+    width: '5px',
     opacity: 0,
-    transition: "visibility 0s 1s, opacity 1s linear",
+    transition: 'visibility 0s 1s, opacity 1s linear'
   },
   logo: {
-    cursor: "pointer",
-    height: "50px",
-    width: "140px",
-    margin: "25px 0",
+    cursor: 'pointer',
+    height: '50px',
+    width: '140px',
+    margin: '25px 0'
   },
   arrow: {},
   arrowCont: {
@@ -71,28 +72,28 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: 20,
     height: 20,
     padding: 5,
-    position: "absolute",
-    boxShadow: "6px 2px 10px rgba(0,0,0,0.07)",
+    position: 'absolute',
+    boxShadow: '6px 2px 10px rgba(0,0,0,0.07)',
     borderRadius: 20,
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF'
   },
   title: {
     fontSize: theme.fontSizes.large,
-    fontWeight: "700",
+    fontWeight: '700',
     color: theme.colors.textBlue,
-    margin: "0 25px",
+    margin: '0 25px'
   },
   body: {
-    padding: "30px 30px",
+    padding: '30px 30px',
     backgroundColor: theme.colors.backgroundGrey,
     boxShadow: theme.shadows.body,
-    flexGrow: 1,
+    flexGrow: 1
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    marginLeft: "30px",
-  },
+    display: 'flex',
+    flexDirection: 'row',
+    marginLeft: '30px'
+  }
 }));
 
 export interface Tab {
@@ -117,7 +118,7 @@ function SideMenu({
   selected,
   onClick,
   onLogoClick,
-  className,
+  className
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -125,7 +126,7 @@ function SideMenu({
   const { left, opacity } = useSpring({
     left: isOpen ? 0 : -274,
     opacity: isOpen ? 1 : 0,
-    config: config.default,
+    config: config.default
   });
 
   return (
@@ -148,6 +149,8 @@ function SideMenu({
         src={logo}
         alt="Logo"
       />
+      <Spacer vertical spacing={2} />
+      <Spacer vertical spacing={1} />
       <animated.div className={classNames(classes.menu)} style={{ opacity }}>
         {tabs &&
           tabs.map((tab) => (
@@ -172,7 +175,7 @@ function SideMenu({
                 <Icon
                   name={tab.icon}
                   size={tab.size ?? 20}
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                 />
                 <div className={classes.title}>{tab.title}</div>
               </div>

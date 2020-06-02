@@ -34,12 +34,13 @@ export const AppHolder = ({ children }: Props) => {
   const selected = () => {
     const { routes } = match;
     const currentRouter = routes[routes.length - 1];
+    console.log(currentRouter.path);
     switch (currentRouter.path) {
       case '/':
         return tabs[0];
-      case '/online-courses':
+      case '/courses':
         return tabs[1];
-      case '/online-courses/:id':
+      case '/courses/:id':
         return tabs[1];
       default:
         return tabs[0];
@@ -57,7 +58,7 @@ export const AppHolder = ({ children }: Props) => {
               router.push('/app');
               break;
             case 1:
-              router.push('/app/online-courses/1');
+              router.push('/app/courses');
               break;
             default:
               break;

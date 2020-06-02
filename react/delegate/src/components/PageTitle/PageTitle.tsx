@@ -24,9 +24,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   backTextBold: {
     marginLeft: 10,
-    color: theme.colors.secondaryBlack,
+    color: theme.colors.primaryBlack,
     fontSize: theme.fontSizes.default,
-    fontWeight: 500,
+    fontWeight: 700,
     lineHeight: `18px`,
     letterSpacing: -0.35,
     marginRight: 5
