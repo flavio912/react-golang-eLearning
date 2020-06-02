@@ -8,7 +8,7 @@ import Table from "components/core/Table";
 import UserLabel from "components/core/Table/UserLabel";
 import Text from "components/core/Table/Text/Text";
 import Icon from "sharedComponents/core/Icon";
-import CourseCompletion from "sharedComponents/core/Table/CourseCompletion";
+import CourseCompletion from "sharedComponents/core/CourseCompletion";
 import Dropdown from "sharedComponents/core/Input/Dropdown";
 import Spacer from "sharedComponents/core/Spacers/Spacer";
 import Paginator from "sharedComponents/Pagination/Paginator";

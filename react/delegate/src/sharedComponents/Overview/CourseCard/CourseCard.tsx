@@ -6,7 +6,7 @@ import Button from '../../core/Input/Button';
 import Icon from '../../core/Icon';
 import { Theme } from 'helpers/theme';
 import FooterIcon from './FooterIcon';
-import CourseCompletion from 'sharedComponents/core/Table/CourseCompletion';
+import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
