@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="11px" height="11px" viewBox="0 0 11 11" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>user</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Hifi---Company-Managers" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="09-Company-Manager-&gt;-Quick-Booking-Step-1---Selected-Course" transform="translate(-1289.000000, -436.000000)" fill="#34373A" fill-rule="nonzero">
+            <g id="Add-Delegate" transform="translate(1276.000000, 421.000000)">
+                <g id="user" transform="translate(13.000000, 15.000000)">
+                    <path d="M5.5,0 C2.4673,0 0,2.4673 0,5.5 C0,8.5327 2.4673,11 5.5,11 C8.5327,11 11,8.5327 11,5.5 C11,2.4673 8.5327,0 5.5,0 Z M5.5,10 C3.0187,10 1,7.9813 1,5.5 C1,3.0187 3.0187,1 5.5,1 C7.9813,1 10,3.0187 10,5.5 C10,7.9813 7.9813,10 5.5,10 Z" id="Shape"></path>
+                    <rect id="Rectangle" x="3" y="5" width="5" height="1" rx="0.5"></rect>
+                    <rect id="Rectangle" transform="translate(5.500000, 5.500000) rotate(90.000000) translate(-5.500000, -5.500000) " x="3" y="5" width="5" height="1" rx="0.5"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Multipy Sir</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="StatusIncomplete" transform="translate(1.000000, 1.000000)">
+            <g id="Multipy-Sir">
+                <circle id="Oval" stroke="#DB5C5D" stroke-width="1.45454545" cx="8" cy="8" r="8"></circle>
+                <g id="Multipy" transform="translate(8.152671, 8.070399) rotate(44.000000) translate(-8.152671, -8.070399) translate(3.652671, 3.570399)" fill="#DB5C5D" fill-rule="nonzero">
+                    <rect id="Rectangle" transform="translate(4.287091, 4.643260) rotate(-44.000000) translate(-4.287091, -4.643260) " x="-0.712909167" y="3.9159873" width="10" height="1.45454545" rx="0.727272727"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
