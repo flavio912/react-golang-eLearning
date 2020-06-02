@@ -53,6 +53,24 @@ func TestDelegateLogin(t *testing.T) {
 		}, *grant)
 	})
 
+	t.Run("noResp param is respected", func(t *testing.T) {
+		gqltest.RunTest(t, &gqltest.Test{
+
+			Name:    "Blank response expected",
+			Context: defaultContext(),
+			Schema:  schema,
+			Query: `
+					mutation {
+						delegateLogin(input:{TTC_ID: "delegate-test-1", password: "iamamanager", noResp: true}) {
+							token
+						}
+					}
+				`,
+			ExpectedResult: `{"delegateLogin":{"token":""}}`,
+			ExpectedErrors: nil,
+		})
+	})
+
 	t.Run("must fail properly", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{

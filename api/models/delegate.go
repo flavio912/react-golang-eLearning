@@ -45,6 +45,10 @@ func (delegate *Delegate) GenerateToken(password string) (string, error) {
 	}
 
 	token, err := auth.GenerateToken(claims, 24)
+
+	if err == nil {
+		database.GormDB.Model(&delegate).Update("last_login", time.Now())
+	}
 	return token, err
 }
 

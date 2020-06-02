@@ -61,4 +61,5 @@ func (m *CreateDelegateInput) Validate() error {
 type DelegateLoginInput struct {
 	TTC_ID   string
 	Password string
+	NoResp   *bool
 }

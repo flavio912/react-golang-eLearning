@@ -9,10 +9,16 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
-func (m *MutationResolver) DelegateLogin(args struct{ Input gentypes.DelegateLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) DelegateLogin(ctx context.Context, args struct{ Input gentypes.DelegateLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetDelegateAccessToken(args.Input.TTC_ID, args.Input.Password)
 	if err != nil {
 		return nil, err
+	}
+	auth.SetAuthCookie(ctx, token)
+
+	// If NoResp given return a blank token in the response - @temmerson
+	if args.Input.NoResp != nil && *args.Input.NoResp {
+		return &gentypes.AuthToken{Token: ""}, nil
 	}
 	return &gentypes.AuthToken{Token: token}, nil
 }

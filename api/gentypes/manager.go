@@ -70,4 +70,5 @@ func (m *DeleteManagerInput) Validate() error {
 type ManagerLoginInput struct {
 	Email    string
 	Password string
+	NoResp   *bool
 }

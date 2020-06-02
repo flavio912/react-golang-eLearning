@@ -9,6 +9,7 @@ import (
 
 type yamlConfig struct {
 	IsTesting bool `yaml:"isTesting"`
+	IsDev     bool `yaml:"isDev"`
 	Database  struct {
 		Host         string `yaml:"host"`
 		User         string `yaml:"user"`

@@ -18,17 +18,14 @@ function fetchQuery(operation: any, variables: any) {
     'content-type': 'application/json'
   };
 
-  const token = localStorage.getItem('auth');
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
   return fetch('http://localhost:8080/graphql', {
     method: 'POST',
     headers,
     body: JSON.stringify({
       query: operation.text,
       variables
-    })
+    }),
+    credentials: 'include'
   }).then(async (response) => {
     const json = await response.json();
     if (json && 'errors' in json) {

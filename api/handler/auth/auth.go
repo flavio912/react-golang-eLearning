@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"strings"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -20,6 +22,7 @@ var (
 	AuthKey = contextKey("token")
 	// GrantKey is the contextKey for getting a grant
 	GrantKey = contextKey("grant")
+	RespKey  = contextKey("resp")
 )
 
 // Handler handles creating a grant for authenticated users
@@ -28,6 +31,14 @@ func Handler(h http.Handler) http.Handler {
 		ctx := r.Context()
 
 		token := strings.ReplaceAll(r.Header.Get("Authorization"), "Bearer ", "")
+
+		if token == "" {
+			_token, err := r.Cookie("auth")
+			if err == nil {
+				// TODO: IMPORTANT - Carry out AUTH checks
+				token = _token.Value
+			}
+		}
 
 		// Attempt to get a grant
 		grant, err := middleware.Authenticate(token)
@@ -38,6 +49,7 @@ func Handler(h http.Handler) http.Handler {
 		}
 
 		ctx = context.WithValue(ctx, AuthKey, token)
+		ctx = context.WithValue(ctx, RespKey, &w)
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
@@ -65,4 +77,31 @@ func GrantFromContext(ctx context.Context) *middleware.Grant {
 	v := val.(*middleware.Grant)
 	v.Logger = logging.GetLoggerFromCtx(ctx)
 	return v
+}
+
+// ResponseFromContext returns a pointer to the response writer of the http request
+func ResponseFromContext(ctx context.Context) *http.ResponseWriter {
+	val := ctx.Value(RespKey)
+	if val == nil {
+		return nil
+	}
+
+	v := val.(*http.ResponseWriter)
+	return v
+}
+
+// SetAuthCookie gets the responseWriter from context and uses it to set the jwt cookie
+func SetAuthCookie(ctx context.Context, token string) {
+	writer := ResponseFromContext(ctx)
+	if writer == nil {
+		glog.Warning("Unable to set auth cookie, no writer set")
+		return
+	}
+
+	if helpers.Config.IsDev {
+		// In dev, don't use a secure cookie as we aren't using tls in dev
+		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: token, HttpOnly: true, Secure: false})
+	} else {
+		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: token, HttpOnly: true, Secure: true, Domain: "*.ttc-hub.com"})
+	}
 }

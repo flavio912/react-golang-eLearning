@@ -14,6 +14,7 @@ type GraphQL struct {
 	Loaders loader.Map
 }
 
+
 func (g *GraphQL) Serve() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -32,7 +33,6 @@ func (g *GraphQL) Serve() http.Handler {
 		}
 
 		ctx := r.Context()
-
 		ctx = g.Loaders.Attach(ctx)
 		resp := g.Schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
 

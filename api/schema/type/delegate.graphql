@@ -36,4 +36,5 @@ type DelegatePage implements PaginatedQuery {
 input DelegateLogin {
   TTC_ID: String!
   password: String!
+  noResp: Boolean
 }

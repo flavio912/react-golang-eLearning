@@ -67,16 +67,17 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 		return "", &errors.ErrUnauthorized
 	}
 
-	// Update last login time
-	manager.LastLogin = time.Now()
-	database.GormDB.Save(manager)
-
 	claims := auth.UserClaims{
 		UUID:    manager.UUID,
 		Role:    auth.ManagerRole,
 		Company: manager.CompanyUUID,
 	}
 	token, err := auth.GenerateToken(claims, 24)
+
+	if err == nil {
+		// Update last login time
+		database.GormDB.Model(&manager).Update("last_login", time.Now())
+	}
 	return token, err
 }
 

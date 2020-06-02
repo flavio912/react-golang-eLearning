@@ -25,15 +25,24 @@ func (m *MutationResolver) AdminLogin(args struct{ Input gentypes.AdminLoginInpu
 	if err != nil {
 		return nil, err
 	}
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
 // ManagerLogin - Resolver for getting an authToken
-func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) ManagerLogin(ctx context.Context, args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetManagerAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
+
+	auth.SetAuthCookie(ctx, token)
+
+	// If NoResp given return a blank token in the response - @temmerson
+	if args.Input.NoResp != nil && *args.Input.NoResp {
+		return &gentypes.AuthToken{Token: ""}, nil
+	}
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
