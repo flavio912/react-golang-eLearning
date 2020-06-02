@@ -65,7 +65,7 @@ const theme: Theme = {
     primaryGreen: '#10b73b',
     secondaryBlack: '#34373A',
     secondaryGreen: '#15C324',
-    hoverGreen: '#E7F8E6',
+    hoverGreen: 'rgb(243, 251, 242)',
     primaryRed: '#CB463A',
     secondaryGrey: '#9ea2ad',
     primaryWhite: '#FFFFFF',

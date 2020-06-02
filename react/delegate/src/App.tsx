@@ -18,9 +18,8 @@ import LoginPage from 'views/Login';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
-import { Redirect } from 'react-router-dom';
-import Dashboard from 'views/Dashboard';
 import OnlineCoursePage from 'views/OnlineCourse';
+import TrainingZone from 'views/TrainingZone/TrainingZone';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -52,7 +51,7 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        <Route path="/" Component={Dashboard} />
+        <Route path="/" Component={TrainingZone} />
         <Route path="/online-courses/:id" Component={OnlineCoursePage} />
       </Route>
     </Route>

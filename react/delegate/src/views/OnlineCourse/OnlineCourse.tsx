@@ -232,7 +232,12 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
           <p className={classes.flatCardText}>
             Make sure your speakers are turned on before you start this course
           </p>
-          <Button title="Begin Course" onClick={() => {}} padding="massive" />
+          <Button
+            title="Begin Course"
+            onClick={() => {}}
+            padding="massive"
+            noWrap
+          />
         </FlatCard>
         {course.estimateTimeComplete && (
           <div className={classes.courseContent}>

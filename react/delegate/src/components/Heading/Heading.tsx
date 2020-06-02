@@ -1,18 +1,19 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   headingRoot: {
     fontWeight: (props: { font: Font }) => props.font.weight,
     fontSize: (props: { font: Font }) => props.font.size,
     color: theme.colors.primaryBlack,
-  },
+    marginTop: 0
+  }
 }));
 
 type Props = {
   text: string;
-  size: "large" | "medium";
+  size: 'large' | 'medium';
 };
 
 type Font = {
@@ -25,12 +26,12 @@ const fonts: {
 } = {
   large: {
     size: 41,
-    weight: 900,
+    weight: 900
   },
   medium: {
     size: 20,
-    weight: 600,
-  },
+    weight: 600
+  }
 };
 
 function Heading({ text, size }: Props) {
