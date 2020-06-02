@@ -3,7 +3,7 @@ import PageNumbers from "./PageNumbers";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "core/PageNumbers",
+  title: "Pagination/PageNumbers",
   decorators: [withKnobs],
 };
 
