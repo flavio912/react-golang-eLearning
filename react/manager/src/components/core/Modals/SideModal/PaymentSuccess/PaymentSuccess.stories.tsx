@@ -3,7 +3,7 @@ import PaymentSuccess from './PaymentSuccess';
 import { withKnobs, number, text } from '@storybook/addon-knobs';
 
 export default {
-  title: 'Core/SlideModal/PaymentSuccess',
+  title: 'Core/Modals/SlideModal/PaymentSuccess',
   decorators: [withKnobs]
 };
 

@@ -1,6 +1,6 @@
 import * as React from "react";
-import SideModal from "components/core/SideModal";
-import Tabs, { TabContent, Body, Heading, Footer } from "components/core/SideModal/Tabs";
+import SideModal from "components/core/Modals/SideModal";
+import Tabs, { TabContent, Body, Heading, Footer } from "components/core/Modals/SideModal/Tabs";
 import Button from "sharedComponents/core/Input/Button";
 import Icon from "sharedComponents/core/Icon";
 import EasyInput from "components/core/Input/EasyInput";

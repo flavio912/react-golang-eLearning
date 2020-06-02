@@ -5,7 +5,7 @@ import { Theme } from 'helpers/theme';
 import useDimensions from 'react-use-dimensions';
 import { useSpring, animated, config } from 'react-spring';
 import classNames from 'classnames';
-import { Course } from '../../Input/SearchableDropdown';
+import { Course } from '../../../Input/SearchableDropdown';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {

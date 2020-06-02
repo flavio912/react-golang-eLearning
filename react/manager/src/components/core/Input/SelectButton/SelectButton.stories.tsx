@@ -3,7 +3,7 @@ import SelectButton from "./SelectButton";
 import { withKnobs, array } from "@storybook/addon-knobs";
 
 export default {
-  title: "Core/InputSelectButton",
+  title: "Core/Input/SelectButton",
   decorators: [withKnobs],
 };
 
