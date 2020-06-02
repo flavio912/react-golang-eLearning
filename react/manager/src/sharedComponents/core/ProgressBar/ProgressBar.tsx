@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
-import { Theme } from "../../../helpers/theme";
+import { Theme } from "helpers/theme";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   progressBarRoot: {
