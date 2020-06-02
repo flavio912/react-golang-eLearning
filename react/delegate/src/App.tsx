@@ -20,6 +20,7 @@ import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import OnlineCoursePage from 'views/OnlineCourse';
 import TrainingZone from 'views/TrainingZone/TrainingZone';
+import OnlineCourses from 'views/OnlineCourses';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -52,7 +53,8 @@ const Router = createFarceRouter({
         }}
       >
         <Route path="/" Component={TrainingZone} />
-        <Route path="/online-courses/:id" Component={OnlineCoursePage} />
+        <Route path="/courses" Component={OnlineCourses} />
+        <Route path="/courses/:id" Component={OnlineCoursePage} />
       </Route>
     </Route>
   ),

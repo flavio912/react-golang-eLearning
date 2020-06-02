@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
+import classnames from 'classnames';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   headingRoot: {
@@ -14,6 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
   text: string;
   size: 'large' | 'medium';
+  className?: string;
 };
 
 type Font = {
@@ -34,13 +36,13 @@ const fonts: {
   }
 };
 
-function Heading({ text, size }: Props) {
+function Heading({ text, size, className }: Props) {
   const theme = useTheme();
 
   const font = fonts[size];
   const classes = useStyles({ font, theme });
 
-  return <h1 className={classes.headingRoot}>{text}</h1>;
+  return <h1 className={classnames(classes.headingRoot, className)}>{text}</h1>;
 }
 
 export default Heading;

@@ -130,10 +130,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type SizeOptions = 'small' | 'large';
-export type Completion = {
-  total: number;
-  complete: number;
-};
+
 export interface Course {
   type: string;
   colour: string;
@@ -141,10 +138,10 @@ export interface Course {
   title: string;
   price?: number;
   description: string;
-  assigned: number;
-  expiring: number;
-  date: string;
-  location: string;
+  assigned?: number;
+  expiring?: number;
+  date?: string;
+  location?: string;
   modules?: number;
   lessons?: number;
   video_time?: number;
@@ -153,7 +150,7 @@ export interface Course {
 type Props = {
   course: Course;
   size?: SizeOptions;
-  progress?: Completion;
+  progress?: number;
   onClick: Function;
   padding?: PaddingOptions;
   className?: string;
@@ -184,6 +181,9 @@ function CourseCard({
         classes[size],
         className
       )}
+      onClick={() => {
+        onClick();
+      }}
     >
       <div
         className={classNames(classes.mainContainer)}
@@ -248,7 +248,12 @@ function CourseCard({
           </div>
           {size === 'large' && (
             <div className={classNames(classes.button)}>
-              <Button archetype="submit" onClick={() => onClick()}>
+              <Button
+                archetype="submit"
+                onClick={() => {
+                  onClick();
+                }}
+              >
                 Book Now
               </Button>
             </div>
@@ -256,12 +261,12 @@ function CourseCard({
         </div>
       </div>
 
-      {progress && progress.complete && progress.total ? (
+      {progress ? (
         <div className={classNames(classes.row, classes.footer)}>
           <div className={classes.progress}>PROGRESS</div>
           <CourseCompletion
-            complete={progress.complete}
-            total={progress.total}
+            complete={progress}
+            total={100}
             width={125}
             fraction={false}
           />

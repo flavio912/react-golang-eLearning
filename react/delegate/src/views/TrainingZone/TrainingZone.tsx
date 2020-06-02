@@ -19,7 +19,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "header header header topinf topinf topinf"
       "allcou allcou expire expire trainp trainp"
       "jumpba jumpba jumpba .      .      .     "
-    `
+    `,
+    '@media (max-width: 1350px)': {
+      gridTemplateAreas: `
+      "header"
+      "topinf"
+      "allcou"
+      "expire"
+      "trainp"
+      "jumpba"
+    `,
+      gridTemplateColumns: 'repeat(1, 1fr)'
+    }
   },
   trainingHeader: {
     gridArea: 'header'
