@@ -5,14 +5,14 @@ const white = '#FFFFFF';
 export default {
   primary: {
     contrastText: white,
-    dark: colors.indigo[900],
+    dark: '#072a79',
     main: '#0d57ff',
     light: colors.indigo[100]
   },
   secondary: {
     contrastText: white,
     dark: colors.blue[900],
-    main: colors.blue.A700,
+    main: '#11c128',
     light: colors.blue.A400
   },
   error: {

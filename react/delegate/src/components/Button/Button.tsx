@@ -26,29 +26,41 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   largePadding: {
     padding: '15px 35px'
+  },
+  massivePadding: {
+    padding: '17px 39px'
   }
 }));
-export type PaddingOptions = 'none' | 'small' | 'medium' | 'large';
+export type PaddingOptions = 'none' | 'small' | 'medium' | 'large' | 'massive';
 
 export type ButtonProps = {
   title: string;
   onClick: Function;
   className?: string;
   padding?: PaddingOptions;
+  noWrap?: boolean;
 };
 
-function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
+function Button({
+  title,
+  onClick,
+  className,
+  padding = 'none',
+  noWrap
+}: ButtonProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const paddingLink = {
     none: '',
     small: classes.smallPadding,
     medium: classes.mediumPadding,
-    large: classes.largePadding
+    large: classes.largePadding,
+    massive: classes.massivePadding
   };
   return (
     <ButtonBase
       onClick={() => onClick()}
+      style={noWrap ? { whiteSpace: 'nowrap' } : {}}
       className={classNames(classes.root, paddingLink[padding], className)}
     >
       <span className={classes.buttonText}>{title}</span>

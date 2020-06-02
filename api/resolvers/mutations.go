@@ -320,3 +320,19 @@ func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Inpu
 		Category: category,
 	})
 }
+
+func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input gentypes.CreateLessonInput }) (*LessonResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &LessonResolver{}, &errors.ErrUnauthorized
+	}
+
+	lesson, err := grant.CreateLesson(args.Input)
+	if err != nil {
+		return &LessonResolver{}, err
+	}
+
+	return &LessonResolver{
+		Lesson: lesson,
+	}, err
+}

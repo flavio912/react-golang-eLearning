@@ -41,12 +41,14 @@ export type Theme = {
   fontSizes: {
     heading: number;
     smallHeading: number;
+    xSmallHeading: number;
     tinyHeading: number;
     extraLarge: number;
     large: number;
     xLarge: number;
     default: number;
     small: number;
+    xSmall: number;
     tiny: number;
   };
 };
@@ -64,7 +66,7 @@ const theme: Theme = {
     primaryGreen: '#10b73b',
     secondaryBlack: '#34373A',
     secondaryGreen: '#15C324',
-    hoverGreen: '#E7F8E6',
+    hoverGreen: 'rgb(243, 251, 242)',
     primaryRed: '#CB463A',
     secondaryGrey: '#9ea2ad',
     primaryWhite: '#FFFFFF',
@@ -87,12 +89,14 @@ const theme: Theme = {
   fontSizes: {
     heading: 25,
     smallHeading: 24,
+    xSmallHeading: 21,
     tinyHeading: 20,
     extraLarge: 18,
     large: 16,
     xLarge: 15,
     default: 14,
     small: 13,
+    xSmall: 12,
     tiny: 11
   }
 };
