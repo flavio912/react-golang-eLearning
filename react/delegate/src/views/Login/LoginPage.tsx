@@ -26,7 +26,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 const mutation = graphql`
   mutation LoginPage_LoginMutation($email: String!, $password: String!) {
-    managerLogin(input: { email: $email, password: $password }) {
+    managerLogin(input: { email: $email, password: $password, noResp: true }) {
       token
     }
   }
@@ -55,7 +55,6 @@ const AttemptLogin = (
         return;
       }
       console.log('Response received from server.', response, errors);
-      localStorage.setItem('auth', response.managerLogin.token);
       window.location.href = '/app';
     },
     onError: (err) => console.error(err)
