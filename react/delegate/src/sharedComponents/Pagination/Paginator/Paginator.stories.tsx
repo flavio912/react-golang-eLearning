@@ -3,7 +3,7 @@ import Paginator from ".";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "/~/Desktop/GitHub/admin-react/react/delegate/src/sharedComponents/Paginator",
+  title: "Pagination/Paginator",
   decorators: [withKnobs],
 };
 
