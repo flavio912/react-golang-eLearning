@@ -3,7 +3,7 @@ import { withKnobs, text } from '@storybook/addon-knobs';
 import CardItem from './CardItem';
 
 export default {
-  title: 'CardItem',
+  title: 'Core/Cards/CardItem',
   decorators: [withKnobs]
 };
 

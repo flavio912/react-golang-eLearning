@@ -10,7 +10,7 @@ import {
 import Icon from "../../../sharedComponents/core/Icon";
 
 export default {
-  title: "/Table",
+  title: "Core/Table",
   decorators: [withKnobs],
 };
 

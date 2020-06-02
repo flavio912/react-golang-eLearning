@@ -3,7 +3,7 @@ import { withKnobs, text } from "@storybook/addon-knobs";
 import Question from "./Question";
 
 export default {
-  title: "Question",
+  title: "Misc/Question",
   decorators: [withKnobs],
 };
 const questionImage = {
