@@ -1,8 +1,8 @@
 import * as React from 'react';
-import Card, { PaddingOptions } from '../../core/Card';
+import Card, { PaddingOptions } from '../../core/Cards/Card';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
-import Button from '../../core/Button';
+import Button from '../../core/Input/Button';
 import Icon from '../../core/Icon';
 import { Theme } from 'helpers/theme';
 import FooterIcon from './FooterIcon';

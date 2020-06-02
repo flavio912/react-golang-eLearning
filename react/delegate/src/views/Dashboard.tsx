@@ -1,9 +1,9 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
-import CoreInput, { InputTypes } from "sharedComponents/core/CoreInput";
+import CoreInput, { InputTypes } from "sharedComponents/core/Input/CoreInput";
 import classnames from "classnames";
 import { Theme } from "helpers/theme";
-import Heading from "components/Heading";
+import Heading from "components/core/Heading";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   dashboardRoot: {

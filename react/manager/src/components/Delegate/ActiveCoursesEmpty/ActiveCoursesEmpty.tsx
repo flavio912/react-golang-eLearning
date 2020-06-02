@@ -1,7 +1,7 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import Text from "components/core/Table/Text/Text";
-import Button from "sharedComponents/core/Button";
+import Button from "sharedComponents/core/Input/Button";
 import themeConfig, { Theme } from "helpers/theme";
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {

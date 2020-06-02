@@ -1,7 +1,7 @@
 import * as React from 'react';
 import SideModal from './SideModal';
 import { withKnobs, boolean } from '@storybook/addon-knobs';
-import Button from 'sharedComponents/core/Button';
+import Button from 'sharedComponents/core/Input/Button';
 import Tabs, {
   TabContent,
   Footer,
@@ -17,10 +17,10 @@ import Tabs, {
 import SearchableDropdown, {
   CourseCategory,
   Course
-} from '../SearchableDropdown';
+} from '../Input/SearchableDropdown';
 import { ResultItem } from 'components/UserSearch';
 import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
-import Checkbox from '../Checkbox';
+import Checkbox from '../Input/Checkbox';
 
 export default {
   title: 'Core/Course Management',

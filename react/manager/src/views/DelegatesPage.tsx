@@ -6,7 +6,7 @@ import ActvityCard from "components/Overview/ActivityCard";
 import { createUseStyles, useTheme } from "react-jss";
 import classes from "*.module.css";
 import classNames from "classnames";
-import Button from "sharedComponents/core/Button";
+import Button from "sharedComponents/core/Input/Button";
 import UserSearch from "components/UserSearch";
 import PageTitle from "components/PageTitle";
 import TitleWrapper from "components/Overview/TitleWrapper";
@@ -21,9 +21,9 @@ import UserLabel from "components/core/Table/UserLabel";
 import Text from "components/core/Table/Text/Text";
 import Icon from "sharedComponents/core/Icon";
 import CourseCompletion from "components/core/Table/CourseCompletion";
-import Dropdown from "sharedComponents/core/Dropdown";
+import Dropdown from "sharedComponents/core/Input/Dropdown";
 import Spacer from "sharedComponents/core/Spacers/Spacer";
-import Paginator from "sharedComponents/Paginator";
+import Paginator from "sharedComponents/Pagination/Paginator";
 
 type Props = {};
 

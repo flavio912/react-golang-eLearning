@@ -2,7 +2,7 @@ import * as React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import Icon from 'sharedComponents/core/Icon';
-import CoreInput from 'components/core/CoreInput';
+import CoreInput from 'components/core/Input/CoreInput';
 import PaymentForm from 'components/core/SideModal/PaymentForm';
 import PaymentSuccess from 'components/core/SideModal/PaymentSuccess';
 
