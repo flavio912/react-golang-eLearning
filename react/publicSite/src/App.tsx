@@ -14,13 +14,11 @@ import {
 import { Resolver } from 'found-relay';
 import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
-import LoginPage from 'views/Login';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Dashboard from 'views/Dashboard';
-import OnlineCoursePage from 'views/OnlineCourse';
 
 const ExamplePageQuery = graphql`
   query App_Query {
