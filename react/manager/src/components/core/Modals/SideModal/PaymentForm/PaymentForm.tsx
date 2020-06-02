@@ -7,7 +7,7 @@ import {
   StripeProvider
 } from 'react-stripe-elements';
 import { Elements } from 'react-stripe-elements';
-import Button from 'components/Button';
+import Button from 'components/core/Input/Button';
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentFormRoot: {
     backgroundColor: theme.colors.backgroundGrey,

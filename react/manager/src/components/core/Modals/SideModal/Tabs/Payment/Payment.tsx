@@ -3,8 +3,8 @@ import { createUseStyles } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import Icon from 'sharedComponents/core/Icon';
 import CoreInput from 'components/core/Input/CoreInput';
-import PaymentForm from 'components/core/SideModal/PaymentForm';
-import PaymentSuccess from 'components/core/SideModal/PaymentSuccess';
+import PaymentForm from 'components/core/Modals/SideModal/PaymentForm';
+import PaymentSuccess from 'components/core/Modals/SideModal/PaymentSuccess';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentRoot: {},

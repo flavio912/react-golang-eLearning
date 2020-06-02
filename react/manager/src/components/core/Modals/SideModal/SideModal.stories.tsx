@@ -6,7 +6,7 @@ import FancyInput from "components/LoginDialogue/FancyInput";
 import Tabs, { TabContent } from "./Tabs";
 
 export default {
-  title: "Core/Side Modal",
+  title: "Core/Modals/Side Modal",
   decorators: [withKnobs],
 };
 

@@ -17,13 +17,13 @@ import Tabs, {
 import SearchableDropdown, {
   CourseCategory,
   Course
-} from '../Input/SearchableDropdown';
+} from '../../Input/SearchableDropdown';
 import { ResultItem } from 'components/UserSearch';
 import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
-import Checkbox from '../Input/Checkbox';
+import Checkbox from '../../Input/Checkbox';
 
 export default {
-  title: 'Core/Course Management',
+  title: 'Core/Modals/Course Management',
   decorators: [withKnobs]
 };
 
