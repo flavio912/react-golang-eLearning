@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import SearchResultItem from 'components/Search/SearchResultItem';
 import SearchInput from 'components/Search/SearchInput';
-import Paginator from 'sharedComponents/Paginator';
+import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const useStyles = createUseStyles((theme: Theme) => ({
