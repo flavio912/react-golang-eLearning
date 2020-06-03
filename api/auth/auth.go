@@ -86,6 +86,11 @@ type trueFinaliseDelegateClaims struct {
 	Claims FinaliseDelegateClaims `json:"claims"`
 }
 
+type trueCSRFClaims struct {
+	jwt.StandardClaims
+	Claims CSRFClaims `json:"claims"`
+}
+
 // ValidateToken - Checks the signature on a token and returns claims
 func ValidateToken(token string) (UserClaims, error) {
 
@@ -128,6 +133,10 @@ type FinaliseDelegateClaims struct {
 	UUID gentypes.UUID
 }
 
+type CSRFClaims struct {
+	UUID gentypes.UUID
+}
+
 func ValidateFinaliseDelegateToken(token string) (FinaliseDelegateClaims, error) {
 	claims := &trueFinaliseDelegateClaims{}
 
@@ -157,6 +166,24 @@ func GenerateFinaliseDelegateToken(claims FinaliseDelegateClaims) (string, error
 	}
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, finalClaims)
 	tokenString, errToken := token.SignedString([]byte(helpers.Config.Jwt.DelegateFinaliseSecret))
+	if errToken != nil {
+		return "", errors.New("jwt error: " + errToken.Error())
+	}
+
+	return tokenString, nil
+}
+
+// Generates a CSRF token for use in cookie authenticated requests
+func GenerateCSRFToken(claims CSRFClaims) (string, error) {
+	finalClaims := trueCSRFClaims{
+		Claims: claims,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Duration(168) * time.Hour).Unix(), // Expires in one week
+			IssuedAt:  time.Now().Unix(),
+		},
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, finalClaims)
+	tokenString, errToken := token.SignedString([]byte(helpers.Config.Jwt.CSRFSecret))
 	if errToken != nil {
 		return "", errors.New("jwt error: " + errToken.Error())
 	}

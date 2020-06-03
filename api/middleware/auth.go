@@ -4,6 +4,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -118,4 +119,17 @@ func (g *Grant) HasFullRestrictedAccess() bool {
 	}
 
 	return false
+}
+
+func (g *Grant) GenerateCSRFToken() (string, error) {
+	token, err := auth.GenerateCSRFToken(auth.CSRFClaims{
+		UUID: g.Claims.UUID,
+	})
+
+	if err != nil {
+		g.Logger.Log(sentry.LevelInfo, err, "Unable to generate CSRF token for user")
+		return "", &errors.ErrWhileHandling
+	}
+
+	return token, nil
 }

@@ -35,6 +35,15 @@ func Handler(h http.Handler) http.Handler {
 		if token == "" {
 			_token, err := r.Cookie("auth")
 			if err == nil {
+				// If valid cookie given, check XSRF token is present
+				var csrfToken = r.Header.Get("X-CSRF-TOKEN")
+				if csrfToken == "" {
+					w.Header().Set("Content-Type", "application/text")
+					w.WriteHeader(http.StatusUnauthorized)
+					w.Write([]byte("Invalid CSRF TOKEN"))
+					return
+				}
+
 				// TODO: IMPORTANT - Carry out AUTH checks
 				token = _token.Value
 			}

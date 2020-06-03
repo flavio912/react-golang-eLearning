@@ -123,4 +123,8 @@ var (
 		Type:    "ErrDelegateFinalised",
 		Message: "Delegate already has a password set, please use reset password to reset it instead",
 	}
+	ErrCSRFTokenInvalid = SimpleError{
+		Type:    "ErrCSRFTokenInvalid",
+		Message: "The given CSRF token was blank or invalid",
+	}
 )

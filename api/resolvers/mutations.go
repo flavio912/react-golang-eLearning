@@ -329,3 +329,13 @@ func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Inpu
 		Category: category,
 	})
 }
+
+// CSRFToken returns a CSRF token to authenticated users
+func (m *MutationResolver) CSRFToken(ctx context.Context) (string, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return "", &errors.ErrUnauthorized
+	}
+
+	return grant.GenerateCSRFToken()
+}
