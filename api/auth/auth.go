@@ -10,6 +10,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/golang/glog"
+
 	"github.com/dgrijalva/jwt-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -189,6 +191,30 @@ func GenerateCSRFToken(claims CSRFClaims) (string, error) {
 	}
 
 	return tokenString, nil
+}
+
+// ValidateCSRFToken checks if the UUID in the CSRFtoken matches the one in the cookie
+func ValidateCSRFToken(token string, cookieUUID gentypes.UUID) error {
+	claims := &trueCSRFClaims{}
+
+	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		return []byte(helpers.Config.Jwt.CSRFSecret), nil
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if !tkn.Valid {
+		return errors.New("Token invalid")
+	}
+
+	if claims.Claims.UUID != cookieUUID {
+		glog.Warning("Cookie and XSRF UUID do not match")
+		return errors.New("Token invalid")
+	}
+
+	return nil
 }
 
 func GenerateRandomBytes(n int) ([]byte, error) {
