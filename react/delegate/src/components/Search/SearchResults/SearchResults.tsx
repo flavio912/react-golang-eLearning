@@ -40,7 +40,12 @@ function SearchResults({ results }: Props) {
   });
   const [searchText, setSearchText] = React.useState<string>('');
   return (
-    <div className={classes.searchRoot}>
+    <div
+      className={classes.searchRoot}
+      onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        event?.stopPropagation();
+      }}
+    >
       <SearchInput
         placeholder="Search for Courses..."
         onChange={setSearchText}

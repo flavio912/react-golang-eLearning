@@ -82,6 +82,7 @@ export const AppHolder = ({ children }: Props) => {
     false
   );
   const onToggleSearchModal = () => setIsShowSearchModal(!isShowSearchModal);
+  const hideSearch = () => setIsShowSearchModal(false);
   return (
     <div className={classes.appHolderRoot}>
       <SideMenu
@@ -108,7 +109,7 @@ export const AppHolder = ({ children }: Props) => {
       <div className={classes.appHolder}>
         {children}
         {isShowSearchModal && (
-          <div className={classes.appHolderSearch}>
+          <div className={classes.appHolderSearch} onClick={hideSearch}>
             <SearchResults results={results} />
           </div>
         )}
