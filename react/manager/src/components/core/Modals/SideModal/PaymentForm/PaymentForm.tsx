@@ -28,6 +28,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     background: theme.paymentButtonBackgroundGradient,
     boxShadow: `0 2px 9px 0 rgba(14,99,232,0.35)`,
     width: 192,
+    border: 'none',
     height: 39,
     marginLeft: 23
   },

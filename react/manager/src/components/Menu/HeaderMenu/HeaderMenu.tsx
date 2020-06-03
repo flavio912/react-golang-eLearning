@@ -1,43 +1,43 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
-import Icon from "../../../sharedComponents/core/Icon/Icon";
-import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
+import Icon from '../../../sharedComponents/core/Icon/Icon';
+import CircleBorder, { User } from 'sharedComponents/core/CircleBorder';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
-    borderBottom: [1, "solid", theme.colors.borderGrey],
+    display: 'flex',
+    flexDirection: 'column',
+    borderBottom: [1, 'solid', theme.colors.borderGrey],
     top: 0,
-    width: "100%",
-    position: "fixed",
-    zIndex: 10,
+    width: '100%',
+    position: 'fixed',
+    zIndex: 10
   },
   menu: {
     backgroundColor: theme.colors.primaryWhite,
-    padding: "17px 25px",
+    padding: '17px 25px'
   },
   logo: {
-    cursor: "pointer",
-    height: "50px",
-    width: "140px",
-    borderRadius: theme.primaryBorderRadius,
-    border: [1, "solid", theme.colors.borderGrey],
-    boxShadow: theme.shadows.primary,
-    objectFit: "cover",
+    cursor: 'pointer',
+    height: 55,
+    width: 140,
+    borderRadius: theme.buttonBorderRadius,
+    border: [1, 'solid', theme.colors.borderGrey],
+    boxShadow: '2px 2px 3px rgba(0, 0, 0, 0.04)',
+    objectFit: 'cover'
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center'
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
-    flexGrow: 1,
-  },
+    flexGrow: 1
+  }
 }));
 
 type Props = {
@@ -55,7 +55,7 @@ function HeaderMenu({
   children,
   onLogoClick,
   onProfileClick,
-  className,
+  className
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -75,7 +75,7 @@ function HeaderMenu({
           <Icon
             name="Card_SecondaryActon_Dots"
             size={20}
-            style={{ cursor: "pointer", margin: "0 20px" }}
+            style={{ cursor: 'pointer', margin: '0 20px' }}
             onClick={() => onProfileClick && onProfileClick()}
           />
         </div>
