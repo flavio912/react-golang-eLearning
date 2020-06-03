@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles } from "react-jss";
 import { Theme } from "helpers/theme";
 import SingleUserSearch from "./SingleUserSearch";
-import Button from "sharedComponents/core/Button";
+import Button from "sharedComponents/core/Input/Button";
 import { ResultItem } from "../UserSearch";
 import converter from "number-to-words";
 

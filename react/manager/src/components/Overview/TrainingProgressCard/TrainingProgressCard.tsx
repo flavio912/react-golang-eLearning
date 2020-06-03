@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
-import Card from "sharedComponents/core/Card";
+import Card from "sharedComponents/core/Cards/Card";
 import { IconNames } from "sharedComponents/core/Icon/Icon";
 import Spacer from "sharedComponents/core/Spacers/Spacer";
 const useStyles = createUseStyles((theme: Theme) => ({

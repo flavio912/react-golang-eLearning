@@ -5,7 +5,7 @@ import Summary from "components/Overview/Summary";
 import TrainingProgressCard from "components/Overview/TrainingProgressCard";
 import { Theme } from "helpers/theme";
 import PageHeader from "components/PageHeader";
-import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
+import Dropdown, { DropdownOption } from "sharedComponents/core/Input/Dropdown";
 import Spacer from "sharedComponents/core/Spacers/Spacer";
 import CourseTable from "components/Delegate/CourseTable";
 import ActivityTable from "components/Delegate/ActivityTable";

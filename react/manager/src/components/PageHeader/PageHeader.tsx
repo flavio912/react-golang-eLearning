@@ -1,6 +1,6 @@
 import * as React from "react";
 import PageTitle from "components/PageTitle";
-import Button from "sharedComponents/core/Button";
+import Button from "sharedComponents/core/Input/Button";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 import DelegateSlideIn from "components/Delegate/DelegateSlideIn";

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
-import Button from 'components/Button';
+import Button from 'components/core/Input/Button';
 import { Theme } from 'helpers/theme';
 import PageTitle from 'components/PageTitle';
-import FlatCard from 'components/FlatCard';
+import FlatCard from 'components/core/Cards/FlatCard';
 import CourseSyllabusCard from 'components/Overview/CourseSyllabusCard';
 import Icon from 'sharedComponents/core/Icon';
 import { useRouter } from 'found';

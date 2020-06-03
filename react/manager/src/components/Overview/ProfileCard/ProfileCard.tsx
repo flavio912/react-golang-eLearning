@@ -1,6 +1,6 @@
 import * as React from "react";
-import Card, { PaddingOptions } from "../../../sharedComponents/core/Card";
-import InfoField, { Field } from "../../core/InfoField";
+import Card, { PaddingOptions } from "../../../sharedComponents/core/Cards/Card";
+import InfoField, { Field } from "../../core/Input/InfoField";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";

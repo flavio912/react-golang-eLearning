@@ -5,7 +5,8 @@ import { Theme } from 'helpers/theme';
 import Icon from '../../../sharedComponents/core/Icon/Icon';
 import CircleBorder, { User } from 'sharedComponents/core/CircleBorder';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
-import CoreInput from 'sharedComponents/core/CoreInput';
+import CoreInput from 'sharedComponents/core/Input/CoreInput';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
