@@ -10,8 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 6,
     borderColor: 'transparent',
     cursor: 'pointer',
-    height: 'auto',
-    whiteSpace: 'nowrap'
+    height: 'auto'
   },
   buttonText: {
     fontSize: 19.5,
@@ -39,9 +38,16 @@ export type ButtonProps = {
   onClick: Function;
   className?: string;
   padding?: PaddingOptions;
+  noWrap?: boolean;
 };
 
-function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
+function Button({
+  title,
+  onClick,
+  className,
+  padding = 'none',
+  noWrap
+}: ButtonProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const paddingLink = {
@@ -54,6 +60,7 @@ function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
   return (
     <ButtonBase
       onClick={() => onClick()}
+      style={noWrap ? { whiteSpace: 'nowrap' } : {}}
       className={classNames(classes.root, paddingLink[padding], className)}
     >
       <span className={classes.buttonText}>{title}</span>

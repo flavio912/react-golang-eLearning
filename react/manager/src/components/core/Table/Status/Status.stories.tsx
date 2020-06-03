@@ -3,7 +3,7 @@ import Status from "./Status";
 import { withKnobs, text, boolean } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Table/UserLabel",
+  title: "Core/Table/UserLabel",
   decorators: [withKnobs],
 };
 

@@ -3,7 +3,7 @@ import UserLabel from "./UserLabel";
 import { withKnobs, text } from "@storybook/addon-knobs";
 
 export default {
-  title: "/Table/UserLabel",
+  title: "Core/Table/UserLabel",
   decorators: [withKnobs],
 };
 

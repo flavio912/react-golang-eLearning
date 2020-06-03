@@ -1,18 +1,17 @@
 import * as React from "react";
 import { withKnobs, number } from "@storybook/addon-knobs";
-import ProgressBar from ".";
+import CourseCompletion from ".";
 
 export default {
-  title: "Core/Table/ProgressBar",
+  title: "Core/CourseCompletion",
   decorators: [withKnobs],
 };
 
 export const normal = () => {
   return (
-    <ProgressBar
-      percent={number("Percent", 30)}
-      width={number("Width (px)", 200)}
-      height={number("Height", 7)}
+    <CourseCompletion
+      complete={number("Courses completed", 4)}
+      total={number("Total courses", 6)}
     />
   );
 };

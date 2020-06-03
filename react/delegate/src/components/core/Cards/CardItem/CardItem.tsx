@@ -4,6 +4,7 @@ import { Theme } from 'helpers/theme';
 import Button, { ButtonProps } from 'components/core/Input/Button';
 import FlatCard from 'components/core/Cards/FlatCard';
 import classnames from 'classnames';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   cardItemRoot: {
     border: `1px solid ${theme.colors.approxZircon}`,
@@ -46,6 +47,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.extraLarge,
     letterSpacing: -0.45,
     marginBottom: 31,
+    fontWeight: 300,
     marginTop: 0,
     lineHeight: `30px`
   },

@@ -24,7 +24,7 @@ const defaultCourse = {
   location: 'TTC at Hilton T4',
   modules: 5,
   lessons: 5,
-  vidoe_time: 5
+  video_time: 5
 };
 
 const filterColour = '#AAAAAA90';

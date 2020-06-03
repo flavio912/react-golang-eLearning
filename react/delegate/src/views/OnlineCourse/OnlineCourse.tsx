@@ -7,6 +7,7 @@ import PageTitle from 'components/PageTitle';
 import FlatCard from 'components/core/Cards/FlatCard';
 import CourseSyllabusCard from 'components/Overview/CourseSyllabusCard';
 import Icon from 'sharedComponents/core/Icon';
+import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -61,7 +62,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   courseContent: {},
   courseContentTitle: {
-    color: theme.colors.secondaryBlack,
+    color: theme.colors.primaryBlack,
     fontWeight: 'bold',
     fontSize: theme.fontSizes.tinyHeading,
     letterSpacing: -0.5,
@@ -69,7 +70,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: 0
   },
   courseContentText: {
-    color: theme.colors.secondaryBlack,
+    color: theme.colors.primaryBlack,
     fontSize: theme.fontSizes.extraLarge,
     letterSpacing: -0.45,
     lineHeight: `30px`,
@@ -202,6 +203,8 @@ const defaultSyllabus = {
 function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+  const { router } = useRouter();
+
   return (
     <div className={classes.rootOnlineCourse}>
       <div>
@@ -209,7 +212,9 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
           title={course.title}
           backProps={{
             text: 'all Online Courses',
-            onClick: () => {}
+            onClick: () => {
+              router.push('/app/courses');
+            }
           }}
         />
         <div className={classes.courseHead}>
@@ -232,7 +237,12 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
           <p className={classes.flatCardText}>
             Make sure your speakers are turned on before you start this course
           </p>
-          <Button title="Begin Course" onClick={() => {}} padding="massive" />
+          <Button
+            title="Begin Course"
+            onClick={() => {}}
+            padding="massive"
+            noWrap
+          />
         </FlatCard>
         {course.estimateTimeComplete && (
           <div className={classes.courseContent}>
