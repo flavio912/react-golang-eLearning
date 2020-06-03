@@ -1,5 +1,5 @@
 import * as React from "react";
-import Card from "../../sharedComponents/core/Card";
+import Card from "../../sharedComponents/core/Cards/Card";
 import FancyInput from "./FancyInput";
 import FancyButton from "./FancyButton";
 import { createUseStyles, useTheme } from "react-jss";

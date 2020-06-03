@@ -1,43 +1,43 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import Button from "sharedComponents/core/Button";
-import Attempt from "components/Delegate/Attempt";
-import ActiveCoursesEmpty from "components/Delegate/ActiveCoursesEmpty";
-import theme, { Theme } from "helpers/theme";
-import Table from "components/core/Table";
-import Text from "components/core/Table/Text/Text";
-import Status from "components/core/Table/Status";
-import Action from "components/core/Table/Action";
-import CourseCompletion from "components/core/Table/CourseCompletion";
-import Dropdown, { DropdownOption } from "sharedComponents/core/Dropdown";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import Button from 'sharedComponents/core/Input/Button';
+import Attempt from 'components/Delegate/Attempt';
+import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
+import theme, { Theme } from 'helpers/theme';
+import Table from 'components/core/Table';
+import Text from 'components/core/Table/Text/Text';
+import Status from 'components/core/Table/Status';
+import Action from 'components/core/Table/Action';
+import CourseCompletion from 'sharedComponents/core/CourseCompletion';
+import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 // import CheckboxSingle from "components/core/CheckboxSingle";
 
 type Props = {};
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {},
   sectionTitleWrapper: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "flex-start",
-    "& h2": {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    '& h2': {
       fontSize: 15,
       color: theme.colors.primaryBlack,
-      fontWeight: 300,
+      fontWeight: 300
     },
-    marginBottom: 16,
+    marginBottom: 16
   },
   courseDropdown: {
     marginLeft: 49,
-    background: theme.colors.primaryWhite,
+    background: theme.colors.primaryWhite
   },
   courseButton: {
-    display: "flex",
-    justifyContent: "flex-end",
+    display: 'flex',
+    justifyContent: 'flex-end',
     marginTop: 27,
-    "& button": {
-      width: 214,
-    },
-  },
+    '& button': {
+      width: 214
+    }
+  }
 }));
 const courseRowEmpty = () => ({
   key: -1,
@@ -46,12 +46,12 @@ const courseRowEmpty = () => ({
       component: () => (
         <ActiveCoursesEmpty title="Book John on their first Course" />
       ),
-      colspan: 5,
+      colspan: 5
     },
     {
-      component: () => <Action />,
-    },
-  ],
+      component: () => <Action />
+    }
+  ]
 });
 const courseRow = (
   key: string | number,
@@ -78,46 +78,28 @@ const courseRow = (
     //   ),
     // },
     {
-      component: () => (
-        <Text text={title} color={theme.colors.secondaryBlack} />
-      ),
+      component: () => <Text text={title} color={theme.colors.secondaryBlack} />
     },
     {
       component: () => (
         <Text text={category} color={theme.colors.secondaryBlack} />
-      ),
+      )
     },
     {
       component: () => (
         <CourseCompletion total={totalProcess} complete={totalCompleted} />
-      ),
+      )
     },
     {
-      component: () => <Attempt attempt={attempt} />,
+      component: () => <Attempt attempt={attempt} />
     },
     { component: () => <Status isComplete={status} expires={expires} /> },
     {
-      component: () => <Action />,
-    },
-  ],
+      component: () => <Action />
+    }
+  ]
 });
-const defaultFilterCourseOptions: DropdownOption[] = [
-  {
-    id: 1,
-    title: "Show Historical Courses 1",
-    component: <div>Show Historical Courses 1</div>,
-  },
-  {
-    id: 2,
-    title: "Show Historical Courses 2",
-    component: <div>Show Historical Courses 2</div>,
-  },
-  {
-    id: 3,
-    title: "Show Historical Courses 3",
-    component: <div>Show Historical Courses 3</div>,
-  },
-];
+const defaultFilterCourseOptions: DropdownOption[] = [];
 const CourseTable = (props: any) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -142,37 +124,37 @@ const CourseTable = (props: any) => {
           //     box={{ label: "", checked: false }}
           //     setBox={() => {}}
           //   />,
-          "COURSE TITLE",
-          "CATEGORY",
-          "PROGRESS",
-          "ATTEMPT",
-          "STATUS",
-          "ACTIONS",
+          'COURSE TITLE',
+          'CATEGORY',
+          'PROGRESS',
+          'ATTEMPT',
+          'STATUS',
+          'ACTIONS'
         ]}
         rows={[
           courseRow(
             1,
-            "Dangerous Goods by Road Awareness",
-            "DANGEROUS GOODS(ROAD)",
+            'Dangerous Goods by Road Awareness',
+            'DANGEROUS GOODS(ROAD)',
             80,
             32,
-            "1",
+            '1',
             false,
-            "",
+            '',
             classes
           ),
           courseRow(
             2,
-            "Dangerous Goods by Road Awareness",
-            "DANGEROUS GOODS(ROAD)",
+            'Dangerous Goods by Road Awareness',
+            'DANGEROUS GOODS(ROAD)',
             80,
             32,
-            "1",
+            '1',
             true,
-            "20/02/2022",
+            '20/02/2022',
             classes
           ),
-          courseRowEmpty(),
+          courseRowEmpty()
         ]}
       />
       <div className={classes.courseButton}>

@@ -3,11 +3,11 @@ import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
 import CourseCard, { SizeOptions } from 'sharedComponents/Overview/CourseCard';
-import Dropdown, { DropdownOption } from 'sharedComponents/core/Dropdown';
+import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import PageHeader from 'components/PageHeader';
-import SelectButton from 'components/core/SelectButton';
+import SelectButton from 'components/core/Input/SelectButton';
 import CircleBorder from 'sharedComponents/core/CircleBorder';
-import Paginator from 'sharedComponents/Paginator';
+import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const defaultCourse = {

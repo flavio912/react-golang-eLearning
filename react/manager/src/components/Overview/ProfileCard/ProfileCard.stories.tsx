@@ -1,7 +1,7 @@
 import * as React from 'react';
 import ProfileCard from './ProfileCard';
-import { PaddingOptions } from '../../../sharedComponents/core/Card';
-import { Field } from '../../core/InfoField';
+import { PaddingOptions } from '../../../sharedComponents/core/Cards/Card';
+import { Field } from '../../core/Input/InfoField';
 import { withKnobs, select, text, object } from '@storybook/addon-knobs';
 
 export default {
