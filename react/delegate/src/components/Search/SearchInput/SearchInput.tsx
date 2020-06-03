@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import CoreInput from 'sharedComponents/core/CoreInput';
+import CoreInput from 'sharedComponents/core/Input/CoreInput';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   searchInputRoot: {
