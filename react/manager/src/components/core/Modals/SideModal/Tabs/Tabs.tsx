@@ -55,7 +55,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexGrow: 1,
     display: 'flex',
     flexDirection: 'column',
-    padding: [30, 40]
+    padding: [30, 40],
+    overflow: 'scroll',
+    height: 10
   },
   footer: {
     height: 120,
@@ -69,14 +71,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   smallHeading: {
     fontSize: theme.fontSizes.smallHeading,
-    fontWeight: 900
+    fontWeight: 900,
+    color: theme.colors.primaryBlack
   },
   largeText: {
     fontSize: 15,
-    maxWidth: 500
+    maxWidth: 500,
+    color: theme.colors.secondaryBlack,
+    fontWeight: 300
   },
   text: {
-    fontSize: theme.fontSizes.default
+    fontSize: theme.fontSizes.default,
+    fontWeight: 300,
+    color: theme.colors.secondaryBlack
   },
   termsBox: {
     width: '100%',

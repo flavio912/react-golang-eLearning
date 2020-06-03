@@ -1,24 +1,26 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
-import Icon from "../../../../sharedComponents/core/Icon";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Theme } from 'helpers/theme';
+import Icon from '../../../../sharedComponents/core/Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column'
   },
   checkbox: {
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    cursor: "pointer",
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    cursor: 'pointer'
   },
   label: {
     margin: theme.spacing(1),
     fontSize: theme.fontSizes.small,
     maxWidth: 500,
-  },
+    fontWeight: 300,
+    color: theme.colors.secondaryBlack
+  }
 }));
 
 type Checkbox = {
@@ -44,7 +46,7 @@ function Checkbox({ boxes, setBoxes }: Props) {
               boxes.reduce(
                 (arr: Checkbox[], curr: Checkbox, i: number) => [
                   ...arr,
-                  i === index ? { label, checked: !curr.checked } : curr,
+                  i === index ? { label, checked: !curr.checked } : curr
                 ],
                 []
               )
@@ -52,7 +54,7 @@ function Checkbox({ boxes, setBoxes }: Props) {
           }
         >
           <Icon
-            name={checked ? "FormCheckbox_Checked" : "FormCheckbox_Unchecked"}
+            name={checked ? 'FormCheckbox_Checked' : 'FormCheckbox_Unchecked'}
             size={15}
             pointer
           />
