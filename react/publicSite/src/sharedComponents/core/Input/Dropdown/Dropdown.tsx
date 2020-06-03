@@ -1,75 +1,76 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import classNames from "classnames";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 
-import { Theme } from "helpers/theme";
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
     height: 40,
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "strech",
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'strech',
+    background: theme.colors.primaryWhite
   },
   clickableBox: {
     height: 40,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: [0, 15],
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: theme.buttonBorderRadius,
-    cursor: "pointer",
+    cursor: 'pointer'
   },
   dropdown: {
-    position: "absolute",
+    position: 'absolute',
     top: 50,
-    width: "100%",
+    width: '100%',
     maxHeight: 450, // don't know how this should be calculated
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: theme.primaryBorderRadius,
-    display: "flex",
-    flexDirection: "column",
-    backgroundColor: theme.colors.primaryWhite,
+    display: 'flex',
+    flexDirection: 'column',
+    backgroundColor: theme.colors.primaryWhite
   },
   searchResults: {
-    overflowY: "auto",
+    overflowY: 'auto'
   },
   title: {
     fontSize: theme.fontSizes.small,
     fontWeight: 300,
-    marginRight: 19,
+    marginRight: 19
   },
   option: {
     height: 40,
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
-    "&:last-child": {
-      borderBottom: "none",
-    },
+    '&:last-child': {
+      borderBottom: 'none'
+    }
   },
   triangleDown: {
     width: 0,
     height: 0,
-    borderLeft: "5px solid transparent",
-    borderRight: "5px solid transparent",
-    borderTop: ` ${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`,
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderTop: ` ${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`
   },
   triangleUp: {
     width: 0,
     height: 0,
-    borderLeft: "5px solid transparent",
-    borderRight: "5px solid transparent",
-    borderBottom: `${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`,
-  },
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderBottom: `${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`
+  }
 }));
 
 export type DropdownOption = {
@@ -93,7 +94,7 @@ function Dropdown({
   options,
   selected,
   setSelected,
-  className,
+  className
 }: Props) {
   const classes = useStyles();
   const [isOpen, setOpen] = React.useState<boolean>(false);
