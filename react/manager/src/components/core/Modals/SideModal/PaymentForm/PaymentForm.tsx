@@ -1,13 +1,15 @@
 import * as React from 'react';
 import { createUseStyles } from 'react-jss';
 import theme, { Theme } from 'helpers/theme';
+import { loadStripe } from '@stripe/stripe-js';
 import {
   CardElement,
-  injectStripe,
-  StripeProvider
-} from 'react-stripe-elements';
-import { Elements } from 'react-stripe-elements';
+  Elements,
+  useStripe,
+  useElements
+} from '@stripe/react-stripe-js';
 import Button from 'components/core/Input/Button';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentFormRoot: {
     backgroundColor: theme.colors.backgroundGrey,
@@ -44,40 +46,52 @@ const useStyles = createUseStyles((theme: Theme) => ({
     }
   }
 }));
+const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
+
 function PaymentForm({}: any) {
   const classes = useStyles();
+  const stripe = useStripe() as any;
+  const elements = useElements() as any;
+  const handleSubmit = async (event: any) => {
+    event.preventDefault();
+    const { error, paymentMethod } = await stripe.createPaymentMethod({
+      type: 'card',
+      card: elements.getElement(CardElement)
+    } as any);
+  };
   return (
     <div className={classes.paymentFormRoot}>
       <label className={classes.cardTitle}>Credit or debit card*</label>
-      <div className={classes.form}>
+      <form className={classes.form} onSubmit={handleSubmit}>
         <CardElement
-          style={{
-            base: {
-              fontSize: `${theme.fontSizes.default}px`,
-              fontFamily: `'Muli', sans-serif`,
-              lineHeight: `31px`,
-              color: theme.colors.secondaryBlack
+          options={{
+            style: {
+              base: {
+                fontSize: `${theme.fontSizes.default}px`,
+                fontFamily: `'Muli', sans-serif`,
+                lineHeight: `31px`,
+                color: theme.colors.secondaryBlack
+              }
             }
           }}
         />
         <Button
           title={'Place Order'}
           onClick={() => {}}
+          type="submit"
           className={classes.buttonOrder}
           padding="medium"
+          disabled={!stripe}
         />
-      </div>
+      </form>
     </div>
   );
 }
-const InjectPaymentForm = injectStripe(PaymentForm);
 function PaymentStripProvider() {
   return (
-    <StripeProvider apiKey="pk_test_12345">
-      <Elements>
-        <InjectPaymentForm />
-      </Elements>
-    </StripeProvider>
+    <Elements stripe={stripePromise}>
+      <PaymentForm />
+    </Elements>
   );
 }
 export default PaymentStripProvider;
