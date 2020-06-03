@@ -1,12 +1,12 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
-import Button from "sharedComponents/core/Button";
+import Button from "sharedComponents/core/Input/Button";
 import ActiveType from "components/Delegate/ActiveType";
 import theme, { Theme } from "helpers/theme";
 import Table from "components/core/Table";
 import Text from "components/core/Table/Text/Text";
-import Paginator from "sharedComponents/Paginator";
-import CheckboxSingle from "components/core/CheckboxSingle";
+import Paginator from "sharedComponents/Pagination/Paginator";
+import CheckboxSingle from "components/core/Input/CheckboxSingle";
 import TimeSpent from "components/Delegate/TimeSpent";
 import ActivityName from "components/Delegate/ActivityName";
 

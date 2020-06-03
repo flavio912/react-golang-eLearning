@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import Heading from 'components/Heading';
-import SelectButton from 'components/core/SelectButton';
-import Dropdown, { DropdownOption } from 'sharedComponents/core/Dropdown';
+import Heading from 'components/core/Heading';
+import SelectButton from 'components/core/Input/SelectButton';
+import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import CourseCard from 'sharedComponents/Overview/CourseCard';
 import { Course } from 'sharedComponents/Overview/CourseCard/CourseCard';
-import Paginator from 'sharedComponents/Paginator';
+import Paginator from 'sharedComponents/Pagination/Paginator';
 import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({

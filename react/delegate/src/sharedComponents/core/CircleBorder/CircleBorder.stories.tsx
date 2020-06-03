@@ -3,7 +3,7 @@ import CircleBorder, { User, BorderType } from './CircleBorder';
 import { withKnobs, text, number, select } from '@storybook/addon-knobs';
 
 export default {
-  title: 'core/CircleBorder',
+  title: 'Core/CircleBorder',
   decorators: [withKnobs]
 };
 
