@@ -39,6 +39,7 @@ export type IconNames =
   | 'Location_Pin'
   | 'PDF_Icon'
   | 'RemoveSelectedCourse_X'
+  | 'Right_Arrow'
   | 'SampleImage_ClassroomCoursesDetail_Feat'
   | 'SearchGlass'
   | 'TTC_Logo_Icon'
@@ -87,6 +88,7 @@ const iconNameMap = {
   Location_Pin: require("../../../assets/Location_Pin.svg"),
   PDF_Icon: require("../../../assets/PDF_Icon.svg"),
   RemoveSelectedCourse_X: require("../../../assets/RemoveSelectedCourse_X.svg"),
+  Right_Arrow: require("../../../assets/Right_Arrow.svg"),
   SampleImage_ClassroomCoursesDetail_Feat: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
