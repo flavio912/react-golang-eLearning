@@ -1,25 +1,25 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import Text from "components/core/Table/Text/Text";
-import themeConfig, { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import Text from 'sharedComponents/core/Table/Text/Text';
+import themeConfig, { Theme } from 'helpers/theme';
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
+    display: 'flex'
   },
   userName: {
     color: theme.colors.textNavyBlue,
     fontSize: theme.fontSizes.tiny,
     marginRight: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     width: 29,
     height: 29,
     background: theme.colors.textSolitude,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: 30,
-    letterSpacing: -0.28,
-  },
+    letterSpacing: -0.28
+  }
 }));
 
 type Props = {
@@ -29,7 +29,7 @@ type Props = {
 function ActiveName({ userName, title }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const nameArr = userName.split(" ");
+  const nameArr = userName.split(' ');
   const shortName = nameArr.map((item: string) => item.charAt(0));
   return (
     <div className={classes.root}>

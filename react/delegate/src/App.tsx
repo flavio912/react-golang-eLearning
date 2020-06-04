@@ -21,6 +21,7 @@ import { AppHolder } from 'views/AppHolder';
 import OnlineCoursePage from 'views/OnlineCourse';
 import TrainingZone from 'views/TrainingZone/TrainingZone';
 import OnlineCourses from 'views/OnlineCourses';
+import Progress from 'views/Progress';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -55,6 +56,7 @@ const Router = createFarceRouter({
         <Route path="/" Component={TrainingZone} />
         <Route path="/courses" Component={OnlineCourses} />
         <Route path="/courses/:id" Component={OnlineCoursePage} />
+        <Route path="/progress" Component={Progress} />
       </Route>
     </Route>
   ),

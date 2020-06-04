@@ -60,7 +60,13 @@ export const AppHolder = ({ children }: Props) => {
   const { match, router } = useRouter();
   const tabs: Tab[] = [
     { id: 0, icon: 'LeftNav_Icon_Dashboard', title: 'Dashboard' },
-    { id: 1, icon: 'LeftNav_Icon_Courses', title: 'Online Courses', size: 23 }
+    { id: 1, icon: 'LeftNav_Icon_Courses', title: 'Online Courses', size: 23 },
+    {
+      id: 2,
+      icon: 'LeftNav_Icon_Courses',
+      title: 'Training Progress',
+      size: 23
+    }
   ];
 
   const selected = () => {
@@ -74,6 +80,8 @@ export const AppHolder = ({ children }: Props) => {
         return tabs[1];
       case '/courses/:id':
         return tabs[1];
+      case '/progress':
+        return tabs[2];
       default:
         return tabs[0];
     }
@@ -97,6 +105,8 @@ export const AppHolder = ({ children }: Props) => {
             case 1:
               router.push('/app/courses');
               break;
+            case 2:
+              router.push('/app/progress');
             default:
               break;
           }
