@@ -132,6 +132,7 @@ const DelegateProfilePage = (props: any) => {
         EmptyComponent={
           <ActiveCoursesEmpty title="Book John on their first Course" />
         }
+        rowClicked={() => {}}
       />
       <Spacer vertical spacing={3} />
       <ActivityTable />
