@@ -1,35 +1,35 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import Text from 'sharedComponents/core/Table/Text/Text';
-import Button from 'sharedComponents/core/Input/Button';
 import themeConfig, { Theme } from 'helpers/theme';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'center',
-    '& button': {
-      marginLeft: 51
-    },
     '& div': {
-      fontSize: themeConfig.fontSizes.default
+      fontSize: theme.fontSizes.large
     }
+  },
+  stText: {
+    fontSize: theme.fontSizes.tiny,
+    marginBottom: 5
   }
 }));
 
-type Props = { title: string };
-function ActiveCoursesEmpty({ title }: Props) {
+type Props = {
+  attempt: string;
+};
+
+function Attempt({ attempt }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
   return (
     <div className={classes.root}>
-      <Text text={title} color={themeConfig.colors.secondaryBlack} />
-      <Button bold archetype="submit">
-        Book now
-      </Button>
+      <Text text={attempt} color={themeConfig.colors.secondaryBlack} />
+      <span className={classes.stText}>st</span>
     </div>
   );
 }
 
-export default ActiveCoursesEmpty;
+export default Attempt;

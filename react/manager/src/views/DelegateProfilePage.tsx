@@ -7,8 +7,9 @@ import { Theme } from 'helpers/theme';
 import PageHeader from 'components/PageHeader';
 import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
-import CourseTable from 'components/Delegate/CourseTable';
+import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/Delegate/ActivityTable';
+import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
 
 type Props = {};
 
@@ -59,6 +60,7 @@ const headerActionOptions: DropdownOption[] = [
     component: <div>Edit</div>
   }
 ];
+
 const DelegateProfilePage = (props: any) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -126,7 +128,11 @@ const DelegateProfilePage = (props: any) => {
       </div>
 
       <Spacer spacing={3} vertical />
-      <CourseTable />
+      <CourseTable
+        EmptyComponent={
+          <ActiveCoursesEmpty title="Book John on their first Course" />
+        }
+      />
       <Spacer vertical spacing={3} />
       <ActivityTable />
     </div>

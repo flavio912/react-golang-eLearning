@@ -1,12 +1,12 @@
 import * as React from "react";
-import CourseTable from "./CourseTable";
+import Action from "./Action";
 import { withKnobs } from "@storybook/addon-knobs";
 
 export default {
-  title: "Delegate/CourseTable",
+  title: "Core/Table/Action",
   decorators: [withKnobs],
 };
 
 export const normal = () => {
-  return <CourseTable />;
+  return <Action />;
 };

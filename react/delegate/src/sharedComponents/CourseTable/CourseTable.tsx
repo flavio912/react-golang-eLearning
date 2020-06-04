@@ -1,18 +1,16 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import Button from 'sharedComponents/core/Input/Button';
-import Attempt from 'components/Delegate/Attempt';
-import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
+import Attempt from './Attempt';
 import theme, { Theme } from 'helpers/theme';
-import Table from 'components/core/Table';
-import Text from 'components/core/Table/Text/Text';
-import Status from 'components/core/Table/Status';
-import Action from 'components/core/Table/Action';
+import Table, { TableRow } from 'sharedComponents/core/Table';
+import Text from 'sharedComponents/core/Table/Text/Text';
+import Status from 'sharedComponents/core/Table/Status';
+import classnames from 'classnames';
 import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 // import CheckboxSingle from "components/core/CheckboxSingle";
 
-type Props = {};
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {},
   sectionTitleWrapper: {
@@ -39,32 +37,31 @@ const useStyles = createUseStyles((theme: Theme) => ({
     }
   }
 }));
-const courseRowEmpty = () => ({
+
+const courseRowEmpty = (EmptyComponent: React.ReactElement) => ({
   key: -1,
   cells: [
     {
-      component: () => (
-        <ActiveCoursesEmpty title="Book John on their first Course" />
-      ),
+      component: () => EmptyComponent,
       colspan: 5
-    },
-    {
-      component: () => <Action />
     }
   ]
 });
+
 const courseRow = (
-  key: string | number,
+  key: string,
   title: string,
+  onClick: () => void | undefined,
   category: string,
   totalProcess: number,
   totalCompleted: number,
   attempt: string,
   status: boolean,
   expires?: string,
-  classes?: any
-): any => ({
+  classes?: { [key: string]: string }
+): TableRow => ({
   key,
+  onClick,
   cells: [
     // {
     //   component: () => (
@@ -93,20 +90,31 @@ const courseRow = (
     {
       component: () => <Attempt attempt={attempt} />
     },
-    { component: () => <Status isComplete={status} expires={expires} /> },
-    {
-      component: () => <Action />
-    }
+    { component: () => <Status isComplete={status} expires={expires} /> }
   ]
 });
+
 const defaultFilterCourseOptions: DropdownOption[] = [];
-const CourseTable = (props: any) => {
+
+type Props = {
+  EmptyComponent: React.ReactElement;
+  bookCourseHandler?: Function;
+  className?: string;
+  rowClicked: () => void | undefined;
+};
+
+const CourseTable = ({
+  EmptyComponent,
+  bookCourseHandler,
+  className,
+  rowClicked
+}: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [filterCourse, setFilterCourse] = React.useState<DropdownOption>();
 
   return (
-    <div className={classes.root}>
+    <div className={classnames(classes.root, className)}>
       <div className={classes.sectionTitleWrapper}>
         <h2>Active Courses</h2>
         <div className={classes.courseDropdown}>
@@ -128,13 +136,13 @@ const CourseTable = (props: any) => {
           'CATEGORY',
           'PROGRESS',
           'ATTEMPT',
-          'STATUS',
-          'ACTIONS'
+          'STATUS'
         ]}
         rows={[
           courseRow(
-            1,
+            '1',
             'Dangerous Goods by Road Awareness',
+            rowClicked,
             'DANGEROUS GOODS(ROAD)',
             80,
             32,
@@ -144,8 +152,9 @@ const CourseTable = (props: any) => {
             classes
           ),
           courseRow(
-            2,
+            '2',
             'Dangerous Goods by Road Awareness',
+            rowClicked,
             'DANGEROUS GOODS(ROAD)',
             80,
             32,
@@ -153,15 +162,19 @@ const CourseTable = (props: any) => {
             true,
             '20/02/2022',
             classes
-          ),
-          courseRowEmpty()
+          )
         ]}
       />
-      <div className={classes.courseButton}>
-        <Button bold archetype="submit">
-          Book on new Course
-        </Button>
-      </div>
+      {bookCourseHandler && (
+        <div
+          className={classes.courseButton}
+          onClick={() => bookCourseHandler()}
+        >
+          <Button bold archetype="submit">
+            Book on new Course
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

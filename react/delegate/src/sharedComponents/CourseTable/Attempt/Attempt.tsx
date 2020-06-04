@@ -1,20 +1,20 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import Text from "components/core/Table/Text/Text";
-import themeConfig, { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import Text from 'sharedComponents/core/Table/Text/Text';
+import themeConfig, { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    alignItems: "center",
-    "& div": {
-      fontSize: theme.fontSizes.large,
-    },
+    display: 'flex',
+    alignItems: 'center',
+    '& div': {
+      fontSize: theme.fontSizes.large
+    }
   },
   stText: {
     fontSize: theme.fontSizes.tiny,
-    marginBottom: 5,
-  },
+    marginBottom: 5
+  }
 }));
 
 type Props = {

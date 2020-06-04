@@ -1,20 +1,20 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   table: {
-    width: "100%",
-    borderCollapse: "separate",
-    borderSpacing: "0 10px",
+    width: '100%',
+    borderCollapse: 'separate',
+    borderSpacing: '0 10px'
   },
   row: {
-    background: "white",
+    background: 'white',
     height: 70,
     borderRadius: theme.primaryBorderRadius,
-    transition: "box-shadow 0.1s ease",
-    "&:hover": {
-      boxShadow: theme.shadows.primary,
+    transition: 'box-shadow 0.1s ease',
+    '&:hover': {
+      boxShadow: theme.shadows.primary
       // "& $cell": {
       //   "&:first-child": {
       //     borderRadius: 0,
@@ -23,45 +23,45 @@ const useStyles = createUseStyles((theme: Theme) => ({
       //     borderRadius: 0,
       //   },
       // },
-    },
+    }
   },
   headerCell: {
-    color: theme.colors.secondaryBlack,
-    textTransform: "uppercase",
+    color: '#929CA6',
+    textTransform: 'uppercase',
     fontSize: theme.fontSizes.tiny,
-    fontWeight: 400,
+    fontWeight: 300,
     padding: [0, 10],
-    textAlign: "left",
+    textAlign: 'left'
   },
   cell: {
     padding: [0, 10],
     borderTop: `1px solid ${theme.colors.borderGrey}`,
-    borderRight: "0",
+    borderRight: '0',
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
-    borderLeft: "0",
-    transition: "border-radius 0.1s ease",
-    "&:first-child": {
+    borderLeft: '0',
+    transition: 'border-radius 0.1s ease',
+    '&:first-child': {
       borderRadius: [
         theme.primaryBorderRadius,
         0,
         0,
-        theme.primaryBorderRadius,
+        theme.primaryBorderRadius
       ],
-      borderLeft: `1px solid ${theme.colors.borderGrey}`,
+      borderLeft: `1px solid ${theme.colors.borderGrey}`
     },
-    "&:last-child": {
+    '&:last-child': {
       borderRadius: [
         0,
         theme.primaryBorderRadius,
         theme.primaryBorderRadius,
-        0,
+        0
       ],
-      borderRight: `1px solid ${theme.colors.borderGrey}`,
-    },
+      borderRight: `1px solid ${theme.colors.borderGrey}`
+    }
   },
   defaultCell: {
-    fontSize: theme.fontSizes.default,
-  },
+    fontSize: theme.fontSizes.default
+  }
 }));
 
 type Props = {
@@ -71,7 +71,7 @@ type Props = {
   sort?: Sort;
 };
 
-type TableRow = {
+export type TableRow = {
   key: string;
   cells: TableCell[];
   onClick?: () => void;
@@ -85,7 +85,7 @@ type TableCell = {
 
 type Sort = {
   column: number;
-  dir: "ASC" | "DESC";
+  dir: 'ASC' | 'DESC';
 };
 
 type Filter = {
@@ -99,7 +99,7 @@ function Table({ header, rows, sort, filter }: Props) {
   const sorter = (a: TableRow, b: TableRow): number => {
     if (sort === undefined) return 0;
     if (sort.column < header.length) {
-      if (sort.dir === "DESC") {
+      if (sort.dir === 'DESC') {
         const t = b;
         b = a;
         a = t;
@@ -110,9 +110,9 @@ function Table({ header, rows, sort, filter }: Props) {
 
       if (
         !(
-          "sort" in aCell &&
+          'sort' in aCell &&
           aCell.sort !== undefined &&
-          "sort" in bCell &&
+          'sort' in bCell &&
           bCell.sort !== undefined
         )
       ) {
@@ -132,7 +132,7 @@ function Table({ header, rows, sort, filter }: Props) {
     if (filter.column < row.cells.length) {
       const value = row.cells[filter.column];
 
-      if ("sort" in value && value.sort !== undefined) {
+      if ('sort' in value && value.sort !== undefined) {
         return filter.filterFunc(value.sort);
       } else {
         console.warn(
@@ -164,7 +164,7 @@ function Table({ header, rows, sort, filter }: Props) {
               <tr key={key} className={classes.row} onClick={onClick}>
                 {cells.map(({ component: Cell, sort, colspan }) => (
                   <td className={classes.cell} colSpan={colspan}>
-                    {typeof Cell === "string" ? (
+                    {typeof Cell === 'string' ? (
                       <p className={classes.defaultCell} key={`${key}-${sort}`}>
                         {Cell}
                       </p>
