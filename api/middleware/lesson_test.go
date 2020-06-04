@@ -1,9 +1,11 @@
 package middleware_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -163,4 +165,70 @@ func TestGetLessonsByUUID(t *testing.T) {
 			assert.Len(t, l, test.wantLen)
 		})
 	}
+}
+
+func TestGetLessons(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		lessons, info, err := nonAdminGrant.GetLessons(nil, nil, nil)
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+		assert.Equal(t, []gentypes.Lesson{}, lessons)
+		assert.Equal(t, gentypes.PageInfo{}, info)
+	})
+
+	t.Run("Should return ALL lessons", func(t *testing.T) {
+		lessons, _, err := adminGrant.GetLessons(nil, nil, nil)
+		assert.Nil(t, err)
+		// there are only 3 lessons in test_db
+		assert.Len(t, lessons, 3)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(2)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		lessons, pageInfo, err := adminGrant.GetLessons(&page, nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, lessons, 2)
+		assert.Equal(t, gentypes.PageInfo{Total: 3, Given: 2, Limit: limit}, pageInfo)
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		asc := true
+		order := gentypes.OrderBy{Field: "title", Ascending: &asc}
+
+		lessons, _, err := adminGrant.GetLessons(nil, nil, &order)
+		assert.Nil(t, err)
+		assert.Len(t, lessons, 3)
+		assert.Equal(t, "Dynamic Programming", lessons[0].Title)
+	})
+
+	t.Run("Should filter", func(t *testing.T) {
+		lesson := gentypes.Lesson{
+			UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Title: "Dynamic Programming",
+			Tags:  nil,
+			Text:  "{}",
+		}
+		uuidString := lesson.UUID.String()
+
+		filterTests := []struct {
+			name   string
+			filter gentypes.LessonFilter
+		}{
+			{"uuid", gentypes.LessonFilter{UUID: &uuidString}},
+			{"Title", gentypes.LessonFilter{Title: &lesson.Title}},
+		}
+
+		for _, test := range filterTests {
+			t.Run(fmt.Sprintf("Should filter %s", test.name), func(t *testing.T) {
+				lessons, _, err := adminGrant.GetLessons(nil, &test.filter, nil)
+				assert.Nil(t, err)
+				require.Len(t, lessons, 1)
+
+				assert.Equal(t, lesson, lessons[0])
+			})
+		}
+	})
+
 }
