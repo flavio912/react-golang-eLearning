@@ -28,6 +28,7 @@ export type Theme = {
     textGrey: string;
     searchHoverGrey: string;
     progressGrey: string;
+    lightBlue: string;
     navyBlue: string;
     blueRibbon: string;
     approxIron: string;
@@ -75,6 +76,7 @@ const theme: Theme = {
     textBlue: '#1081AA',
     textGrey: '#737988',
     progressGrey: '#d2d6db',
+    lightBlue: "#E2E9F8",
     navyBlue: '#0E66E0',
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
