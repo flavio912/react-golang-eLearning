@@ -23,6 +23,7 @@ export type IconNames =
   | 'CourseTimeTrackedGreen'
   | 'CourseTimeTrackedGrey'
   | 'Course_Calendar'
+  | 'Down_Arrow'
   | 'DownloadCSV'
   | 'EditDelegateProfilePic_Default'
   | 'EditPicPencil'
@@ -70,6 +71,7 @@ const iconNameMap = {
   CourseTimeTrackedGreen: require("../../../assets/CourseTimeTrackedGreen.svg"),
   CourseTimeTrackedGrey: require("../../../assets/CourseTimeTrackedGrey.svg"),
   Course_Calendar: require("../../../assets/Course_Calendar.svg"),
+  Down_Arrow: require("../../../assets/Down_Arrow.svg"),
   DownloadCSV: require("../../../assets/DownloadCSV.svg"),
   EditDelegateProfilePic_Default: require("../../../assets/EditDelegateProfilePic_Default.png"),
   EditPicPencil: require("../../../assets/EditPicPencil.svg"),

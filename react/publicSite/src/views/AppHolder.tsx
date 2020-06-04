@@ -1,7 +1,5 @@
 import * as React from 'react';
-import HeaderMenu from 'components/Menu/HeaderMenu';
-import SideMenu from 'components/Menu/SideMenu';
-import { Tab } from 'components/Menu/SideMenu/SideMenu';
+import HeaderMenu, { Tab } from 'components/Menu/HeaderMenu';
 import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 
@@ -27,7 +25,7 @@ export const AppHolder = ({ children }: Props) => {
   const classes = useStyles();
   const { match, router } = useRouter();
   const tabs: Tab[] = [
-    { id: 0, icon: 'LeftNav_Icon_Dashboard', title: 'Dashboard' },
+    { id: 0, title: 'Dashboard' },
   ];
 
   const selected = () => {
@@ -42,10 +40,9 @@ export const AppHolder = ({ children }: Props) => {
   };
   return (
     <div className={classes.appHolderRoot}>
-      <SideMenu
+      <HeaderMenu
         tabs={tabs}
         selected={selected()}
-        logo={require('../assets/logo/ttc-logo.svg')}
         onClick={(tab) => {
           switch (tab.id) {
             case 0:
@@ -56,7 +53,6 @@ export const AppHolder = ({ children }: Props) => {
           }
         }}
       />
-      <HeaderMenu user={{ name: 'James Smith', url: '' }} />
       <div className={classes.appHolder}>{children}</div>
     </div>
   );

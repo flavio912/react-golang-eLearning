@@ -2,10 +2,9 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
-import Icon from '../../../sharedComponents/core/Icon/Icon';
-import CircleBorder, { User } from 'sharedComponents/core/CircleBorder';
-import Spacer from 'sharedComponents/core/Spacers/Spacer';
-import CoreInput from 'sharedComponents/core/Input/CoreInput';
+import Icon from 'sharedComponents/core/Icon/Icon';
+import Button from 'sharedComponents/core/Input/Button';
+import CircleBorder from 'sharedComponents/core/CircleBorder';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -18,41 +17,46 @@ const useStyles = createUseStyles((theme: Theme) => ({
   menu: {
     display: 'flex',
     flexDirection: 'row',
-    justfiyContent: 'flex-start',
-    backgroundImage: `linear-gradient(90deg,
-      ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
-    padding: '17px 25px',
+    padding: '20px 95px',
   },
-  search: {
-    display: 'flex',
-    alignItems: 'center',
-    flex: 1,
-    padding: theme.spacing(1),
-  },
-  searchInput: {
-    color: theme.colors.primaryWhite,
+  tab: {
+    fontFamily: 'Muli',
     fontSize: theme.fontSizes.large,
-    fontWeight: 300,
-    paddingLeft: theme.spacing(1),
-    backgroundColor: 'transparent',
-    '&::placeholder': {
-      color: theme.colors.primaryWhite,
-    },
+    fontWeight: "500",
+    marginRight: "30px",
+    cursor: "pointer",
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-start",
   },
-  profile: {
-    display: 'flex',
-    alignSelf: 'flex-end',
+  basket: {
+    paddingRight: '25px',
+    marginRight: '25px',
+    borderRight: [1, 'solid', theme.colors.borderGrey]
   },
-  name: {
-    fontSize: theme.fontSizes.tinyHeading,
-    fontWeight: 800,
+  notification: {
+    position: 'absolute',
+    marginLeft: '15px',
+    backgroundColor: theme.colors.navyBlue,
     color: theme.colors.primaryWhite,
+    fontSize: theme.fontSizes.default,
+    height: '25px',
+    width: '25px',
+    borderRadius: '25px',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  title: {
+    fontSize: theme.fontSizes.large,
+    fontWeight: "500",
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: "space-between",
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
@@ -60,41 +64,53 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
+export interface Tab {
+  id: number;
+  title: string;
+  options?: string[];
+}
+
 type Props = {
-  user: User;
-  onProfileClick?: Function;
+  tabs: Array<Tab>;
+  selected: Tab;
+  onClick?: (tab: Tab) => void;
+  basketItems?: number;
   className?: string;
 };
 
-function HeaderMenu({ user, onProfileClick, className }: Props) {
+function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
-        <div className={classes.search}>
-          <Icon name='SearchGlass' size={15} />
-          <CoreInput
-            type='search'
-            placeholder='Search'
-            className={classes.searchInput}
-            onChange={(text: string) => {}}
-            /*
-            onFocus={onFocus}
-            onBlur={onBlur}
-            value={input}
-            setValue={setInput}*/
-          />
-        </div>
-        <div
-          className={classNames(classes.row, classes.profile)}
-          onClick={() => onProfileClick && onProfileClick()}
-        >
-          <div className={classes.name}>{user.name}</div>
-          <Spacer horizontal spacing={2} />
-          <CircleBorder user={user} borderType='plain' />
-        </div>
+        <div className={classes.row}>
+          <Icon name="TTC_Logo_Icon" size={44} style={{ marginRight: '70px' }} />
+          {tabs &&
+              tabs.map((tab) => (
+                <div
+                  key={tab.id}
+                  className={classNames(classes.tab)}
+                  onClick={() => {
+                    if (onClick) onClick(tab);
+                  }}
+                >
+                  <div className={classes.title}>{tab.title}</div>
+                  {tab.options && <Icon name="Down_Arrow" size={10} style={{ cursor: "pointer", marginLeft: '5px' }} />}
+                </div>
+              ))}
+          </div>
+          <div className={classes.row}>
+            {basketItems && basketItems > 0 && 
+              <div>
+                <div className={classes.notification}>{basketItems}</div>
+                <Icon name="Payments_Method" className={classes.basket} size={38} />
+              </div>
+            }
+            <div className={classes.tab}>Login</div>
+            <Button archetype="gradient">Register</Button>
+          </div>
       </div>
     </div>
   );
