@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="16px" height="16px" viewBox="0 0 16 16" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Search</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Search-Bar" transform="translate(-11.000000, -12.000000)">
+            <g id="Search">
+                <g transform="translate(12.000000, 13.000000)">
+                    <ellipse id="Oval" stroke="#C0CEDD" stroke-width="1.31999993" cx="5.32829243" cy="5.47799972" rx="5.32829243" ry="5.47799972"></ellipse>
+                    <path d="M11.3136002,7.70571806 L11.8341018,7.69924079 C12.198582,7.69479235 12.4976993,7.98661414 12.502199,8.35109427 C12.5022493,8.35652574 12.5022493,8.36195784 12.502199,8.36738931 L12.4258907,14.5483614 C12.4214693,14.9064944 12.1322216,15.1957421 11.7740886,15.2001635 L11.253587,15.2066408 C10.8891068,15.2110892 10.5899895,14.9192675 10.5854898,14.5547873 C10.5854395,14.5493559 10.5854395,14.5439238 10.5854898,14.5384923 L10.6617981,8.35752023 C10.6662195,7.99938722 10.9554672,7.71013946 11.3136002,7.70571806 Z" id="Rectangle" fill="#C0CEDC" fill-rule="nonzero" transform="translate(11.543844, 11.452941) rotate(-45.000000) translate(-11.543844, -11.452941) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

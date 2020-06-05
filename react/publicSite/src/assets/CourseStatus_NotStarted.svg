@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 64 (93537) - https://sketch.com -->
+    <title>Multipy Sir</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Symbols" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="StatusNotStarted" transform="translate(1.000000, 1.000000)">
+            <g id="Multipy-Sir">
+                <circle id="Oval" stroke="#E9EBEB" stroke-width="1.45454545" cx="8" cy="8" r="8"></circle>
+                <g id="Multipy" transform="translate(8.053253, 8.064282) rotate(45.000000) translate(-8.053253, -8.064282) translate(3.553253, 3.564282)" fill="#E9EBEB" fill-rule="nonzero">
+                    <rect id="Rectangle" x="0.21301325" y="3.63636364" width="8.72727273" height="1.45454545" rx="0.727272727"></rect>
+                    <path d="M0.940285826,3.63636379 L8.2130131,3.63636379 C8.61467472,3.63636379 8.94028581,3.96197488 8.94028581,4.36363652 C8.94028581,4.76529815 8.61467472,5.09090924 8.2130131,5.09090924 L0.940285826,5.09090924 C0.538624189,5.09090924 0.213013098,4.76529815 0.213013098,4.36363652 C0.213013098,3.96197488 0.538624189,3.63636379 0.940285826,3.63636379 Z" id="Rectangle" transform="translate(4.576649, 4.363637) rotate(90.000000) translate(-4.576649, -4.363637) "></path>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

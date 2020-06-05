@@ -1,0 +1,30 @@
+{
+  "errors": [
+    "Entry module not found: Error: Can't resolve './src' in '/Users/tomemmerson/git-repos/admin-react/react/manager'\nresolve './src' in '/Users/tomemmerson/git-repos/admin-react/react/manager'\n  using description file: /Users/tomemmerson/git-repos/admin-react/react/manager/package.json (relative path: .)\n    Field 'browser' doesn't contain a valid alias configuration\n    using description file: /Users/tomemmerson/git-repos/admin-react/react/manager/package.json (relative path: ./src)\n      no extension\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/tomemmerson/git-repos/admin-react/react/manager/src is not a file\n      .wasm\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/tomemmerson/git-repos/admin-react/react/manager/src.wasm doesn't exist\n      .mjs\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/tomemmerson/git-repos/admin-react/react/manager/src.mjs doesn't exist\n      .js\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/tomemmerson/git-repos/admin-react/react/manager/src.js doesn't exist\n      .json\n        Field 'browser' doesn't contain a valid alias configuration\n        /Users/tomemmerson/git-repos/admin-react/react/manager/src.json doesn't exist\n      as directory\n        existing directory\n          using path: /Users/tomemmerson/git-repos/admin-react/react/manager/src/index\n            using description file: /Users/tomemmerson/git-repos/admin-react/react/manager/package.json (relative path: ./src/index)\n              no extension\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/tomemmerson/git-repos/admin-react/react/manager/src/index doesn't exist\n              .wasm\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/tomemmerson/git-repos/admin-react/react/manager/src/index.wasm doesn't exist\n              .mjs\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/tomemmerson/git-repos/admin-react/react/manager/src/index.mjs doesn't exist\n              .js\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/tomemmerson/git-repos/admin-react/react/manager/src/index.js doesn't exist\n              .json\n                Field 'browser' doesn't contain a valid alias configuration\n                /Users/tomemmerson/git-repos/admin-react/react/manager/src/index.json doesn't exist"
+  ],
+  "warnings": [
+    "configuration\nThe 'mode' option has not been set, webpack will fallback to 'production' for this value. Set 'mode' option to 'development' or 'production' to enable defaults for each environment.\nYou can also set it to 'none' to disable any default behavior. Learn more: https://webpack.js.org/configuration/mode/"
+  ],
+  "version": "4.40.2",
+  "hash": "0faf26159743e5d39301",
+  "time": 43,
+  "builtAt": 1585324025264,
+  "publicPath": "",
+  "outputPath": "/Users/tomemmerson/git-repos/admin-react/react/manager/dist",
+  "assetsByChunkName": {},
+  "assets": [],
+  "filteredAssets": 0,
+  "entrypoints": {},
+  "namedChunkGroups": {},
+  "chunks": [],
+  "modules": [],
+  "filteredModules": 0,
+  "logging": {
+    "webpack.buildChunkGraph.visitModules": {
+      "entries": [],
+      "filteredEntries": 1,
+      "debug": false
+    }
+  },
+  "children": []
+}
