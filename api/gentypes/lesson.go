@@ -14,7 +14,7 @@ type Lesson struct {
 type LessonFilter struct {
 	UUID  *string `valid:"uuidv4"`
 	Title *string
-	Tags  *[]UUID
+	Tags  *[]*UUID
 }
 
 func (l *LessonFilter) Validate() error {

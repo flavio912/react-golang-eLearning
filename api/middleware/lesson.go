@@ -136,7 +136,12 @@ func filterLesson(query *gorm.DB, filter *gentypes.LessonFilter) *gorm.DB {
 			query = query.Where("title = ?", *filter.Title)
 		}
 		if filter.Tags != nil && len(*filter.Tags) > 0 {
-			lessonUUIDs, err := getLessonsByTags(filter.Tags)
+			var tags []gentypes.UUID
+			for _, t := range *filter.Tags {
+				tags = append(tags, *t)
+			}
+
+			lessonUUIDs, err := getLessonsByTags(&tags)
 
 			if err == nil {
 				query = query.Where("uuid IN (?)", lessonUUIDs)
