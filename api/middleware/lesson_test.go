@@ -229,6 +229,19 @@ func TestGetLessons(t *testing.T) {
 				assert.Equal(t, lesson, lessons[0])
 			})
 		}
+
+		filterTagTest := gentypes.LessonFilter{
+			Tags: &[]gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			},
+		}
+		t.Run("Should filter by tags and return multiple", func(t *testing.T) {
+			lessons, _, err := adminGrant.GetLessons(nil, &filterTagTest, nil)
+
+			assert.Nil(t, err)
+			assert.Len(t, lessons, 2)
+		})
+
 	})
 
 }

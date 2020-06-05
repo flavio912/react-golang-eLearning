@@ -51,6 +51,7 @@ input CompanyFilter {
 input LessonFilter {
   uuid: UUID
   title: String
+  tags: [UUID]
 }
 
 interface PaginatedQuery {
