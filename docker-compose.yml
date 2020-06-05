@@ -66,3 +66,21 @@ services:
       - ./react/delegate:/app
     ports:
       - "4001:4001"
+
+  public:
+    build:
+      context: ./react/publicSite
+      dockerfile: "dev.Dockerfile"
+    volumes:
+      - ./react/publicSite:/app
+    ports:
+      - "4000:3000"
+
+  public_storybook:
+    build:
+      context: ./react/publicSite
+      dockerfile: "storybook.Dockerfile"
+    volumes:
+      - ./react/publicSite:/app
+    ports:
+      - "4001:4001"
