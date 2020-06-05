@@ -111,8 +111,8 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) 
             <div className={classes.tab}>Login</div>
             <Button archetype="gradient">Register</Button>
           </div>
+        </div>
       </div>
-    </div>
   );
 }
 

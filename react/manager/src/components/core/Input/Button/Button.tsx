@@ -29,15 +29,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 export type PaddingOptions = 'none' | 'small' | 'medium' | 'large';
+export type ButtonType = 'submit' | 'button';
 
 export type ButtonProps = {
   title: string;
   onClick: Function;
   className?: string;
   padding?: PaddingOptions;
+  disabled?: boolean;
+  type?: ButtonType;
 };
 
-function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
+function Button({
+  title,
+  onClick,
+  className,
+  padding = 'none',
+  disabled = false,
+  type = 'button'
+}: ButtonProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const paddingLink = {
@@ -50,6 +60,8 @@ function Button({ title, onClick, className, padding = 'none' }: ButtonProps) {
     <ButtonBase
       onClick={() => onClick()}
       className={classNames(classes.root, paddingLink[padding], className)}
+      disabled={disabled}
+      type={type}
     >
       <span className={classes.buttonText}>{title}</span>
     </ButtonBase>

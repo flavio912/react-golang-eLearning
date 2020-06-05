@@ -12,6 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    transition: '0.2s all',
     '&:hover': {
       boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
     }

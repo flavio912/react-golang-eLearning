@@ -48,7 +48,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.default,
     letterSpacing: -0.35,
     color: theme.colors.secondaryBlack,
-    display: 'block'
+    display: 'block',
+    fontWeight: 300
   },
   productSku: {
     display: 'block',
@@ -87,7 +88,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite,
     borderRadius: 4,
     border: `1px solid ${theme.colors.borderGrey}`,
-    // height: 37,
     padding: [8, 14],
     '& input': {
       width: '100%',
@@ -228,7 +228,7 @@ export default function Payment({ courses }: { courses: Course[] }) {
                   <tr key={index}>
                     <td colSpan={2}>
                       <span className={classes.productText}>
-                        <strong>{qty}x</strong>
+                        <strong>{qty}x </strong>
                         {name}
                       </span>
                       <span className={classes.productSku}>SKU: {sku}</span>
@@ -254,7 +254,11 @@ export default function Payment({ courses }: { courses: Course[] }) {
               Please send a copy of my Invoice to
             </p>
             <div className={classes.inputWrapper}>
-              <CoreInput type="text" onChange={() => {}} />
+              <CoreInput
+                type="text"
+                onChange={() => {}}
+                placeholder={'email@email.com'}
+              />
             </div>
           </div>
           <div className={classes.summaryBoxRight}>

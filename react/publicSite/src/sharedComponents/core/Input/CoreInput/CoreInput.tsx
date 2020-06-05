@@ -1,22 +1,22 @@
-import React, { useState, ChangeEvent } from "react";
-import { createUseStyles } from "react-jss";
-import classNames from "classnames";
+import React, { useState, ChangeEvent } from 'react';
+import { createUseStyles } from 'react-jss';
+import classNames from 'classnames';
 
 const styles = createUseStyles({
   defaultStyles: {
-    border: "none",
-    outline: "none",
-    flex: 1,
-  },
+    border: 'none',
+    outline: 'none',
+    flex: 1
+  }
 });
 
 export type InputTypes =
-  | "text"
-  | "password"
-  | "email"
-  | "search"
-  | "tel"
-  | "number";
+  | 'text'
+  | 'password'
+  | 'email'
+  | 'search'
+  | 'tel'
+  | 'number';
 type Props = {
   type: InputTypes;
   className?: string;
@@ -26,6 +26,7 @@ type Props = {
   onBlur?: () => void;
   value?: string;
   setValue?: (text: string) => any;
+  disabled?: boolean;
 };
 
 const CoreInput = React.forwardRef(
@@ -33,12 +34,13 @@ const CoreInput = React.forwardRef(
     {
       type,
       className,
-      placeholder = "",
+      placeholder = '',
       onChange,
       onFocus,
       onBlur,
       value,
       setValue,
+      disabled
     }: Props,
     ref: React.Ref<HTMLInputElement>
   ) => {
@@ -49,14 +51,14 @@ const CoreInput = React.forwardRef(
       _value = value;
       _setValue = setValue;
     } else {
-      [_value, _setValue] = useState("");
+      [_value, _setValue] = useState('');
     }
 
     const updateInput = (event: ChangeEvent<HTMLInputElement>) => {
       let newValue = onChange(event.target.value) || event.target.value;
 
       // Only update with given value if it is a string
-      if (typeof newValue != "string") {
+      if (typeof newValue != 'string') {
         newValue = event.target.value;
       }
       _setValue(newValue);
@@ -72,6 +74,7 @@ const CoreInput = React.forwardRef(
         ref={ref}
         onFocus={onFocus}
         onBlur={onBlur}
+        disabled={disabled}
       />
     );
   }

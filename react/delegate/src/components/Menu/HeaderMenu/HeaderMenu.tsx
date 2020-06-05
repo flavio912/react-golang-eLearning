@@ -13,7 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     borderBottom: [1, 'solid', theme.colors.borderGrey],
     gridArea: '1 / 2',
-    zIndex: 10,
+    zIndex: 10
   },
   menu: {
     display: 'flex',
@@ -21,13 +21,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justfiyContent: 'flex-start',
     backgroundImage: `linear-gradient(90deg,
       ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
-    padding: '17px 25px',
+    padding: '17px 25px'
   },
   search: {
     display: 'flex',
     alignItems: 'center',
     flex: 1,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   searchInput: {
     color: theme.colors.primaryWhite,
@@ -36,48 +36,58 @@ const useStyles = createUseStyles((theme: Theme) => ({
     paddingLeft: theme.spacing(1),
     backgroundColor: 'transparent',
     '&::placeholder': {
-      color: theme.colors.primaryWhite,
-    },
+      color: theme.colors.primaryWhite
+    }
   },
   profile: {
     display: 'flex',
-    alignSelf: 'flex-end',
+    alignSelf: 'flex-end'
   },
   name: {
     fontSize: theme.fontSizes.tinyHeading,
     fontWeight: 800,
-    color: theme.colors.primaryWhite,
+    color: theme.colors.primaryWhite
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
-    flexGrow: 1,
-  },
+    flexGrow: 1
+  }
 }));
 
 type Props = {
   user: User;
   onProfileClick?: Function;
   className?: string;
+  onToggleSearchModal?: Function;
 };
 
-function HeaderMenu({ user, onProfileClick, className }: Props) {
+function HeaderMenu({
+  user,
+  onProfileClick,
+  onToggleSearchModal,
+  className
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
-        <div className={classes.search}>
-          <Icon name='SearchGlass' size={15} />
+        <div
+          className={classes.search}
+          onClick={() => onToggleSearchModal && onToggleSearchModal()}
+        >
+          <Icon name="SearchGlass" size={15} />
           <CoreInput
-            type='search'
-            placeholder='Search'
+            type="search"
+            placeholder="Search"
+            disabled={true}
             className={classes.searchInput}
             onChange={(text: string) => {}}
             /*
@@ -93,7 +103,7 @@ function HeaderMenu({ user, onProfileClick, className }: Props) {
         >
           <div className={classes.name}>{user.name}</div>
           <Spacer horizontal spacing={2} />
-          <CircleBorder user={user} borderType='plain' />
+          <CircleBorder user={user} borderType="plain" />
         </div>
       </div>
     </div>
