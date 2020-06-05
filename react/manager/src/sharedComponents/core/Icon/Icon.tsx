@@ -7,6 +7,7 @@ export type IconNames =
   | 'ArrowLeftNavyBlue'
   | 'ArrowRight'
   | 'ArrowRightNavyBlue'
+  | 'Basket'
   | 'Card_SecondaryActon_Dots'
   | 'CloseCourseManagementTray_X'
   | 'CourseAccountActivated'
@@ -56,6 +57,7 @@ const iconNameMap = {
   ArrowLeftNavyBlue: require("../../../assets/ArrowLeftNavyBlue.svg"),
   ArrowRight: require("../../../assets/ArrowRight.svg"),
   ArrowRightNavyBlue: require("../../../assets/ArrowRightNavyBlue.svg"),
+  Basket: require("../../../assets/Basket.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
   CourseAccountActivated: require("../../../assets/CourseAccountActivated.svg"),

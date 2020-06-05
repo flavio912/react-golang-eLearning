@@ -37,13 +37,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   notification: {
     position: 'absolute',
-    marginLeft: '15px',
+    marginLeft: '25px',
     backgroundColor: theme.colors.navyBlue,
     color: theme.colors.primaryWhite,
     fontSize: theme.fontSizes.default,
-    height: '25px',
-    width: '25px',
-    borderRadius: '25px',
+    height: '20px',
+    width: '20px',
+    borderRadius: '20px',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center'
@@ -105,14 +105,14 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) 
             {basketItems && basketItems > 0 && 
               <div>
                 <div className={classes.notification}>{basketItems}</div>
-                <Icon name="Payments_Method" className={classes.basket} size={38} />
+                <Icon name="Basket" className={classes.basket} size={38} />
               </div>
             }
             <div className={classes.tab}>Login</div>
             <Button archetype="gradient">Register</Button>
           </div>
+        </div>
       </div>
-    </div>
   );
 }
 

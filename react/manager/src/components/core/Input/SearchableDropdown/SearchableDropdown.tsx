@@ -1,73 +1,73 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import ThemeObject, { Theme } from "helpers/theme";
-import classNames from "classnames";
-import Icon from "../../../../sharedComponents/core/Icon";
-import { ScaleLoader } from "react-spinners";
-import CoreInput from "../CoreInput";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import ThemeObject, { Theme } from 'helpers/theme';
+import classNames from 'classnames';
+import Icon from '../../../../sharedComponents/core/Icon';
+import { ScaleLoader } from 'react-spinners';
+import CoreInput from '../CoreInput';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   tagContainer: {
-    width: "100%",
+    width: '100%'
   },
   tag: {
     height: 40,
-    display: "inline-flex",
-    alignItems: "center",
-    flexDirection: "row",
+    display: 'inline-flex',
+    alignItems: 'center',
+    flexDirection: 'row',
     backgroundColor: theme.colors.backgroundGrey,
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: theme.buttonBorderRadius,
     fontSize: theme.fontSizes.default,
     padding: [0, 15],
-    margin: [0, 15, 15, 0],
+    margin: [0, 15, 15, 0]
   },
   removeTag: {
     margin: [0, 0, 5, 15],
     height: 20,
-    width: 12,
+    width: 12
   },
   container: {
-    width: "100%",
+    width: '100%',
     height: 40,
-    position: "relative",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "strech",
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'strech'
   },
   clickableBox: {
     height: 40,
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: [0, 15],
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: theme.buttonBorderRadius,
-    cursor: "pointer",
+    cursor: 'pointer'
   },
   dropdown: {
-    backgroundColor: "white",
-    position: "absolute",
+    backgroundColor: 'white',
+    position: 'absolute',
     top: 50,
-    width: "100%",
+    width: '100%',
     maxHeight: 450, // don't know how this should be calculated
     border: `1px solid ${theme.colors.borderGrey}`,
     borderRadius: theme.primaryBorderRadius,
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column'
   },
   searchContainer: {
     padding: 10,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "strech",
-    position: "relative",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'strech',
+    position: 'relative'
   },
   searchIcon: {
-    position: "absolute",
+    position: 'absolute',
     top: 21,
-    right: 21,
+    right: 21
   },
   searchBox: {
     height: 40,
@@ -75,71 +75,86 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 3,
     padding: [0, 10],
     fontSize: 14,
-    flex: "auto",
-    "&:focus": {
-      borderColor: theme.colors.primaryBlue,
-    },
+    flex: 'auto',
+    '&:focus': {
+      borderColor: theme.colors.primaryBlue
+    }
   },
   tempResults: {
     height: 100,
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    borderTop: `1px solid ${theme.colors.borderGrey}`,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderTop: `1px solid ${theme.colors.borderGrey}`
+  },
+  tempPlaceholder: {
+    color: theme.colors.textGrey
   },
   searchResults: {
-    overflowY: "auto",
+    overflowY: 'auto'
   },
   option: {
     height: 40,
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    fontWeight: 300,
+    color: theme.colors.secondaryBlack,
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
-    "&:first-child, &:last-child": {
-      borderBottom: "none",
-    },
+    '&:first-child, &:last-child': {
+      borderBottom: 'none'
+    }
+  },
+  optionHover: {
+    '&:hover': {
+      background: '#f9fafd'
+    }
   },
   header: {
     backgroundColor: theme.colors.primaryBlue,
-    cursor: "default",
+    cursor: 'default'
   },
   title: {
-    textTransform: "uppercase",
-    color: "white",
-    fontWeight: 900,
+    textTransform: 'uppercase',
+    color: 'white',
+    fontWeight: 900
   },
   pill: {
-    textTransform: "uppercase",
-    color: "white",
+    textTransform: 'uppercase',
+    color: 'white',
     fontSize: 9,
-    border: "1px solid white",
+    border: '1px solid white',
     borderRadius: 10,
-    padding: [2, 10],
+    padding: [2, 10]
   },
   checkbox: {
-    marginRight: 15,
+    marginRight: 15
   },
   // CSS triangle hack :)
   // https://css-tricks.com/snippets/css/css-triangle/
   triangleDown: {
     width: 0,
     height: 0,
-    borderLeft: "5px solid transparent",
-    borderRight: "5px solid transparent",
-    borderTop: ` ${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`,
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderTop: ` ${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`
   },
   triangleUp: {
     width: 0,
     height: 0,
-    borderLeft: "5px solid transparent",
-    borderRight: "5px solid transparent",
-    borderBottom: `${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`,
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderBottom: `${5 * 2 * 0.866}px solid ${theme.colors.primaryBlue}`
   },
+  placeholderText: {
+    fontSize: theme.fontSizes.small,
+    fontWeight: 300,
+    color: theme.colors.primaryBlack
+  }
 }));
 
 export type CourseCategory = {
@@ -167,21 +182,21 @@ function SearchableDropdown({
   selected = [],
   setSelected,
   searchQuery,
-  debounceTime = 600,
+  debounceTime = 600
 }: Props) {
   const classes = useStyles();
   const [isOpen, setOpen] = React.useState<boolean>(false);
   const [isLoading, setLoading] = React.useState<boolean>(false);
-  const [search, setSearch] = React.useState<string>("");
+  const [search, setSearch] = React.useState<string>('');
   const [categories, setCategories] = React.useState<CourseCategory[]>([]);
   const searchRef = React.useRef<HTMLInputElement>(null);
   const debounceRef = React.useRef<number | undefined>();
 
   const placeholder = multiselect
-    ? "Please select one or more Courses"
+    ? 'Please select one or more Courses'
     : selected.length > 0
     ? selected[0].name
-    : "Please select the Course you wish to book";
+    : 'Please select the Course you wish to book';
 
   React.useEffect(() => {
     if (isOpen && searchRef && searchRef.current) {
@@ -190,7 +205,7 @@ function SearchableDropdown({
   }, [isOpen]);
 
   React.useEffect(() => {
-    if (search !== "") {
+    if (search !== '') {
       setLoading(true);
       clearTimeout(debounceRef.current);
       debounceRef.current = window.setTimeout(async () => {
@@ -230,7 +245,7 @@ function SearchableDropdown({
           className={classes.clickableBox}
           onClick={() => setOpen((o) => !o)}
         >
-          <p>{placeholder}</p>
+          <p className={classes.placeholderText}>{placeholder}</p>
           <div className={isOpen ? classes.triangleUp : classes.triangleDown} />
         </div>
         {isOpen && (
@@ -258,13 +273,15 @@ function SearchableDropdown({
                   loading={isLoading}
                 />
               </div>
-            ) : search === "" ? (
+            ) : search === '' ? (
               <div className={classes.tempResults}>
-                <p>Start typing to see courses</p>
+                <p className={classes.tempPlaceholder}>
+                  Start typing to see courses
+                </p>
               </div>
             ) : categories.length === 0 ? (
               <div className={classes.tempResults}>
-                <p>No Courses found</p>
+                <p className={classes.tempPlaceholder}>No Courses found</p>
               </div>
             ) : (
               <div className={classes.searchResults}>
@@ -277,7 +294,10 @@ function SearchableDropdown({
                     {courses.map(({ name, id, price, trainingReq }: Course) => (
                       <div
                         key={id}
-                        className={classes.option}
+                        className={classNames(
+                          classes.option,
+                          classes.optionHover
+                        )}
                         onClick={() => {
                           if (multiselect) {
                             if (
@@ -285,11 +305,14 @@ function SearchableDropdown({
                             ) {
                               setSelected(selected.filter((f) => f.id !== id));
                             } else {
-                              setSelected([...selected, { name, id, price, trainingReq }]);
+                              setSelected([
+                                ...selected,
+                                { name, id, price, trainingReq }
+                              ]);
                             }
                           } else {
                             setSelected([{ name, id, price, trainingReq }]);
-                            setSearch("");
+                            setSearch('');
                             setOpen(false);
                           }
                         }}
