@@ -13,6 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         border: '1px solid #E9EBEB',
         borderRadius: '5px',
+        backgroundColor: theme.colors.primaryWhite,
         boxShadow: '0 2px 10px 0 rgba(0,0,0,0.15), 4px 2px 10px -2px rgba(0,0,0,0.06)',
     },
     price: {
@@ -76,7 +77,7 @@ function CoursePreview({ price, details, onBasket, onBuy }: Props) {
                 <Icon name="SampleImage_ClassroomCoursesDetail_Feat" style={videoStyle} />
           </div>
 
-            <div className={classes.price}>{price} <span className={classes.vat}>+VAT</span></div>
+          <div className={classes.price}>{price} <span className={classes.vat}>+VAT</span></div>
 
           <Button
             archetype="submit"

@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Button from "sharedComponents/core/Input/Button";
 import Icon from "sharedComponents/core/Icon";
+import Spacer from "sharedComponents/core/Spacers/Spacer";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
@@ -15,6 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         padding: '57px 0'
     },
     defaultTitle: {
+        alignSelf: 'center',
         fontSize: theme.fontSizes.extraLarge,
         fontWeight: '800',
         textAlign: 'center',
@@ -35,6 +37,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontWeight: '500',
     },
     courseTitle: {
+        alignSelf: 'flex-start',
         fontSize: theme.fontSizes.heading,
         textAlign: 'left',
     },
@@ -73,13 +76,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
         marginBottom: '59px'
     },
     course: {
-        justifyContent: 'flex-start'
+        alignSelf: 'flex-start',
+        marginLeft: '90px'
+    },
+    component: {
+        position: 'absolute',
+        top: '15%',
+        right: '5%'
     },
     extraLarge: {
         fontSize: theme.fontSizes.extraLarge,
-    },
-    spaceBetween: {
-        justifyContent: 'space-between',
     },
     bold: {
         fontWeight: 'bold',
@@ -96,6 +102,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         justifyContent: 'flex-start',
         alignItems: 'flex-start'
+    },
+    spacer: {
+        minWidth: '450px'
     }
 }));
 
@@ -114,10 +123,11 @@ type Props = {
     buttons?: ButtonLink[];
     estimatedTime?: string;
     lastUpdated?: string;
+    sideComponent?: React.Component;
     className?: string;
 };
 
-function PageHeader({ title, description, archetype, history, buttons, estimatedTime, lastUpdated, className }: Props) {
+function PageHeader({ title, description, archetype, history, buttons, estimatedTime, lastUpdated, sideComponent, className }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
@@ -136,8 +146,8 @@ function PageHeader({ title, description, archetype, history, buttons, estimated
                 ))}
           </div>}
 
-          <div className={classNames(classes.row, archetype && archetype === "course" && classes.spaceBetween)}>
-              <div className={classNames(classes.column, archetype && archetype === "course" && classes.course)}>
+          <div className={classNames(classes.row, archetype && archetype === "course" && classes.course)}>
+              <div className={classes.column}>
                 <div className={classNames(classes.defaultTitle, titleStyle)}>{title}</div>
                 {archetype && archetype === "default" && <div className={classes.bar}/>}
                 <div className={classNames(classes.defaultDesc, descStyle)}>{description}</div>
@@ -163,12 +173,15 @@ function PageHeader({ title, description, archetype, history, buttons, estimated
                     </div>
                 }
               </div>
-              <div>
-                  <div>
-                      PlaceHolder
-                  </div>
-              </div>
+              {archetype && archetype === "course" &&
+                <div className={classes.spacer} />
+              }
           </div>
+          {archetype && archetype === "course" &&
+                <div className={classes.component}>
+                    {sideComponent}
+                </div>
+              }
       </div>
   );
 }
