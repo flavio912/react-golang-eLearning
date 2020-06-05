@@ -13,7 +13,7 @@ jwt:
   secret: wKz%rR69b8vX24%RMJ&MpmYxNfRjHPKcfU@yXo#^9@Z9EHZ2eeDp9B818!^Aq7oLTHj!@pjZZlTnbTG6!
   uploadsSecret: S^&4D4dMaKHb^hwQvtqBw^0nG83^QrM3c&P%JwbzC%HnBZ#RGwcqgfc$@y7rvKnt@&F92pgn8tzTn3w
   csrfSecret: 86%C$pPtci*NZrP!4L#q2PLcG*HrJb4jw0P1vaRL&vnC7At0Qd
-  adminExpirationHours: 3 # How many hours until the admin auth token expires
+  tokenExpirationHours: 3 # How many hours until the admin auth token expires
 aws:
   uploadsBucket: ttc-platform-uploads
   sesSendAddress: ttc-noreply@devserver.london

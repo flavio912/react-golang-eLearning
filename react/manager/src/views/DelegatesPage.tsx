@@ -1,66 +1,54 @@
-import * as React from "react";
-import HeaderMenu from "components/Menu/HeaderMenu";
-import SideMenu from "components/Menu/SideMenu";
-import { Tab } from "components/Menu/SideMenu/SideMenu";
-import ActvityCard from "components/Overview/ActivityCard";
-import { createUseStyles, useTheme } from "react-jss";
-import classes from "*.module.css";
-import classNames from "classnames";
-import Button from "sharedComponents/core/Button";
-import UserSearch from "components/UserSearch";
-import PageTitle from "components/PageTitle";
-import TitleWrapper from "components/Overview/TitleWrapper";
-import QuickInfo from "components/Overview/QuickInfo";
-import QuickOverview from "components/Overview/QuickOverview";
-import TrainingProgressCard from "components/Overview/TrainingProgressCard";
-import theme, { Theme } from "helpers/theme";
-import ProfileCard from "components/Overview/ProfileCard";
-import PageHeader from "components/PageHeader";
-import Table from "components/core/Table";
-import UserLabel from "components/core/Table/UserLabel";
-import Text from "components/core/Table/Text/Text";
-import Icon from "sharedComponents/core/Icon";
-import CourseCompletion from "components/core/Table/CourseCompletion";
-import Dropdown from "sharedComponents/core/Dropdown";
-import Spacer from "sharedComponents/core/Spacers/Spacer";
-import Paginator from "sharedComponents/Paginator";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import Button from 'sharedComponents/core/Input/Button';
+import UserSearch from 'components/UserSearch';
+import theme, { Theme } from 'helpers/theme';
+import PageHeader from 'components/PageHeader';
+import Table from 'sharedComponents/core/Table';
+import UserLabel from 'sharedComponents/core/Table/UserLabel';
+import Text from 'sharedComponents/core/Table/Text/Text';
+import Icon from 'sharedComponents/core/Icon';
+import CourseCompletion from 'sharedComponents/core/CourseCompletion';
+import Dropdown from 'sharedComponents/core/Input/Dropdown';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import Paginator from 'sharedComponents/Pagination/Paginator';
 
 type Props = {};
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column',
     flexGrow: 1,
-    maxWidth: 1275,
+    maxWidth: 1275
   },
   searchAndFilter: {
-    display: "flex",
-    justifyContent: "space-between",
-    height: 40,
+    display: 'flex',
+    justifyContent: 'space-between',
+    height: 40
   },
   tableOptions: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   dropdown: {
-    background: "white",
+    background: 'white'
   },
   divider: {
-    width: theme.spacing(1),
+    width: theme.spacing(1)
   },
   search: {
-    flex: 0.4,
+    flex: 0.4
   },
   actionsRow: {
-    borderLeft: "1px solid #ededed",
+    borderLeft: '1px solid #ededed',
     paddingLeft: 23,
     height: 38,
-    display: "flex",
+    display: 'flex',
     /* justify-content: center; */
-    alignItems: "center",
-  },
+    alignItems: 'center'
+  }
 }));
 
 const delegateRow = (
@@ -79,24 +67,24 @@ const delegateRow = (
   cells: [
     { component: () => <UserLabel name={name} profileUrl={profileUrl} /> },
     {
-      component: () => <Text text={email} color={theme.colors.textBlue} />,
+      component: () => <Text text={email} color={theme.colors.textBlue} />
     },
     {
       component: () => (
         <CourseCompletion total={totalCourses} complete={coursesCompleted} />
-      ),
+      )
     },
     { component: () => <Text text={lastActiveTimestamp} formatDate /> },
     { component: () => <Text text={nextExpiryTimestamp} formatDate /> },
     {
       component: () => (
         <div className={classes.actionsRow}>
-          <Icon name={"Card_SecondaryActon_Dots"} />
+          <Icon name={'Card_SecondaryActon_Dots'} />
         </div>
-      ),
-    },
+      )
+    }
   ],
-  onClick: () => router.push(`/app/delegates/${userUUID}`),
+  onClick: () => router.push(`/app/delegates/${userUUID}`)
 });
 
 const DelegatesPage = (props: any) => {
@@ -114,42 +102,42 @@ const DelegatesPage = (props: any) => {
       <div className={classes.searchAndFilter}>
         <div className={classes.search}>
           <UserSearch
-            companyName={"Fedex"}
+            companyName={'Fedex'}
             searchFunction={async (query: string) => {
               return [
                 {
-                  key: "Jim Smith",
-                  value: "uuid-1",
+                  key: 'Jim Smith',
+                  value: 'uuid-1'
                 },
                 {
-                  key: "Bruce Willis",
-                  value: "uuid-2",
+                  key: 'Bruce Willis',
+                  value: 'uuid-2'
                 },
                 {
-                  key: "Tony Stark",
-                  value: "uuid-3",
-                },
+                  key: 'Tony Stark',
+                  value: 'uuid-3'
+                }
               ];
             }}
           />
         </div>
         <div className={classes.tableOptions}>
           <Button
-            archetype={"default"}
-            icon={{ right: "FilterAdjust" }}
-            children={"Filters"}
+            archetype={'default'}
+            icon={{ right: 'FilterAdjust' }}
+            children={'Filters'}
           />
           <Spacer spacing={1} horizontal />
           <Dropdown
-            placeholder={"Sort By"}
+            placeholder={'Sort By'}
             options={[]}
             setSelected={(selected) => <div />}
             className={classes.dropdown}
           />
           <Spacer spacing={1} horizontal />
           <Button
-            archetype={"default"}
-            icon={{ right: "DownloadCSV" }}
+            archetype={'default'}
+            icon={{ right: 'DownloadCSV' }}
             noIconPadding
           />
         </div>
@@ -157,38 +145,38 @@ const DelegatesPage = (props: any) => {
       <Spacer spacing={3} vertical />
       <Table
         header={[
-          "Name",
-          "Email",
-          "Courses Completed",
-          "Last Active",
-          "Next Expiry",
-          "Actions",
+          'Name',
+          'Email',
+          'Courses Completed',
+          'Last Active',
+          'Next Expiry',
+          'Actions'
         ]}
         rows={[
           delegateRow(
-            "asda",
-            "Jim Smith",
-            "",
-            "email@email.com",
+            'asda',
+            'Jim Smith',
+            '',
+            'email@email.com',
             3,
             6,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800",
+            '2013-04-20T20:00:00+0800',
+            '2013-04-20T20:00:00+0800',
             classes,
             router
           ),
           delegateRow(
-            "abc",
-            "Bruce Willis",
-            "",
-            "bruce.willis@email.com",
+            'abc',
+            'Bruce Willis',
+            '',
+            'bruce.willis@email.com',
             3,
             6,
-            "2013-04-20T20:00:00+0800",
-            "2013-04-20T20:00:00+0800",
+            '2013-04-20T20:00:00+0800',
+            '2013-04-20T20:00:00+0800',
             classes,
             router
-          ),
+          )
         ]}
       />
       <Spacer vertical spacing={3} />

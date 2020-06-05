@@ -36,7 +36,7 @@ func (m *MutationResolver) ManagerLogin(ctx context.Context, args struct{ Input 
 		return nil, err
 	}
 
-	auth.SetAuthCookie(ctx, token)
+	auth.SetAuthCookies(ctx, token)
 
 	// If NoResp given return a blank token in the response - @temmerson
 	if args.Input.NoResp != nil && *args.Input.NoResp {
@@ -330,12 +330,18 @@ func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Inpu
 	})
 }
 
-// CSRFToken returns a CSRF token to authenticated users
-func (m *MutationResolver) CSRFToken(ctx context.Context) (string, error) {
+func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input gentypes.CreateLessonInput }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return "", &errors.ErrUnauthorized
+		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
-	return grant.GenerateCSRFToken()
+	lesson, err := grant.CreateLesson(args.Input)
+	if err != nil {
+		return &LessonResolver{}, err
+	}
+
+	return &LessonResolver{
+		Lesson: lesson,
+	}, err
 }

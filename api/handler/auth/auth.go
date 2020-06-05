@@ -2,8 +2,10 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
@@ -42,21 +44,37 @@ func Handler(h http.Handler) http.Handler {
 
 		// Attempt to get a grant
 		grant, err := middleware.Authenticate(token)
-		if err == nil {
-			// Check XSRF Token is used if token came from cookie
-			var csrfToken = r.Header.Get("X-CSRF-TOKEN")
-			if cookieUsed && auth.ValidateCSRFToken(csrfToken, grant.Claims.UUID) != nil {
-				w.Header().Set("Content-Type", "application/text")
-				w.WriteHeader(http.StatusUnauthorized)
-				w.Write([]byte("Invalid CSRF TOKEN"))
-				return
+
+		// Check CSRF if cookie was used for authentication and disallow if CSRF is invalid
+		// This is happening after authetication so the user can still make unauthenticated
+		// requests (like logging in) even if CSRF fails
+		if err == nil && grant != nil {
+
+			var csrfHeader = r.Header.Get("X-CSRF-TOKEN")
+			csrfCookie, _ := r.Cookie("csrf")
+
+			var allowRequest = false
+			if cookieUsed && csrfCookie != nil {
+				if fmt.Sprintf("csrf=%s", csrfHeader) == csrfCookie.String() {
+					allowRequest = true
+				} else {
+					w.Header().Set("CSRF-FAIL", "true") // Useful for diagnosing
+					glog.Warningf("CSRF Tokens don't match: IP - %s", r.RemoteAddr)
+					allowRequest = false
+				}
 			}
 
-			ctx = context.WithValue(ctx, GrantKey, grant)
-			addSentryContext(r, grant)
+			if !cookieUsed {
+				allowRequest = true
+			}
+
+			if allowRequest {
+				ctx = context.WithValue(ctx, GrantKey, grant)
+				ctx = context.WithValue(ctx, AuthKey, token)
+				addSentryContext(r, grant)
+			}
 		}
 
-		ctx = context.WithValue(ctx, AuthKey, token)
 		ctx = context.WithValue(ctx, RespKey, &w)
 
 		h.ServeHTTP(w, r.WithContext(ctx))
@@ -98,18 +116,36 @@ func ResponseFromContext(ctx context.Context) *http.ResponseWriter {
 	return v
 }
 
-// SetAuthCookie gets the responseWriter from context and uses it to set the jwt cookie
-func SetAuthCookie(ctx context.Context, token string) {
+// SetAuthCookies gets the responseWriter from context and uses it to set the jwt cookie
+func SetAuthCookies(ctx context.Context, authToken string) {
 	writer := ResponseFromContext(ctx)
 	if writer == nil {
 		glog.Warning("Unable to set auth cookie, no writer set")
 		return
 	}
 
+	grant, err := middleware.Authenticate(authToken)
+	if err != nil {
+		grant.Logger.LogMessage(sentry.LevelError, "Unable to authenticate with token, auth cookies not set")
+		return
+	}
+
+	csrfToken, err := grant.GenerateCSRFToken()
+	if err != nil {
+		grant.Logger.Log(sentry.LevelError, err, "Unable to generate CSRF token")
+		return
+	}
+
+	var expirationTime = time.Now().Add(time.Hour * time.Duration(helpers.Config.Jwt.TokenExpirationHours))
+
 	if helpers.Config.IsDev {
 		// In dev, don't use a secure cookie as we aren't using tls in dev
-		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: token, HttpOnly: true, Secure: false})
+		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Secure: false, Expires: expirationTime})
+
+		// Set CSRF cookie
+		http.SetCookie(*writer, &http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Secure: false, Expires: expirationTime})
 	} else {
-		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: token, HttpOnly: true, Secure: true, Domain: "*.ttc-hub.com"})
+		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Secure: true, Domain: "*.ttc-hub.com", Expires: expirationTime})
+		http.SetCookie(*writer, &http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Secure: true, Domain: "*.ttc-hub.com", Expires: expirationTime})
 	}
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -44,7 +45,7 @@ func (delegate *Delegate) GenerateToken(password string) (string, error) {
 		Company: delegate.CompanyUUID,
 	}
 
-	token, err := auth.GenerateToken(claims, 24)
+	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.TokenExpirationHours)
 
 	if err == nil {
 		database.GormDB.Model(&delegate).Update("last_login", time.Now())

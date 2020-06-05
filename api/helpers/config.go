@@ -28,7 +28,7 @@ type yamlConfig struct {
 		UploadsSecret          string  `yaml:"uploadsSecret"`
 		DelegateFinaliseSecret string  `yaml:"delegateFinaliseSecret"`
 		CSRFSecret             string  `yaml:"csrfSecret"`
-		AdminExpirationHours   float64 `yaml:"adminExpirationHours"`
+		TokenExpirationHours   float64 `yaml:"tokenExpirationHours"`
 	} `yaml:"jwt"`
 	AWS struct {
 		UploadsBucket  string `yaml:"uploadsBucket"`

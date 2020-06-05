@@ -14,7 +14,8 @@ func (m *MutationResolver) DelegateLogin(ctx context.Context, args struct{ Input
 	if err != nil {
 		return nil, err
 	}
-	auth.SetAuthCookie(ctx, token)
+
+	auth.SetAuthCookies(ctx, token)
 
 	// If NoResp given return a blank token in the response - @temmerson
 	if args.Input.NoResp != nil && *args.Input.NoResp {

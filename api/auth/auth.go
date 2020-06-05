@@ -98,6 +98,10 @@ func ValidateToken(token string) (UserClaims, error) {
 
 	claims := &trueClaims{}
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			glog.Errorf("Unexpected signing method %v", token.Header["alg"])
+			return nil, errors.New("jwt error")
+		}
 		return []byte(helpers.Config.Jwt.Secret), nil
 	})
 
@@ -143,6 +147,10 @@ func ValidateFinaliseDelegateToken(token string) (FinaliseDelegateClaims, error)
 	claims := &trueFinaliseDelegateClaims{}
 
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			glog.Errorf("Unexpected signing method %v", token.Header["alg"])
+			return nil, errors.New("jwt error")
+		}
 		return []byte(helpers.Config.Jwt.DelegateFinaliseSecret), nil
 	})
 
@@ -198,6 +206,10 @@ func ValidateCSRFToken(token string, cookieUUID gentypes.UUID) error {
 	claims := &trueCSRFClaims{}
 
 	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			glog.Errorf("Unexpected signing method %v", token.Header["alg"])
+			return nil, errors.New("jwt error")
+		}
 		return []byte(helpers.Config.Jwt.CSRFSecret), nil
 	})
 

@@ -1,4 +1,6 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
+//@ts-ignore
+import jwtDecode from 'jwt-decode';
 
 type GraphError = {
   message: string;
@@ -13,9 +15,23 @@ export class FetchError extends Error {
   }
 }
 
-function fetchQuery(operation: any, variables: any) {
+function readCookie(name: string) {
+  var nameEQ = name + '=';
+  var ca = document.cookie.split(';');
+  for (var i = 0; i < ca.length; i++) {
+    var c = ca[i];
+    while (c.charAt(0) == ' ') c = c.substring(1, c.length);
+    if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length, c.length);
+  }
+  return null;
+}
+
+async function fetchQuery(operation: any, variables: any) {
+  const CSRF_TOKEN = readCookie('csrf');
+
   const headers: any = {
-    'content-type': 'application/json'
+    'content-type': 'application/json',
+    'X-CSRF-TOKEN': CSRF_TOKEN
   };
 
   return fetch('http://localhost:8080/graphql', {

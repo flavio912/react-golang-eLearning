@@ -83,6 +83,6 @@ func (admin *Admin) GenerateToken(password string) (string, error) {
 		UUID: admin.UUID,
 		Role: auth.AdminRole,
 	}
-	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.AdminExpirationHours)
+	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.TokenExpirationHours)
 	return token, err
 }

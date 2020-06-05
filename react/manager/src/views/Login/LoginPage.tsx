@@ -22,7 +22,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 const mutation = graphql`
   mutation LoginPage_LoginMutation($email: String!, $password: String!) {
-    managerLogin(input: { email: $email, password: $password, noResp: true }) {
+    managerLogin(input: { email: $email, password: $password }) {
       token
     }
   }
@@ -41,7 +41,7 @@ const AttemptLogin = (router: Router) => (
   commitMutation(environment, {
     mutation,
     variables,
-    onCompleted: (
+    onCompleted: async (
       response: { managerLogin: { token: string } },
       errors: GraphError[]
     ) => {
@@ -50,6 +50,7 @@ const AttemptLogin = (router: Router) => (
         errorCallback(`${errors[0]?.extensions?.message}`);
         return;
       }
+
       console.log('Response received from server.', response, errors);
       router.push('/app');
     },

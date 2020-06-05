@@ -1,6 +1,6 @@
-import * as React from "react";
+import * as React from 'react';
 //@ts-ignore
-import { BrowserProtocol, queryMiddleware } from "farce";
+import { BrowserProtocol, queryMiddleware } from 'farce';
 import {
   createFarceRouter,
   createRender,
@@ -8,18 +8,20 @@ import {
   Route,
   RouteRenderArgs,
   RenderErrorArgs,
-  RedirectException,
-} from "found";
+  RedirectException
+} from 'found';
 //@ts-ignore
-import { Resolver } from "found-relay";
-import environment from "./api/environment";
-import { graphql, createFragmentContainer } from "react-relay";
-import LoginPage from "views/Login";
-import { ThemeProvider } from "react-jss";
-import theme from "./helpers/theme";
-import { AppHolder } from "views/AppHolder";
-import { Redirect } from "react-router-dom";
-import Dashboard from "views/Dashboard";
+import { Resolver } from 'found-relay';
+import environment from './api/environment';
+import { graphql, createFragmentContainer } from 'react-relay';
+import LoginPage from 'views/Login';
+import { ThemeProvider } from 'react-jss';
+import theme from './helpers/theme';
+import { AppHolder } from 'views/AppHolder';
+import OnlineCoursePage from 'views/OnlineCourse';
+import TrainingZone from 'views/TrainingZone/TrainingZone';
+import OnlineCourses from 'views/OnlineCourses';
+import Progress from 'views/Progress';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -51,11 +53,14 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        <Route path="/" Component={Dashboard} />
+        <Route path="/" Component={TrainingZone} />
+        <Route path="/courses" Component={OnlineCourses} />
+        <Route path="/courses/:id" Component={OnlineCoursePage} />
+        <Route path="/progress" Component={Progress} />
       </Route>
     </Route>
   ),
-  render: createRender({}),
+  render: createRender({})
 });
 
 const App = () => (

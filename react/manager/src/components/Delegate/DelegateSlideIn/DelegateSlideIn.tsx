@@ -1,14 +1,14 @@
 import * as React from 'react';
-import SideModal from 'components/core/SideModal';
+import SideModal from 'components/core/Modals/SideModal';
 import Tabs, {
   TabContent,
   Body,
   Heading,
   Footer
-} from 'components/core/SideModal/Tabs';
-import Button from 'sharedComponents/core/Button';
+} from 'components/core/Modals/SideModal/Tabs';
+import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
-import EasyInput from 'components/core/EasyInput';
+import EasyInput from 'components/core/Input/EasyInput';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import { CreateDelegate } from './mutations';
@@ -92,20 +92,27 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
+export type DelegateInfo = {
+  firstName: string;
+  lastName: string;
+  jobTitle: string;
+  email: string;
+  phone: string;
+  ttcId: string;
+};
+
+type SubmitDelegate = (delegate: DelegateInfo) => void;
+
 type Props = {
   isOpen: boolean;
-  delegate?: {
-    firstName: string;
-    lastName: string;
-    jobTitle: string;
-    email: string;
-    phone: string;
-    ttcId: string;
-  };
+  delegate?: DelegateInfo;
+  onSubmit: SubmitDelegate;
   onClose: () => void;
 };
 
-const delegateDetails: TabContent[] = [
+const delegateDetails: (onSubmit: SubmitDelegate) => TabContent[] = (
+  onSubmit: SubmitDelegate
+) => [
   {
     key: 'Delegate Details',
     component: ({ state, setState, setTab, closeModal }) => {
@@ -206,16 +213,14 @@ const delegateDetails: TabContent[] = [
               <Button
                 archetype="submit"
                 onClick={() =>
-                  CreateDelegate(
-                    {
-                      firstName: state.firstName,
-                      lastName: state.lastName,
-                      jobTitle: state.jobTitle,
-                      email: state.email,
-                      phone: state.phone
-                    },
-                    (err: string) => alert(err)
-                  )
+                  onSubmit({
+                    firstName: state.firstName,
+                    lastName: state.lastName,
+                    jobTitle: state.jobTitle,
+                    email: state.email,
+                    phone: state.phone,
+                    ttcId: state.ttcId
+                  })
                 }
                 className={classes.submitBtn}
               >
@@ -229,7 +234,7 @@ const delegateDetails: TabContent[] = [
   }
 ];
 
-const DelegateSlideIn = ({ isOpen, delegate, onClose }: Props) => {
+const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
   if (delegate === undefined) {
     delegate = {
       firstName: '',
@@ -252,7 +257,7 @@ const DelegateSlideIn = ({ isOpen, delegate, onClose }: Props) => {
       isOpen={isOpen}
     >
       <Tabs
-        content={delegateDetails}
+        content={delegateDetails(onSubmit)}
         closeModal={onClose}
         initialState={{
           profileUrl: 'https://i.imgur.com/C0RGBYP.jpg',

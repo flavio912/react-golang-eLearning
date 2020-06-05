@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 import classNames from "classnames";
 import QuickInfo from "../QuickInfo";
-import Card from "sharedComponents/core/Card";
+import Card from "sharedComponents/core/Cards/Card";
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {

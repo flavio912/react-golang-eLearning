@@ -14,7 +14,7 @@ type Props = {
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    background: theme.loginBackgroundGradient,
+    background: theme.colors.backgroundGrey,
     width: '100%',
     height: '100%',
     position: 'absolute',

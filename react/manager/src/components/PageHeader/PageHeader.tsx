@@ -1,9 +1,13 @@
 import * as React from 'react';
 import PageTitle from 'components/PageTitle';
-import Button from 'sharedComponents/core/Button';
+import Button from 'sharedComponents/core/Input/Button';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
+import DelegateSlideIn, {
+  DelegateInfo
+} from 'components/Delegate/DelegateSlideIn';
+import MultiUser from 'components/core/Modals/SideModal/CourseManagement/MultiUser';
+import SingleUser from 'components/core/Modals/SideModal/CourseManagement/SingleUser';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -20,6 +24,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     gridGap: theme.spacing(2)
   }
 }));
+
+const addDelegate = (delegate: DelegateInfo) => {
+  const {
+    // profileUrl,
+    firstName,
+    lastName,
+    jobTitle,
+    email,
+    phone,
+    ttcId
+  } = delegate;
+  console.log('added a new delegate');
+};
 
 type Props = {
   title: string;
@@ -44,7 +61,8 @@ const PageHeader = ({
   const classes = useStyles({ theme });
 
   const [openDelegateSlideIn, setOpenDelegateSlideIn] = React.useState(false);
-
+  const [isMultiUserOpen, setMultiUserOpen] = React.useState(false);
+  const [isSingleUserOpen, setSingleUserOpen] = React.useState(false);
   return (
     <div className={classes.infoHeader}>
       <PageTitle
@@ -56,7 +74,11 @@ const PageHeader = ({
       />
       {showCreateButtons && (
         <div className={classes.mainButtons}>
-          <Button bold archetype="submit">
+          <Button
+            bold
+            archetype="submit"
+            onClick={() => setMultiUserOpen(true)}
+          >
             Quick Booking
           </Button>
           <Button
@@ -73,6 +95,15 @@ const PageHeader = ({
       <DelegateSlideIn
         isOpen={openDelegateSlideIn}
         onClose={() => setOpenDelegateSlideIn(false)}
+        onSubmit={addDelegate}
+      />
+      <MultiUser
+        isOpen={isMultiUserOpen}
+        onClose={() => setMultiUserOpen(false)}
+      />
+      <SingleUser
+        isOpen={isSingleUserOpen}
+        onClose={() => setSingleUserOpen(false)}
       />
     </div>
   );

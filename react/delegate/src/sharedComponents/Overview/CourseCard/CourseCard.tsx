@@ -1,17 +1,18 @@
 import * as React from 'react';
-import Card, { PaddingOptions } from '../../core/Card';
+import Card, { PaddingOptions } from '../../core/Cards/Card';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
-import Button from '../../core/Button';
+import Button from '../../core/Input/Button';
 import Icon from '../../core/Icon';
 import { Theme } from 'helpers/theme';
 import FooterIcon from './FooterIcon';
-import CourseCompletion from 'sharedComponents/core/Table/CourseCompletion';
+import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    transition: '0.2s all',
     '&:hover': {
       boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
     }
@@ -130,10 +131,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type SizeOptions = 'small' | 'large';
-export type Completion = {
-  total: number;
-  complete: number;
-};
+
 export interface Course {
   type: string;
   colour: string;
@@ -141,8 +139,8 @@ export interface Course {
   title: string;
   price?: number;
   description: string;
-  assigned: number;
-  expiring: number;
+  assigned?: number;
+  expiring?: number;
   date?: string;
   location?: string;
   modules?: number;
@@ -153,7 +151,7 @@ export interface Course {
 type Props = {
   course: Course;
   size?: SizeOptions;
-  progress?: Completion;
+  progress?: number;
   onClick: Function;
   padding?: PaddingOptions;
   className?: string;
@@ -184,6 +182,9 @@ function CourseCard({
         classes[size],
         className
       )}
+      onClick={() => {
+        onClick();
+      }}
     >
       <div
         className={classNames(classes.mainContainer)}
@@ -248,7 +249,12 @@ function CourseCard({
           </div>
           {size === 'large' && (
             <div className={classNames(classes.button)}>
-              <Button archetype="submit" onClick={() => onClick()}>
+              <Button
+                archetype="submit"
+                onClick={() => {
+                  onClick();
+                }}
+              >
                 Book Now
               </Button>
             </div>
@@ -256,12 +262,12 @@ function CourseCard({
         </div>
       </div>
 
-      {progress && progress.complete && progress.total ? (
+      {progress ? (
         <div className={classNames(classes.row, classes.footer)}>
           <div className={classes.progress}>PROGRESS</div>
           <CourseCompletion
-            complete={progress.complete}
-            total={progress.total}
+            complete={progress}
+            total={100}
             width={125}
             fraction={false}
           />

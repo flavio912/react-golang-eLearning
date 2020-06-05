@@ -8,6 +8,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
 // Manager - DB model for managers
@@ -72,7 +73,7 @@ func (manager *Manager) GenerateToken(password string) (string, error) {
 		Role:    auth.ManagerRole,
 		Company: manager.CompanyUUID,
 	}
-	token, err := auth.GenerateToken(claims, 24)
+	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.TokenExpirationHours)
 
 	if err == nil {
 		// Update last login time
