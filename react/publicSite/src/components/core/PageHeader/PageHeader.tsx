@@ -18,39 +18,44 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontSize: theme.fontSizes.extraLarge,
         fontWeight: '800',
         textAlign: 'center',
-        margin: '10px'
+        marginBottom: '10px'
     },
     defaultDesc: {
         fontSize: '40px',
         fontWeight: '800',
         marginTop: '10px',
         maxWidth: '950px',
-        textAlign: 'center'
+        textAlign: 'center',
     },
     buttonsTitle: {
         fontSize: '40px',
-        fontWeight: '800',
-        textAlign: 'center',
-        margin: '10px'
     },
     buttonsDesc: {
         fontSize: theme.fontSizes.heading,
         fontWeight: '500',
-        marginTop: '10px',
-        maxWidth: '950px',
-        textAlign: 'center'
+    },
+    courseTitle: {
+        fontSize: theme.fontSizes.heading,
+        textAlign: 'left',
+    },
+    courseDesc: {
+        fontSize: theme.fontSizes.tinyHeading,
+        fontWeight: '500',
+        textAlign: 'left',
     },
     bar: {
+        alignSelf: 'center',
         width: '55px',
         height: '3px',
         backgroundColor: theme.colors.navyBlue
     },
     jumpText: {
-        fontSize: theme.fontSizes.extraLarge,
         marginRight: '20px'
     },
+    updatedText: {
+        marginLeft: '25px'
+    },
     button: {
-        fontSize: theme.fontSizes.extraLarge,
         fontWeight: '800',
         marginRight: '20px',
         height: '53px',
@@ -59,13 +64,22 @@ const useStyles = createUseStyles((theme: Theme) => ({
     buttons: {
         marginTop: '18px'
     },
+    times: {
+        marginTop: '31px'
+    },
     history: {
         alignSelf: 'flex-start',
         marginLeft: '90px',
         marginBottom: '59px'
     },
+    course: {
+        justifyContent: 'flex-start'
+    },
     extraLarge: {
         fontSize: theme.fontSizes.extraLarge,
+    },
+    spaceBetween: {
+        justifyContent: 'space-between',
     },
     bold: {
         fontWeight: 'bold',
@@ -76,10 +90,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center'
+    },
+    column: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-start',
+        alignItems: 'flex-start'
     }
 }));
 
-export type Archetypes = "default" | "buttons";
+export type Archetypes = "default" | "buttons" | "course";
 
 export type ButtonLink = {
     title: string;
@@ -92,9 +112,12 @@ type Props = {
     archetype?: Archetypes;
     history?: string[];
     buttons?: ButtonLink[];
+    estimatedTime?: string;
+    lastUpdated?: string;
+    className?: string;
 };
 
-function PageHeader({ title, description, archetype, history, buttons }: Props) {
+function PageHeader({ title, description, archetype, history, buttons, estimatedTime, lastUpdated, className }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
@@ -102,7 +125,8 @@ function PageHeader({ title, description, archetype, history, buttons }: Props) 
     const descStyle = classes[archetype + "Desc"];
 
   return (
-      <div className={classes.root}>
+      <div className={classNames(classes.root, className)}>
+
           {history &&
             <div className={classNames(classes.row, classes.history)}>
                 {history.map((page: string, index: number) => (
@@ -111,19 +135,40 @@ function PageHeader({ title, description, archetype, history, buttons }: Props) 
                     : <div className={classNames(classes.extraLarge, classes.bold)}>{page}</div>
                 ))}
           </div>}
-          <div className={titleStyle}>{title}</div>
-          {archetype && archetype === "default" && <div className={classes.bar}/>}
-          <div className={descStyle}>{description}</div>
-          {archetype && archetype === "buttons" &&
-            <div className={classNames(classes.row, classes.buttons)}>
-                <div className={classes.jumpText}>Jump to:</div>
-                {buttons && buttons.map((buttonLink: ButtonLink) => (
-                    <Button className={classes.button} onClick={() => console.log(buttonLink.link)}>
-                        {buttonLink.title}
-                    </Button>
-                ))}
-            </div>
-          }
+
+          <div className={classNames(classes.row, archetype && archetype === "course" && classes.spaceBetween)}>
+              <div className={classNames(classes.column, archetype && archetype === "course" && classes.course)}>
+                <div className={classNames(classes.defaultTitle, titleStyle)}>{title}</div>
+                {archetype && archetype === "default" && <div className={classes.bar}/>}
+                <div className={classNames(classes.defaultDesc, descStyle)}>{description}</div>
+
+                {archetype && archetype === "course" &&
+                    <div className={classNames(classes.row, classes.times)}>
+                        <div className={classes.extraLarge}>{<strong>Estimated Time:</strong>} {estimatedTime}</div>
+                        <div className={classNames(classes.updatedText, classes.extraLarge)}>{<strong>Last Updated:</strong>} {lastUpdated}</div>
+                    </div>
+                } 
+
+                {archetype && archetype === "buttons" &&
+                    <div className={classNames(classes.row, classes.buttons)}>
+                        <div className={classNames(classes.jumpText, classes.extraLarge)}>Jump to:</div>
+                        {buttons && buttons.map((buttonLink: ButtonLink) => (
+                            <Button
+                                className={classNames(classes.button, classes.extraLarge)}
+                                onClick={() => console.log(buttonLink.link)}
+                            >
+                                {buttonLink.title}
+                            </Button>
+                        ))}
+                    </div>
+                }
+              </div>
+              <div>
+                  <div>
+                      PlaceHolder
+                  </div>
+              </div>
+          </div>
       </div>
   );
 }

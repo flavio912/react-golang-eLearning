@@ -7,7 +7,7 @@ export default {
   decorators: [withKnobs],
 };
 
-const archetypes: Archetypes[] = ["default", "buttons"];
+const archetypes: Archetypes[] = ["default", "buttons", "course"];
 
 const defaultButtons: ButtonLink[] = [
   { title: "Regulated Agents", link: "TBD"},
@@ -19,6 +19,8 @@ export const normal = () => {
   const archetype: Archetypes = select("Type", archetypes, "default");
   const title: string = text("Title", "About Us");
   const description: string = text("Description", "Our mission is to create the highest quality safety & compliance training in the world");
+  const estimatedTime: string = text("Estimated Time", "6 hours");
+  const lastUpdated: string = text("Last Updated", "May 2020");
   const history: string[] = array("History", ["Courses", "Aviation Security"]);
   const buttons: ButtonLink[] = object("Buttons", defaultButtons);
   return <PageHeader
@@ -27,5 +29,7 @@ export const normal = () => {
             archetype={archetype}
             history={history}
             buttons={buttons}
+            estimatedTime={estimatedTime}
+            lastUpdated={lastUpdated}
           />;
 };
