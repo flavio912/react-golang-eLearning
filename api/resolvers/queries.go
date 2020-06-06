@@ -241,14 +241,14 @@ func (q *QueryResolver) ClassroomCourses(ctx context.Context, args struct {
 		}}, nil
 }
 
-func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*LessonResolver, error) {
+func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID string }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
 	return NewLessonResolver(ctx, NewLessonArgs{
-		UUID: args.UUID.String(),
+		UUID: args.UUID,
 	})
 }
 
