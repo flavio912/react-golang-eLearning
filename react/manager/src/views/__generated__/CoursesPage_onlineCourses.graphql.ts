@@ -5,7 +5,7 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type CoursesPage_onlineCourses = {
     readonly edges: ReadonlyArray<{
-        readonly uuid: unknown;
+        readonly uuid: string;
         readonly info: {
             readonly name: string | null;
             readonly color: string | null;

@@ -12,8 +12,9 @@ import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 import Dropdown from 'sharedComponents/core/Input/Dropdown';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import Paginator from 'sharedComponents/Pagination/Paginator';
-
-type Props = {};
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Router } from 'found';
+import { DelegatesPage_delegates } from './__generated__/DelegatesPage_delegates.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -87,10 +88,31 @@ const delegateRow = (
   onClick: () => router.push(`/app/delegates/${userUUID}`)
 });
 
-const DelegatesPage = (props: any) => {
+type Props = {
+  delegates: DelegatesPage_delegates;
+  router: Router;
+};
+
+const DelegatesPage = ({ delegates, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const { router } = props;
+  console.log(delegates);
+  const edges = delegates.edges ?? [];
+  const pageInfo = delegates.pageInfo;
+  const delegateComponents = edges.map((delegate: any) =>
+    delegateRow(
+      delegate?.uuid,
+      `${delegate?.firstName} ${delegate?.lastName}`,
+      '',
+      delegate?.email,
+      3,
+      6,
+      delegate?.lastLogin,
+      '2013-04-20T20:00:00+0800',
+      classes,
+      router
+    )
+  );
   return (
     <div className={classes.root}>
       <PageHeader
@@ -152,32 +174,7 @@ const DelegatesPage = (props: any) => {
           'Next Expiry',
           'Actions'
         ]}
-        rows={[
-          delegateRow(
-            'asda',
-            'Jim Smith',
-            '',
-            'email@email.com',
-            3,
-            6,
-            '2013-04-20T20:00:00+0800',
-            '2013-04-20T20:00:00+0800',
-            classes,
-            router
-          ),
-          delegateRow(
-            'abc',
-            'Bruce Willis',
-            '',
-            'bruce.willis@email.com',
-            3,
-            6,
-            '2013-04-20T20:00:00+0800',
-            '2013-04-20T20:00:00+0800',
-            classes,
-            router
-          )
-        ]}
+        rows={delegateComponents}
       />
       <Spacer vertical spacing={3} />
       <Paginator
@@ -190,4 +187,25 @@ const DelegatesPage = (props: any) => {
   );
 };
 
-export default DelegatesPage;
+const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
+  delegates: graphql`
+    fragment DelegatesPage_delegates on DelegatePage {
+      edges {
+        uuid
+        email
+        firstName
+        lastName
+        lastLogin
+        createdAt
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
+    }
+  `
+});
+
+export default DelegatesPageFrag;

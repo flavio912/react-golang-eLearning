@@ -3,30 +3,35 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type CoursesPage_classroomCourses = {
+export type DelegatesPage_delegates = {
     readonly edges: ReadonlyArray<{
         readonly uuid: string;
-    } | null>;
+        readonly email: string | null;
+        readonly firstName: string;
+        readonly lastName: string;
+        readonly lastLogin: string;
+        readonly createdAt: string | null;
+    } | null> | null;
     readonly pageInfo: {
         readonly total: number;
         readonly offset: number;
         readonly limit: number;
         readonly given: number;
     } | null;
-    readonly " $refType": "CoursesPage_classroomCourses";
+    readonly " $refType": "DelegatesPage_delegates";
 };
-export type CoursesPage_classroomCourses$data = CoursesPage_classroomCourses;
-export type CoursesPage_classroomCourses$key = {
-    readonly " $data"?: CoursesPage_classroomCourses$data;
-    readonly " $fragmentRefs": FragmentRefs<"CoursesPage_classroomCourses">;
+export type DelegatesPage_delegates$data = DelegatesPage_delegates;
+export type DelegatesPage_delegates$key = {
+    readonly " $data"?: DelegatesPage_delegates$data;
+    readonly " $fragmentRefs": FragmentRefs<"DelegatesPage_delegates">;
 };
 
 
 
 const node: ReaderFragment = ({
     "kind": "Fragment",
-    "name": "CoursesPage_classroomCourses",
-    "type": "ClassroomCoursePage",
+    "name": "DelegatesPage_delegates",
+    "type": "DelegatePage",
     "metadata": null,
     "argumentDefinitions": [],
     "selections": [
@@ -36,13 +41,48 @@ const node: ReaderFragment = ({
             "name": "edges",
             "storageKey": null,
             "args": null,
-            "concreteType": "ClassroomCourse",
+            "concreteType": "Delegate",
             "plural": true,
             "selections": [
                 {
                     "kind": "ScalarField",
                     "alias": null,
                     "name": "uuid",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "email",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "firstName",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "lastName",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "lastLogin",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "createdAt",
                     "args": null,
                     "storageKey": null
                 }
@@ -89,5 +129,5 @@ const node: ReaderFragment = ({
         }
     ]
 } as any);
-(node as any).hash = '5fbd5dd17f377dfe16492f3eacd3b456';
+(node as any).hash = '8a7f29cca036c34433d36538addac5f0';
 export default node;

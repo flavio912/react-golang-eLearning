@@ -26,6 +26,7 @@ func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 	}
 
 	createdAt := delegate.CreatedAt.Format(time.RFC3339)
+	lastLogin := delegate.LastLogin.Format(time.RFC3339)
 	return gentypes.Delegate{
 		CreatedAt:       &createdAt,
 		UUID:            delegate.UUID,
@@ -37,6 +38,7 @@ func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
 		CompanyUUID:     delegate.CompanyUUID,
 		TTC_ID:          delegate.TtcId,
 		ProfileImageURL: profileURL,
+		LastLogin:       lastLogin,
 	}
 }
 
