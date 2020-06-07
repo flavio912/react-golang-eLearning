@@ -24,20 +24,20 @@ type Query {
 
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
-  createDelegate(input: CreateDelegateInput!): Delegate
+  createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
 }
 
 
 # Delegate 
 
-type Delegate implements User {
+type Delegate  {
   uuid: UUID!
   createdAt: String
   TTC_ID: String!
-  email: String!
+  email: String
   firstName: String!
   lastName: String!
-  telephone: String!
+  telephone: String
   lastLogin: String!
   jobTitle: String!
   company: Company!
@@ -45,12 +45,19 @@ type Delegate implements User {
 }
 
 input CreateDelegateInput {
+  companyUUID: UUID
   firstName: String!
   lastName: String!
-  email: String!
+  email: String
   jobTitle: String!
-  telephone: String!
-  generatePassword: Bool
+  telephone: String
+  generatePassword: Boolean
+  profileImageUploadToken: String
+}
+
+type CreateDelegateResponse {
+  delegate: Delegate!,
+  generatedPassword: String
 }
 
 input DelegateFilter {

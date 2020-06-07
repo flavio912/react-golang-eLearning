@@ -12,6 +12,13 @@ import EasyInput from 'components/core/Input/EasyInput';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import { CreateDelegate } from './mutations';
+import Checkbox from 'components/core/Input/Checkbox';
+import CheckboxSingle from 'components/core/Input/CheckboxSingle';
+import { check } from 'prettier';
+import { mutations_CreateDelegateMutationResponse } from './__generated__/mutations_CreateDelegateMutation.graphql';
+import IdentTag from 'components/IdentTag';
+import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   personalContainer: {
@@ -66,10 +73,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: '40%'
   },
   ttcInput: {
-    width: '50%',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'flex-start'
+    marginBottom: theme.spacing(2)
   },
   ttcLabel: {
     fontSize: theme.fontSizes.heading,
@@ -89,6 +93,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   submitBtn: {
     marginLeft: theme.spacing(2)
+  },
+  infoText: {
+    fontSize: theme.fontSizes.default,
+    color: theme.colors.textGrey,
+    marginBottom: theme.spacing(1)
+  },
+  passwordText: {
+    color: theme.colors.primaryBlack
   }
 }));
 
@@ -106,13 +118,11 @@ type SubmitDelegate = (delegate: DelegateInfo) => void;
 type Props = {
   isOpen: boolean;
   delegate?: DelegateInfo;
-  onSubmit: SubmitDelegate;
+  onSubmit?: SubmitDelegate;
   onClose: () => void;
 };
 
-const delegateDetails: (onSubmit: SubmitDelegate) => TabContent[] = (
-  onSubmit: SubmitDelegate
-) => [
+const delegateDetails: TabContent[] = [
   {
     key: 'Delegate Details',
     component: ({ state, setState, setTab, closeModal }) => {
@@ -199,10 +209,40 @@ const delegateDetails: (onSubmit: SubmitDelegate) => TabContent[] = (
             {/* <Heading>
             TTC ID
           </Heading> */}
-            <div className={classes.ttcInput}>
-              <span className={classes.ttcLabel}>TTC ID</span>
-              <span className={classes.ttcId}>{state.ttcId}</span>
-            </div>
+            {state.update ? (
+              <div className={classes.ttcInput}>
+                <div className={classes.ttcLabel}>TTC ID</div>
+                <IdentTag ident={state.ttcId} />
+              </div>
+            ) : (
+              <div>
+                <span className={classes.heading}>Generate password</span>
+                <p className={classes.infoText}>
+                  If unchecked, a link will be sent to the email above to set
+                  the user's password
+                </p>
+                <CheckboxSingle
+                  label={'Generate a password for the new delegate'}
+                  onChange={(checked: boolean) => {
+                    setState((s: object) => ({
+                      ...s,
+                      generatePassword: checked
+                    }));
+                  }}
+                />
+              </div>
+            )}
+            {state.generatedPassword && (
+              <LabelledCard label={'Generated password'}>
+                <p className={classes.infoText}>
+                  You will not be able to see this again, please take a note of
+                  it:
+                </p>
+                <p className={classes.passwordText}>
+                  {state.generatedPassword}
+                </p>
+              </LabelledCard>
+            )}
           </Body>
           <Footer>
             <div />
@@ -213,14 +253,31 @@ const delegateDetails: (onSubmit: SubmitDelegate) => TabContent[] = (
               <Button
                 archetype="submit"
                 onClick={() =>
-                  onSubmit({
-                    firstName: state.firstName,
-                    lastName: state.lastName,
-                    jobTitle: state.jobTitle,
-                    email: state.email,
-                    phone: state.phone,
-                    ttcId: state.ttcId
-                  })
+                  CreateDelegate(
+                    {
+                      firstName: state.firstName,
+                      lastName: state.lastName,
+                      jobTitle: state.jobTitle,
+                      email: state.email,
+                      phone: state.phone
+                    },
+                    state.generatePassword,
+                    () => {},
+                    (resp: mutations_CreateDelegateMutationResponse) => {
+                      setState((s: object) => ({
+                        ...s,
+                        firstName: resp.createDelegate?.delegate.firstName,
+                        lastName: resp.createDelegate?.delegate.lastName,
+                        // jobTitle: resp.createDelegate?.delegate.jobTitle,
+                        email: resp.createDelegate?.delegate.email,
+                        phone: resp.createDelegate?.delegate.telephone,
+                        generatedPassword:
+                          resp.createDelegate?.generatedPassword,
+                        ttcId: resp.createDelegate?.delegate.TTC_ID,
+                        update: true
+                      }));
+                    }
+                  )
                 }
                 className={classes.submitBtn}
               >
@@ -235,6 +292,7 @@ const delegateDetails: (onSubmit: SubmitDelegate) => TabContent[] = (
 ];
 
 const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
+  const inputDel = delegate;
   if (delegate === undefined) {
     delegate = {
       firstName: '',
@@ -249,7 +307,7 @@ const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
   return (
     <SideModal
       title={
-        delegate !== undefined
+        inputDel !== undefined
           ? `${delegate.firstName} ${delegate.lastName}`
           : 'Add New Delegate'
       }
@@ -257,7 +315,7 @@ const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
       isOpen={isOpen}
     >
       <Tabs
-        content={delegateDetails(onSubmit)}
+        content={delegateDetails}
         closeModal={onClose}
         initialState={{
           profileUrl: 'https://i.imgur.com/C0RGBYP.jpg',
@@ -267,7 +325,7 @@ const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
           email: delegate.email,
           phone: delegate.phone,
           ttcId: delegate.ttcId,
-          update: delegate !== undefined
+          update: inputDel !== undefined
         }}
       />
     </SideModal>

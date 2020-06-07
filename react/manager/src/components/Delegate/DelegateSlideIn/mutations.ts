@@ -1,6 +1,8 @@
 import { commitMutation, graphql } from 'react-relay';
 import environment from 'api/environment';
 import { GraphError } from 'types/general';
+import { mutations_CreateDelegateMutationResponse } from './__generated__/mutations_CreateDelegateMutation.graphql';
+import { DelegateInfo } from './DelegateSlideIn';
 
 const mutation = graphql`
   mutation mutations_CreateDelegateMutation(
@@ -9,6 +11,7 @@ const mutation = graphql`
     $jobTitle: String!
     $email: String!
     $phone: String!
+    $generatePassword: Boolean
   ) {
     createDelegate(
       input: {
@@ -17,9 +20,17 @@ const mutation = graphql`
         email: $email
         jobTitle: $jobTitle
         telephone: $phone
+        generatePassword: $generatePassword
       }
     ) {
-      firstName
+      delegate {
+        firstName
+        lastName
+        TTC_ID
+        email
+        telephone
+      }
+      generatedPassword
     }
   }
 `;
@@ -32,15 +43,24 @@ export const CreateDelegate = (
     email: string;
     phone: string;
   },
-  errorCallback: (err: string) => void
+  generatePassword = false,
+  errorCallback: (err: string) => void,
+  successCallback: (response: mutations_CreateDelegateMutationResponse) => void
 ) => {
-  const variables = delegate;
-
+  const variables = {
+    firstName: delegate.firstName,
+    lastName: delegate.lastName,
+    jobTitle: delegate.jobTitle,
+    email: delegate.email,
+    phone: delegate.phone,
+    generatePassword: generatePassword
+  };
+  console.log('Variables', variables);
   commitMutation(environment, {
     mutation,
     variables,
     onCompleted: (
-      response: { createDelegate: { firstName: string } },
+      response: mutations_CreateDelegateMutationResponse,
       errors: GraphError[]
     ) => {
       if (errors) {
@@ -49,6 +69,7 @@ export const CreateDelegate = (
         return;
       }
       console.log('Response received from server.', response, errors);
+      successCallback(response);
     },
     onError: (err) => console.error(err)
   });

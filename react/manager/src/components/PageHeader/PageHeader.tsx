@@ -25,19 +25,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-const addDelegate = (delegate: DelegateInfo) => {
-  const {
-    // profileUrl,
-    firstName,
-    lastName,
-    jobTitle,
-    email,
-    phone,
-    ttcId
-  } = delegate;
-  console.log('added a new delegate');
-};
-
 type Props = {
   title: string;
   subTitle: string;
@@ -95,7 +82,6 @@ const PageHeader = ({
       <DelegateSlideIn
         isOpen={openDelegateSlideIn}
         onClose={() => setOpenDelegateSlideIn(false)}
-        onSubmit={addDelegate}
       />
       <MultiUser
         isOpen={isMultiUserOpen}
