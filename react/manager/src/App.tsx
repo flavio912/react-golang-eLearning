@@ -22,9 +22,6 @@ import DelegatesPage from 'views/DelegatesPage';
 import { OnlineCoursesPage } from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
 
-import type { AppHolder_manager } from './views/__generated__/AppHolder_manager.graphql';
-import { Redirect } from 'react-router-dom';
-
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
 ) => {

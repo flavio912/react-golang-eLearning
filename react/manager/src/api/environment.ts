@@ -1,6 +1,4 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
-//@ts-ignore
-import jwtDecode from 'jwt-decode';
 
 type GraphError = {
   message: string;

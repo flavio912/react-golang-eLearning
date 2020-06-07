@@ -6,10 +6,8 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import SearchResults from 'components/Search/SearchResults';
 import { Theme } from 'helpers/theme';
-
-type Props = {
-  children?: React.ReactChildren;
-};
+import { createFragmentContainer, graphql } from 'react-relay';
+import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -32,6 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     background: theme.searchBackground
   }
 }));
+
 const results = [
   {
     id: 1,
@@ -55,7 +54,14 @@ const results = [
       'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
   }
 ];
-export const AppHolder = ({ children }: Props) => {
+
+type Props = {
+  children?: React.ReactChildren;
+  user?: AppHolder_user;
+};
+
+const AppHolder = ({ children, user }: Props) => {
+  console.log('USER', user);
   const classes = useStyles();
   const { match, router } = useRouter();
   const tabs: Tab[] = [
@@ -72,7 +78,6 @@ export const AppHolder = ({ children }: Props) => {
   const selected = () => {
     const { routes } = match;
     const currentRouter = routes[routes.length - 1];
-    console.log(currentRouter.path);
     switch (currentRouter.path) {
       case '/':
         return tabs[0];
@@ -113,7 +118,7 @@ export const AppHolder = ({ children }: Props) => {
         }}
       />
       <HeaderMenu
-        user={{ name: 'James Smith', url: '' }}
+        user={{ name: `${user?.firstName} ${user?.lastName}`, url: '' }}
         onToggleSearchModal={onToggleSearchModal}
       />
       <div className={classes.appHolder}>
@@ -127,3 +132,12 @@ export const AppHolder = ({ children }: Props) => {
     </div>
   );
 };
+
+export default createFragmentContainer(AppHolder, {
+  user: graphql`
+    fragment AppHolder_user on User {
+      firstName
+      lastName
+    }
+  `
+});

@@ -1,5 +1,18 @@
 import { Environment, Network, RecordSource, Store } from 'relay-runtime';
 
+type GraphError = {
+  message: string;
+  type?: string;
+};
+
+export class FetchError extends Error {
+  public type: string | boolean = false;
+  constructor(error: GraphError) {
+    super(error.message); // (1)
+    this.type = error?.type || false; // (2)
+  }
+}
+
 function readCookie(name: string) {
   var nameEQ = name + '=';
   var ca = document.cookie.split(';');
@@ -11,7 +24,7 @@ function readCookie(name: string) {
   return null;
 }
 
-function fetchQuery(operation: any, variables: any) {
+async function fetchQuery(operation: any, variables: any) {
   const CSRF_TOKEN = readCookie('csrf');
 
   const headers: any = {
@@ -27,8 +40,17 @@ function fetchQuery(operation: any, variables: any) {
       variables
     }),
     credentials: 'include'
-  }).then((response) => {
-    return response.json();
+  }).then(async (response) => {
+    const json = await response.json();
+    if (json && 'errors' in json) {
+      throw new FetchError({
+        message:
+          json.errors[0]?.extensions?.message ||
+          json.errors[0]?.extensions?.message,
+        type: json.errors[0]?.extensions?.type
+      });
+    }
+    return json;
   });
 }
 

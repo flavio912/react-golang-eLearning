@@ -6,7 +6,7 @@ import environment from 'api/environment';
 import { createUseStyles, useTheme } from 'react-jss';
 import { commitMutation, graphql } from 'react-relay';
 import { GraphError } from 'types/general';
-import { Redirect, RedirectException } from 'found';
+import { Router, useRouter } from 'found';
 
 type Props = {
   data: any;
@@ -25,20 +25,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 const mutation = graphql`
-  mutation LoginPage_LoginMutation($email: String!, $password: String!) {
-    managerLogin(input: { email: $email, password: $password, noResp: true }) {
+  mutation LoginPage_LoginMutation($ttcId: String!, $password: String!) {
+    delegateLogin(input: { TTC_ID: $ttcId, password: $password }) {
       token
     }
   }
 `;
 
-const AttemptLogin = (
-  email: string,
+const AttemptLogin = (router: Router) => (
+  ttcId: string,
   password: string,
   errorCallback: (err: string) => void
 ) => {
   const variables = {
-    email,
+    ttcId,
     password
   };
 
@@ -46,7 +46,7 @@ const AttemptLogin = (
     mutation,
     variables,
     onCompleted: (
-      response: { managerLogin: { token: string } },
+      response: { delegateLogin: { token: string } },
       errors: GraphError[]
     ) => {
       if (errors) {
@@ -64,12 +64,12 @@ const AttemptLogin = (
 const LoginPage = ({ data }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
+  const { router } = useRouter();
   return (
     <>
       {/* <RedirectRequest/> */}
       <div className={classes.root}>
-        <LoginDialogue onSubmit={AttemptLogin} />
+        <LoginDialogue onSubmit={AttemptLogin(router)} />
       </div>
     </>
   );
