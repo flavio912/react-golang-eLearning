@@ -123,6 +123,7 @@ func TestGetDelegates(t *testing.T) {
 			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 			FirstName:   "Delegate",
 			LastName:    "Man",
+			LastLogin:   "0001-01-01T00:00:00Z",
 			Telephone:   helpers.StringPointer("7912935287"),
 			JobTitle:    "Doer",
 			Email:       helpers.StringPointer("del@delegates.com"),
@@ -219,6 +220,7 @@ func TestCreateDelegate(t *testing.T) {
 				FirstName:   "Angry",
 				LastName:    "Tim",
 				Email:       helpers.StringPointer("testemail@devserver.london"),
+				LastLogin:   "0001-01-01T00:00:00Z",
 			},
 			false,
 			gentypes.CreateDelegateInput{
@@ -237,6 +239,7 @@ func TestCreateDelegate(t *testing.T) {
 				FirstName:   "Smelly",
 				LastName:    "Joe",
 				Email:       helpers.StringPointer("testemail@devserver.london"),
+				LastLogin:   "0001-01-01T00:00:00Z",
 			},
 			false,
 			gentypes.CreateDelegateInput{
@@ -254,6 +257,7 @@ func TestCreateDelegate(t *testing.T) {
 				CompanyUUID: managerGrant.Claims.Company,
 				FirstName:   "Smelly",
 				LastName:    "Joe",
+				LastLogin:   "0001-01-01T00:00:00Z",
 			},
 			true,
 			gentypes.CreateDelegateInput{
