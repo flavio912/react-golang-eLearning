@@ -1,0 +1,28 @@
+enum UserType {
+  manager
+  individual
+  delegate
+}
+
+type Address {
+
+}
+
+# User is a thin type that collates information about the manager, delegate
+# and individual user types. Some fields are not going to be available depending
+# on the type of user you are requesting data for.
+type User {
+  # certificates
+  # onlineCourses: OnlineCoursePage
+  # activity
+  type: UserType!
+  email: String
+  firstName: String!
+  lastName: String!
+  telephone: String
+  jobTitle: String
+  lastLogin: String!
+  company: Company
+  profileImageUrl: String
+  # address: Address
+}

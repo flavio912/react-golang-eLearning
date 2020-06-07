@@ -244,7 +244,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	}
 
 	// Check if company exists
-	if !g.CompanyExists(companyUUID) {
+	if !g.companyExists(companyUUID) {
 		return gentypes.Delegate{}, nil, &errors.ErrCompanyNotFound
 	}
 

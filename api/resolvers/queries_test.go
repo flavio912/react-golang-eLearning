@@ -1020,3 +1020,45 @@ func TestClassroomCourses(t *testing.T) {
 		},
 	})
 }
+
+func TestGetUser(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should get manager user info",
+			Context: managerContext(),
+			Schema:  schema,
+			Query: `
+					{
+						user {
+							firstName
+							lastName
+							email
+							type
+							company {
+								name
+							}
+							jobTitle
+							telephone
+						}
+					}
+				`,
+			ExpectedResult: `
+				{
+					"user": {
+						"company": {
+							"name":"TestCompany"
+						},
+						"email":"man@managers.com",
+						"firstName":"Manager",
+						"jobTitle":"In Charge",
+						"lastName":"Man",
+						"telephone":"7912938287",
+						"type":"manager"
+					}
+				}
+			`,
+		},
+	})
+}

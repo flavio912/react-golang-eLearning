@@ -217,7 +217,7 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 	}
 
 	// Check if company exists
-	if !g.CompanyExists(inputUUID) {
+	if !g.companyExists(inputUUID) {
 		return gentypes.Manager{}, &errors.ErrCompanyNotFound
 	}
 

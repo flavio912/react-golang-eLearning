@@ -44,8 +44,8 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 	return genCompanies
 }
 
-// CompanyExists checks is a companyUUID exists in the DB
-func (g *Grant) CompanyExists(companyUUID gentypes.UUID) bool {
+// companyExists checks if a companyUUID exists in the DB
+func (g *Grant) companyExists(companyUUID gentypes.UUID) bool {
 	var company models.Company
 	query := database.GormDB.Where("uuid = ?", companyUUID).First(&company)
 	if query.Error != nil {
@@ -353,7 +353,7 @@ func (g *Grant) ApproveCompany(companyUUID gentypes.UUID) (gentypes.Company, err
 		return gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
-	if !g.CompanyExists(companyUUID) {
+	if !g.companyExists(companyUUID) {
 		return gentypes.Company{}, &errors.ErrCompanyNotFound
 	}
 
