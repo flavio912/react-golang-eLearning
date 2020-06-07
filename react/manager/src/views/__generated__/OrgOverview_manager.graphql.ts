@@ -9,6 +9,9 @@ export type OrgOverview_manager = {
     readonly email: string;
     readonly telephone: string;
     readonly createdAt: string | null;
+    readonly company: {
+        readonly name: string;
+    };
     readonly " $refType": "OrgOverview_manager";
 };
 export type OrgOverview_manager$data = OrgOverview_manager;
@@ -60,8 +63,26 @@ const node: ReaderFragment = ({
             "name": "createdAt",
             "args": null,
             "storageKey": null
+        },
+        {
+            "kind": "LinkedField",
+            "alias": null,
+            "name": "company",
+            "storageKey": null,
+            "args": null,
+            "concreteType": "Company",
+            "plural": false,
+            "selections": [
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "name",
+                    "args": null,
+                    "storageKey": null
+                }
+            ]
         }
     ]
 } as any);
-(node as any).hash = '12e21416a68d12eccb5d1cc3f1f45df2';
+(node as any).hash = '8de4c1250cbe2f9165688141e5964e3a';
 export default node;

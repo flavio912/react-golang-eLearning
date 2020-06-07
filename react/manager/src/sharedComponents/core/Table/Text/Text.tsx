@@ -25,7 +25,6 @@ function Text({ text, color, formatDate, invalidDateText }: Props) {
   const classes = useStyles();
 
   if (formatDate) {
-    console.log('text', text);
     text = moment(text).format('DD-MM-YY');
     if (!moment(text).isValid()) {
       text = invalidDateText ?? '-';

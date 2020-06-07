@@ -93,13 +93,13 @@ const OrgOverview = ({ manager }: Props) => {
     <div className={classes.root}>
       <PageHeader
         showCreateButtons
-        title="Fedex"
+        title={manager.company.name}
         subTitle="Organisation Overview"
       />
       <div className={classes.grid}>
         <div className={classes.search}>
           <UserSearch
-            companyName="Fedex"
+            companyName={manager.company.name}
             searchFunction={async (query: string) => {
               return [
                 {
@@ -196,6 +196,9 @@ export default createFragmentContainer(OrgOverview, {
       email
       telephone
       createdAt
+      company {
+        name
+      }
     }
   `
 });

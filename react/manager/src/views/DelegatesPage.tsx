@@ -15,6 +15,7 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegatesPage_delegates } from './__generated__/DelegatesPage_delegates.graphql';
+import { DelegatesPage_manager } from './__generated__/DelegatesPage_manager.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -90,13 +91,14 @@ const delegateRow = (
 
 type Props = {
   delegates: DelegatesPage_delegates;
+  manager: DelegatesPage_manager;
   router: Router;
 };
 
-const DelegatesPage = ({ delegates, router }: Props) => {
+const DelegatesPage = ({ delegates, manager, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  console.log(delegates);
+
   const edges = delegates.edges ?? [];
   const pageInfo = delegates.pageInfo;
   const delegateComponents = edges.map((delegate: any) =>
@@ -113,18 +115,19 @@ const DelegatesPage = ({ delegates, router }: Props) => {
       router
     )
   );
+
   return (
     <div className={classes.root}>
       <PageHeader
         showCreateButtons
-        title="Fedex"
+        title={manager.company.name}
         subTitle="Organisation Overview"
-        sideText="127 members total"
+        sideText={`${pageInfo?.total} members total`}
       />
       <div className={classes.searchAndFilter}>
         <div className={classes.search}>
           <UserSearch
-            companyName={'Fedex'}
+            companyName={manager.company.name}
             searchFunction={async (query: string) => {
               return [
                 {
@@ -203,6 +206,13 @@ const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
         offset
         limit
         given
+      }
+    }
+  `,
+  manager: graphql`
+    fragment DelegatesPage_manager on Manager {
+      company {
+        name
       }
     }
   `

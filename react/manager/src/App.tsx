@@ -75,10 +75,31 @@ const Router = createFarceRouter({
               delegates {
                 ...DelegatesPage_delegates
               }
+              manager {
+                ...DelegatesPage_manager
+              }
             }
           `}
         />
-        <Route path="/delegates/:id" Component={DelegateProfilePage} />
+        <Route
+          path="/delegates/:uuid"
+          Component={DelegateProfilePage}
+          query={graphql`
+            query App_DelegatesProfile_Query($uuid: UUID!) {
+              delegate(uuid: $uuid) {
+                ...DelegateProfilePage_delegate
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            console.log(params);
+            console.log(location);
+            const { uuid } = params;
+            return {
+              uuid
+            };
+          }}
+        />
         <Route
           path="/courses"
           Component={OnlineCoursesPage}
@@ -94,6 +115,7 @@ const Router = createFarceRouter({
             console.log(location);
             const { pageNum, type } = location.query;
             return {
+              ...params,
               page: {
                 offset: pageNum,
                 limit: 10

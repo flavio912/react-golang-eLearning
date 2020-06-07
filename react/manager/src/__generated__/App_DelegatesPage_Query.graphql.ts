@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 5247563776f66063d1a26672d6c1a71d */
+/* @relayHash 42929ac79f4f0e5a67b9a75ef187d825 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -8,6 +8,9 @@ export type App_DelegatesPage_QueryVariables = {};
 export type App_DelegatesPage_QueryResponse = {
     readonly delegates: {
         readonly " $fragmentRefs": FragmentRefs<"DelegatesPage_delegates">;
+    } | null;
+    readonly manager: {
+        readonly " $fragmentRefs": FragmentRefs<"DelegatesPage_manager">;
     } | null;
 };
 export type App_DelegatesPage_Query = {
@@ -21,6 +24,9 @@ export type App_DelegatesPage_Query = {
 query App_DelegatesPage_Query {
   delegates {
     ...DelegatesPage_delegates
+  }
+  manager {
+    ...DelegatesPage_manager
   }
 }
 
@@ -38,6 +44,12 @@ fragment DelegatesPage_delegates on DelegatePage {
     offset
     limit
     given
+  }
+}
+
+fragment DelegatesPage_manager on Manager {
+  company {
+    name
   }
 }
 */
@@ -63,6 +75,22 @@ const node: ConcreteRequest = ({
                     {
                         "kind": "FragmentSpread",
                         "name": "DelegatesPage_delegates",
+                        "args": null
+                    }
+                ]
+            },
+            {
+                "kind": "LinkedField",
+                "alias": null,
+                "name": "manager",
+                "storageKey": null,
+                "args": null,
+                "concreteType": "Manager",
+                "plural": false,
+                "selections": [
+                    {
+                        "kind": "FragmentSpread",
+                        "name": "DelegatesPage_manager",
                         "args": null
                     }
                 ]
@@ -176,6 +204,35 @@ const node: ConcreteRequest = ({
                         ]
                     }
                 ]
+            },
+            {
+                "kind": "LinkedField",
+                "alias": null,
+                "name": "manager",
+                "storageKey": null,
+                "args": null,
+                "concreteType": "Manager",
+                "plural": false,
+                "selections": [
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "name": "company",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Company",
+                        "plural": false,
+                        "selections": [
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "name",
+                                "args": null,
+                                "storageKey": null
+                            }
+                        ]
+                    }
+                ]
             }
         ]
     },
@@ -183,9 +240,9 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_DelegatesPage_Query",
         "id": null,
-        "text": "query App_DelegatesPage_Query {\n  delegates {\n    ...DelegatesPage_delegates\n  }\n}\n\nfragment DelegatesPage_delegates on DelegatePage {\n  edges {\n    uuid\n    email\n    firstName\n    lastName\n    lastLogin\n    createdAt\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n",
+        "text": "query App_DelegatesPage_Query {\n  delegates {\n    ...DelegatesPage_delegates\n  }\n  manager {\n    ...DelegatesPage_manager\n  }\n}\n\nfragment DelegatesPage_delegates on DelegatePage {\n  edges {\n    uuid\n    email\n    firstName\n    lastName\n    lastLogin\n    createdAt\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n\nfragment DelegatesPage_manager on Manager {\n  company {\n    name\n  }\n}\n",
         "metadata": {}
     }
 } as any);
-(node as any).hash = '78c5bfbba1cc22166fb8e52b95eac228';
+(node as any).hash = '1cfd762ff257bf53ed4aa0afcfa62c34';
 export default node;
