@@ -4,10 +4,6 @@ enum UserType {
   delegate
 }
 
-type Address {
-
-}
-
 # User is a thin type that collates information about the manager, delegate
 # and individual user types. Some fields are not going to be available depending
 # on the type of user you are requesting data for.
