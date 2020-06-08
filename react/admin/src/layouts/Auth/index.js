@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/styles';
 import { LinearProgress } from '@material-ui/core';
 import Topbar from './Topbar';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   container: {
     minHeight: '100vh',
     display: 'flex',

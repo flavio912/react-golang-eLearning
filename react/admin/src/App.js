@@ -14,6 +14,8 @@ import GoogleAnalytics from './components/GoogleAnalytics';
 import CookiesNotification from './components/CookiesNotification';
 import ScrollReset from './components/ScrollReset';
 import StylesProvider from './components/StylesProvider';
+import ApolloClient from 'apollo-boost';
+import { ApolloProvider } from '@apollo/react-hooks';
 import './mixins/chartjs';
 import './mixins/moment';
 import './mixins/validate';
@@ -24,6 +26,10 @@ import './assets/scss/main.scss';
 const history = createBrowserHistory();
 const store = configureStore();
 
+const client = new ApolloClient({
+  uri: 'http://localhost:8080/graphql'
+});
+
 function App() {
   const direction = 'ltr';
 
@@ -32,12 +38,14 @@ function App() {
       <ThemeProvider theme={direction === 'rtl' ? themeWithRtl : theme}>
         <StylesProvider direction={direction}>
           <MuiPickersUtilsProvider utils={MomentUtils}>
-            <Router history={history}>
-              <ScrollReset />
-              <GoogleAnalytics />
-              <CookiesNotification />
-              {renderRoutes(routes)}
-            </Router>
+            <ApolloProvider client={client}>
+              <Router history={history}>
+                <ScrollReset />
+                <GoogleAnalytics />
+                <CookiesNotification />
+                {renderRoutes(routes)}
+              </Router>
+            </ApolloProvider>
           </MuiPickersUtilsProvider>
         </StylesProvider>
       </ThemeProvider>

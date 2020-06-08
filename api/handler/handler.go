@@ -14,7 +14,6 @@ type GraphQL struct {
 	Loaders loader.Map
 }
 
-
 func (g *GraphQL) Serve() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
@@ -47,7 +46,7 @@ func (g *GraphQL) Serve() http.Handler {
 				Errors: resp.Errors,
 			}
 
-			w.WriteHeader(http.StatusInternalServerError)
+			// w.WriteHeader(http.StatusFound)
 			json.NewEncoder(w).Encode(errResp)
 			return
 		}
