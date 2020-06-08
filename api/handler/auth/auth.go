@@ -58,7 +58,7 @@ func Handler(h http.Handler) http.Handler {
 				if fmt.Sprintf("csrf=%s", csrfHeader) == csrfCookie.String() {
 					allowRequest = true
 				} else {
-					w.Header().Set("CSRF-FAIL", "true") // Useful for diagnosing
+					w.Header().Set("CSRF-FAIL", "true") // Useful for diagnosis
 					glog.Warningf("CSRF Tokens don't match: IP - %s", r.RemoteAddr)
 					allowRequest = false
 				}
@@ -118,6 +118,7 @@ func ResponseFromContext(ctx context.Context) *http.ResponseWriter {
 
 // SetAuthCookies gets the responseWriter from context and uses it to set the jwt cookie
 func SetAuthCookies(ctx context.Context, authToken string) {
+
 	writer := ResponseFromContext(ctx)
 	if writer == nil {
 		glog.Warning("Unable to set auth cookie, no writer set")
@@ -138,14 +139,39 @@ func SetAuthCookies(ctx context.Context, authToken string) {
 
 	var expirationTime = time.Now().Add(time.Hour * time.Duration(helpers.Config.Jwt.TokenExpirationHours))
 
-	if helpers.Config.IsDev {
-		// In dev, don't use a secure cookie as we aren't using tls in dev
-		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Secure: false, Expires: expirationTime})
+	var authCookie = http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Domain: "nowhere.ttc-hub.com", Secure: true, Expires: expirationTime}
+	var csrfCookie = http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Domain: "nowhere.ttc-hub.com", Secure: true, Expires: expirationTime}
 
-		// Set CSRF cookie
-		http.SetCookie(*writer, &http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Secure: false, Expires: expirationTime})
-	} else {
-		http.SetCookie(*writer, &http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Secure: true, Domain: "*.ttc-hub.com", Expires: expirationTime})
-		http.SetCookie(*writer, &http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Secure: true, Domain: "*.ttc-hub.com", Expires: expirationTime})
+	if grant.IsAdmin {
+		authCookie.Domain = "admin.ttc-hub.com"
+		csrfCookie.Domain = "admin.ttc-hub.com"
 	}
+
+	if grant.IsDelegate {
+		authCookie.Domain = "delegate.ttc-hub.com"
+		csrfCookie.Domain = "delegate.ttc-hub.com"
+		//TODO: Add another cookie for public site
+	}
+
+	if grant.IsManager {
+		authCookie.Domain = "manager.ttc-hub.com"
+		csrfCookie.Domain = "manager.ttc-hub.com"
+		//TODO: Add another cookie for public site
+	}
+
+	if grant.IsIndividual {
+		authCookie.Domain = "delegate.ttc-hub.com"
+		csrfCookie.Domain = "delegate.ttc-hub.com"
+		//TODO: Add another cookie for public site
+	}
+
+	if helpers.Config.IsDev {
+		authCookie.Domain = ""
+		csrfCookie.Domain = ""
+		authCookie.Secure = false
+		csrfCookie.Secure = false
+	}
+
+	http.SetCookie(*writer, &authCookie)
+	http.SetCookie(*writer, &csrfCookie)
 }

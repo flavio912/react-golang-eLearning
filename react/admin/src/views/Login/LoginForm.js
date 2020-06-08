@@ -100,7 +100,6 @@ function LoginForm({ className, ...rest }) {
       }));
       console.warn(err);
     }
-    //history.push('/');
   };
 
   const hasError = field =>
