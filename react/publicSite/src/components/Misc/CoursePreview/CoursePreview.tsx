@@ -4,6 +4,7 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Button from "sharedComponents/core/Input/Button";
 import Icon from "sharedComponents/core/Icon";
+import VideoPlayer from "components/core/VideoPlayer";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
@@ -15,6 +16,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
         borderRadius: '5px',
         backgroundColor: theme.colors.primaryWhite,
         boxShadow: '0 2px 10px 0 rgba(0,0,0,0.15), 4px 2px 10px -2px rgba(0,0,0,0.06)',
+    },
+    video: {
+        margin: '4px',
+        borderRadius: '5px 5px 0 0',
+        overflow: 'hidden'
     },
     price: {
         fontSize: theme.fontSizes.tinyHeading,
@@ -51,10 +57,43 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontWeight: '500',
         color: theme.colors.textGrey
     },
+    column: {
+        alignSelf: 'flex-end',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    preview: {
+        fontSize: theme.fontSizes.xSmall,
+        fontWeight: 'bold',
+        color: theme.colors.primaryWhite,
+        margin: '45px 0 10px 0'
+    },
     row: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center'
+    },
+    // Thumbnail styles
+    playCircle: {
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '76px',
+        height: '76px',
+        borderRadius: '76px',
+        backgroundColor: theme.colors.navyBlue,
+        opacity: 0.8
+    },
+    playTriangle: {
+        width: 0, 
+        height: 0,
+        marginLeft: 6,
+        borderTop: "13.5px solid transparent",
+        borderBottom: "13.5px solid transparent",
+        borderLeft: ["27px", "solid", theme.colors.primaryWhite]
     }
 }));
 
@@ -69,13 +108,23 @@ function CoursePreview({ price, details, onBasket, onBuy }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
-    const videoStyle = { height: '238px', width: '382px', margin: '4px',  borderRadius: '5px 5px 0 0' };
-
   return (
       <div className={classes.root}>
-          <div>
-                <Icon name="SampleImage_ClassroomCoursesDetail_Feat" style={videoStyle} />
-          </div>
+
+          <VideoPlayer
+            source={require("assets/Stock_Video.mp4")}
+            width={384} height={216}
+            className={classes.video}
+            thumbnail={
+                <div className={classes.column}>
+                    <div />
+                    <div className={classes.playCircle}>
+                            <div className={classes.playTriangle}/>
+                    </div>
+                    <div className={classes.preview}>Preview this course</div>
+                </div>
+            }
+        />
 
           <div className={classes.price}>{price} <span className={classes.vat}>+VAT</span></div>
 
