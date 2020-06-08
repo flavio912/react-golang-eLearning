@@ -7,6 +7,7 @@ import (
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 )
@@ -78,14 +79,27 @@ func NewLessonResolvers(ctx context.Context, args NewLessonsArgs) (*[]*LessonRes
 func (l *LessonResolver) UUID() gentypes.UUID { return l.Lesson.UUID }
 func (l *LessonResolver) Title() string       { return l.Lesson.Title }
 func (l *LessonResolver) Text() string        { return l.Lesson.Text }
-func (l *LessonResolver) Tags() []*TagResolver {
+
+// TODO: Use dataloaders
+func (l *LessonResolver) Tags(ctx context.Context) ([]*TagResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
+	}
+
+	tags, err := grant.GetTagsByLessonUUID(l.UUID().String())
+	if err != nil {
+		glog.Info("Unable to resolve tags")
+		return nil, err
+
+	}
 	var res []*TagResolver
-	for _, tag := range l.Lesson.Tags {
+	for _, tag := range tags {
 		res = append(res, &TagResolver{
 			Tag: tag,
 		})
 	}
-	return res
+	return res, nil
 }
 
 type LessonPageResolver struct {

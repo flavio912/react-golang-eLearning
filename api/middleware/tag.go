@@ -126,3 +126,25 @@ func (g *Grant) GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, order
 
 	return []gentypes.Tag{}, nil
 }
+
+// GetTagsByLessonUUID returns a slice of tags associated with a given lesson
+func (g *Grant) GetTagsByLessonUUID(uuid string) ([]gentypes.Tag, error) {
+	if !g.IsAdmin {
+		return []gentypes.Tag{}, &errors.ErrUnauthorized
+	}
+
+	var tags []models.Tag
+	query := database.GormDB.Table("tags").
+		Joins("JOIN lesson_tags_link ON lesson_tags_link.tag_uuid = tags.uuid AND lesson_tags_link.lesson_uuid = ?", uuid).Find(&tags)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []gentypes.Tag{}, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to finds tags associated with lesson "+uuid)
+		return []gentypes.Tag{}, &errors.ErrWhileHandling
+	}
+
+	return tagsToGentypes(tags), nil
+}
