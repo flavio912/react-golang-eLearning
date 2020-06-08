@@ -6,10 +6,7 @@ import environment from 'api/environment';
 import { createUseStyles, useTheme } from 'react-jss';
 import { commitMutation, graphql } from 'react-relay';
 import { GraphError } from 'types/general';
-
-type Props = {
-  data: any;
-};
+import { useRouter, Router } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -31,7 +28,7 @@ const mutation = graphql`
   }
 `;
 
-const AttemptLogin = (
+const AttemptLogin = (router: Router) => (
   email: string,
   password: string,
   errorCallback: (err: string) => void
@@ -44,7 +41,7 @@ const AttemptLogin = (
   commitMutation(environment, {
     mutation,
     variables,
-    onCompleted: (
+    onCompleted: async (
       response: { managerLogin: { token: string } },
       errors: GraphError[]
     ) => {
@@ -53,23 +50,23 @@ const AttemptLogin = (
         errorCallback(`${errors[0]?.extensions?.message}`);
         return;
       }
+
       console.log('Response received from server.', response, errors);
-      localStorage.setItem('auth', response.managerLogin.token);
-      window.location.href = '/app';
+      router.push('/app');
     },
     onError: (err) => console.error(err)
   });
 };
 
-const LoginPage = ({ data }: Props) => {
+const LoginPage = () => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
+  const { router } = useRouter();
   return (
     <>
       {/* <RedirectRequest/> */}
       <div className={classes.root}>
-        <LoginDialogue onSubmit={AttemptLogin} />
+        <LoginDialogue onSubmit={AttemptLogin(router)} />
       </div>
     </>
   );

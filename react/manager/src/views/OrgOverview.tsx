@@ -9,6 +9,8 @@ import { Theme } from 'helpers/theme';
 import ProfileCard from 'components/Overview/ProfileCard';
 import PageHeader from 'components/PageHeader';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { OrgOverview_manager } from './__generated__/OrgOverview_manager.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -80,20 +82,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-export const OrgOverview = () => {
+type Props = {
+  manager: OrgOverview_manager;
+};
+
+const OrgOverview = ({ manager }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
     <div className={classes.root}>
       <PageHeader
         showCreateButtons
-        title="Fedex"
+        title={manager.company.name}
         subTitle="Organisation Overview"
       />
       <div className={classes.grid}>
         <div className={classes.search}>
           <UserSearch
-            companyName="Fedex"
+            companyName={manager.company.name}
             searchFunction={async (query: string) => {
               return [
                 {
@@ -142,11 +148,17 @@ export const OrgOverview = () => {
           <ProfileCard
             heading="Profile"
             fields={[
-              { fieldName: 'Name', value: 'Fred Eccleston' },
+              {
+                fieldName: 'Name',
+                value: `${manager.firstName} ${manager.lastName}`
+              },
               { fieldName: 'Role', value: 'Group Leader' },
-              { fieldName: 'Email', value: 'Group Leader' },
-              { fieldName: 'Tel Contact', value: 'Group Leader' },
-              { fieldName: 'Active since', value: 'Group Leader' }
+              { fieldName: 'Email', value: manager.email },
+              { fieldName: 'Tel Contact', value: manager.telephone },
+              {
+                fieldName: 'Active since',
+                value: new Date(manager.createdAt || '').toDateString()
+              }
             ]}
             padding="medium"
           />
@@ -175,3 +187,18 @@ export const OrgOverview = () => {
     </div>
   );
 };
+
+export default createFragmentContainer(OrgOverview, {
+  manager: graphql`
+    fragment OrgOverview_manager on Manager {
+      firstName
+      lastName
+      email
+      telephone
+      createdAt
+      company {
+        name
+      }
+    }
+  `
+});

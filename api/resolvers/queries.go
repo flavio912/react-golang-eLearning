@@ -240,3 +240,13 @@ func (q *QueryResolver) ClassroomCourses(ctx context.Context, args struct {
 			pageInfo: &pageInfo,
 		}}, nil
 }
+
+func (q *QueryResolver) User(ctx context.Context) (*UserResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &UserResolver{}, &errors.ErrUnauthorized
+	}
+	return NewUserResolver(ctx, NewUserArgs{
+		UUID: &grant.Claims.UUID,
+	})
+}

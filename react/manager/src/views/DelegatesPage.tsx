@@ -12,8 +12,10 @@ import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 import Dropdown from 'sharedComponents/core/Input/Dropdown';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import Paginator from 'sharedComponents/Pagination/Paginator';
-
-type Props = {};
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Router } from 'found';
+import { DelegatesPage_delegates } from './__generated__/DelegatesPage_delegates.graphql';
+import { DelegatesPage_manager } from './__generated__/DelegatesPage_manager.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -87,22 +89,45 @@ const delegateRow = (
   onClick: () => router.push(`/app/delegates/${userUUID}`)
 });
 
-const DelegatesPage = (props: any) => {
+type Props = {
+  delegates: DelegatesPage_delegates;
+  manager: DelegatesPage_manager;
+  router: Router;
+};
+
+const DelegatesPage = ({ delegates, manager, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const { router } = props;
+
+  const edges = delegates.edges ?? [];
+  const pageInfo = delegates.pageInfo;
+  const delegateComponents = edges.map((delegate: any) =>
+    delegateRow(
+      delegate?.uuid,
+      `${delegate?.firstName} ${delegate?.lastName}`,
+      '',
+      delegate?.email,
+      3,
+      6,
+      delegate?.lastLogin,
+      '2013-04-20T20:00:00+0800',
+      classes,
+      router
+    )
+  );
+
   return (
     <div className={classes.root}>
       <PageHeader
         showCreateButtons
-        title="Fedex"
+        title={manager.company.name}
         subTitle="Organisation Overview"
-        sideText="127 members total"
+        sideText={`${pageInfo?.total} members total`}
       />
       <div className={classes.searchAndFilter}>
         <div className={classes.search}>
           <UserSearch
-            companyName={'Fedex'}
+            companyName={manager.company.name}
             searchFunction={async (query: string) => {
               return [
                 {
@@ -152,32 +177,7 @@ const DelegatesPage = (props: any) => {
           'Next Expiry',
           'Actions'
         ]}
-        rows={[
-          delegateRow(
-            'asda',
-            'Jim Smith',
-            '',
-            'email@email.com',
-            3,
-            6,
-            '2013-04-20T20:00:00+0800',
-            '2013-04-20T20:00:00+0800',
-            classes,
-            router
-          ),
-          delegateRow(
-            'abc',
-            'Bruce Willis',
-            '',
-            'bruce.willis@email.com',
-            3,
-            6,
-            '2013-04-20T20:00:00+0800',
-            '2013-04-20T20:00:00+0800',
-            classes,
-            router
-          )
-        ]}
+        rows={delegateComponents}
       />
       <Spacer vertical spacing={3} />
       <Paginator
@@ -190,4 +190,32 @@ const DelegatesPage = (props: any) => {
   );
 };
 
-export default DelegatesPage;
+const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
+  delegates: graphql`
+    fragment DelegatesPage_delegates on DelegatePage {
+      edges {
+        uuid
+        email
+        firstName
+        lastName
+        lastLogin
+        createdAt
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
+    }
+  `,
+  manager: graphql`
+    fragment DelegatesPage_manager on Manager {
+      company {
+        name
+      }
+    }
+  `
+});
+
+export default DelegatesPageFrag;

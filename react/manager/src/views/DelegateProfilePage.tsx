@@ -10,8 +10,9 @@ import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/Delegate/ActivityTable';
 import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
-
-type Props = {};
+import { createFragmentContainer, graphql } from 'react-relay';
+import { Router } from 'found';
+import { DelegateProfilePage_delegate } from './__generated__/DelegateProfilePage_delegate.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -44,15 +45,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   headerActions: {}
 }));
-const delegateData = {
-  userUUID: 'asda',
-  name: 'Bruce Willis',
-  email: 'bruce.willis@email.com',
-  courses: 30,
-  certificates: 10,
-  lastActive: 30,
-  expiringSoon: 30
-};
+
 const headerActionOptions: DropdownOption[] = [
   {
     id: 1,
@@ -61,10 +54,14 @@ const headerActionOptions: DropdownOption[] = [
   }
 ];
 
-const DelegateProfilePage = (props: any) => {
+type Props = {
+  delegate: DelegateProfilePage_delegate;
+  router: Router;
+};
+
+const DelegateProfilePage = ({ delegate, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const { router } = props;
   const [action, setAction] = React.useState<DropdownOption>();
 
   return (
@@ -72,7 +69,7 @@ const DelegateProfilePage = (props: any) => {
       <div className={classes.top}>
         <PageHeader
           showCreateButtons={false}
-          title={delegateData.name}
+          title={`${delegate.firstName} ${delegate.lastName}`}
           subTitle="Member of Fedex UK Limited"
           backProps={{
             text: 'Back to all Delegates',
@@ -90,14 +87,14 @@ const DelegateProfilePage = (props: any) => {
       </div>
       <div className={classes.grid}>
         <TitleWrapper
-          title={`${delegateData.name}'s summary`}
+          title={`${delegate.firstName} ${delegate.lastName}'s summary`}
           className={classes.quickOverview}
         >
           <Summary
-            numActiveCourses={delegateData.courses}
-            numLastActive={delegateData.lastActive}
-            numCertificates={delegateData.certificates}
-            numExpiringSoon={delegateData.expiringSoon}
+            numActiveCourses={3}
+            numLastActive={4}
+            numCertificates={2}
+            numExpiringSoon={1}
           />
         </TitleWrapper>
         <TitleWrapper
@@ -140,4 +137,13 @@ const DelegateProfilePage = (props: any) => {
   );
 };
 
-export default DelegateProfilePage;
+const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
+  delegate: graphql`
+    fragment DelegateProfilePage_delegate on Delegate {
+      firstName
+      lastName
+    }
+  `
+});
+
+export default DelegateProfilePageFrag;

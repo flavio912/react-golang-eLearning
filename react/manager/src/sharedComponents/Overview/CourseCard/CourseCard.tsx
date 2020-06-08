@@ -200,7 +200,7 @@ function CourseCard({
             size={18}
           />
         </div>
-        {course.price && (
+        {course.price !== undefined && (
           <div className={classNames(classes.price)}>
             £{course.price?.toFixed(2)}
           </div>

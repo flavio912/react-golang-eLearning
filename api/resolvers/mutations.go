@@ -20,20 +20,30 @@ type AuthToken struct {
 }
 
 // AdminLogin - Resolver for getting an authToken
-func (m *MutationResolver) AdminLogin(args struct{ Input gentypes.AdminLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) AdminLogin(ctx context.Context, args struct{ Input gentypes.AdminLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetAdminAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
+	auth.SetAuthCookies(ctx, token)
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
 // ManagerLogin - Resolver for getting an authToken
-func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) ManagerLogin(ctx context.Context, args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetManagerAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
+
+	auth.SetAuthCookies(ctx, token)
+
+	// If NoResp given return a blank token in the response - @temmerson
+	if args.Input.NoResp != nil && *args.Input.NoResp {
+		return &gentypes.AuthToken{Token: ""}, nil
+	}
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
@@ -143,7 +153,7 @@ func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input g
 	return success, err
 }
 
-func (m *MutationResolver) ManagerProfileUploadRequest(
+func (m *MutationResolver) ProfileImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
 ) (*gentypes.UploadFileResp, error) {
@@ -152,14 +162,14 @@ func (m *MutationResolver) ManagerProfileUploadRequest(
 		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
 	}
 
-	url, successToken, err := grant.ManagerProfileUploadRequest(args.Input)
+	url, successToken, err := grant.ProfileUploadRequest(args.Input)
 	return &gentypes.UploadFileResp{
 		URL:          url,
 		SuccessToken: successToken,
 	}, err
 }
 
-func (m *MutationResolver) ManagerProfileUploadSuccess(
+func (m *MutationResolver) UpdateManagerProfileImage(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileSuccess },
 ) (*ManagerResolver, error) {

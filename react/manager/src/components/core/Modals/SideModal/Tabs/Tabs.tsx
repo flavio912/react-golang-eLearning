@@ -56,7 +56,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     padding: [30, 40],
-    overflow: 'scroll',
+    overflowY: 'scroll',
     height: 10
   },
   footer: {
@@ -210,7 +210,10 @@ function Tabs({ content, closeModal, initialState }: Props) {
                   ? setActive(tab)
                   : throwErr()
               }
-              closeModal={closeModal}
+              closeModal={() => {
+                setState({});
+                closeModal();
+              }}
             />
           </div>
         ))}

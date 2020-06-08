@@ -5,9 +5,13 @@ import { Tab } from 'components/Menu/SideMenu/SideMenu';
 import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import { useRouteMatch } from 'react-router-dom';
+import { createFragmentContainer, graphql } from 'react-relay';
+
+import type { AppHolder_manager } from './__generated__/AppHolder_manager.graphql';
 
 type Props = {
   children?: React.ReactChildren;
+  manager: AppHolder_manager;
 };
 
 const useStyles = createUseStyles(() => ({
@@ -20,7 +24,7 @@ const useStyles = createUseStyles(() => ({
   }
 }));
 
-export const AppHolder = ({ children }: Props) => {
+const AppHolder = ({ children, manager }: Props) => {
   const classes = useStyles();
   const { match, router } = useRouter();
   const tabs: Tab[] = [
@@ -65,8 +69,8 @@ export const AppHolder = ({ children }: Props) => {
           'https://i.pinimg.com/originals/e3/a5/19/e3a5199fde5caf756884d99fc60178de.png'
         }
         user={{
-          name: 'Test',
-          url: '/images/user_image.png'
+          name: `${manager.firstName} ${manager.lastName}`,
+          url: manager?.profileImageUrl || undefined
         }}
       />
       <SideMenu
@@ -93,3 +97,13 @@ export const AppHolder = ({ children }: Props) => {
     </div>
   );
 };
+
+export default createFragmentContainer(AppHolder, {
+  manager: graphql`
+    fragment AppHolder_manager on Manager {
+      firstName
+      lastName
+      profileImageUrl
+    }
+  `
+});

@@ -21,7 +21,7 @@ type CourseInfo struct {
 	AccessType      gentypes.AccessType // Restricted or Open Access
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
-	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
+	SpecificTerms   string              `sql:"json"` // Terms specific to this course in quill json
 	Published       bool                // If not published users can't see this course
 }
 

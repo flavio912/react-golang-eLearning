@@ -8,7 +8,9 @@ import (
 )
 
 type yamlConfig struct {
-	Database struct {
+	IsTesting bool `yaml:"isTesting"`
+	IsDev     bool `yaml:"isDev"`
+	Database  struct {
 		Host         string `yaml:"host"`
 		User         string `yaml:"user"`
 		Password     string `yaml:"password"`
@@ -22,12 +24,15 @@ type yamlConfig struct {
 		Password  string `yaml:"password"`
 	} `yaml:"devAdmin"`
 	Jwt struct {
-		Secret               string  `yaml:"secret"`
-		UploadsSecret        string  `yaml:"uploadsSecret"`
-		AdminExpirationHours float64 `yaml:"adminExpirationHours"`
+		Secret                 string  `yaml:"secret"`
+		UploadsSecret          string  `yaml:"uploadsSecret"`
+		DelegateFinaliseSecret string  `yaml:"delegateFinaliseSecret"`
+		CSRFSecret             string  `yaml:"csrfSecret"`
+		TokenExpirationHours   float64 `yaml:"tokenExpirationHours"`
 	} `yaml:"jwt"`
 	AWS struct {
-		UploadsBucket string `yaml:"uploadsBucket"`
+		UploadsBucket  string `yaml:"uploadsBucket"`
+		SESSendAddress string `yaml:"sesSendAddress"`
 	} `yaml:"aws"`
 	Imgix struct {
 		BaseURL string `yaml:"baseUrl"`

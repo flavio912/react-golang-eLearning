@@ -32,7 +32,6 @@ func (g *GraphQL) Serve() http.Handler {
 		}
 
 		ctx := r.Context()
-
 		ctx = g.Loaders.Attach(ctx)
 		resp := g.Schema.Exec(ctx, payload.Query, payload.OperationName, payload.Variables)
 
@@ -47,7 +46,7 @@ func (g *GraphQL) Serve() http.Handler {
 				Errors: resp.Errors,
 			}
 
-			w.WriteHeader(http.StatusInternalServerError)
+			// w.WriteHeader(http.StatusFound)
 			json.NewEncoder(w).Encode(errResp)
 			return
 		}

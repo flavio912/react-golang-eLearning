@@ -17,17 +17,17 @@ import (
 var realCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001") // A company that exists
 var fakeCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999") // A company that doesn't exist
 
-func TestCompanyExists(t *testing.T) {
-	prepareTestDatabase()
+// func TestCompanyExists(t *testing.T) {
+// 	prepareTestDatabase()
 
-	t.Run("Company should exist", func(t *testing.T) {
-		assert.True(t, adminGrant.CompanyExists(realCompany))
-	})
+// 	t.Run("Company should exist", func(t *testing.T) {
+// 		assert.True(t, adminGrant.CompanyExists(realCompany))
+// 	})
 
-	t.Run("Company should not exist", func(t *testing.T) {
-		assert.False(t, adminGrant.CompanyExists(fakeCompany))
-	})
-}
+// 	t.Run("Company should not exist", func(t *testing.T) {
+// 		assert.False(t, adminGrant.CompanyExists(fakeCompany))
+// 	})
+// }
 
 func TestIsCompanyDelegate(t *testing.T) {
 	assert.True(t, delegateGrant.IsCompanyDelegate(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")))
@@ -114,14 +114,12 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		manager := gentypes.Manager{
-			User: gentypes.User{
-				UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-				Email:     "man@managers.com",
-				FirstName: "Manager",
-				LastName:  "Man",
-				Telephone: "7912938287",
-				JobTitle:  "In Charge",
-			},
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			FirstName:   "Manager",
+			LastName:    "Man",
+			Telephone:   "7912938287",
+			JobTitle:    "In Charge",
+			Email:       "man@managers.com",
 			CompanyUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		}
 
@@ -132,13 +130,13 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 			name   string
 			filter gentypes.ManagersFilter
 		}{
-			{"Email", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &manager.Email}}},
+			{"Email", gentypes.ManagersFilter{Email: &manager.Email}},
 			{"FirstName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.FirstName}}},
 			{"LastName", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &manager.LastName}}},
 			{"First and Last", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName}}},
 			{"JobTitle", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{JobTitle: &manager.JobTitle}}},
 			{"uuid", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{UUID: &uuidString}}},
-			{"Full", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName, Email: &manager.Email}}},
+			{"Full", gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Name: &fullName}, Email: &manager.Email}},
 		}
 
 		for _, test := range filterTests {
@@ -152,7 +150,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
-			filter := gentypes.ManagersFilter{UserFilter: gentypes.UserFilter{Email: &email}}
+			filter := gentypes.ManagersFilter{Email: &email}
 			managers, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, managers, 2)
@@ -346,18 +344,16 @@ func TestCreateCompanyRequest(t *testing.T) {
 		manager, err := adminGrant.GetManagerByUUID(managers[0])
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Manager{
-			User: gentypes.User{
-				CreatedAt: manager.CreatedAt,
-				UUID:      manager.UUID,
-				Email:     managerInput.Email,
-				FirstName: managerInput.FirstName,
-				LastName:  managerInput.LastName,
-				Telephone: managerInput.Telephone,
-				JobTitle:  managerInput.JobTitle,
-				LastLogin: manager.LastLogin,
-			},
+			CreatedAt:       manager.CreatedAt,
+			UUID:            manager.UUID,
+			FirstName:       managerInput.FirstName,
+			LastName:        managerInput.LastName,
+			Telephone:       managerInput.Telephone,
+			JobTitle:        managerInput.JobTitle,
+			LastLogin:       manager.LastLogin,
+			Email:           managerInput.Email,
 			ProfileImageURL: manager.ProfileImageURL,
-			CompanyUUID:       company.UUID,
+			CompanyUUID:     company.UUID,
 		}, manager)
 	})
 }

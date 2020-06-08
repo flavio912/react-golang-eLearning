@@ -113,4 +113,18 @@ var (
 		Type:    "ErrCategoryAlreadyExists",
 		Message: "Could not create category as it already exists",
 	}
+	ErrNoEmailProvided = FullError{
+		Type:     "ErrNoEmailProvided",
+		Message:  "If not email is provided, you must have a password generated for the user",
+		Title:    "No email or generated password",
+		HelpText: "You must either have a password generated for the user or provide an email address",
+	}
+	ErrDelegateFinalised = SimpleError{
+		Type:    "ErrDelegateFinalised",
+		Message: "Delegate already has a password set, please use reset password to reset it instead",
+	}
+	ErrCSRFTokenInvalid = SimpleError{
+		Type:    "ErrCSRFTokenInvalid",
+		Message: "The given CSRF token was blank or invalid",
+	}
 )

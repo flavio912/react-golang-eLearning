@@ -1,18 +1,19 @@
-import * as React from "react";
-import CheckboxSingle from "./CheckboxSingle";
-import { withKnobs } from "@storybook/addon-knobs";
+import * as React from 'react';
+import CheckboxSingle from './CheckboxSingle';
+import { withKnobs, text, boolean } from '@storybook/addon-knobs';
 
 export default {
-  title: "Core/Input/CheckboxSingle",
-  decorators: [withKnobs],
+  title: 'Core/Input/CheckboxSingle',
+  decorators: [withKnobs]
 };
 
 const Wrapper = () => {
-  const [box, setBox] = React.useState<{ label: string; checked: boolean }>({
-    label: "Checkbox 1",
-    checked: true,
-  });
-  return <CheckboxSingle setBox={setBox} box={box} />;
+  return (
+    <CheckboxSingle
+      label={text('Label text', 'This is a label')}
+      defaultChecked={boolean('Default checked', false)}
+    />
+  );
 };
 
 export const normal = () => {

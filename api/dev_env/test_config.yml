@@ -1,3 +1,5 @@
+isTesting: true
+isDev: false
 database:
   host: test_db
   user: test
@@ -11,8 +13,9 @@ devAdmin:
   password: iamasuperadmin
 jwt:
   secret: asdha8s7dgbuida89s7dba9hdsn8basd
-  uploadsSecret: asasdasdadahs98db7asvd8a9sghdjas90h8d7gasd
-  adminExpirationHours: 3 # How many hours until the admin auth token expires
+  uploadsSecret: asasdasdadahs98db7asvd8a9sghdjas90h8d7gasd21dscdvf
+  csrfSecret: asasdasdadahs98db7asvd8a9sghdjas90h8d7gasdasdaasd2e
+  tokenExpirationHours: 3 # How many hours until the auth token expires
 aws:
   uploadsBucket: ttc-platform-uploads-test
 imgix:

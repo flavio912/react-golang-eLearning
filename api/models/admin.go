@@ -1,8 +1,9 @@
 package models
 
 import (
-	"errors"
 	"strings"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -14,7 +15,7 @@ import (
 type Admin struct {
 	Base
 	Email     string `gorm:"unique"`
-	Password  string
+	Password  *string
 	FirstName string
 	LastName  string
 }
@@ -25,18 +26,20 @@ func (admin *Admin) BeforeSave(scope *gorm.Scope) (err error) {
 	scope.SetColumn("Email", strings.ToLower(admin.Email))
 
 	// Hash the password
-	if pw, err := auth.HashPassword(admin.Password); err == nil {
-		scope.SetColumn("Password", pw)
+	if admin.Password != nil {
+		if pw, err := auth.HashPassword(*admin.Password); err == nil {
+			scope.SetColumn("Password", pw)
+		}
 	}
 	return
 }
 
-func (admin *Admin) getHash() string {
+func (admin *Admin) getHash() *string {
 	return admin.Password
 }
 
 // FindUser - Find the user by their email address
-func (*Admin) FindUser(email string) (IUser, error) {
+func (*Admin) FindUser(email string) (*Admin, error) {
 	var admin Admin
 	if err := database.GormDB.Where("email = ?", email).First(&admin).Error; err != nil {
 		return &admin, err
@@ -46,7 +49,7 @@ func (*Admin) FindUser(email string) (IUser, error) {
 
 // ValidatePassword - Check if a password and email for an admin is valid
 func (*Admin) ValidatePassword(email string, password string) error {
-	failedError := errors.New("Incorrect email or password")
+	failedError := &errors.ErrUnauthorized
 
 	// Find the user
 	var admin Admin
@@ -54,7 +57,11 @@ func (*Admin) ValidatePassword(email string, password string) error {
 		return failedError
 	}
 
-	if err := auth.ValidatePassword(admin.Password, password); err == nil {
+	if admin.Password == nil {
+		return failedError
+	}
+
+	if err := auth.ValidatePassword(*admin.Password, password); err == nil {
 		// Success
 		return nil
 	}
@@ -70,12 +77,12 @@ circumstances be given without the password - @temmerson
 */
 func (admin *Admin) GenerateToken(password string) (string, error) {
 	if err := admin.ValidatePassword(admin.Email, password); err != nil {
-		return "", ErrPasswordInvalid
+		return "", &errors.ErrUnauthorized
 	}
 	claims := auth.UserClaims{
 		UUID: admin.UUID,
 		Role: auth.AdminRole,
 	}
-	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.AdminExpirationHours)
+	token, err := auth.GenerateToken(claims, helpers.Config.Jwt.TokenExpirationHours)
 	return token, err
 }
