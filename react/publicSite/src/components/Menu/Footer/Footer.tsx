@@ -115,7 +115,7 @@ function Footer({ columns, className }: Props) {
       <div className={classNames(classes.root, className)}>
           <div className={classNames(classes.row, classes.border)}>
               <div className={classes.column}>
-                  <Icon name="TTC_Logo_Icon" size={46} />
+                  <Icon name="Blue_TTC_Logo_Icon" size={46} />
                   <div className={classes.message}>Redefining the <strong>future</strong> of <strong>compliance</strong> and training</div>
                   <Icon name="AviationSecurityCert" style={{height: '74px', width: '152px'}} />
               </div>

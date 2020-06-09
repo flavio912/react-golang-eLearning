@@ -9,6 +9,7 @@ export type IconNames =
   | 'ArrowRightNavyBlue'
   | 'AviationSecurityCert'
   | 'Basket'
+  | 'Blue_TTC_Logo_Icon'
   | 'Card_SecondaryActon_Dots'
   | 'CloseCourseManagementTray_X'
   | 'CourseAccountActivated'
@@ -63,6 +64,7 @@ const iconNameMap = {
   ArrowRightNavyBlue: require("../../../assets/ArrowRightNavyBlue.svg"),
   AviationSecurityCert: require("../../../assets/AviationSecurityCert.svg"),
   Basket: require("../../../assets/Basket.svg"),
+  Blue_TTC_Logo_Icon: require("../../../assets/logo/blue-ttc-logo.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
   CourseAccountActivated: require("../../../assets/CourseAccountActivated.svg"),
