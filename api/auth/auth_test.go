@@ -43,7 +43,7 @@ func TestHashAndValidate(t *testing.T) {
 }
 
 func TestGenAndValidateToken(t *testing.T) {
-	helpers.LoadConfig("../config.yml")
+	helpers.LoadConfig()
 
 	claims := UserClaims{
 		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
@@ -72,7 +72,7 @@ func TestGenAndValidateToken(t *testing.T) {
 }
 
 func TestGenerateFinaliseDelegateToken(t *testing.T) {
-	helpers.LoadConfig("../config.yml")
+	helpers.LoadConfig()
 
 	claims := FinaliseDelegateClaims{
 		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
