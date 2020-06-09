@@ -30,22 +30,22 @@ import './assets/scss/main.scss';
 const history = createBrowserHistory();
 const store = configureStore();
 
-function readCookie(name) {
-  var nameEQ = name + '=';
-  var ca = document.cookie.split(';');
-  for (var i = 0; i < ca.length; i++) {
-    var c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-  }
-  return null;
-}
+// function readCookie(name) {
+//   var nameEQ = name + '=';
+//   var ca = document.cookie.split(';');
+//   for (var i = 0; i < ca.length; i++) {
+//     var c = ca[i];
+//     while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+//     if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+//   }
+//   return null;
+// }
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
   operation.setContext({
     headers: {
-      'X-CSRF-TOKEN': readCookie('csrf')
+      Authorization: `Bearer ${localStorage.getItem('auth')}`
     }
   });
 
@@ -53,7 +53,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const link = new HttpLink({
-  uri: 'http://localhost:8080/graphql',
+  uri: 'https://ttc.devserver.london/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 

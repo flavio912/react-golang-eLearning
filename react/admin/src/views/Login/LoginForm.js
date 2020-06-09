@@ -88,6 +88,7 @@ function LoginForm({ className, ...rest }) {
           pass: formState.values.password
         }
       });
+      localStorage.setItem('auth', resp.data?.adminLogin?.token);
       console.log(resp);
       history.push('/');
     } catch (err) {
