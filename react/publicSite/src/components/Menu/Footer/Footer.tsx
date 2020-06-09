@@ -16,12 +16,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'flex-start',
+        alignItems: 'center',
     },
     border: {
         paddingBottom: '100px',
         marginBottom: '20px',
-        borderBottom: ['1px', 'solid', theme.colors.footerGrey]
+        borderBottom: ['1px', 'solid', theme.colors.footerGrey],
+        alignItems: 'flex-start',
     },
     column: {
         display: 'flex',
@@ -84,11 +85,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type Column = {
+    id: number;
     header: string;
     links: Link[];
 }
 
 export type Link = {
+    id: number;
     name: string;
     link: string;
     alert?: Alert;
@@ -114,7 +117,7 @@ function Footer({ columns, className }: Props) {
               <div className={classes.column}>
                   <Icon name="TTC_Logo_Icon" size={46} />
                   <div className={classes.message}>Redefining the <strong>future</strong> of <strong>compliance</strong> and training</div>
-                  <Icon name="SampleImage_ClassroomCoursesDetail_Feat" style={{height: '74px', width: '152px'}} />
+                  <Icon name="AviationSecurityCert" style={{height: '74px', width: '152px'}} />
               </div>
               {columns && columns.map((column: Column) => (
                   <div className={classes.column}>
@@ -135,7 +138,11 @@ function Footer({ columns, className }: Props) {
               ))}
           </div>
           <div className={classes.row}>
-              <div>Socials</div>
+              <div className={classNames(classes.row, classes.center)}>
+                    <Icon name="Twitter_Logo" size={25} style={{ marginRight: '10px' }} />
+                    <Icon name="Facebook_Logo" size={25} style={{ marginRight: '10px' }} />
+                    <Icon name="LinkedIn_Logo" size={25} />
+              </div>
               <div className={classes.copyright}>© 2020 TTC Hub. All Rights Reserved. Registered in England | Company registration number 10849230.</div>
           </div>
       </div>

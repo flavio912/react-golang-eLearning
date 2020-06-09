@@ -8,11 +8,13 @@ export default {
 };
 
 const defaultLink: Link = {
+    id: 0,
     name: "Feature",
     link: ""
 }
 
 const defaultNew: Link = {
+    id: 1,
     name: "Feature",
     link: "",
     alert: {
@@ -22,6 +24,7 @@ const defaultNew: Link = {
 }
 
 const defaultIncrease: Link = {
+    id: 2,
     name: "Feature",
     link: "",
     alert: {
@@ -32,21 +35,25 @@ const defaultIncrease: Link = {
 
 const defaultColumns: Column[] = [
     {
+        id: 0,
         header: "Features", links: [
             defaultLink, defaultLink, defaultLink, defaultLink, defaultNew, defaultLink, defaultLink, defaultLink, defaultLink
         ]
     },
     {
+        id: 1,
         header: "Learn More", links: [
             defaultLink, defaultLink, defaultLink, defaultLink, defaultLink, defaultLink
         ]
     },
     {
+        id: 2,
         header: "Company", links: [
             defaultLink, defaultLink, defaultLink, defaultLink, defaultLink, defaultLink
         ]
     },
     {
+        id: 3,
         header: "Get Help", links: [
             defaultLink, defaultLink, defaultLink, defaultLink, defaultIncrease
         ]

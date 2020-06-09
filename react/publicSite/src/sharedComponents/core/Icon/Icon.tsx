@@ -7,6 +7,7 @@ export type IconNames =
   | 'ArrowLeftNavyBlue'
   | 'ArrowRight'
   | 'ArrowRightNavyBlue'
+  | 'AviationSecurityCert'
   | 'Basket'
   | 'Card_SecondaryActon_Dots'
   | 'CloseCourseManagementTray_X'
@@ -28,6 +29,7 @@ export type IconNames =
   | 'DownloadCSV'
   | 'EditDelegateProfilePic_Default'
   | 'EditPicPencil'
+  | 'Facebook_Logo'
   | 'FilterAdjust'
   | 'FormCheckbox_Checked'
   | 'FormCheckbox_states'
@@ -36,6 +38,7 @@ export type IconNames =
   | 'LeftNav_Icon_Courses'
   | 'LeftNav_Icon_Dashboard'
   | 'LeftNav_Icon_Delegates'
+  | 'LinkedIn_Logo'
   | 'Loading_Screen_Donut'
   | 'Location_Pin'
   | 'PDF_Icon'
@@ -48,6 +51,7 @@ export type IconNames =
   | 'Mp3_Speaker'
   | 'Payments_Method'
   | 'Stripe'
+  | 'Twitter_Logo'
   | 'Volume';
 
 const iconNameMap = {
@@ -57,6 +61,7 @@ const iconNameMap = {
   ArrowLeftNavyBlue: require("../../../assets/ArrowLeftNavyBlue.svg"),
   ArrowRight: require("../../../assets/ArrowRight.svg"),
   ArrowRightNavyBlue: require("../../../assets/ArrowRightNavyBlue.svg"),
+  AviationSecurityCert: require("../../../assets/AviationSecurityCert.svg"),
   Basket: require("../../../assets/Basket.svg"),
   Card_SecondaryActon_Dots: require("../../../assets/Card_SecondaryActon_Dots.svg"),
   CloseCourseManagementTray_X: require("../../../assets/CloseCourseManagementTray_X.svg"),
@@ -78,6 +83,7 @@ const iconNameMap = {
   DownloadCSV: require("../../../assets/DownloadCSV.svg"),
   EditDelegateProfilePic_Default: require("../../../assets/EditDelegateProfilePic_Default.png"),
   EditPicPencil: require("../../../assets/EditPicPencil.svg"),
+  Facebook_Logo: require("../../../assets/Facebook_Logo.png"),
   FilterAdjust: require("../../../assets/FilterAdjust.svg"),
   FormCheckbox_Checked: require("../../../assets/FormCheckbox_Checked.svg"),
   FormCheckbox_states: require("../../../assets/FormCheckbox_states.png"),
@@ -86,6 +92,7 @@ const iconNameMap = {
   LeftNav_Icon_Courses: require("../../../assets/LeftNav_Icon_Courses.svg"),
   LeftNav_Icon_Dashboard: require("../../../assets/LeftNav_Icon_Dashboard.svg"),
   LeftNav_Icon_Delegates: require("../../../assets/LeftNav_Icon_Delegates.svg"),
+  LinkedIn_Logo: require("../../../assets/LinkedIn_Logo.png"),
   Loading_Screen_Donut: require("../../../assets/Loading_Screen_Donut.svg"),
   Location_Pin: require("../../../assets/Location_Pin.svg"),
   PDF_Icon: require("../../../assets/PDF_Icon.svg"),
@@ -98,6 +105,7 @@ const iconNameMap = {
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
   Stripe: require("../../../assets/Stripe.svg"),
+  Twitter_Logo: require("../../../assets/Twitter_Logo.png"),
   Volume: require("../../../assets/Volume.svg")
 };
 
