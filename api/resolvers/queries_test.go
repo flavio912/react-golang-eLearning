@@ -1062,3 +1062,277 @@ func TestGetUser(t *testing.T) {
 		},
 	})
 }
+
+func TestLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lesson(uuid: "00000000-0000-0000-0000-000000000003") {
+						uuid
+						tags {
+							name
+							uuid
+							color
+						}
+						title
+						text
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lesson": {
+						"uuid": "00000000-0000-0000-0000-000000000003",
+						"tags": [
+							{
+								"name": "Handling cool things",
+								"uuid": "00000000-0000-0000-0000-000000000002",
+								"color": "#123"
+							}
+						],
+						"title": "Eigenvalues and Eigenvectors",
+						"text": "{}"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{lesson(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"lesson"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
+	)
+}
+
+func TestLessons(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all lessons",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lessons {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lessons":{
+						"edges": [
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"limit": 100,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should order",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lessons (orderBy: {
+						ascending: true
+						field: "title"
+					}) {
+						edges {
+							title
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lessons":{
+						"edges":[
+							{"title":"Dynamic Programming"},
+							{"title":"Eigenvalues and Eigenvectors"},
+							{"title":"Lorentz Invariance"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"limit": 100,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should filter title",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lessons (filter: {
+						title: "en"
+					}) {
+						edges {
+							title
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lessons":{
+						"edges":[
+							{"title":"Eigenvalues and Eigenvectors"},
+							{"title":"Lorentz Invariance"}
+						],
+						"pageInfo": {
+							"total": 2,
+							"offset": 0,
+							"limit": 100,
+							"given": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should filter tags",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lessons (filter: {
+						tags: ["00000000-0000-0000-0000-000000000002"]
+					}) {
+						edges {
+							tags {
+								uuid
+							}
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lessons":{
+						"edges":[
+							{
+								"tags":[
+									{"uuid":"00000000-0000-0000-0000-000000000002"}
+								]
+							},
+							{
+								"tags":[
+									{"uuid":"00000000-0000-0000-0000-000000000001"},
+									{"uuid":"00000000-0000-0000-0000-000000000002"},
+									{"uuid":"00000000-0000-0000-0000-000000000003"}
+								]
+							}
+						],
+						"pageInfo": {
+							"total": 2,
+							"offset": 0,
+							"limit": 100,
+							"given": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should page",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					lessons (page: {
+						offset: 1
+						limit: 2
+					}) {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"lessons":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 2,
+							"offset": 1,
+							"total": 3
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{lessons { edges { uuid } }}`,
+			Path:            []interface{}{"lessons"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
+	)
+}
