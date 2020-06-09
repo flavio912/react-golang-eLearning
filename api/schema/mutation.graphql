@@ -17,15 +17,16 @@ input UploadFileSuccess {
 type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
+  delegateLogin(input: DelegateLogin!): AuthToken
   createManager(input: CreateManagerInput!): Manager
   updateManager(input: UpdateManagerInput!): Manager
-  managerProfileUploadRequest(input: UploadFileMeta!): UploadFileResp
-  managerProfileUploadSuccess(input: UploadFileSuccess!): Manager
+  profileImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateManagerProfileImage(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
   createAdmin(input: CreateAdminInput!): Admin
   updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
-  createDelegate(input: CreateDelegateInput!): Delegate
+  createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
   createCompany(input: CreateCompanyInput!): Company
   updateCompany(input: UpdateCompanyInput!): Company
   createCompanyRequest(

@@ -1,20 +1,29 @@
 package gentypes
 
+type UserType string
+
+const (
+	ManagerType    UserType = "manager"
+	DelegateType   UserType = "delegate"
+	IndividualType UserType = "individual"
+)
+
 // User - User graphQL interface
 type User struct {
-	CreatedAt *string
-	UUID      UUID
-	Email     string
-	FirstName string
-	LastName  string
-	Telephone string
-	JobTitle  string
-	LastLogin string
+	CreatedAt       *string
+	UUID            *UUID
+	Type            UserType
+	Email           *string
+	FirstName       string
+	LastName        string
+	Telephone       *string
+	JobTitle        *string
+	LastLogin       string
+	ProfileImageUrl *string
 }
 
 type UserFilter struct {
 	UUID      *string `valid:"uuidv4"`
-	Email     *string
 	Name      *string
 	JobTitle  *string
 	Telephone *string `valid:"numeric"`
@@ -23,8 +32,7 @@ type UserFilter struct {
 type CreateUserInput struct {
 	FirstName string `valid:"required,alpha"`
 	LastName  string `valid:"required,alpha"`
-	Email     string `valid:"required,email"`
 	JobTitle  string `valid:"required"`
-	Telephone string `valid:"required,numeric"`
+	Telephone string `valid:"numeric"`
 	Password  string `valid:"required,stringlength(5|30)"`
 }

@@ -25,7 +25,7 @@ func NewDelegateResolver(ctx context.Context, args NewDelegateArgs) (*DelegateRe
 			return &DelegateResolver{}, &errors.ErrUnauthorized
 		}
 
-		delegate, err := grant.GetDelegateByUUID(*args.UUID)
+		delegate, err := grant.GetDelegateByUUID(*args.UUID) // TODO: Use Dataloaders
 		if err != nil {
 			return &DelegateResolver{}, err
 		}
@@ -39,14 +39,13 @@ func NewDelegateResolver(ctx context.Context, args NewDelegateArgs) (*DelegateRe
 func (d *DelegateResolver) UUID() gentypes.UUID      { return d.delegate.UUID }
 func (d *DelegateResolver) TTC_ID() string           { return d.delegate.TTC_ID }
 func (d *DelegateResolver) CreatedAt() *string       { return d.delegate.CreatedAt }
-func (d *DelegateResolver) Email() string            { return d.delegate.Email }
+func (d *DelegateResolver) Email() *string           { return d.delegate.Email }
 func (d *DelegateResolver) FirstName() string        { return d.delegate.FirstName }
 func (d *DelegateResolver) LastName() string         { return d.delegate.LastName }
-func (d *DelegateResolver) Telephone() string        { return d.delegate.Telephone }
+func (d *DelegateResolver) Telephone() *string       { return d.delegate.Telephone }
 func (d *DelegateResolver) JobTitle() string         { return d.delegate.JobTitle }
 func (d *DelegateResolver) LastLogin() string        { return d.delegate.LastLogin }
 func (d *DelegateResolver) ProfileImageURL() *string { return d.delegate.ProfileImageURL }
-
 func (d *DelegateResolver) Company(ctx context.Context) (*CompanyResolver, error) {
 	return NewCompanyResolver(ctx, NewCompanyArgs{
 		UUID: d.delegate.CompanyUUID.String(),
@@ -60,3 +59,17 @@ type DelegatePageResolver struct {
 
 func (r *DelegatePageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
 func (r *DelegatePageResolver) Edges() *[]*DelegateResolver { return r.edges }
+
+type CreateDelegateResponse struct {
+	delegate          gentypes.Delegate
+	generatedPassword *string
+}
+
+func (r *CreateDelegateResponse) Delegate(ctx context.Context) (*DelegateResolver, error) {
+	return NewDelegateResolver(ctx, NewDelegateArgs{
+		Delegate: r.delegate,
+	})
+}
+func (r *CreateDelegateResponse) GeneratedPassword() *string {
+	return r.generatedPassword
+}

@@ -17,21 +17,25 @@ import { graphql, createFragmentContainer } from 'react-relay';
 import LoginPage from 'views/Login';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
-import { AppHolder } from 'views/AppHolder';
+import AppHolder from 'views/AppHolder';
 import OnlineCoursePage from 'views/OnlineCourse';
 import TrainingZone from 'views/TrainingZone/TrainingZone';
 import OnlineCourses from 'views/OnlineCourses';
 import Progress from 'views/Progress';
 
-const ExamplePageQuery = graphql`
-  query App_Query {
-    manager {
-      uuid
-      firstName
-      lastName
-    }
+const protectedRenderer = (Comp: React.ReactNode) => (
+  args: RouteRenderArgs
+) => {
+  console.log('ARGS', args);
+  // Sadly found-relay has no types...
+  //@ts-ignore
+  if (args?.error && args?.error.type == 'ErrUnauthorized') {
+    args.match.router.push('/login');
+    return;
   }
-`;
+  //@ts-ignore
+  return <Comp {...args.props} />;
+};
 
 const Router = createFarceRouter({
   historyProtocol: new BrowserProtocol(),
@@ -42,16 +46,14 @@ const Router = createFarceRouter({
       <Route
         path="/app"
         Component={AppHolder}
-        //query={ExamplePageQuery}
-        render={({ props, error }: any) => {
-          // Check if user is logged in, if not redirect to login
-          // if (props?.manager) return <AppHolder {...props} />;
-          // if (error) {
-          //   throw new RedirectException("/login");
-          // }
-          // return undefined;
-          return <AppHolder {...props} />;
-        }}
+        query={graphql`
+          query App_Holder_Query {
+            user {
+              ...AppHolder_user
+            }
+          }
+        `}
+        render={protectedRenderer(AppHolder)}
       >
         <Route path="/" Component={TrainingZone} />
         <Route path="/courses" Component={OnlineCourses} />

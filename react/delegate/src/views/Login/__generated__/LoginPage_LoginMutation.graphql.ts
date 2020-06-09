@@ -1,14 +1,14 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 9a07bc52fb48f0e89e8c9ad4af2ec57f */
+/* @relayHash f536606fb54cd93aa2df4ac00fac653f */
 
 import { ConcreteRequest } from "relay-runtime";
 export type LoginPage_LoginMutationVariables = {
-    email: string;
+    ttcId: string;
     password: string;
 };
 export type LoginPage_LoginMutationResponse = {
-    readonly managerLogin: {
+    readonly delegateLogin: {
         readonly token: string;
     } | null;
 };
@@ -21,10 +21,10 @@ export type LoginPage_LoginMutation = {
 
 /*
 mutation LoginPage_LoginMutation(
-  $email: String!
+  $ttcId: String!
   $password: String!
 ) {
-  managerLogin(input: {email: $email, password: $password}) {
+  delegateLogin(input: {TTC_ID: $ttcId, password: $password}) {
     token
   }
 }
@@ -34,7 +34,7 @@ const node: ConcreteRequest = (function () {
     var v0 = [
         ({
             "kind": "LocalArgument",
-            "name": "email",
+            "name": "ttcId",
             "type": "String!",
             "defaultValue": null
         } as any),
@@ -48,7 +48,7 @@ const node: ConcreteRequest = (function () {
         ({
             "kind": "LinkedField",
             "alias": null,
-            "name": "managerLogin",
+            "name": "delegateLogin",
             "storageKey": null,
             "args": [
                 {
@@ -57,8 +57,8 @@ const node: ConcreteRequest = (function () {
                     "fields": [
                         {
                             "kind": "Variable",
-                            "name": "email",
-                            "variableName": "email"
+                            "name": "TTC_ID",
+                            "variableName": "ttcId"
                         },
                         {
                             "kind": "Variable",
@@ -101,10 +101,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "mutation",
             "name": "LoginPage_LoginMutation",
             "id": null,
-            "text": "mutation LoginPage_LoginMutation(\n  $email: String!\n  $password: String!\n) {\n  managerLogin(input: {email: $email, password: $password}) {\n    token\n  }\n}\n",
+            "text": "mutation LoginPage_LoginMutation(\n  $ttcId: String!\n  $password: String!\n) {\n  delegateLogin(input: {TTC_ID: $ttcId, password: $password}) {\n    token\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = 'c21c415fb7cc373d41068136c9e932df';
+(node as any).hash = '82eaa1d56fabdd9a6ab00ac3760a962d';
 export default node;

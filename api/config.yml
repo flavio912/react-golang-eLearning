@@ -12,11 +12,15 @@ devAdmin:
 jwt:
   secret: wKz%rR69b8vX24%RMJ&MpmYxNfRjHPKcfU@yXo#^9@Z9EHZ2eeDp9B818!^Aq7oLTHj!@pjZZlTnbTG6!
   uploadsSecret: S^&4D4dMaKHb^hwQvtqBw^0nG83^QrM3c&P%JwbzC%HnBZ#RGwcqgfc$@y7rvKnt@&F92pgn8tzTn3w
-  adminExpirationHours: 3 # How many hours until the admin auth token expires
+  csrfSecret: 86%C$pPtci*NZrP!4L#q2PLcG*HrJb4jw0P1vaRL&vnC7At0Qd
+  tokenExpirationHours: 3 # How many hours until the admin auth token expires
 aws:
   uploadsBucket: ttc-platform-uploads
+  sesSendAddress: ttc-noreply@devserver.london
 imgix:
   baseUrl: https://ttc-dev.imgix.net/ # Trailing slash is important as its joined with s3 keys (without a starting slash)
 sentry:
   dsn: https://c6a2d188cc104df5bf18ba78ed1d55a5@o109340.ingest.sentry.io/5197155
   environment: dev
+isTesting: false
+isDev: true

@@ -21,6 +21,7 @@
     "found-relay": "^0.8.0",
     "html-webpack-plugin": "4.0.0-beta.5",
     "identity-obj-proxy": "3.0.0",
+    "jwt-decode": "^2.2.0",
     "mini-css-extract-plugin": "0.8.0",
     "moment": "^2.24.0",
     "number-to-words": "^1.2.4",
@@ -70,7 +71,7 @@
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "eslint . --ext .ts,.tsx",
     "precom": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
-    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__",
+    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --customScalars.UUID=String",
     "relayWatch": "nodemon --exec 'yarn run relay' --ignore 'server.js' -e ts,tsx,graphql"
   },
   "husky": {
@@ -152,12 +153,7 @@
       "react-app"
     ],
     "plugins": [
-      [
-        "relay",
-        {
-          "artifactDirectory": "./src/__generated__"
-        }
-      ]
+      "relay"
     ]
   },
   "devDependencies": {

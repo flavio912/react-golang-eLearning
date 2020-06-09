@@ -3,7 +3,9 @@ import PageTitle from 'components/PageTitle';
 import Button from 'sharedComponents/core/Input/Button';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
+import DelegateSlideIn, {
+  DelegateInfo
+} from 'components/Delegate/DelegateSlideIn';
 import MultiUser from 'components/core/Modals/SideModal/CourseManagement/MultiUser';
 import SingleUser from 'components/core/Modals/SideModal/CourseManagement/SingleUser';
 
@@ -22,19 +24,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     gridGap: theme.spacing(2)
   }
 }));
-
-const addDelegate = (
-  profileUrl: string,
-  firstName: string,
-  lastName: string,
-  jobTitle: string,
-  email: string,
-  phone: string,
-  ttcId: string,
-  errorCallback: (err: string) => void
-) => {
-  console.log('added a new delegate');
-};
 
 type Props = {
   title: string;
@@ -93,7 +82,6 @@ const PageHeader = ({
       <DelegateSlideIn
         isOpen={openDelegateSlideIn}
         onClose={() => setOpenDelegateSlideIn(false)}
-        submitDelegate={addDelegate}
       />
       <MultiUser
         isOpen={isMultiUserOpen}
