@@ -6,3 +6,4 @@ COPY ./main /app/main
 WORKDIR /app
 
 ENTRYPOINT [ "./main" ]
+EXPOSE 8080
