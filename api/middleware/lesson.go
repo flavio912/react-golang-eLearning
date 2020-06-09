@@ -133,7 +133,7 @@ func filterLesson(query *gorm.DB, filter *gentypes.LessonFilter) *gorm.DB {
 			query = query.Where("uuid = ?", *filter.UUID)
 		}
 		if filter.Title != nil && *filter.Title != "" {
-			query = query.Where("title = ?", *filter.Title)
+			query = query.Where("title ILIKE ?", "%%"+*filter.Title+"%%")
 		}
 		if filter.Tags != nil && len(*filter.Tags) > 0 {
 			var tags []gentypes.UUID
