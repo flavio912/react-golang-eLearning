@@ -247,6 +247,11 @@ deploy-api-staging:
   environment:
     name: admin-staging
     url: http://ttc-api.devserver.london
+  only:
+    refs:
+      - dev
+    changes:
+      - api/**/*
   variables:
     EB_ENV: 'ttc-api-staging'
   script:
