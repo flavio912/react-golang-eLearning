@@ -107,26 +107,6 @@ func (g *Grant) GetLessonsByUUID(uuids []string) ([]gentypes.Lesson, error) {
 	return lessons, nil
 }
 
-func getLessonsByTags(tags *[]gentypes.UUID) ([]gentypes.UUID, error) {
-	var links []models.LessonTagsLink
-	linkQuery := database.GormDB.Where("tag_uuid IN (?)", *tags).Find(&links)
-
-	var lessons []gentypes.UUID
-	if linkQuery.Error != nil {
-		if linkQuery.RecordNotFound() {
-			return lessons, &errors.ErrNotFound
-		}
-
-		return lessons, &errors.ErrWhileHandling
-	}
-
-	for _, l := range links {
-		lessons = append(lessons, l.LessonUUID)
-	}
-
-	return lessons, nil
-}
-
 func filterLesson(query *gorm.DB, filter *gentypes.LessonFilter) *gorm.DB {
 	if filter != nil {
 		if filter.UUID != nil && *filter.UUID != "" {
@@ -136,16 +116,8 @@ func filterLesson(query *gorm.DB, filter *gentypes.LessonFilter) *gorm.DB {
 			query = query.Where("title ILIKE ?", "%%"+*filter.Title+"%%")
 		}
 		if filter.Tags != nil && len(*filter.Tags) > 0 {
-			var tags []gentypes.UUID
-			for _, t := range *filter.Tags {
-				tags = append(tags, *t)
-			}
-
-			lessonUUIDs, err := getLessonsByTags(&tags)
-
-			if err == nil {
-				query = query.Where("uuid IN (?)", lessonUUIDs)
-			}
+			query = query.Table("lessons").
+				Joins("JOIN lesson_tags_link ON lesson_tags_link.lesson_uuid = lessons.uuid AND lesson_tags_link.tag_uuid IN (?)", *filter.Tags)
 		}
 	}
 
