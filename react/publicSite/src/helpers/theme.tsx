@@ -30,6 +30,8 @@ export type Theme = {
     progressGrey: string;
     lightBlue: string;
     navyBlue: string;
+    footerBlue: string;
+    footerGrey: string;
     blueRibbon: string;
     approxIron: string;
     approxZircon: string;
@@ -50,6 +52,7 @@ export type Theme = {
     small: number;
     xSmall: number;
     tiny: number;
+    xTiny: number;
   };
 };
 
@@ -78,6 +81,8 @@ const theme: Theme = {
     progressGrey: '#d2d6db',
     lightBlue: "#E2E9F8",
     navyBlue: '#0E66E0',
+    footerBlue: '#1D2B35',
+    footerGrey: '#93A1B0',
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
     approxZircon: '#E9EBEB',
@@ -97,7 +102,8 @@ const theme: Theme = {
     default: 14,
     small: 13,
     xSmall: 12,
-    tiny: 11
+    tiny: 11,
+    xTiny: 9
   }
 };
 

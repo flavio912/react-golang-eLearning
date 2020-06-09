@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import Button from "sharedComponents/core/Input/Button";
 import Icon from "sharedComponents/core/Icon";
-import Spacer from "sharedComponents/core/Spacers/Spacer";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
