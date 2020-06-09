@@ -3,6 +3,34 @@ FROM golang:1.14.1-alpine
 COPY . /app
 WORKDIR /app
 
+ENV IS_TESTING="false"
+ENV IS_DEV="true"
+
+ENV DB_HOST="api_db"
+ENV DB_USER="ttc-api"
+ENV DB_PASSWORD="thd7sds3928dxxkjaKi8"
+ENV DB_NAME="postgresdb"
+ENV DB_PORT=5432
+
+ENV DEV_ADMIN_EMAIL="admin@admin.com"
+ENV DEV_ADMIN_FIRST_NAME="Dev"
+ENV DEV_ADMIN_LAST_NAME="Admin"
+ENV DEV_ADMIN_PASSWORD="iamasuperadmin"
+
+ENV JWT_SECRET="wKz%rR69b8vX24%RMJ&MpmYxNfRjHPKcfU@yXo#^9@Z9EHZ2eeDp9B818!^Aq7oLTHj!@pjZZlTnbTG6!"
+ENV JWT_UPLOADS_SECRET="S^&4D4dMaKHb^hwQvtqBw^0nG83^QrM3c&P%JwbzC%HnBZ#RGwcqgfc$@y7rvKnt@&F92pgn8tzTn3w"
+ENV JWT_FINALISE_DELEGATE_SECRET="asasdasdadaasdjhifnsjdhiujfnkdhusdf"
+ENV JWT_CSRF_SECRET="86%CdpPtci*NZrP!4L#q2PLcG*HrJb4jw0P1vaRL&vnC7At0Qd"
+ENV JWT_TOKEN_EXPIRATION_HOURS="3"
+
+ENV AWS_UPLOADS_BUCKET="ttc-platform-uploads-test"
+ENV AWS_SES_SEND_ADDRESS="ttc-noreply@devserver.london"
+
+ENV IMGIX_BASE_URL="https://ttc-dev.imgix.net/"
+
+ENV SENTRY_DSN="https://c6a2d188cc104df5bf18ba78ed1d55a5@o109340.ingest.sentry.io/5197155"
+ENV SENTRY_ENVIRONMENT="dev"
+
 RUN ["chmod", "+x", "dev_env/entrypoint.sh"]
 
 RUN ["go", "get", "github.com/cespare/reflex"]

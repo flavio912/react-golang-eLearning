@@ -138,6 +138,22 @@ build-manager-webpack:
     paths:
       - react/manager/build/
 
+build-api: 
+  stage: build
+  image: golang:1.14.1-alpine
+  script:
+    - cd api
+    - go mod download
+    - go build main.go
+  artifacts:
+    paths:
+      - api/main
+    expire_in: 3d
+  only:
+    changes:
+      - api/**/*
+      - .gitlab-ci.yml
+
 deploy-storybooks:
   stage: deploy-staging
   image: python:3.8-slim-buster
@@ -222,5 +238,21 @@ deploy-admin-staging:
     - apt-get update
     - apt-get install -y zip
     - cd ./react/admin
+    - chmod +x ./bin/deploy.sh
+    - ./bin/deploy.sh
+
+deploy-api-staging:
+  stage: deploy-staging
+  image: python:3.8-slim-buster
+  environment:
+    name: admin-staging
+    url: http://ttc-api.devserver.london
+  variables:
+    EB_ENV: 'ttc-api-staging'
+  script:
+    - pip install awscli
+    - apt-get update
+    - apt-get install -y zip
+    - cd ./api
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
