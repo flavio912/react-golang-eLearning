@@ -6,13 +6,21 @@ import (
 
 // Manager - CompanyManager graphQL type
 type Manager struct {
-	User
+	CreatedAt       *string
+	UUID            UUID
+	FirstName       string
+	LastName        string
+	Telephone       string
+	JobTitle        string
+	LastLogin       string
+	Email           string
 	ProfileImageURL *string
-	CompanyUUID       UUID
+	CompanyUUID     UUID
 }
 
 type ManagersFilter struct {
 	UserFilter
+	Email *string
 }
 
 func (m *ManagersFilter) Validate() error {
@@ -62,4 +70,5 @@ func (m *DeleteManagerInput) Validate() error {
 type ManagerLoginInput struct {
 	Email    string
 	Password string
+	NoResp   *bool
 }

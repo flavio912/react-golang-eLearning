@@ -21,18 +21,18 @@ var (
 	db       *sql.DB
 	fixtures *testfixtures.Loader
 
-	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, logging.Logger{}}
-	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, logging.Logger{}}
+	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, false, logging.Logger{}}
+	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, false, logging.Logger{}}
 	managerGrant  = middleware.Grant{auth.UserClaims{
 		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Role:    auth.ManagerRole,
-	}, false, true, false, logging.Logger{}}
+	}, false, true, false, false, logging.Logger{}}
 	delegateGrant = middleware.Grant{auth.UserClaims{
 		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Role:    auth.DelegateRole,
-	}, false, false, true, logging.Logger{}}
+	}, false, false, true, false, logging.Logger{}}
 
 	uuidZero = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
 )

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -42,7 +43,7 @@ func TestHashAndValidate(t *testing.T) {
 }
 
 func TestGenAndValidateToken(t *testing.T) {
-	helpers.LoadConfig("../config.yml")
+	helpers.LoadConfig()
 
 	claims := UserClaims{
 		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
@@ -68,4 +69,34 @@ func TestGenAndValidateToken(t *testing.T) {
 	if returnedClaims.Role != claims.Role {
 		t.Errorf("Role claims do not match: returned > %s , given > %s", string(jsonRetClaims), string(jsonGivenClaims))
 	}
+}
+
+func TestGenerateFinaliseDelegateToken(t *testing.T) {
+	helpers.LoadConfig()
+
+	claims := FinaliseDelegateClaims{
+		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
+	}
+
+	token, err := GenerateFinaliseDelegateToken(claims)
+	if err != nil {
+		t.Error("Error generating token")
+	}
+
+	returnedClaims, validErr := ValidateFinaliseDelegateToken(token)
+	if validErr != nil {
+		t.Error(validErr.Error())
+	}
+
+	jsonRetClaims, _ := json.Marshal(returnedClaims)
+	jsonGivenClaims, _ := json.Marshal(claims)
+	if returnedClaims.UUID != claims.UUID {
+		t.Errorf("UUID claims do not match: returned > %s , given > %s", string(jsonRetClaims), string(jsonGivenClaims))
+	}
+
+	// Check that finaliseDelegateToken cannot be verified with normal Validate func
+	valClaims, valErr := ValidateToken(token)
+	assert.NotNil(t, valErr, "Validate token gave no error to delegateFinaliseToken")
+	assert.Equal(t, UserClaims{}, valClaims)
+
 }

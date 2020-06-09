@@ -7,8 +7,9 @@
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-solid-svg-icons": "^5.11.2",
     "@fortawesome/react-fontawesome": "^0.1.5",
+    "@stripe/react-stripe-js": "^1.1.2",
+    "@stripe/stripe-js": "^1.6.0",
     "@svgr/webpack": "4.3.2",
-    "@types/react-stripe-elements": "^6.0.4",
     "camelcase": "^5.2.0",
     "case-sensitive-paths-webpack-plugin": "2.2.0",
     "css-loader": "2.1.1",
@@ -20,6 +21,7 @@
     "found-relay": "^0.8.0",
     "html-webpack-plugin": "4.0.0-beta.5",
     "identity-obj-proxy": "3.0.0",
+    "jwt-decode": "^2.2.0",
     "mini-css-extract-plugin": "0.8.0",
     "moment": "^2.24.0",
     "number-to-words": "^1.2.4",
@@ -43,7 +45,6 @@
     "react-spinners": "^0.8.1",
     "react-spring": "^8.0.27",
     "react-step-progress-bar": "^1.0.3",
-    "react-stripe-elements": "^6.1.2",
     "react-use-dimensions": "^1.2.1",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
@@ -70,7 +71,7 @@
     "storybook-build": "build-storybook -o ./storybook_build",
     "lint": "eslint . --ext .ts,.tsx",
     "precom": "git diff --exit-code --no-index ../delegate/src/sharedComponents ../manager/src/sharedComponents",
-    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --artifactDirectory ./src/__generated__",
+    "relay": "relay-compiler --src ./src --schema ./src/api/schema.graphql --language typescript --customScalars.UUID=String",
     "relayWatch": "nodemon --exec 'yarn run relay' --ignore 'server.js' -e ts,tsx,graphql"
   },
   "husky": {
@@ -152,12 +153,7 @@
       "react-app"
     ],
     "plugins": [
-      [
-        "relay",
-        {
-          "artifactDirectory": "./src/__generated__"
-        }
-      ]
+      "relay"
     ]
   },
   "devDependencies": {

@@ -85,4 +85,5 @@ type Query {
     filter: ClassroomCourseFilter
     orderBy: OrderBy
   ): ClassroomCoursePage
+  user: User 
 }

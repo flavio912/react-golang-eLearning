@@ -2,7 +2,7 @@ import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import { Theme } from "helpers/theme";
 import UserResults from "../UserResults";
-import CoreInput from "components/core/CoreInput";
+import CoreInput from "components/core/Input/CoreInput";
 import { ResultItem } from "../UserSearch";
 import IdentTag from "components/IdentTag";
 

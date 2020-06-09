@@ -2,6 +2,9 @@ import React from 'react';
 import uuid from 'uuid/v1';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
@@ -17,44 +20,46 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const GET_COMPANIES = gql`
+  query GetCompanies {
+    companies {
+      edges {
+        uuid
+        name
+        managers {
+          edges {
+            email
+          }
+          pageInfo {
+            total
+          }
+        }
+      }
+    }
+  }
+`;
+
 function CompaniesManagementList() {
   const classes = useStyles();
+
+  const { loading, error, data } = useQuery(GET_COMPANIES);
+
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>{error.message}</div>;
 
   const handleFilter = () => {};
 
   const handleSearch = () => {};
 
-  const companies = [
-    {
-      id: uuid(),
-      name: 'FedEx',
-      email: 'kate@fedex.com',
-      logo:
-        'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
-      noDelegates: 40,
-      noManagers: 1,
-      paymentType: 'Contract'
-    },
-    {
-      id: uuid(),
-      name: 'Royal Mail',
-      email: 'user@royalmail.co.uk',
-      logo:
-        'https://upload.wikimedia.org/wikipedia/en/thumb/e/ee/Royal_Mail.svg/1200px-Royal_Mail.svg.png',
-      noDelegates: 23,
-      noManagers: 3,
-      paymentType: 'Pay as you go'
-    },
-    {
-      id: uuid(),
-      name: 'DHL',
-      email: 'manager@dhl.com',
-      avatar: '/images/avatars/avatar_4.png',
-      noDelegates: 23,
-      noManagers: 2,
-      paymentType: 'Contract'
-    }
-  ];
+  const companies = data?.companies?.edges.map(comp => ({
+    id: uuid(),
+    name: comp.name,
+    email: comp.managers?.edges[0]?.email,
+    logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
+    noDelegates: 40,
+    noManagers: comp.managers?.pageInfo?.total,
+    paymentType: 'Contract'
+  }));
 
   return (
     <Page className={classes.root} title="Companies Management List">

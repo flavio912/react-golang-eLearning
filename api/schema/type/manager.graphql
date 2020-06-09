@@ -1,4 +1,4 @@
-type Manager implements User {
+type Manager  {
   uuid: UUID!
   createdAt: String
   email: String!
@@ -19,6 +19,7 @@ type ManagerPage implements PaginatedQuery {
 input ManagerLogin {
   email: String!
   password: String!
+  noResp: Boolean
 }
 
 input CreateManagerInput {

@@ -40,6 +40,7 @@ export type Theme = {
     textNavyBlue2: string;
     textGrey2: string;
     textGrey3: string;
+    lightGreen: string
   };
   shadows: {
     primary: string;
@@ -95,7 +96,8 @@ const theme: Theme = {
     textNavyBlue2: '#0E63E8',
     textGrey2: '#5C7487',
     textGrey3: '#E3E3E3',
-    borderBlack: '#08080814'
+    borderBlack: '#08080814',
+    lightGreen: '#81BE86'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',

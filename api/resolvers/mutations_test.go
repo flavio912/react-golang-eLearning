@@ -137,6 +137,24 @@ func TestManagerLogin(t *testing.T) {
 		}, *grant)
 	})
 
+	t.Run("noResp param is respected", func(t *testing.T) {
+		gqltest.RunTest(t, &gqltest.Test{
+
+			Name:    "Blank response expected",
+			Context: defaultContext(),
+			Schema:  schema,
+			Query: `
+					mutation {
+						managerLogin(input:{email: "man@managers.com", password: "iamamanager", noResp: true}) {
+							token
+						}
+					}
+				`,
+			ExpectedResult: `{"managerLogin":{"token":""}}`,
+			ExpectedErrors: nil,
+		})
+	})
+
 	t.Run("must fail properly", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{

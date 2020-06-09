@@ -20,15 +20,13 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	if g.IsAdmin || (g.IsManager && g.Claims.Company == manager.CompanyUUID) {
 		createdAt := manager.CreatedAt.Format(time.RFC3339)
 		return gentypes.Manager{
-			User: gentypes.User{
-				CreatedAt: &createdAt,
-				UUID:      manager.UUID,
-				Email:     manager.Email,
-				FirstName: manager.FirstName,
-				LastName:  manager.LastName,
-				JobTitle:  manager.JobTitle,
-				Telephone: manager.Telephone,
-			},
+			CreatedAt:       &createdAt,
+			UUID:            manager.UUID,
+			FirstName:       manager.FirstName,
+			LastName:        manager.LastName,
+			JobTitle:        manager.JobTitle,
+			Telephone:       manager.Telephone,
+			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
@@ -37,12 +35,10 @@ func (g *Grant) managerToGentype(manager models.Manager) gentypes.Manager {
 	// Delegates can only get a subset of their manager's info
 	if g.IsCompanyDelegate(manager.CompanyUUID) {
 		return gentypes.Manager{
-			User: gentypes.User{
-				Email:     manager.Email,
-				FirstName: manager.FirstName,
-				LastName:  manager.LastName,
-				JobTitle:  manager.JobTitle,
-			},
+			FirstName:       manager.FirstName,
+			LastName:        manager.LastName,
+			JobTitle:        manager.JobTitle,
+			Email:           manager.Email,
 			CompanyUUID:     manager.CompanyUUID,
 			ProfileImageURL: &profileURL,
 		}
@@ -112,6 +108,10 @@ func (g *Grant) GetManagersByUUID(uuids []string) ([]gentypes.Manager, error) {
 func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	if filter != nil {
 		query = filterUser(query, &filter.UserFilter)
+
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
+		}
 	}
 
 	return query
@@ -217,20 +217,18 @@ func (g *Grant) CreateManager(managerDetails gentypes.CreateManagerInput) (genty
 	}
 
 	// Check if company exists
-	if !g.CompanyExists(inputUUID) {
+	if !g.companyExists(inputUUID) {
 		return gentypes.Manager{}, &errors.ErrCompanyNotFound
 	}
 
 	// TODO: Validate input better and return useful details
 	manager := models.Manager{
-		User: models.User{
-			FirstName: managerDetails.FirstName,
-			LastName:  managerDetails.LastName,
-			Email:     managerDetails.Email,
-			JobTitle:  managerDetails.JobTitle,
-			Telephone: managerDetails.Telephone,
-			Password:  managerDetails.Password,
-		},
+		FirstName:   managerDetails.FirstName,
+		LastName:    managerDetails.LastName,
+		JobTitle:    managerDetails.JobTitle,
+		Telephone:   managerDetails.Telephone,
+		Password:    managerDetails.Password,
+		Email:       managerDetails.Email,
 		CompanyUUID: inputUUID,
 	}
 	createErr := database.GormDB.Create(&manager).Error
@@ -302,8 +300,9 @@ func (g *Grant) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	return false, &errors.ErrUnauthorized
 }
 
-// ManagerProfileUploadRequest generates a link that lets users upload a profile image to S3 directly
-func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+// ProfileUploadRequest generates a link that lets users upload a profile image to S3 directly
+// Used by all user types
+func (g *Grant) ProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
 	if !g.IsManager && !g.IsAdmin {
 		return "", "", &errors.ErrUnauthorized
 	}
@@ -314,7 +313,7 @@ func (g *Grant) ManagerProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (
 		[]string{"jpg", "png"},  // Allowed file types
 		int32(20000000),         // Max file size = 20MB
 		"profile",               // Save files in the "profile" s3 directory
-		"managerProfile",        // Unique identifier for this type of upload request
+		"profileImage",          // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err
@@ -326,7 +325,7 @@ func (g *Grant) ManagerProfileUploadSuccess(token string) error {
 		return &errors.ErrUnauthorized
 	}
 
-	s3Key, err := uploads.VerifyUploadSuccess(token, "managerProfile")
+	s3Key, err := uploads.VerifyUploadSuccess(token, "profileImage")
 	if err != nil {
 		return err
 	}

@@ -1,10 +1,17 @@
 package middleware
 
 import (
+	"fmt"
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
+
 	"github.com/getsentry/sentry-go"
+	"github.com/gosimple/slug"
 	"github.com/jinzhu/gorm"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -12,19 +19,26 @@ import (
 )
 
 func (g *Grant) delegateToGentype(delegate models.Delegate) gentypes.Delegate {
+	var profileURL *string
+	if delegate.ProfileKey != nil {
+		url := uploads.GetImgixURL(*delegate.ProfileKey)
+		profileURL = &url
+	}
+
 	createdAt := delegate.CreatedAt.Format(time.RFC3339)
+	lastLogin := delegate.LastLogin.Format(time.RFC3339)
 	return gentypes.Delegate{
-		User: gentypes.User{
-			CreatedAt: &createdAt,
-			UUID:      delegate.UUID,
-			Email:     delegate.Email,
-			FirstName: delegate.FirstName,
-			LastName:  delegate.LastName,
-			JobTitle:  delegate.JobTitle,
-			Telephone: delegate.Telephone,
-		},
-		CompanyUUID: delegate.CompanyUUID,
-		TTC_ID:      delegate.TtcId,
+		CreatedAt:       &createdAt,
+		UUID:            delegate.UUID,
+		FirstName:       delegate.FirstName,
+		LastName:        delegate.LastName,
+		JobTitle:        delegate.JobTitle,
+		Telephone:       delegate.Telephone,
+		Email:           delegate.Email,
+		CompanyUUID:     delegate.CompanyUUID,
+		TTC_ID:          delegate.TtcId,
+		ProfileImageURL: profileURL,
+		LastLogin:       lastLogin,
 	}
 }
 
@@ -51,22 +65,32 @@ func (g *Grant) delegateExists(email string, ttcId string) bool {
 	return true
 }
 
-func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
+func (g *Grant) getDelegateModel(uuid gentypes.UUID) (models.Delegate, error) {
 	var delegate models.Delegate
-	err := database.GormDB.Where("uuid = ?", UUID).First(&delegate).Error
+	err := database.GormDB.Where("uuid = ?", uuid).Find(&delegate).Error
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return gentypes.Delegate{}, &errors.ErrNotFound
+			return models.Delegate{}, &errors.ErrNotFound
 		}
 
 		g.Logger.Log(sentry.LevelError, err, "Unable to find delegate")
-		return gentypes.Delegate{}, &errors.ErrWhileHandling
+		return models.Delegate{}, &errors.ErrWhileHandling
 	}
 
 	if !g.IsAdmin &&
 		!(g.IsManager && g.Claims.Company == delegate.CompanyUUID) &&
 		!(g.IsDelegate && g.Claims.UUID == delegate.UUID) {
-		return gentypes.Delegate{}, &errors.ErrUnauthorized
+		return models.Delegate{}, &errors.ErrUnauthorized
+	}
+
+	return delegate, nil
+}
+
+func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
+	delegate, err := g.getDelegateModel(UUID)
+
+	if err != nil {
+		return gentypes.Delegate{}, err
 	}
 
 	return g.delegateToGentype(delegate), nil
@@ -75,8 +99,13 @@ func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error)
 func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
 	if filter != nil {
 		query = filterUser(query, &filter.UserFilter)
+
 		if filter.TTC_ID != nil && *filter.TTC_ID != "" {
 			query = query.Where("ttc_id ILIKE ?", "%%"+*filter.TTC_ID+"%%")
+		}
+
+		if filter.Email != nil && *filter.Email != "" {
+			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
 		}
 	}
 
@@ -128,14 +157,78 @@ func (g *Grant) GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilt
 	}, nil
 }
 
-func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, error) {
-	if !g.IsAdmin && !g.IsManager {
-		return gentypes.Delegate{}, &errors.ErrUnauthorized
+func generateTTCID(tx *gorm.DB, g *Grant, companyName string, delegateFName string, delegateLName string) (string, error) {
+
+	var (
+		baseID = fmt.Sprintf("%s-%s%s", slug.Make(companyName), slug.Make(delegateFName), slug.Make(delegateLName))
+		newID  = baseID
+		iter   = 1 // Starts at 1 because company-fnamelname-0 looks funny
+	)
+
+	// TODO: Could use a LIKE query to speed this up
+	for iter < 20 {
+		// Check if ttcID created already exists
+		var delegate models.Delegate
+		err := tx.Where("ttc_id = ?", newID).First(&delegate)
+		if !err.RecordNotFound() && err.Error != nil {
+			g.Logger.Log(sentry.LevelError, err.Error, "TTC_ID find error")
+			return "", &errors.ErrWhileHandling
+		}
+
+		// If record doesn't exist return TTCID
+		if err.RecordNotFound() {
+			return newID, nil
+		}
+
+		// If not found keep trying new ones
+		newID = fmt.Sprintf("%s-%d", baseID, iter)
+		iter = iter + 1
 	}
 
-	// check delegate does not exist
-	if g.delegateExists(delegateDetails.Email, delegateDetails.TTC_ID) {
-		return gentypes.Delegate{}, &errors.ErrUserExists
+	g.Logger.LogMessage(sentry.LevelError, "Iteration exceeded max")
+	return "", &errors.ErrWhileHandling
+}
+
+func (g *Grant) GenerateFinaliseDelegateToken(delegateUUID gentypes.UUID) (string, error) {
+	if !g.IsAdmin && !g.IsManager {
+		return "", &errors.ErrUnauthorized
+	}
+
+	delegate, err := g.getDelegateModel(delegateUUID)
+	if err != nil {
+		return "", err
+	}
+
+	// Only allow managers that are in the same company as the delegate
+	if g.IsManager && delegate.CompanyUUID != g.Claims.Company {
+		g.Logger.LogMessage(sentry.LevelWarning, "SEC: Attempt to get finalise delegate token for another company's delegate")
+		return "", &errors.ErrUnauthorized
+	}
+
+	// Check delegate doesn't already have a password
+	if delegate.Password != nil {
+		return "", &errors.ErrDelegateFinalised
+	}
+
+	token, err := auth.GenerateFinaliseDelegateToken(auth.FinaliseDelegateClaims{
+		delegate.UUID,
+	})
+
+	if err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to generate finalise delegate token")
+		return "", &errors.ErrWhileHandling
+	}
+
+	return token, nil
+}
+
+func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, *string, error) {
+	if !g.IsAdmin && !g.IsManager {
+		return gentypes.Delegate{}, nil, &errors.ErrUnauthorized
+	}
+
+	if err := delegateDetails.Validate(); err != nil {
+		return gentypes.Delegate{}, nil, err
 	}
 
 	var companyUUID gentypes.UUID
@@ -144,34 +237,112 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		if delegateDetails.CompanyUUID != nil {
 			companyUUID = *delegateDetails.CompanyUUID
 		} else {
-			return gentypes.Delegate{}, &errors.ErrCompanyNotFound
+			return gentypes.Delegate{}, nil, &errors.ErrCompanyNotFound
 		}
 	} else {
 		companyUUID = g.Claims.Company
 	}
 
 	// Check if company exists
-	if !g.CompanyExists(companyUUID) {
-		return gentypes.Delegate{}, &errors.ErrCompanyNotFound
+	if !g.companyExists(companyUUID) {
+		return gentypes.Delegate{}, nil, &errors.ErrCompanyNotFound
+	}
+
+	// Get company
+	comp, err := g.GetCompanyByUUID(companyUUID)
+	if err != nil {
+		return gentypes.Delegate{}, nil, err
+	}
+
+	var (
+		s3UploadKey       *string
+		password          *string
+		realPass          *string
+		needsGeneratePass = delegateDetails.GeneratePassword != nil && *delegateDetails.GeneratePassword
+	)
+
+	// Check if autogenerating password is required
+	if needsGeneratePass {
+		pass, err := auth.GenerateSecurePassword(10)
+		if err != nil {
+			g.Logger.Log(sentry.LevelError, err, "Unable to generate secure password")
+			return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+		}
+		password = &pass
+		newPass := pass
+		realPass = &newPass // So that this pointer is not altered later on (by BeforeCreate)
+	}
+
+	// Check if upload token is valid
+	if delegateDetails.ProfileImageUploadToken != nil {
+		tmpUploadKey, err := uploads.VerifyUploadSuccess(*delegateDetails.ProfileImageUploadToken, "profileImage")
+		if err != nil {
+			return gentypes.Delegate{}, nil, &errors.ErrUploadTokenInvalid
+		}
+
+		s3UploadKey = &tmpUploadKey
+	}
+
+	// Create a transaction to ensure that a new TTC_ID isn't created before we insert ours
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	ttcId, err := generateTTCID(tx, g, comp.Name, delegateDetails.FirstName, delegateDetails.LastName)
+	if err != nil {
+		tx.Rollback()
+		return gentypes.Delegate{}, nil, err
 	}
 
 	delegate := models.Delegate{
-		User: models.User{
-			FirstName: delegateDetails.FirstName,
-			LastName:  delegateDetails.LastName,
-			Email:     delegateDetails.Email,
-			JobTitle:  delegateDetails.JobTitle,
-			Telephone: delegateDetails.Telephone,
-			Password:  delegateDetails.Password,
-		},
+		FirstName:   delegateDetails.FirstName,
+		LastName:    delegateDetails.LastName,
+		JobTitle:    delegateDetails.JobTitle,
+		Telephone:   delegateDetails.Telephone,
+		Password:    password,
+		Email:       delegateDetails.Email,
 		CompanyUUID: companyUUID,
-		TtcId:       delegateDetails.TTC_ID,
+		TtcId:       ttcId,
+		ProfileKey:  s3UploadKey,
 	}
-	createErr := database.GormDB.Create(&delegate).Error
+	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
+		tx.Rollback()
 		g.Logger.Log(sentry.LevelError, createErr, "Unable to create delegate")
-		return gentypes.Delegate{}, &errors.ErrWhileHandling
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
 	}
 
-	return g.delegateToGentype(delegate), nil
+	if err := tx.Commit().Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Error commiting create delegate transaction")
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+	}
+
+	// Send transactional email
+	// If not generated password, send an email to the user
+	if !needsGeneratePass {
+		token, err := g.GenerateFinaliseDelegateToken(delegate.UUID)
+		if err != nil {
+			tx.Rollback()
+			return gentypes.Delegate{}, nil, err
+		}
+
+		if delegate.Email == nil {
+			tx.Rollback()
+			g.Logger.LogMessage(sentry.LevelError, "Delegate email is nil")
+			return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+		}
+
+		err = email.SendFinaliseAccountEmail(token, delegate.FirstName, *delegate.Email)
+		if err != nil {
+			tx.Rollback()
+			g.Logger.Log(sentry.LevelWarning, err, "Unable to send finalise account email")
+			return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+		}
+
+	}
+
+	return g.delegateToGentype(delegate), realPass, nil
 }

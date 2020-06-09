@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -28,7 +30,7 @@ func updateOrCreateDevAdmin() {
 	adminUser := database.GormDB.Where("email = ?", helpers.Config.DevAdmin.Email).First(&models.Admin{})
 	newAdmin := &models.Admin{
 		Email:     helpers.Config.DevAdmin.Email,
-		Password:  helpers.Config.DevAdmin.Password,
+		Password:  &helpers.Config.DevAdmin.Password,
 		FirstName: helpers.Config.DevAdmin.FirstName,
 		LastName:  helpers.Config.DevAdmin.LastName,
 	}
@@ -53,7 +55,7 @@ func usage() {
 
 func setupConfig() {
 	// Load in the config.yaml file
-	if err := helpers.LoadConfig("config.yml"); err != nil {
+	if err := helpers.LoadConfig(); err != nil {
 		panic(err)
 	}
 }
@@ -93,6 +95,7 @@ func main() {
 	setupDatabase()
 
 	uploads.Initialize()
+	email.Initialize()
 
 	loaders := loader.Init()
 
