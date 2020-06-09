@@ -124,7 +124,12 @@ function Footer({ columns, className }: Props) {
                       <div className={classes.header}>{column.header}</div>
                       {column.links && column.links.map((link: Link) => (
                           <div className={classNames(classes.row, classes.center)}>
-                              <div className={classes.link}>{link.name}</div>
+                              <div
+                                onClick={() => console.log(link.link)}
+                                className={classes.link}
+                              >
+                                  {link.name}
+                              </div>
                               {link.alert && (
                                 <div
                                     className={classNames(classes.alert, classes.center, classes[link.alert.type])}
