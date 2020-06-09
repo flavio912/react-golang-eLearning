@@ -45,7 +45,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
   operation.setContext({
     headers: {
-      'X-CSRF-TOKEN': readCookie('csrf')
+      Authorization: `Bearer ${localStorage.getItem('auth')}`
     }
   });
 
@@ -53,7 +53,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const link = new HttpLink({
-  uri: 'http://localhost:8080/graphql',
+  uri: 'https://ttc.devserver.london/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 

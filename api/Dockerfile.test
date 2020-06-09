@@ -8,6 +8,7 @@ ENV CGO_ENABLED=0
 
 ENV IS_TESTING=true
 ENV IS_DEV=false
+ENV COOKIE_DOMAIN=".ttc.devserver.london"
 
 ENV DB_HOST=test_db
 ENV DB_USER=test

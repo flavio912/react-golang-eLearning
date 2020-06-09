@@ -139,31 +139,8 @@ func SetAuthCookies(ctx context.Context, authToken string) {
 
 	var expirationTime = time.Now().Add(time.Hour * time.Duration(helpers.Config.Jwt.TokenExpirationHours))
 
-	var authCookie = http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Domain: "nowhere.ttc-hub.com", Secure: true, Expires: expirationTime}
-	var csrfCookie = http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Domain: "nowhere.ttc-hub.com", Secure: true, Expires: expirationTime}
-
-	if grant.IsAdmin {
-		authCookie.Domain = "admin.ttc-hub.com"
-		csrfCookie.Domain = "admin.ttc-hub.com"
-	}
-
-	if grant.IsDelegate {
-		authCookie.Domain = "delegate.ttc-hub.com"
-		csrfCookie.Domain = "delegate.ttc-hub.com"
-		//TODO: Add another cookie for public site
-	}
-
-	if grant.IsManager {
-		authCookie.Domain = "manager.ttc-hub.com"
-		csrfCookie.Domain = "manager.ttc-hub.com"
-		//TODO: Add another cookie for public site
-	}
-
-	if grant.IsIndividual {
-		authCookie.Domain = "delegate.ttc-hub.com"
-		csrfCookie.Domain = "delegate.ttc-hub.com"
-		//TODO: Add another cookie for public site
-	}
+	var authCookie = http.Cookie{Name: "auth", Value: authToken, HttpOnly: true, Domain: helpers.Config.CookieDomain, Secure: true, Expires: expirationTime}
+	var csrfCookie = http.Cookie{Name: "csrf", Value: csrfToken, HttpOnly: false, Domain: helpers.Config.CookieDomain, Secure: true, Expires: expirationTime}
 
 	if helpers.Config.IsDev {
 		authCookie.Domain = ""

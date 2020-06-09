@@ -5,6 +5,7 @@ WORKDIR /app
 
 ENV IS_TESTING="false"
 ENV IS_DEV="true"
+ENV COOKIE_DOMAIN=".ttc.devserver.london"
 
 ENV DB_HOST="api_db"
 ENV DB_USER="ttc-api"

@@ -45,14 +45,15 @@ type Sentry struct {
 }
 
 type yamlConfig struct {
-	IsTesting bool     `yaml:"isTesting"`
-	IsDev     bool     `yaml:"isDev"`
-	Database  Database `yaml:"database"`
-	DevAdmin  DevAdmin `yaml:"devAdmin"`
-	Jwt       Jwt      `yaml:"jwt"`
-	AWS       AWS      `yaml:"aws"`
-	Imgix     Imgix    `yaml:"imgix"`
-	Sentry    Sentry   `yaml:"sentry"`
+	IsTesting    bool     `yaml:"isTesting"`
+	IsDev        bool     `yaml:"isDev"`
+	CookieDomain string   `yaml:"cookieDomain"`
+	Database     Database `yaml:"database"`
+	DevAdmin     DevAdmin `yaml:"devAdmin"`
+	Jwt          Jwt      `yaml:"jwt"`
+	AWS          AWS      `yaml:"aws"`
+	Imgix        Imgix    `yaml:"imgix"`
+	Sentry       Sentry   `yaml:"sentry"`
 }
 
 // Config - The config variable can be used by other packages to get config data
@@ -74,8 +75,9 @@ func LoadConfig() error {
 
 	// if !getBoolEnv("IS_TESTING") && !getBoolEnv()
 	var config = yamlConfig{
-		IsTesting: getBoolEnv("IS_TESTING"),
-		IsDev:     getBoolEnv("IS_DEV"),
+		IsTesting:    getBoolEnv("IS_TESTING"),
+		IsDev:        getBoolEnv("IS_DEV"),
+		CookieDomain: getStringEnv("COOKIE_DOMAIN"),
 		Database: Database{
 			Host:         getStringEnv("DB_HOST"),
 			User:         getStringEnv("DB_USER"),
