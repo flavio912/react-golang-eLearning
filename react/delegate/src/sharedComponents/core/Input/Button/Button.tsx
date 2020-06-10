@@ -54,9 +54,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
       backgroundColor: "#0044db",
     },
   },
+  gradient: {
+    color: "white",
+    backgroundImage: `linear-gradient(45deg,
+      ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
+    fontWeight: 800,
+    fontSize: theme.fontSizes.large,
+    borderRadius: 4,
+    border: "none",
+  },
 }));
 
-export type Archetypes = "default" | "grey" | "submit";
+export type Archetypes = "default" | "grey" | "submit" | "gradient";
 
 interface Props {
   archetype?: Archetypes;
