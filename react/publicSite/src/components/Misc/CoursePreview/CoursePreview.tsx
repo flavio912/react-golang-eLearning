@@ -23,8 +23,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         overflow: 'hidden'
     },
     price: {
-        fontSize: theme.fontSizes.tinyHeading,
-        fontWeight: '800',
+        fontSize: theme.fontSizes.smallHeading,
+        fontWeight: '600',
         margin: '18px 0 15px 33px'
     },
     vat: {
@@ -41,8 +41,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)'
     },
     list: {
-        fontSize: theme.fontSizes.default,
-        fontWeight: '800',
+        fontSize: theme.fontSizes.small,
+        fontWeight: '600',
         margin: '22px 0 0 33px'
     },
     bullet: {
