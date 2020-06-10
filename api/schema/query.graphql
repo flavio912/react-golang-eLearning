@@ -48,6 +48,12 @@ input CompanyFilter {
   name: String
 }
 
+input LessonFilter {
+  uuid: UUID
+  title: String
+  tags: [UUID]
+}
+
 interface PaginatedQuery {
   pageInfo: PageInfo
 }
@@ -67,6 +73,8 @@ type Query {
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
   company(uuid: UUID!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
+  lesson(uuid: UUID!): Lesson
+  lessons(page: Page, filter: LessonFilter, orderBy: OrderBy): LessonPage
   onlineCourses(
     page: Page
     filter: OnlineCourseFilter

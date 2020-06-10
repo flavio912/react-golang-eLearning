@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/stretchr/testify/assert"
 
@@ -91,4 +92,47 @@ func TestGetTagsByCourseInfoIDs(t *testing.T) {
 	uuid, _ = gentypes.StringToUUID("00000000-0000-0000-0000-000000000003")
 	assert.Contains(t, uuids, uuid)
 
+}
+
+func TestGetTagsByLessonUUID(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name    string
+		grant   middleware.Grant
+		uuid    string
+		wantErr interface{}
+		wantLen int
+	}{
+		{
+			"Must be admin",
+			nonAdminGrant,
+			"00000000-0000-0000-0000-000000000001",
+			&errors.ErrUnauthorized,
+			0,
+		},
+		{
+			"UUID must be valid",
+			adminGrant,
+			"ayyyyyyy",
+			&errors.ErrWhileHandling,
+			0,
+		},
+		{
+			"Get all tags",
+			adminGrant,
+			"00000000-0000-0000-0000-000000000002",
+			nil,
+			3,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			tags, err := test.grant.GetTagsByLessonUUID(test.uuid)
+
+			assert.Equal(t, test.wantErr, err)
+			assert.Len(t, tags, test.wantLen)
+		})
+	}
 }
