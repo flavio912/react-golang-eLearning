@@ -11,6 +11,17 @@ type Lesson struct {
 	Text  string
 }
 
+type LessonFilter struct {
+	UUID  *string `valid:"uuidv4"`
+	Title *string
+	Tags  *[]*UUID
+}
+
+func (l *LessonFilter) Validate() error {
+	_, err := govalidator.ValidateStruct(l)
+	return err
+}
+
 type CreateLessonInput struct {
 	Title string `valid:"required"`
 	Tags  *[]UUID
