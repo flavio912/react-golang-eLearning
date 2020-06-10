@@ -18,12 +18,21 @@ func TestUpdateCourseInfo(t *testing.T) {
 		prepareTestDatabase()
 		open := gentypes.Open
 		inp := middleware.CourseInfoInput{
-			Name:            helpers.StringPointer("UpdatedCourse"),
-			Price:           helpers.FloatPointer(43.4),
-			Color:           helpers.StringPointer("#ffffff"),
-			Excerpt:         helpers.StringPointer("{}"),
-			Introduction:    helpers.StringPointer("{}"),
-			AccessType:      &open,
+			Name:         helpers.StringPointer("UpdatedCourse"),
+			Price:        helpers.FloatPointer(43.4),
+			Color:        helpers.StringPointer("#ffffff"),
+			Excerpt:      helpers.StringPointer("{}"),
+			Introduction: helpers.StringPointer("{}"),
+			AccessType:   &open,
+			WhatYouLearn: &[]string{
+				"This cool thing",
+				"This also cool thing",
+			},
+			Requirements: &[]string{
+				"req 1",
+				"req 2",
+				"req 3",
+			},
 			BackgroundCheck: helpers.BoolPointer(false),
 			SpecificTerms:   helpers.StringPointer("{}"),
 		}
@@ -39,6 +48,8 @@ func TestUpdateCourseInfo(t *testing.T) {
 		assert.Equal(t, *inp.Color, info.Color)
 		assert.Equal(t, *inp.Introduction, info.Introduction)
 		assert.Equal(t, *inp.Excerpt, info.Excerpt)
+		assert.Equal(t, *inp.WhatYouLearn, info.WhatYouLearn)
+		assert.Equal(t, *inp.Requirements, info.Requirements)
 		assert.Equal(t, *inp.SpecificTerms, info.SpecificTerms)
 	})
 
@@ -109,27 +120,27 @@ func TestComposeCourseinfo(t *testing.T) {
 		assert.Nil(t, err)
 
 		// Expected requirements
-		req := []models.BulletPoint{
-			models.BulletPoint{
+		req := []models.RequirementBullet{
+			models.RequirementBullet{
 				Text:    (*inp.Requirements)[0],
 				OrderID: 0,
 			},
-			models.BulletPoint{
+			models.RequirementBullet{
 				Text:    (*inp.Requirements)[1],
 				OrderID: 1,
 			},
-			models.BulletPoint{
+			models.RequirementBullet{
 				Text:    (*inp.Requirements)[2],
 				OrderID: 2,
 			},
 		}
 
-		whatLearn := []models.BulletPoint{
-			models.BulletPoint{
+		whatLearn := []models.WhatYouLearnBullet{
+			models.WhatYouLearnBullet{
 				Text:    (*inp.WhatYouLearn)[0],
 				OrderID: 0,
 			},
-			models.BulletPoint{
+			models.WhatYouLearnBullet{
 				Text:    (*inp.WhatYouLearn)[1],
 				OrderID: 1,
 			},

@@ -84,6 +84,29 @@ type CourseInfoInput struct {
 	SpecificTerms     *string `valid:"json"`
 }
 
+// composeRequirements creates a slice of Bulletpoint models from a slice of strings (the bullet points)
+func composeRequirements(requirements *[]string) []models.RequirementBullet {
+	var requirementModels []models.RequirementBullet
+	if requirements != nil {
+		for index, reqText := range *requirements {
+			requirementModels = append(requirementModels, models.RequirementBullet{Text: reqText, OrderID: index})
+		}
+	}
+
+	return requirementModels
+}
+
+func composeWhatYouLearn(whatYouLearn *[]string) []models.WhatYouLearnBullet {
+	var whatYouLearnModels []models.WhatYouLearnBullet
+	if whatYouLearn != nil {
+		for index, reqText := range *whatYouLearn {
+			whatYouLearnModels = append(whatYouLearnModels, models.WhatYouLearnBullet{Text: reqText, OrderID: index})
+		}
+	}
+
+	return whatYouLearnModels
+}
+
 // ComposeCourseInfo creates a courseInfo model from given info
 func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo, error) {
 	// TODO: validate course info input
@@ -97,19 +120,8 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 		tags = _tags
 	}
 
-	var requirements []models.RequirementBullet
-	if courseInfo.Requirements != nil {
-		for index, reqText := range *courseInfo.Requirements {
-			requirements = append(requirements, models.RequirementBullet{Text: reqText, OrderID: index})
-		}
-	}
-
-	var whatYouLearn []models.WhatYouLearnBullet
-	if courseInfo.WhatYouLearn != nil {
-		for index, learnText := range *courseInfo.WhatYouLearn {
-			whatYouLearn = append(whatYouLearn, models.WhatYouLearnBullet{Text: learnText, OrderID: index})
-		}
-	}
+	var requirements = composeRequirements(courseInfo.Requirements)
+	var whatYouLearn = composeWhatYouLearn(courseInfo.WhatYouLearn)
 
 	info := models.CourseInfo{
 		Name:            helpers.NilStringToEmpty(courseInfo.Name),
@@ -195,9 +207,42 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
 	}
 
-	query := database.GormDB.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(&courseInfo)
+	tx := database.GormDB.Begin()
+
+	// If requirements changed, remove all old ones and repopulate
+	if infoChanges.Requirements != nil {
+		var newRequirements = composeRequirements(infoChanges.Requirements)
+
+		if err := tx.Delete(models.RequirementBullet{}, "course_info_id = ?", courseInfoID).Error; err != nil {
+			tx.Rollback()
+			g.Logger.Log(sentry.LevelError, err, "Unable to delete requirements for course")
+			return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+		}
+
+		courseInfo.Requirements = newRequirements
+	}
+
+	// If requirements changed, remove all old ones and repopulate
+	if infoChanges.WhatYouLearn != nil {
+		var newWhatYouLearn = composeWhatYouLearn(infoChanges.WhatYouLearn)
+
+		if err := tx.Delete(models.WhatYouLearnBullet{}, "course_info_id = ?", courseInfoID).Error; err != nil {
+			tx.Rollback()
+			g.Logger.Log(sentry.LevelError, err, "Unable to delete whatYouLearn for course")
+			return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+		}
+
+		courseInfo.WhatYouLearn = newWhatYouLearn
+	}
+
+	query := tx.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(&courseInfo)
 	if query.Error != nil {
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update courseInfo")
+		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
 		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
 	}
 
