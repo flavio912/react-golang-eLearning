@@ -8,7 +8,6 @@ import VideoPlayer from "components/core/VideoPlayer";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
-        height: '674.5px',
         width: '390.5px',
         display: 'flex',
         flexDirection: 'column',
@@ -43,7 +42,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     list: {
         fontSize: theme.fontSizes.small,
         fontWeight: '600',
-        margin: '22px 0 0 33px'
+        margin: '22px 0 0 33px',
+        marginBottom: '30px'
     },
     bullet: {
         height: '8px',
