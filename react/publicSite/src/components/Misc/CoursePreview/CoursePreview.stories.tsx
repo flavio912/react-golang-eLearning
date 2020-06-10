@@ -23,5 +23,6 @@ export const normal = () => {
   return <CoursePreview
         price={price}
         details={details}
+        video={require("assets/Stock_Video.mp4")}
     />;
 };

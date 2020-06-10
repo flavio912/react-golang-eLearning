@@ -100,11 +100,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
     price: string;
     details: string[];
+    video: string;
     onBasket?: () => void;
     onBuy?: () => void;
 };
 
-function CoursePreview({ price, details, onBasket, onBuy }: Props) {
+function CoursePreview({ price, details, video, onBasket, onBuy }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
@@ -112,7 +113,7 @@ function CoursePreview({ price, details, onBasket, onBuy }: Props) {
       <div className={classes.root}>
 
           <VideoPlayer
-            source={require("assets/Stock_Video.mp4")}
+            source={video}
             width={384} height={216}
             className={classes.video}
             thumbnail={
