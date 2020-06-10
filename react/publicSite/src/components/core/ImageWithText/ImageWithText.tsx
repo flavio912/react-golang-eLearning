@@ -9,14 +9,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
         //height: '606px',
         display: 'flex',
         justifyContent: 'space-between',
-        alignItems: 'center'
+        alignItems: 'center',
+        flexWrap: 'wrap'
     },
     container: {
         display: 'flex',
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-        alignItems: 'flex-start',
+        alignItems: 'flex-start'
     },
     title: {
         fontSize: theme.fontSizes.heading,
@@ -38,11 +39,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
         cursor: 'pointer',
         fontSize: theme.fontSizes.xSmallHeading,
         fontWeight: 'bold',
-        color: theme.colors.navyBlue
+        color: theme.colors.navyBlue,
+        marginBottom: '25px'
     },
     image: {
         height: '457px',
-        width: '100%'
+        maxWidth: '650px'
     },
     text: {
         fontSize: theme.fontSizes.extraLarge,
@@ -57,6 +59,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         alignItems: 'center'
     },
     maxWidth: {
+        minWidth: '400px',
         maxWidth: '400px',
         marginRight: '100px'
     },
