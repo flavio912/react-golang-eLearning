@@ -27,6 +27,7 @@ type CourseInfo {
   requirements: [String!]
   specificTerms: String
   category: Category
+  allowedToBuy: Boolean
   # secondaryCategory: Category
 }
 

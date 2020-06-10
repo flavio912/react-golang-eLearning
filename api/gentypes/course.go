@@ -49,6 +49,7 @@ type CourseInfo struct {
 	ID              uint
 	Name            string
 	AccessType      AccessType
+	AllowedToBuy    bool // Helper field, true if current user is allowed to buy this course
 	BackgroundCheck bool
 	Price           float64
 	Tags            []Tag
@@ -73,4 +74,5 @@ type CourseInfoFilter struct {
 	AccessType      *AccessType
 	BackgroundCheck *bool
 	Price           *float64
+	AllowedToBuy    *bool
 }

@@ -237,12 +237,6 @@ func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInf
 		query = query.Where("course_infos.published = ?", true)
 	}
 
-	// TODO: If you're a delegate you should only be allowed to see courses you're assigined to
-	// Filter out restricted courses
-	if !g.HasFullRestrictedAccess() {
-		query = query.Not("course_infos.access_type = ?", gentypes.Restricted)
-	}
-
 	// Filter course info
 	if filter != nil {
 		if filter.Name != nil {
@@ -256,6 +250,9 @@ func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInf
 		}
 		if filter.Price != nil {
 			query = query.Where("course_infos.price = ?", *filter.Price)
+		}
+		if filter.AllowedToBuy != nil && !g.IsFullyApproved() {
+			query = query.Not("course_infos.access_type = ?", gentypes.Restricted)
 		}
 	}
 	return query

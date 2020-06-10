@@ -74,3 +74,6 @@ func (r *CourseInfoResolver) Category(ctx context.Context) (*CategoryResolver, e
 	}
 	return &CategoryResolver{}, nil
 }
+func (r *CourseInfoResolver) AllowedToBuy() *bool {
+	return helpers.BoolPointer(r.CourseInfo.AllowedToBuy)
+}

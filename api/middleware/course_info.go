@@ -15,7 +15,7 @@ import (
 
 /* Course Info CRUD */
 
-func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
+func (g *Grant) courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
 
 	// Get bullet points
 	var requirementModels []models.RequirementBullet
@@ -47,6 +47,11 @@ func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
 		learnBullets = append(learnBullets, bullet.Text)
 	}
 
+	var allowedToBuy = true
+	if courseInfo.AccessType == gentypes.Restricted {
+		allowedToBuy = g.IsFullyApproved()
+	}
+
 	// TODO: Check if user has access to this course
 	return gentypes.CourseInfo{
 		ID:              courseInfo.ID,
@@ -63,6 +68,7 @@ func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
 		Excerpt:         courseInfo.Excerpt,
 		SpecificTerms:   courseInfo.SpecificTerms,
 		CategoryUUID:    courseInfo.CategoryUUID,
+		AllowedToBuy:    allowedToBuy,
 	}
 }
 
@@ -246,7 +252,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
 	}
 
-	return courseInfoToGentype(courseInfo), nil
+	return g.courseInfoToGentype(courseInfo), nil
 }
 
 // GetCourseInfoFromID -
@@ -260,11 +266,11 @@ func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, err
 	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return courseInfoToGentype(info), &errors.ErrNotFound
+			return g.courseInfoToGentype(info), &errors.ErrNotFound
 		}
 
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course info")
-		return courseInfoToGentype(info), &errors.ErrWhileHandling
+		return g.courseInfoToGentype(info), &errors.ErrWhileHandling
 	}
-	return courseInfoToGentype(info), nil
+	return g.courseInfoToGentype(info), nil
 }

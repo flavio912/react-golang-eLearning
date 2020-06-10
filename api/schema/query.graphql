@@ -33,6 +33,7 @@ input CourseInfoFilter {
   accessType: AccessType
   backgroundCheck: Boolean
   price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
 }
 
 input OnlineCourseFilter {

@@ -365,3 +365,25 @@ func (g *Grant) ApproveCompany(companyUUID gentypes.UUID) (gentypes.Company, err
 
 	return g.GetCompanyByUUID(companyUUID)
 }
+
+// IsFullyApproved checks if a user is approved to view all restricted courses
+func (g *Grant) IsFullyApproved() bool {
+	if g.IsAdmin {
+		return true
+	}
+	if !g.IsManager {
+		return false
+	}
+
+	var company, err = g.GetCompanyByUUID(g.Claims.Company)
+	if err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to check if manager is approved")
+		return false
+	}
+
+	if company.Approved != nil && *company.Approved {
+		return true
+	}
+
+	return false
+}
