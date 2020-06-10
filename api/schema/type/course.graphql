@@ -21,8 +21,13 @@ type CourseInfo {
   color: String
   excerpt: String
   introduction: String
+  howToComplete: String
+  hoursToComplete: Float
+  whatYouLearn: [String!]
+  requirements: [String!]
   specificTerms: String
   category: Category
+  # secondaryCategory: Category
 }
 
 type OnlineCourse {
@@ -69,8 +74,13 @@ input SaveOnlineCourseInput {
   uuid: UUID
   name: String
   categoryUUID: UUID
-  excerpt: String
-  introduction: String
+  # secondaryCategoryUUID: UUID
+  excerpt: String # Short description of course
+  introduction: String # 'About this course' section
+  howToComplete: String # 'How to complete this course' section
+  hoursToComplete: Float # Estimated hours to complete this course
+  whatYouLearn: [String!] # 'What you'll learn' bullet points
+  requirements: [String!] # 'Requirements' bullet points
   backgroundCheck: Boolean
   accessType: AccessType
   price: Float
@@ -78,7 +88,7 @@ input SaveOnlineCourseInput {
   tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
-  structure: [CourseItem!] # Only for online courses
+  structure: [CourseItem!] 
 }
 
 input CourseItem {

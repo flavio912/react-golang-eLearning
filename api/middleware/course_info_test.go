@@ -3,6 +3,8 @@ package middleware_test
 import (
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/stretchr/testify/assert"
@@ -75,6 +77,68 @@ func TestUpdateCourseInfo(t *testing.T) {
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
+}
+
+func TestComposeCourseinfo(t *testing.T) {
+	t.Run("Gives correct model", func(t *testing.T) {
+		prepareTestDatabase()
+
+		var open = gentypes.Open
+		inp := middleware.CourseInfoInput{
+			Name:            helpers.StringPointer("Correct model course"),
+			Price:           helpers.FloatPointer(32.3),
+			Color:           helpers.StringPointer("#fff"),
+			CategoryUUID:    &gentypes.UUID{},
+			HowToComplete:   helpers.StringPointer("{}"),
+			HoursToComplete: helpers.FloatPointer(12.3),
+			WhatYouLearn: &[]string{
+				"This cool thing",
+				"This also cool thing",
+			},
+			Requirements: &[]string{
+				"req 1",
+				"req 2",
+				"req 3",
+			},
+			AccessType:      &open,
+			BackgroundCheck: helpers.BoolPointer(false),
+			SpecificTerms:   helpers.StringPointer("Some specific stuff"),
+		}
+
+		info, err := adminGrant.ComposeCourseInfo(inp)
+		assert.Nil(t, err)
+
+		// Expected requirements
+		req := []models.BulletPoint{
+			models.BulletPoint{
+				Text:    (*inp.Requirements)[0],
+				OrderID: 0,
+			},
+			models.BulletPoint{
+				Text:    (*inp.Requirements)[1],
+				OrderID: 1,
+			},
+			models.BulletPoint{
+				Text:    (*inp.Requirements)[2],
+				OrderID: 2,
+			},
+		}
+
+		whatLearn := []models.BulletPoint{
+			models.BulletPoint{
+				Text:    (*inp.WhatYouLearn)[0],
+				OrderID: 0,
+			},
+			models.BulletPoint{
+				Text:    (*inp.WhatYouLearn)[1],
+				OrderID: 1,
+			},
+		}
+
+		assert.Equal(t, req, info.Requirements)
+		assert.Equal(t, whatLearn, info.WhatYouLearn)
+
+	})
 }
 
 func checkCourseInfoEqual(t *testing.T, inpInfo gentypes.CourseInput, outInfo gentypes.CourseInfo) {

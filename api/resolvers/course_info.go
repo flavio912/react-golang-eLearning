@@ -50,6 +50,21 @@ func (r *CourseInfoResolver) Excerpt() *string { return helpers.StringPointer(r.
 func (r *CourseInfoResolver) Introduction() *string {
 	return helpers.StringPointer(r.CourseInfo.Introduction)
 }
+func (r *CourseInfoResolver) HowToComplete() *string {
+	return helpers.StringPointer(r.CourseInfo.HowToComplete)
+}
+func (r *CourseInfoResolver) HoursToComplete() *float64 {
+	return helpers.FloatPointer(r.CourseInfo.HoursToComplete)
+}
+func (r *CourseInfoResolver) WhatYouLearn() *[]string {
+	var learn = r.CourseInfo.WhatYouLearn
+	return &learn
+}
+func (r *CourseInfoResolver) Requirements() *[]string {
+	var req = r.CourseInfo.Requirements
+	return &req
+}
+
 func (r *CourseInfoResolver) SpecificTerms() *string {
 	return helpers.StringPointer(r.CourseInfo.SpecificTerms)
 }

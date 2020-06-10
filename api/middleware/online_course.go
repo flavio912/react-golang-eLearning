@@ -47,13 +47,17 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 
 	// Get courseInfo model
 	infoModel, err := g.ComposeCourseInfo(CourseInfoInput{
-		Name:          courseInfo.Name,
-		Price:         courseInfo.Price,
-		Color:         courseInfo.Color,
-		Tags:          courseInfo.Tags,
-		Excerpt:       courseInfo.Excerpt,
-		Introduction:  courseInfo.Introduction,
-		SpecificTerms: courseInfo.SpecificTerms,
+		Name:            courseInfo.Name,
+		Price:           courseInfo.Price,
+		Color:           courseInfo.Color,
+		Tags:            courseInfo.Tags,
+		Excerpt:         courseInfo.Excerpt,
+		Introduction:    courseInfo.Introduction,
+		HowToComplete:   courseInfo.HowToComplete,
+		HoursToComplete: courseInfo.HoursToComplete,
+		WhatYouLearn:    courseInfo.WhatYouLearn,
+		Requirements:    courseInfo.Requirements,
+		SpecificTerms:   courseInfo.SpecificTerms,
 	})
 	if err != nil {
 		return gentypes.OnlineCourse{}, err
@@ -132,7 +136,7 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 	return onlineCourse, nil
 }
 
-// SaveOnlineCourse updates or create a new onlineCourse dependant on the existance of a UUID key in the courseInfo input
+// SaveOnlineCourse updates or creates a new onlineCourse dependant on the existance of a UUID key in the courseInfo input
 func (g *Grant) SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.OnlineCourse, error) {
 	if !g.IsAdmin {
 		return gentypes.OnlineCourse{}, &errors.ErrUnauthorized
@@ -229,7 +233,7 @@ func (g *Grant) filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseInf
 		query = query.Where("course_infos.published = ?", true)
 	}
 
-	// TODO: If you're a delegate you should only be allowed to see courses you're assigined too
+	// TODO: If you're a delegate you should only be allowed to see courses you're assigined to
 	// Filter out restricted courses
 	if !g.HasFullRestrictedAccess() {
 		query = query.Not("course_infos.access_type = ?", gentypes.Restricted)

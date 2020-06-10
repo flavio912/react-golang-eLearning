@@ -1263,3 +1263,62 @@ func TestCreateCategory(t *testing.T) {
 	// 	CleanDB:         false,
 	// })
 }
+
+func TestSaveOnlineCourse(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create online course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					saveOnlineCourse(
+						input:{
+							name: "Test online course",
+							excerpt: "{}",
+							introduction:"{}",
+							backgroundCheck: true,
+							accessType: open,
+							price: 34.3,
+							color: "#fff",
+							howToComplete: "{}",
+        			whatYouLearn: ["What 1", "What 2"],
+        			requirements: ["req 1", "req 2"]
+						}
+					) {
+						info {
+							name
+							excerpt
+							introduction
+							backgroundCheck
+							price
+							color
+							howToComplete
+							whatYouLearn
+							requirements
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"saveOnlineCourse":{
+							"info": {
+								"name": "Test online course",
+								"excerpt": "{}",
+								"introduction":"{}",
+								"backgroundCheck": true,
+								"price": 34.3,
+								"color": "#fff",
+								"howToComplete": "{}",
+								"whatYouLearn": ["What 1", "What 2"],
+								"requirements": ["req 1", "req 2"]
+							}
+					}
+				}
+			`,
+		},
+	})
+}

@@ -10,19 +10,37 @@ type CourseInfo struct {
 	ID              uint
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Name            string              // The course name/title
-	Price           float64             // 0.00 if free course
-	Color           string              // The primary color for the course
-	Category        Category            // The category that the course belongs to
-	CategoryUUID    *gentypes.UUID      // FKEY
-	Tags            []Tag               `gorm:"many2many:course_tags_link;"`
-	Excerpt         string              `sql:"json"` // Excert quill json
-	Introduction    string              `sql:"json"` // Introduction quill json
+	Name            string         // The course name/title
+	Price           float64        // 0.00 if free course
+	Color           string         // The primary color for the course
+	Category        Category       // The category that the course belongs to
+	CategoryUUID    *gentypes.UUID // FKEY
+	Tags            []Tag          `gorm:"many2many:course_tags_link;"`
+	Excerpt         string         `sql:"json"` // Excert quill json
+	Introduction    string         `sql:"json"` // Introduction quill json
+	HowToComplete   string
+	HoursToComplete float64
+	WhatYouLearn    []WhatYouLearnBullet
+	Requirements    []RequirementBullet
 	AccessType      gentypes.AccessType // Restricted or Open Access
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
 	SpecificTerms   string              `sql:"json"` // Terms specific to this course in quill json
 	Published       bool                // If not published users can't see this course
+}
+
+type RequirementBullet struct {
+	ID           uint
+	OrderID      int // The precedence of the bullet point in the list
+	CourseInfoID uint
+	Text         string
+}
+
+type WhatYouLearnBullet struct {
+	ID           uint
+	OrderID      int // The precedence of the bullet point in the list
+	CourseInfoID uint
+	Text         string
 }
 
 // CourseTagsLink is not needed to create the table, but

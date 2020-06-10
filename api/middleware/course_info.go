@@ -1,6 +1,8 @@
 package middleware
 
 import (
+	"sort"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -14,6 +16,37 @@ import (
 /* Course Info CRUD */
 
 func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
+
+	// Get bullet points
+	var requirementModels []models.RequirementBullet
+	if err := database.GormDB.Where("course_info_id = ?", courseInfo.ID).Find(&requirementModels).Error; err != nil {
+		// Unable to get courseInfo
+	}
+
+	sort.SliceStable(requirementModels, func(i, j int) bool {
+		return requirementModels[i].OrderID < requirementModels[j].OrderID
+	})
+
+	var requirementBullets []string
+	for _, bullet := range requirementModels {
+		requirementBullets = append(requirementBullets, bullet.Text)
+	}
+
+	// Get WhatYouLearn bullet points
+	var learnModels []models.WhatYouLearnBullet
+	if err := database.GormDB.Where("course_info_id = ?", courseInfo.ID).Find(&learnModels).Error; err != nil {
+		// Unable to get courseInfo
+	}
+
+	sort.SliceStable(learnModels, func(i, j int) bool {
+		return learnModels[i].OrderID < learnModels[j].OrderID
+	})
+
+	var learnBullets []string
+	for _, bullet := range learnModels {
+		learnBullets = append(learnBullets, bullet.Text)
+	}
+
 	// TODO: Check if user has access to this course
 	return gentypes.CourseInfo{
 		ID:              courseInfo.ID,
@@ -23,6 +56,10 @@ func courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
 		Price:           courseInfo.Price,
 		Color:           courseInfo.Color,
 		Introduction:    courseInfo.Introduction,
+		HowToComplete:   courseInfo.HowToComplete,
+		HoursToComplete: courseInfo.HoursToComplete,
+		WhatYouLearn:    learnBullets,
+		Requirements:    requirementBullets,
 		Excerpt:         courseInfo.Excerpt,
 		SpecificTerms:   courseInfo.SpecificTerms,
 		CategoryUUID:    courseInfo.CategoryUUID,
@@ -37,6 +74,10 @@ type CourseInfoInput struct {
 	Tags              *[]gentypes.UUID
 	Excerpt           *string `valid:"json"`
 	Introduction      *string `valid:"json"`
+	HowToComplete     *string `valid:"json"`
+	HoursToComplete   *float64
+	WhatYouLearn      *[]string
+	Requirements      *[]string
 	AccessType        *gentypes.AccessType
 	ImageSuccessToken *string
 	BackgroundCheck   *bool
@@ -45,6 +86,8 @@ type CourseInfoInput struct {
 
 // ComposeCourseInfo creates a courseInfo model from given info
 func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo, error) {
+	// TODO: validate course info input
+
 	var tags []models.Tag
 	if courseInfo.Tags != nil {
 		_tags, err := g.CheckTagsExist(*courseInfo.Tags)
@@ -54,20 +97,39 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 		tags = _tags
 	}
 
+	var requirements []models.RequirementBullet
+	if courseInfo.Requirements != nil {
+		for index, reqText := range *courseInfo.Requirements {
+			requirements = append(requirements, models.RequirementBullet{Text: reqText, OrderID: index})
+		}
+	}
+
+	var whatYouLearn []models.WhatYouLearnBullet
+	if courseInfo.WhatYouLearn != nil {
+		for index, learnText := range *courseInfo.WhatYouLearn {
+			whatYouLearn = append(whatYouLearn, models.WhatYouLearnBullet{Text: learnText, OrderID: index})
+		}
+	}
+
 	info := models.CourseInfo{
-		Name:          helpers.NilStringToEmpty(courseInfo.Name),
-		Price:         helpers.NilFloatToZero(courseInfo.Price),
-		Color:         helpers.NilStringToEmpty(courseInfo.Color),
-		Tags:          tags,
-		Excerpt:       helpers.NilStringToEmpty(courseInfo.Excerpt),
-		Introduction:  helpers.NilStringToEmpty(courseInfo.Introduction),
-		SpecificTerms: helpers.NilStringToEmpty(courseInfo.SpecificTerms),
-		CategoryUUID:  courseInfo.CategoryUUID,
+		Name:            helpers.NilStringToEmpty(courseInfo.Name),
+		Price:           helpers.NilFloatToZero(courseInfo.Price),
+		Color:           helpers.NilStringToEmpty(courseInfo.Color),
+		Tags:            tags,
+		Excerpt:         helpers.NilStringToEmpty(courseInfo.Excerpt),
+		Introduction:    helpers.NilStringToEmpty(courseInfo.Introduction),
+		HowToComplete:   helpers.NilStringToEmpty(courseInfo.HowToComplete),
+		HoursToComplete: helpers.NilFloatToZero(courseInfo.HoursToComplete),
+		Requirements:    requirements,
+		WhatYouLearn:    whatYouLearn,
+		SpecificTerms:   helpers.NilStringToEmpty(courseInfo.SpecificTerms),
+		CategoryUUID:    courseInfo.CategoryUUID,
 	}
 
 	if courseInfo.AccessType != nil {
 		info.AccessType = *courseInfo.AccessType
 	}
+
 	if courseInfo.BackgroundCheck != nil {
 		info.BackgroundCheck = *courseInfo.BackgroundCheck
 	}

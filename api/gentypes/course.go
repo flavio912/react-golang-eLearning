@@ -21,6 +21,10 @@ type CourseInput struct {
 	CategoryUUID       *UUID
 	Excerpt            *string `valid:"json"`
 	Introduction       *string `valid:"json"`
+	HowToComplete      *string `valid:"json"`
+	HoursToComplete    *float64
+	WhatYouLearn       *[]string
+	Requirements       *[]string
 	BackgroundCheck    *bool
 	AccessType         *AccessType
 	Price              *float64
@@ -50,6 +54,10 @@ type CourseInfo struct {
 	Tags            []Tag
 	Color           string `valid:"hexcolor"`
 	Introduction    string `valid:"json"`
+	HowToComplete   string `valid:"json"`
+	HoursToComplete float64
+	WhatYouLearn    []string
+	Requirements    []string
 	Excerpt         string `valid:"json"`
 	SpecificTerms   string `valid:"json"`
 	CategoryUUID    *UUID
