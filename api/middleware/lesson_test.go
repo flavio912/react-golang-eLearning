@@ -146,7 +146,7 @@ func TestGetLessonsByUUID(t *testing.T) {
 			1,
 		},
 		{
-			"Must get all managers",
+			"Must get all lessons",
 			adminGrant,
 			[]string{
 				"00000000-0000-0000-0000-000000000001",
