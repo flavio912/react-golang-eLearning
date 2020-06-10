@@ -33,7 +33,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     quote: {
         fontSize: theme.fontSizes.smallHeading,
         color: theme.colors.textGrey,
-        fontWeight: '500',
+        fontWeight: '300',
         marginBottom: '40px'
     },
     authorName: {
@@ -41,7 +41,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontWeight: 'bold'
     },
     authorTitle: {
-        fontSize: theme.fontSizes.extraLarge
+        fontSize: theme.fontSizes.extraLarge,
+        color: theme.colors.textGrey
     },
     logo: {
         marginLeft: '34px'
