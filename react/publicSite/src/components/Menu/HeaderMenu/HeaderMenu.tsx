@@ -52,6 +52,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: "500",
   },
+  register: {
+    height: '40px',
+    width: '127.75px'
+  },
   row: {
     display: 'flex',
     flexDirection: 'row',
@@ -109,7 +113,7 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) 
               </div>
             }
             <div className={classes.tab}>Login</div>
-            <Button archetype="gradient">Register</Button>
+            <Button archetype="gradient" className={classes.register}>Register</Button>
           </div>
         </div>
       </div>
