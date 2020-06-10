@@ -42,6 +42,7 @@ export type Theme = {
     body: string;
   };
   fontSizes: {
+    extraLargeHeading: number;
     heading: number;
     smallHeading: number;
     xSmallHeading: number;
@@ -93,6 +94,7 @@ const theme: Theme = {
     body: 'inset 0px -2px 10px 0px #0000001f'
   },
   fontSizes: {
+    extraLargeHeading: 34,
     heading: 25,
     smallHeading: 24,
     xSmallHeading: 21,
