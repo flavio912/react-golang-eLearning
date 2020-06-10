@@ -28,7 +28,10 @@ export type Theme = {
     textGrey: string;
     searchHoverGrey: string;
     progressGrey: string;
+    lightBlue: string;
     navyBlue: string;
+    footerBlue: string;
+    footerGrey: string;
     blueRibbon: string;
     approxIron: string;
     approxZircon: string;
@@ -39,6 +42,7 @@ export type Theme = {
     body: string;
   };
   fontSizes: {
+    extraLargeHeading: number;
     heading: number;
     smallHeading: number;
     xSmallHeading: number;
@@ -49,6 +53,7 @@ export type Theme = {
     small: number;
     xSmall: number;
     tiny: number;
+    xTiny: number;
   };
 };
 
@@ -75,7 +80,10 @@ const theme: Theme = {
     textBlue: '#1081AA',
     textGrey: '#737988',
     progressGrey: '#d2d6db',
+    lightBlue: "#E2E9F8",
     navyBlue: '#0E66E0',
+    footerBlue: '#1D2B35',
+    footerGrey: '#93A1B0',
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
     approxZircon: '#E9EBEB',
@@ -86,6 +94,7 @@ const theme: Theme = {
     body: 'inset 0px -2px 10px 0px #0000001f'
   },
   fontSizes: {
+    extraLargeHeading: 34,
     heading: 25,
     smallHeading: 24,
     xSmallHeading: 21,
@@ -95,7 +104,8 @@ const theme: Theme = {
     default: 14,
     small: 13,
     xSmall: 12,
-    tiny: 11
+    tiny: 11,
+    xTiny: 9
   }
 };
 
