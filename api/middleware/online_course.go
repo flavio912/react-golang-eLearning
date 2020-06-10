@@ -118,6 +118,10 @@ func (g *Grant) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (m
 		// TAGS
 		Excerpt:           courseInfo.Excerpt,
 		Introduction:      courseInfo.Introduction,
+		HoursToComplete:   courseInfo.HoursToComplete,
+		HowToComplete:     courseInfo.HowToComplete,
+		WhatYouLearn:      courseInfo.WhatYouLearn,
+		Requirements:      courseInfo.Requirements,
 		AccessType:        courseInfo.AccessType,
 		ImageSuccessToken: courseInfo.BannerImageSuccess,
 		BackgroundCheck:   courseInfo.BackgroundCheck,
