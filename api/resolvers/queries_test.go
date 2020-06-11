@@ -1211,3 +1211,60 @@ func TestLessons(t *testing.T) {
 		},
 	)
 }
+
+func TestGetCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all courses",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					courses {
+						edges {
+							id
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"courses":{
+						"edges": [
+							{"id":1},
+							{"id":2},
+							{"id":3},
+							{"id":4},
+							{"id":5}
+						],
+						"pageInfo": {
+							"total": 5,
+							"offset": 0,
+							"limit": 100,
+							"given": 5
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	// accessTest(
+	// 	t, schema, accessTestOpts{
+	// 		Query:           `{lessons { edges { uuid } }}`,
+	// 		Path:            []interface{}{"lessons"},
+	// 		MustAuth:        true,
+	// 		AdminAllowed:    true,
+	// 		ManagerAllowed:  false,
+	// 		DelegateAllowed: false,
+	// 	},
+	// )
+}
