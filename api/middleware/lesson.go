@@ -78,7 +78,7 @@ func (g *Grant) GetLessonByUUID(UUID gentypes.UUID) (gentypes.Lesson, error) {
 	query := database.GormDB.Where("uuid = ?", UUID).First(&lesson)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return gentypes.Lesson{}, &errors.ErrNotFound
+			return gentypes.Lesson{}, &errors.ErrLessonNotFound
 		}
 
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get lesson")
@@ -166,4 +166,61 @@ func (g *Grant) GetLessons(
 		Limit:  limit,
 		Given:  int32(len(lessons)),
 	}, nil
+}
+
+// UpdateLesson updates an existing lesson
+func (g *Grant) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error) {
+	if !g.IsAdmin {
+		return gentypes.Lesson{}, &errors.ErrUnauthorized
+	}
+
+	// Validate input
+	if err := input.Validate(); err != nil {
+		return gentypes.Lesson{}, err
+	}
+
+	var lesson models.Lesson
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&lesson)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Lesson{}, &errors.ErrLessonNotFound
+		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find lesson to update with UUID: %s", input.UUID)
+		return gentypes.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	if input.Title != nil {
+		lesson.Title = *input.Title
+	}
+	if input.Text != nil {
+		lesson.Text = *input.Text
+	}
+	if input.Tags != nil {
+		var _tags []gentypes.UUID
+		for _, tag := range *input.Tags {
+			_tags = append(_tags, *tag)
+		}
+		tags, err := g.CheckTagsExist(_tags)
+
+		if err != nil {
+			return gentypes.Lesson{}, err
+		}
+		lesson.Tags = tags
+
+		updateLinks := database.GormDB.Model(&models.LessonTagsLink{}).Where("lesson_uuid = ?", lesson.UUID).Update("tag_uuid", _tags)
+		if updateLinks.Error != nil {
+			g.Logger.Logf(sentry.LevelError, updateLinks.Error, "Error updating tags linked with lesson %s", lesson.UUID)
+			return gentypes.Lesson{}, updateLinks.Error
+		}
+
+	}
+
+	save := database.GormDB.Save(&lesson)
+	if save.Error != nil {
+		g.Logger.Logf(sentry.LevelError, save.Error, "Error updating lesson with UUID: %s", input.UUID)
+		return gentypes.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	return g.lessonToGentype(lesson), nil
 }

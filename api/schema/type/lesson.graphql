@@ -15,3 +15,10 @@ input CreateLessonInput {
   tags: [UUID!]
   text: String!
 }
+
+input UpdateLessonInput {
+  uuid: UUID!
+  title: String
+  text: String
+  tags: [UUID]
+}
