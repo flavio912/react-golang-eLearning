@@ -33,7 +33,7 @@ func TestMain(m *testing.M) {
 	var err error
 
 	// Load in the config.yaml file
-	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(false, "resolvers_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}

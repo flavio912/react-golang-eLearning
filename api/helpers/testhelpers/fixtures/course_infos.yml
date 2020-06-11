@@ -9,6 +9,7 @@
   access_type: open
   background_check: false
   specific_terms: {}
+  course_type: online
 - id: 2
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -20,6 +21,7 @@
   access_type: open
   background_check: false
   specific_terms: {}
+  course_type: classroom
 - id: 3
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -31,6 +33,7 @@
   access_type: restricted
   background_check: false
   specific_terms: {}
+  course_type: classroom
 - id: 4
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -42,6 +45,7 @@
   access_type: restricted
   background_check: false
   specific_terms: {}
+  course_type: online
 - id: 5
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -53,3 +57,4 @@
   access_type: restricted
   background_check: false
   specific_terms: {}
+  course_type: online

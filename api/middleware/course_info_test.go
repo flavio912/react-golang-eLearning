@@ -95,6 +95,7 @@ func TestComposeCourseinfo(t *testing.T) {
 		prepareTestDatabase()
 
 		var open = gentypes.Open
+		var courseType = gentypes.ClassroomCourseType
 		inp := middleware.CourseInfoInput{
 			Name:            helpers.StringPointer("Correct model course"),
 			Price:           helpers.FloatPointer(32.3),
@@ -114,6 +115,7 @@ func TestComposeCourseinfo(t *testing.T) {
 			AccessType:      &open,
 			BackgroundCheck: helpers.BoolPointer(false),
 			SpecificTerms:   helpers.StringPointer("Some specific stuff"),
+			CourseType:      &courseType,
 		}
 
 		info, err := adminGrant.ComposeCourseInfo(inp)
@@ -148,7 +150,7 @@ func TestComposeCourseinfo(t *testing.T) {
 
 		assert.Equal(t, req, info.Requirements)
 		assert.Equal(t, whatLearn, info.WhatYouLearn)
-
+		assert.Equal(t, courseType, info.CourseType)
 	})
 }
 

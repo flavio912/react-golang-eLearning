@@ -15,6 +15,13 @@ const (
 	LessonType StructureElement = "lesson"
 )
 
+type CourseType string
+
+const (
+	ClassroomCourseType CourseType = "classroom"
+	OnlineCourseType    CourseType = "online"
+)
+
 type CourseInput struct {
 	UUID               *UUID
 	Name               *string

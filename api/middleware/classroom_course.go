@@ -68,6 +68,7 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		course.Location = *courseInfo.Location
 	}
 
+	var courseType = gentypes.ClassroomCourseType
 	course.CourseInfo, err = g.ComposeCourseInfo(CourseInfoInput{
 		Name:            courseInfo.Name,
 		Price:           courseInfo.Price,
@@ -79,6 +80,7 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		BackgroundCheck: courseInfo.BackgroundCheck,
 		SpecificTerms:   courseInfo.SpecificTerms,
 		Tags:            courseInfo.Tags,
+		CourseType:      &courseType,
 	})
 	if err != nil {
 		return gentypes.ClassroomCourse{}, err

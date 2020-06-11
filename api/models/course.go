@@ -27,6 +27,7 @@ type CourseInfo struct {
 	BackgroundCheck bool                // Is a background check required
 	SpecificTerms   string              `sql:"json"` // Terms specific to this course in quill json
 	Published       bool                // If not published users can't see this course
+	CourseType      gentypes.CourseType // classroom or online course
 }
 
 type RequirementBullet struct {

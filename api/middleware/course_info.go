@@ -88,6 +88,7 @@ type CourseInfoInput struct {
 	ImageSuccessToken *string
 	BackgroundCheck   *bool
 	SpecificTerms     *string `valid:"json"`
+	CourseType        *gentypes.CourseType
 }
 
 // composeRequirements creates a slice of Bulletpoint models from a slice of strings (the bullet points)
@@ -129,6 +130,11 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 	var requirements = composeRequirements(courseInfo.Requirements)
 	var whatYouLearn = composeWhatYouLearn(courseInfo.WhatYouLearn)
 
+	if courseInfo.CourseType == nil {
+		g.Logger.LogMessage(sentry.LevelWarning, "ComposeCourseInfo requires a courseType")
+		return models.CourseInfo{}, &errors.ErrWhileHandling
+	}
+
 	info := models.CourseInfo{
 		Name:            helpers.NilStringToEmpty(courseInfo.Name),
 		Price:           helpers.NilFloatToZero(courseInfo.Price),
@@ -142,6 +148,7 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 		WhatYouLearn:    whatYouLearn,
 		SpecificTerms:   helpers.NilStringToEmpty(courseInfo.SpecificTerms),
 		CategoryUUID:    courseInfo.CategoryUUID,
+		CourseType:      *courseInfo.CourseType,
 	}
 
 	if courseInfo.AccessType != nil {

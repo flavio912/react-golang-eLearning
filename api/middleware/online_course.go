@@ -46,6 +46,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 	}
 
 	// Get courseInfo model
+	var courseType = gentypes.OnlineCourseType
 	infoModel, err := g.ComposeCourseInfo(CourseInfoInput{
 		Name:            courseInfo.Name,
 		Price:           courseInfo.Price,
@@ -58,6 +59,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 		WhatYouLearn:    courseInfo.WhatYouLearn,
 		Requirements:    courseInfo.Requirements,
 		SpecificTerms:   courseInfo.SpecificTerms,
+		CourseType:      &courseType,
 	})
 	if err != nil {
 		return gentypes.OnlineCourse{}, err
@@ -85,6 +87,7 @@ func (g *Grant) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (g
 
 	err = g.saveOnlineCourseStructure(newCourse.UUID, courseInfo.Structure)
 	if err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to save course structure")
 		return gentypes.OnlineCourse{}, err
 	}
 

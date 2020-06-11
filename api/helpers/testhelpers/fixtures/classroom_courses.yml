@@ -5,7 +5,7 @@
   max_participants: 32
 - uuid: 00000000-0000-0000-0000-000000000013
   created_at: 2020-04-09 13:53:37.338775+00
-  course_info_id: 1
+  course_info_id: 3
   location: Haunted house
   max_participants: 3
 - uuid: 00000000-0000-0000-0000-000000000014
