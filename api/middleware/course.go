@@ -15,11 +15,11 @@ import (
 
 /* Course Info CRUD */
 
-func (g *Grant) courseInfoToGentype(courseInfo models.CourseInfo) gentypes.CourseInfo {
+func (g *Grant) courseToGentype(courseInfo models.Course) gentypes.Course {
 
 	// Get bullet points
 	var requirementModels []models.RequirementBullet
-	if err := database.GormDB.Where("course_info_id = ?", courseInfo.ID).Find(&requirementModels).Error; err != nil {
+	if err := database.GormDB.Where("course_id = ?", courseInfo.ID).Find(&requirementModels).Error; err != nil {
 		// Unable to get courseInfo
 	}
 
@@ -34,7 +34,7 @@ func (g *Grant) courseInfoToGentype(courseInfo models.CourseInfo) gentypes.Cours
 
 	// Get WhatYouLearn bullet points
 	var learnModels []models.WhatYouLearnBullet
-	if err := database.GormDB.Where("course_info_id = ?", courseInfo.ID).Find(&learnModels).Error; err != nil {
+	if err := database.GormDB.Where("course_id = ?", courseInfo.ID).Find(&learnModels).Error; err != nil {
 		// Unable to get courseInfo
 	}
 
@@ -53,7 +53,7 @@ func (g *Grant) courseInfoToGentype(courseInfo models.CourseInfo) gentypes.Cours
 	}
 
 	// TODO: Check if user has access to this course
-	return gentypes.CourseInfo{
+	return gentypes.Course{
 		ID:              courseInfo.ID,
 		Name:            courseInfo.Name,
 		AccessType:      courseInfo.AccessType,
@@ -69,10 +69,11 @@ func (g *Grant) courseInfoToGentype(courseInfo models.CourseInfo) gentypes.Cours
 		SpecificTerms:   courseInfo.SpecificTerms,
 		CategoryUUID:    courseInfo.CategoryUUID,
 		AllowedToBuy:    allowedToBuy,
+		CourseType:      courseInfo.CourseType,
 	}
 }
 
-type CourseInfoInput struct {
+type CourseInput struct {
 	Name              *string
 	Price             *float64
 	Color             *string `valid:"hexcolor"`
@@ -115,14 +116,14 @@ func composeWhatYouLearn(whatYouLearn *[]string) []models.WhatYouLearnBullet {
 }
 
 // ComposeCourseInfo creates a courseInfo model from given info
-func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo, error) {
+func (g *Grant) ComposeCourse(courseInfo CourseInput) (models.Course, error) {
 	// TODO: validate course info input
 
 	var tags []models.Tag
 	if courseInfo.Tags != nil {
 		_tags, err := g.CheckTagsExist(*courseInfo.Tags)
 		if err != nil {
-			return models.CourseInfo{}, err
+			return models.Course{}, err
 		}
 		tags = _tags
 	}
@@ -132,10 +133,10 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 
 	if courseInfo.CourseType == nil {
 		g.Logger.LogMessage(sentry.LevelWarning, "ComposeCourseInfo requires a courseType")
-		return models.CourseInfo{}, &errors.ErrWhileHandling
+		return models.Course{}, &errors.ErrWhileHandling
 	}
 
-	info := models.CourseInfo{
+	info := models.Course{
 		Name:            helpers.NilStringToEmpty(courseInfo.Name),
 		Price:           helpers.NilFloatToZero(courseInfo.Price),
 		Color:           helpers.NilStringToEmpty(courseInfo.Color),
@@ -162,24 +163,24 @@ func (g *Grant) ComposeCourseInfo(courseInfo CourseInfoInput) (models.CourseInfo
 	return info, nil
 }
 
-// UpdateCourseInfo updates the courseInfo for a given courseInfoID
-func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput) (gentypes.CourseInfo, error) {
+// UpdateCourse updates the course for a given courseID
+func (g *Grant) UpdateCourse(courseID uint, infoChanges CourseInput) (gentypes.Course, error) {
 	if !g.IsAdmin {
-		return gentypes.CourseInfo{}, &errors.ErrUnauthorized
+		return gentypes.Course{}, &errors.ErrUnauthorized
 	}
 
 	// Validate input
 	_, err := govalidator.ValidateStruct(infoChanges)
 	if err != nil {
-		return gentypes.CourseInfo{}, err
+		return gentypes.Course{}, err
 	}
 
-	var courseInfo models.CourseInfo
-	courseInfo.ID = courseInfoID
+	var courseInfo models.Course
+	courseInfo.ID = courseID
 	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
 		if err != nil {
-			return gentypes.CourseInfo{}, err
+			return gentypes.Course{}, err
 		}
 		courseInfo.ImageKey = &key
 	}
@@ -189,7 +190,7 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 		if tags, err := g.CheckTagsExist(*infoChanges.Tags); err == nil {
 			courseInfo.Tags = tags
 		} else {
-			return gentypes.CourseInfo{}, err
+			return gentypes.Course{}, err
 		}
 	}
 	if infoChanges.Name != nil {
@@ -226,10 +227,10 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 	if infoChanges.Requirements != nil {
 		var newRequirements = composeRequirements(infoChanges.Requirements)
 
-		if err := tx.Delete(models.RequirementBullet{}, "course_info_id = ?", courseInfoID).Error; err != nil {
+		if err := tx.Delete(models.RequirementBullet{}, "course_id = ?", courseID).Error; err != nil {
 			tx.Rollback()
 			g.Logger.Log(sentry.LevelError, err, "Unable to delete requirements for course")
-			return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+			return gentypes.Course{}, &errors.ErrWhileHandling
 		}
 
 		courseInfo.Requirements = newRequirements
@@ -239,45 +240,71 @@ func (g *Grant) UpdateCourseInfo(courseInfoID uint, infoChanges CourseInfoInput)
 	if infoChanges.WhatYouLearn != nil {
 		var newWhatYouLearn = composeWhatYouLearn(infoChanges.WhatYouLearn)
 
-		if err := tx.Delete(models.WhatYouLearnBullet{}, "course_info_id = ?", courseInfoID).Error; err != nil {
+		if err := tx.Delete(models.WhatYouLearnBullet{}, "course_id = ?", courseID).Error; err != nil {
 			tx.Rollback()
 			g.Logger.Log(sentry.LevelError, err, "Unable to delete whatYouLearn for course")
-			return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+			return gentypes.Course{}, &errors.ErrWhileHandling
 		}
 
 		courseInfo.WhatYouLearn = newWhatYouLearn
 	}
 
-	query := tx.Model(&models.CourseInfo{}).Where("id = ?", courseInfoID).Updates(&courseInfo)
+	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(&courseInfo)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update courseInfo")
-		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
+		return gentypes.Course{}, &errors.ErrWhileHandling
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		g.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
-		return gentypes.CourseInfo{}, &errors.ErrWhileHandling
+		return gentypes.Course{}, &errors.ErrWhileHandling
 	}
 
-	return g.courseInfoToGentype(courseInfo), nil
+	return g.courseToGentype(courseInfo), nil
 }
 
-// GetCourseInfoFromID -
-func (g *Grant) GetCourseInfoFromID(courseInfoID uint) (gentypes.CourseInfo, error) {
-	// TODO: This can be relaxed but should check whether they have access to that course
-	if !g.IsAdmin {
-		return gentypes.CourseInfo{}, &errors.ErrUnauthorized
-	}
-
-	var info models.CourseInfo
-	query := database.GormDB.Where("id = ?", courseInfoID).First(&info)
+func (g *Grant) getCourseModelFromID(courseID uint) (models.Course, error) {
+	var course models.Course
+	query := database.GormDB.Where("id = ?", courseID).First(&course)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return g.courseInfoToGentype(info), &errors.ErrNotFound
+			return course, &errors.ErrNotFound
 		}
 
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course info")
-		return g.courseInfoToGentype(info), &errors.ErrWhileHandling
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course")
+		return course, &errors.ErrWhileHandling
 	}
-	return g.courseInfoToGentype(info), nil
+	return course, nil
 }
+
+func (g *Grant) getOnlineCourseFromCourseID(courseID uint) (models.OnlineCourse, error) {
+	var onlineCourse models.OnlineCourse
+	query := database.GormDB.Where("course_id = ?", courseID).First(&onlineCourse)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return onlineCourse, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get onlineCourse")
+		return onlineCourse, &errors.ErrWhileHandling
+	}
+	return onlineCourse, nil
+}
+
+func (g *Grant) GetCourseFromID(courseID uint) (gentypes.Course, error) {
+	courseModel, err := g.getCourseModelFromID(courseID)
+	return g.courseToGentype(courseModel), err
+}
+
+// func (g *Grant) PurchaseCourses(input gentypes.PurchaseCoursesInput) (gentypes.PurchaseCoursesResponse, error) {
+// 	// Validate input
+// 	if ok, err := govalidator.ValidateStruct(input); !ok {
+// 		return gentypes.PurchaseCoursesResponse{}, err
+// 	}
+
+// 	// Find courses
+
+// 	// Find users
+
+// 	//
+// }

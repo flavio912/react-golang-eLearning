@@ -14,10 +14,17 @@ enum ModuleElement {
   lesson
 }
 
-type CourseInfo {
-  name: String
+enum CourseType {
+  online
+  classroom
+}
+
+type Course {
+  id: Int!
+  type: CourseType!
+  name: String!
   backgroundCheck: Boolean
-  price: Float
+  price: Float!
   color: String
   excerpt: String
   introduction: String
@@ -28,31 +35,15 @@ type CourseInfo {
   specificTerms: String
   category: Category
   allowedToBuy: Boolean
-  # secondaryCategory: Category
 }
 
-type OnlineCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type OnlineCoursePage implements PaginatedQuery {
-  edges: [OnlineCourse]
-  pageInfo: PageInfo
-}
-
-type ClassroomCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type ClassroomCoursePage implements PaginatedQuery {
-  edges: [ClassroomCourse]
+type CoursePage implements PaginatedQuery {
+  edges: [Course]
   pageInfo: PageInfo
 }
 
 input SaveClassroomCourseInput {
-  uuid: UUID
+  id: Int
   name: String
   categoryUUID: UUID
   excerpt: String
@@ -72,7 +63,7 @@ input SaveClassroomCourseInput {
 }
 
 input SaveOnlineCourseInput {
-  uuid: UUID
+  id: Int
   name: String
   categoryUUID: UUID
   # secondaryCategoryUUID: UUID
@@ -123,6 +114,19 @@ type Category {
 input CreateCategoryInput {
   name: String!
   color: String!
+}
+
+input PurchaseCoursesInput {
+  courses: [UUID!]!
+  users: [UUID!]! # List of users taking the course (can be delegates or individuals uuids)
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
 }
 
 # [ EXAMPLE COURSE STRUCTURE

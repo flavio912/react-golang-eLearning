@@ -13,11 +13,11 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
 
-func TestUpdateCourseInfo(t *testing.T) {
+func TestUpdateCourse(t *testing.T) {
 	t.Run("Updates existing course", func(t *testing.T) {
 		prepareTestDatabase()
 		open := gentypes.Open
-		inp := middleware.CourseInfoInput{
+		inp := middleware.CourseInput{
 			Name:         helpers.StringPointer("UpdatedCourse"),
 			Price:        helpers.FloatPointer(43.4),
 			Color:        helpers.StringPointer("#ffffff"),
@@ -36,10 +36,10 @@ func TestUpdateCourseInfo(t *testing.T) {
 			BackgroundCheck: helpers.BoolPointer(false),
 			SpecificTerms:   helpers.StringPointer("{}"),
 		}
-		_, err := adminGrant.UpdateCourseInfo(1, inp)
+		_, err := adminGrant.UpdateCourse(1, inp)
 		assert.Nil(t, err)
 
-		info, err := adminGrant.GetCourseInfoFromID(1)
+		info, err := adminGrant.GetCourseFromID(1)
 		assert.Nil(t, err)
 		assert.Equal(t, *inp.Name, info.Name)
 		assert.Equal(t, *inp.AccessType, info.AccessType)
@@ -56,16 +56,16 @@ func TestUpdateCourseInfo(t *testing.T) {
 	t.Run("Doesn't update nil fields", func(t *testing.T) {
 		prepareTestDatabase()
 
-		prevInfo, err := adminGrant.GetCourseInfoFromID(1)
+		prevInfo, err := adminGrant.GetCourseFromID(1)
 		assert.Nil(t, err)
 
-		inp := middleware.CourseInfoInput{
+		inp := middleware.CourseInput{
 			Color: helpers.StringPointer("#ffffff"),
 		}
-		_, err = adminGrant.UpdateCourseInfo(1, inp)
+		_, err = adminGrant.UpdateCourse(1, inp)
 		assert.Nil(t, err)
 
-		info, err := adminGrant.GetCourseInfoFromID(1)
+		info, err := adminGrant.GetCourseFromID(1)
 		assert.Nil(t, err)
 		assert.Equal(t, prevInfo.Name, info.Name)
 	})
@@ -74,29 +74,29 @@ func TestUpdateCourseInfo(t *testing.T) {
 		prepareTestDatabase()
 
 		// Manager should fail
-		inp := middleware.CourseInfoInput{
+		inp := middleware.CourseInput{
 			Name: helpers.StringPointer("New Course name"),
 		}
-		_, err := managerGrant.UpdateCourseInfo(1, inp)
+		_, err := managerGrant.UpdateCourse(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 
 		// delegate should fail
-		inp = middleware.CourseInfoInput{
+		inp = middleware.CourseInput{
 			Name: helpers.StringPointer("New Course name"),
 		}
-		_, err = delegateGrant.UpdateCourseInfo(1, inp)
+		_, err = delegateGrant.UpdateCourse(1, inp)
 		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 }
 
-func TestComposeCourseinfo(t *testing.T) {
+func TestComposeCourse(t *testing.T) {
 	t.Run("Gives correct model", func(t *testing.T) {
 		prepareTestDatabase()
 
 		var open = gentypes.Open
 		var courseType = gentypes.ClassroomCourseType
-		inp := middleware.CourseInfoInput{
+		inp := middleware.CourseInput{
 			Name:            helpers.StringPointer("Correct model course"),
 			Price:           helpers.FloatPointer(32.3),
 			Color:           helpers.StringPointer("#fff"),
@@ -118,7 +118,7 @@ func TestComposeCourseinfo(t *testing.T) {
 			CourseType:      &courseType,
 		}
 
-		info, err := adminGrant.ComposeCourseInfo(inp)
+		info, err := adminGrant.ComposeCourse(inp)
 		assert.Nil(t, err)
 
 		// Expected requirements
@@ -154,7 +154,7 @@ func TestComposeCourseinfo(t *testing.T) {
 	})
 }
 
-func checkCourseInfoEqual(t *testing.T, inpInfo gentypes.CourseInput, outInfo gentypes.CourseInfo) {
+func checkCourseInfoEqual(t *testing.T, inpInfo gentypes.CourseInput, outInfo gentypes.Course) {
 	if inpInfo.Name != nil {
 		assert.Equal(t, *inpInfo.Name, outInfo.Name)
 	}

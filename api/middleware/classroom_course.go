@@ -11,65 +11,44 @@ import (
 
 /* Classroom Course CRUD */
 
-func classroomCourseToGentype(classroomCourse models.ClassroomCourse) gentypes.ClassroomCourse {
-	return gentypes.ClassroomCourse{
-		Course: gentypes.Course{
-			UUID:         classroomCourse.UUID,
-			CourseInfoID: classroomCourse.CourseInfoID,
-		},
-		StartDate:       classroomCourse.StartDate,
-		EndDate:         classroomCourse.EndDate,
-		Location:        classroomCourse.Location,
-		MaxParticipants: classroomCourse.MaxParticipants,
-	}
-}
-
-func classroomCoursesToGentypes(courses []models.ClassroomCourse) []gentypes.ClassroomCourse {
-	var _courses = make([]gentypes.ClassroomCourse, len(courses))
-	for i, course := range courses {
-		_courses[i] = classroomCourseToGentype(course)
-	}
-	return _courses
-}
-
 // SaveClassroomCourse is a wrapper around CreateClassroomCourse and UpdateClassroomCourse to
 // update the course if a uuid is provided, otherwise it will create a new one
-func (g *Grant) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
-	if courseInfo.UUID != nil {
-		return g.UpdateClassroomCourse(courseInfo)
+func (g *Grant) SaveClassroomCourse(course gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
+	if course.ID != nil {
+		return g.UpdateClassroomCourse(course)
 	}
-	return g.CreateClassroomCourse(courseInfo)
+	return g.CreateClassroomCourse(course)
 }
 
 // CreateClassroomCourse makes a new classroom course
-func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
+func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
 	if !g.IsAdmin {
-		return gentypes.ClassroomCourse{}, &errors.ErrUnauthorized
+		return gentypes.Course{}, &errors.ErrUnauthorized
 	}
 
 	// Validate
 	_, err := govalidator.ValidateStruct(courseInfo)
 	if err != nil {
-		return gentypes.ClassroomCourse{}, err
+		return gentypes.Course{}, err
 	}
 
-	course := models.ClassroomCourse{}
+	classroomCourse := models.ClassroomCourse{}
 
 	if courseInfo.MaxParticipants != nil {
-		course.MaxParticipants = *courseInfo.MaxParticipants
+		classroomCourse.MaxParticipants = *courseInfo.MaxParticipants
 	}
 	if courseInfo.StartDate != nil {
-		course.StartDate = *courseInfo.StartDate
+		classroomCourse.StartDate = *courseInfo.StartDate
 	}
 	if courseInfo.EndDate != nil {
-		course.EndDate = *courseInfo.EndDate
+		classroomCourse.EndDate = *courseInfo.EndDate
 	}
 	if courseInfo.Location != nil {
-		course.Location = *courseInfo.Location
+		classroomCourse.Location = *courseInfo.Location
 	}
 
 	var courseType = gentypes.ClassroomCourseType
-	course.CourseInfo, err = g.ComposeCourseInfo(CourseInfoInput{
+	course, err := g.ComposeCourse(CourseInput{
 		Name:            courseInfo.Name,
 		Price:           courseInfo.Price,
 		Color:           courseInfo.Color,
@@ -83,42 +62,33 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		CourseType:      &courseType,
 	})
 	if err != nil {
-		return gentypes.ClassroomCourse{}, err
+		return gentypes.Course{}, err
 	}
+
+	course.ClassroomCourse = classroomCourse
 
 	query := database.GormDB.Create(&course)
 	if query.Error != nil {
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create classroom course")
-		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+		return gentypes.Course{}, &errors.ErrWhileHandling
 	}
 
-	return classroomCourseToGentype(course), nil
+	return g.courseToGentype(course), nil
 }
 
 // UpdateClassroomCourse updates the given classroom course
-func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.ClassroomCourse, error) {
+func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
 	if !g.IsAdmin {
-		return gentypes.ClassroomCourse{}, &errors.ErrUnauthorized
+		return gentypes.Course{}, &errors.ErrUnauthorized
 	}
 
-	// A uuid is required for this function
-	if courseInfo.UUID == nil {
-		return gentypes.ClassroomCourse{}, &errors.ErrUUIDInvalid
-	}
-
-	// Find the course
-	var course models.ClassroomCourse
-	query := database.GormDB.Where("uuid = ?", *courseInfo.UUID).Find(&course)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return gentypes.ClassroomCourse{}, &errors.ErrNotFound
-		}
-		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to get course while updating: %s", *courseInfo.UUID)
-		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+	// An id is required for this function
+	if courseInfo.ID == nil {
+		return gentypes.Course{}, &errors.ErrUUIDInvalid
 	}
 
 	// Update courseInfo
-	_, err := g.UpdateCourseInfo(course.CourseInfoID, CourseInfoInput{
+	course, err := g.UpdateCourse(*courseInfo.ID, CourseInput{
 		Name:            courseInfo.Name,
 		CategoryUUID:    courseInfo.CategoryUUID,
 		Excerpt:         courseInfo.Excerpt,
@@ -131,7 +101,7 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		Tags:            courseInfo.Tags,
 	})
 	if err != nil {
-		return gentypes.ClassroomCourse{}, err
+		return gentypes.Course{}, err
 	}
 
 	var updates models.ClassroomCourse
@@ -149,60 +119,17 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		updates.MaxParticipants = *courseInfo.MaxParticipants
 	}
 
-	q := database.GormDB.Model(models.ClassroomCourse{}).
-		Where("uuid = ?", *courseInfo.UUID).
-		Updates(&updates).
-		Find(&course)
+	courseModel := models.Course{ID: course.ID}
+	courseModel.ClassroomCourse = updates
+
+	q := database.GormDB.Model(models.Course{}).
+		Where("id = ?", course.ID).
+		Updates(&courseModel).
+		Find(&courseModel)
 	if q.Error != nil {
 		g.Logger.Log(sentry.LevelError, q.Error, "Unable to update course")
-		return gentypes.ClassroomCourse{}, &errors.ErrWhileHandling
+		return gentypes.Course{}, &errors.ErrWhileHandling
 	}
 
-	return classroomCourseToGentype(course), nil
-}
-
-func (g *Grant) GetClassroomCourses(
-	page *gentypes.Page,
-	filter *gentypes.ClassroomCourseFilter,
-	orderBy *gentypes.OrderBy,
-) ([]gentypes.ClassroomCourse, gentypes.PageInfo, error) {
-	// TODO: allow delegates access to their assigned courses
-	if !g.IsAdmin && !g.IsManager {
-		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
-	}
-
-	var courses []models.ClassroomCourse
-	query := database.GormDB.Joins("JOIN course_infos ON course_infos.id = classroom_courses.course_info_id")
-	if filter != nil {
-		query = g.filterCoursesFromInfo(query, filter.CourseInfo)
-	} else {
-		query = g.filterCoursesFromInfo(query, nil)
-	}
-
-	query, err := getOrdering(query, orderBy, []string{"name", "access_type", "price"}, "created_at DESC")
-	if err != nil {
-		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, err
-	}
-
-	// Count total that can be retrieved by the current filter
-	var total int32
-	if err := query.Model(&models.ClassroomCourse{}).Count(&total).Error; err != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get classroom course count")
-		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
-	}
-
-	query, limit, offset := getPage(query, page)
-
-	query = query.Find(&courses)
-	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get courses")
-		return []gentypes.ClassroomCourse{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
-	}
-
-	return classroomCoursesToGentypes(courses), gentypes.PageInfo{
-		Total:  total,
-		Given:  int32(len(courses)),
-		Offset: offset,
-		Limit:  limit,
-	}, nil
+	return g.courseToGentype(courseModel), nil
 }

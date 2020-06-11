@@ -1288,34 +1288,30 @@ func TestSaveOnlineCourse(t *testing.T) {
         			requirements: ["req 1", "req 2"]
 						}
 					) {
-						info {
-							name
-							excerpt
-							introduction
-							backgroundCheck
-							price
-							color
-							howToComplete
-							whatYouLearn
-							requirements
-						}
+						name
+						excerpt
+						introduction
+						backgroundCheck
+						price
+						color
+						howToComplete
+						whatYouLearn
+						requirements
 					}
 				}
 			`,
 			ExpectedResult: `
 				{
 					"saveOnlineCourse":{
-							"info": {
-								"name": "Test online course",
-								"excerpt": "{}",
-								"introduction":"{}",
-								"backgroundCheck": true,
-								"price": 34.3,
-								"color": "#fff",
-								"howToComplete": "{}",
-								"whatYouLearn": ["What 1", "What 2"],
-								"requirements": ["req 1", "req 2"]
-							}
+							"name": "Test online course",
+							"excerpt": "{}",
+							"introduction":"{}",
+							"backgroundCheck": true,
+							"price": 34.3,
+							"color": "#fff",
+							"howToComplete": "{}",
+							"whatYouLearn": ["What 1", "What 2"],
+							"requirements": ["req 1", "req 2"]
 					}
 				}
 			`,

@@ -23,7 +23,7 @@ const (
 )
 
 type CourseInput struct {
-	UUID               *UUID
+	ID                 *uint
 	Name               *string
 	CategoryUUID       *UUID
 	Excerpt            *string `valid:"json"`
@@ -52,10 +52,11 @@ type ModuleItem struct {
 	UUID UUID
 }
 
-type CourseInfo struct {
+type Course struct {
 	ID              uint
 	Name            string
 	AccessType      AccessType
+	CourseType      CourseType
 	AllowedToBuy    bool // Helper field, true if current user is allowed to buy this course
 	BackgroundCheck bool
 	Price           float64
@@ -71,15 +72,23 @@ type CourseInfo struct {
 	CategoryUUID    *UUID
 }
 
-type Course struct {
-	UUID         UUID
-	CourseInfoID uint
-}
-
-type CourseInfoFilter struct {
+type CourseFilter struct {
 	Name            *string
 	AccessType      *AccessType
 	BackgroundCheck *bool
 	Price           *float64
 	AllowedToBuy    *bool
+}
+
+type PurchaseCoursesInput struct {
+	Courses                []UUID
+	Users                  []UUID
+	ExtraInvoiceEmail      *string `valid:"email"`
+	AcceptedTerms          bool
+	BackgroundCheckConfirm *bool
+}
+
+type PurchaseCoursesResponse struct {
+	TransactionComplete bool
+	StripeClientSecret  *string
 }

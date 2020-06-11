@@ -269,37 +269,37 @@ func (m *MutationResolver) SaveOnlineCourse(
 	ctx context.Context,
 	args struct {
 		Input gentypes.SaveOnlineCourseInput
-	}) (*OnlineCourseResolver, error) {
+	}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &OnlineCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
 	course, err := grant.SaveOnlineCourse(args.Input)
 	if err != nil {
-		return &OnlineCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{
-		OnlineCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
 	Input gentypes.SaveClassroomCourseInput
-}) (*ClassroomCourseResolver, error) {
+}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &ClassroomCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
 	course, err := grant.SaveClassroomCourse(args.Input)
 	if err != nil {
-		return &ClassroomCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{
-		ClassroomCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
@@ -345,4 +345,13 @@ func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input 
 	return &LessonResolver{
 		Lesson: lesson,
 	}, err
+}
+
+func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Input gentypes.PurchaseCoursesInput }) (*gentypes.PurchaseCoursesResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
+	}
+
+	return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
 }

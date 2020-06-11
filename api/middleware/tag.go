@@ -80,7 +80,7 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 
 	// Find the table links
 	var links []models.CourseTagsLink
-	query := database.GormDB.Where("course_info_id IN (?)", ids).Find(&links)
+	query := database.GormDB.Where("course_id IN (?)", ids).Find(&links)
 	if query.Error != nil {
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags links")
 		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
@@ -107,7 +107,7 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 	// Put tags into map: courseIDs > gentypes.Tag
 	var courseInfoIdsToTags = make(map[uint][]gentypes.Tag, len(tagUUIDs))
 	for _, link := range links {
-		id := link.CourseInfoID
+		id := link.CourseID
 		if _, ok := courseInfoIdsToTags[id]; ok {
 			courseInfoIdsToTags[id] = append(courseInfoIdsToTags[id], tagToGentype(tagsMap[link.TagUUID]))
 		} else {
