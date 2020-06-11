@@ -237,5 +237,24 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 	Filter  *gentypes.CourseFilter
 	OrderBy *gentypes.OrderBy
 }) (*CoursePageResolver, error) {
-	return &CoursePageResolver{}, nil
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, page, err := grant.GetCourses(args.Page, args.Filter, args.OrderBy)
+
+	var courseResolvers []*CourseResolver
+	for _, course := range courses {
+		courseResolvers = append(courseResolvers, &CourseResolver{
+			Course: course,
+		})
+	}
+
+	return &CoursePageResolver{
+		edges: &courseResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
 }

@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -71,6 +72,15 @@ func (g *Grant) courseToGentype(courseInfo models.Course) gentypes.Course {
 		AllowedToBuy:    allowedToBuy,
 		CourseType:      courseInfo.CourseType,
 	}
+}
+
+// TODO: Bulk load rather than making a million db calls
+func (g *Grant) coursesToGentypes(courses []models.Course) []gentypes.Course {
+	var genCourses []gentypes.Course
+	for _, course := range courses {
+		genCourses = append(genCourses, g.courseToGentype(course))
+	}
+	return genCourses
 }
 
 type CourseInput struct {
@@ -294,6 +304,60 @@ func (g *Grant) getOnlineCourseFromCourseID(courseID uint) (models.OnlineCourse,
 func (g *Grant) GetCourseFromID(courseID uint) (gentypes.Course, error) {
 	courseModel, err := g.getCourseModelFromID(courseID)
 	return g.courseToGentype(courseModel), err
+}
+
+func (g *Grant) filterCourse(query *gorm.DB, filter *gentypes.CourseFilter) *gorm.DB {
+	if filter != nil {
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if filter.AccessType != nil && *filter.AccessType != "" {
+			query = query.Where("access_type = ?", *filter.AccessType)
+		}
+		if filter.Price != nil {
+			query = query.Where("price = ?", *filter.Price)
+		}
+		if filter.AllowedToBuy != nil && *filter.AllowedToBuy {
+			if !g.IsFullyApproved() {
+				query = query.Where("access_type = ?", gentypes.Open)
+			}
+		}
+	}
+
+	return query
+}
+
+func (g *Grant) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error) {
+	// Public function
+
+	var courses []models.Course
+
+	query := g.filterCourse(database.GormDB, filter)
+
+	var count int32
+	if err := query.Model(&models.Course{}).Count(&count).Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to count courses")
+		return []gentypes.Course{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, orderErr := getOrdering(query, orderBy, []string{"name", "price"}, "created_at DESC")
+	if orderErr != nil {
+		g.Logger.Log(sentry.LevelError, orderErr, "Unable to order courses")
+		return []gentypes.Course{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := getPage(query, page)
+	if err := query.Find(&courses).Error; err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to find courses")
+		return []gentypes.Course{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return g.coursesToGentypes(courses), gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(courses)),
+	}, nil
 }
 
 // func (g *Grant) PurchaseCourses(input gentypes.PurchaseCoursesInput) (gentypes.PurchaseCoursesResponse, error) {
