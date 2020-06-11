@@ -346,3 +346,19 @@ func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input 
 		Lesson: lesson,
 	}, err
 }
+
+func (m *MutationResolver) UpdateLesson(ctx context.Context, args struct{ Input gentypes.UpdateLessonInput }) (*LessonResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &LessonResolver{}, &errors.ErrUnauthorized
+	}
+
+	lesson, err := grant.UpdateLesson(args.Input)
+	if err != nil {
+		return &LessonResolver{}, err
+	}
+
+	return &LessonResolver{
+		Lesson: lesson,
+	}, nil
+}
