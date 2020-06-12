@@ -19,3 +19,9 @@ func (g *Grant) CourseTakers(ids []uint) ([]models.CourseTaker, error) {
 
 	return courseTakers, nil
 }
+
+func (g *Grant) ComposeNewCourseTaker() models.CourseTaker {
+	return models.CourseTaker{
+		MinutesTracked: 0.1, //TODO Need it not to be the blank object otherwise it wont add it
+	}
+}

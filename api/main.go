@@ -19,6 +19,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/golang/glog"
+	"github.com/stripe/stripe-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -83,6 +84,10 @@ func setupSentry() *sentryhttp.Handler {
 	return sentryHandler
 }
 
+func setupStripe() {
+	stripe.Key = helpers.Config.Stripe.SecretKey
+}
+
 func main() {
 	setupConfig()
 	flag.Usage = usage
@@ -93,7 +98,7 @@ func main() {
 	sentryHandler := setupSentry()
 
 	setupDatabase()
-
+	setupStripe()
 	uploads.Initialize()
 	email.Initialize()
 

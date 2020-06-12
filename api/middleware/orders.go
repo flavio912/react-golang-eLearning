@@ -11,6 +11,12 @@ import (
 )
 
 func (g *Grant) CreatePendingOrder(price float64, courseIds []uint, courseTakerIDs []uint, extraInvoiceEmail *string) (*stripe.PaymentIntent, error) {
+	// Input validation
+	if len(courseIds) == 0 || len(courseTakerIDs) == 0 {
+		g.Logger.LogMessage(sentry.LevelWarning, "CourseIds or takers empty")
+		return &stripe.PaymentIntent{}, &errors.ErrNotFound
+	}
+
 	pennyPrice := int64(price * 100) // This will discard any digit after two decimal places
 
 	params := &stripe.PaymentIntentParams{

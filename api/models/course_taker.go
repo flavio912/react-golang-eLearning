@@ -1,7 +1,7 @@
 package models
 
 type CourseTaker struct {
-	ID uint
-
+	ID             uint
+	MinutesTracked float64
 	// AssignedCourses
 }

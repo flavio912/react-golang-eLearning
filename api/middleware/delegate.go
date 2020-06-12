@@ -319,6 +319,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		CompanyUUID: companyUUID,
 		TtcId:       ttcId,
 		ProfileKey:  s3UploadKey,
+		CourseTaker: g.ComposeNewCourseTaker(),
 	}
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
