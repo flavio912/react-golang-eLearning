@@ -20,5 +20,5 @@ input UpdateLessonInput {
   uuid: UUID!
   title: String
   text: String
-  tags: [UUID]
+  tags: [UUID!]
 }

@@ -37,7 +37,7 @@ type UpdateLessonInput struct {
 	UUID  UUID `valid:"required"`
 	Title *string
 	Text  *string `valid:"json"`
-	Tags  *[]*UUID
+	Tags  *[]UUID
 }
 
 func (u *UpdateLessonInput) Validate() error {

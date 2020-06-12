@@ -273,9 +273,9 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Equal(t, gentypes.Lesson{}, l)
 	})
 
-	tags := []*gentypes.UUID{helpers.UUIDPointer(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003"))}
+	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
 	input := gentypes.UpdateLessonInput{
-		UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003"),
+		UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 		Title: helpers.StringPointer("Diagonalizing Matrices"),
 		Text:  helpers.StringPointer(`{"ayy" : "yoo"}`),
 		Tags:  &tags,
@@ -289,7 +289,7 @@ func TestUpdateLesson(t *testing.T) {
 			Text:  *input.Text,
 			Tags: []gentypes.Tag{
 				{
-					UUID:  *tags[0],
+					UUID:  tags[0],
 					Name:  "Fancy tag for cool people",
 					Color: "#123",
 				},

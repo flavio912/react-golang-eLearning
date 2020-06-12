@@ -197,26 +197,22 @@ func (g *Grant) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson,
 		lesson.Text = *input.Text
 	}
 	if input.Tags != nil {
-		var _tags []gentypes.UUID
-		for _, tag := range *input.Tags {
-			_tags = append(_tags, *tag)
-		}
-		tags, err := g.CheckTagsExist(_tags)
+		tags, err := g.CheckTagsExist(*input.Tags)
 
 		if err != nil {
 			return gentypes.Lesson{}, err
 		}
 		lesson.Tags = tags
 
-		updateLinks := database.GormDB.Model(&models.LessonTagsLink{}).Where("lesson_uuid = ?", lesson.UUID).Update("tag_uuid", _tags)
-		if updateLinks.Error != nil {
-			g.Logger.Logf(sentry.LevelError, updateLinks.Error, "Error updating tags linked with lesson %s", lesson.UUID)
-			return gentypes.Lesson{}, updateLinks.Error
+		remove := database.GormDB.Delete(models.LessonTagsLink{}, "lesson_uuid = ?", lesson.UUID)
+		if remove.Error != nil {
+			g.Logger.Logf(sentry.LevelError, remove.Error, "Error updating tags linked with lesson %s", lesson.UUID)
+			return gentypes.Lesson{}, remove.Error
 		}
 
 	}
 
-	save := database.GormDB.Save(&lesson)
+	save := database.GormDB.Model(&models.Lesson{}).Where("uuid = ?", lesson.UUID).Updates(&lesson)
 	if save.Error != nil {
 		g.Logger.Logf(sentry.LevelError, save.Error, "Error updating lesson with UUID: %s", input.UUID)
 		return gentypes.Lesson{}, &errors.ErrWhileHandling
