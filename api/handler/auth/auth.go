@@ -43,12 +43,12 @@ func Handler(h http.Handler) http.Handler {
 		}
 
 		// Attempt to get a grant
-		grant, err := middleware.Authenticate(token)
+		grant, _ := middleware.Authenticate(token)
 
 		// Check CSRF if cookie was used for authentication and disallow if CSRF is invalid
 		// This is happening after authetication so the user can still make unauthenticated
 		// requests (like logging in) even if CSRF fails
-		if err == nil && grant != nil {
+		if grant != nil {
 
 			var csrfHeader = r.Header.Get("X-CSRF-TOKEN")
 			csrfCookie, _ := r.Cookie("csrf")
@@ -68,7 +68,10 @@ func Handler(h http.Handler) http.Handler {
 				allowRequest = true
 			}
 
-			if allowRequest {
+			fmt.Print("HERE")
+			// Public grants don't need to worry about CSRF tokens
+			if allowRequest || grant.IsPublic {
+				fmt.Print("HERe1")
 				ctx = context.WithValue(ctx, GrantKey, grant)
 				ctx = context.WithValue(ctx, AuthKey, token)
 				addSentryContext(r, grant)

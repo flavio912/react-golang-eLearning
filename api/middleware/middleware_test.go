@@ -21,20 +21,20 @@ var (
 	db       *sql.DB
 	fixtures *testfixtures.Loader
 
-	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, false, logging.Logger{}}
-	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, false, logging.Logger{}}
+	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, false, false, logging.Logger{}}
+	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, false, false, logging.Logger{}}
 	managerGrant  = middleware.Grant{auth.UserClaims{
 		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Role:    auth.ManagerRole,
-	}, false, true, false, false, logging.Logger{}}
+	}, false, true, false, false, false, logging.Logger{}}
 	delegateGrant = middleware.Grant{auth.UserClaims{
 		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 		Role:    auth.DelegateRole,
-	}, false, false, true, false, logging.Logger{}}
-
-	uuidZero = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+	}, false, false, true, false, false, logging.Logger{}}
+	publicGrant = middleware.Grant{IsPublic: true}
+	uuidZero    = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
 )
 
 func TestMain(m *testing.M) {
@@ -67,7 +67,7 @@ func TestAuthenticate(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			grant, err := middleware.Authenticate(test.token)
 			assert.Equal(t, err, &errors.ErrTokenInvalid)
-			assert.Equal(t, grant, &middleware.Grant{})
+			assert.Equal(t, grant, &middleware.Grant{IsPublic: true})
 		})
 	}
 }

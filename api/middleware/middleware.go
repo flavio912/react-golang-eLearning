@@ -29,7 +29,9 @@ func Authenticate(jwt string) (*Grant, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
 		glog.Infof("Authentication failed: %s", err.Error())
-		return &Grant{}, &errors.ErrTokenInvalid
+		return &Grant{
+			IsPublic: true,
+		}, &errors.ErrTokenInvalid
 	}
 
 	var (
@@ -56,6 +58,7 @@ func Authenticate(jwt string) (*Grant, error) {
 		IsManager:    isManager,
 		IsDelegate:   isDelegate,
 		IsIndividual: isIndividual,
+		IsPublic:     false,
 	}, nil
 }
 

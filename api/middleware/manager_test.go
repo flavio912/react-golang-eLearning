@@ -193,7 +193,7 @@ func TestGetManagerSelf(t *testing.T) {
 	}{
 		{
 			"Must be manager",
-			middleware.Grant{auth.UserClaims{}, true, false, true, false, logging.Logger{}},
+			middleware.Grant{auth.UserClaims{}, true, false, true, false, false, logging.Logger{}},
 			"",
 			&errors.ErrUnauthorized,
 		},
