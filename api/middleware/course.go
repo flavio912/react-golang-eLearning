@@ -271,7 +271,7 @@ func (g *Grant) UpdateCourse(courseID uint, infoChanges CourseInput) (gentypes.C
 	return g.courseToGentype(courseInfo), nil
 }
 
-func (g *Grant) getCourseModelFromID(courseID uint) (models.Course, error) {
+func (g *Grant) Course(courseID uint) (models.Course, error) {
 	var course models.Course
 	query := database.GormDB.Where("id = ?", courseID).First(&course)
 	if query.Error != nil {
@@ -286,10 +286,10 @@ func (g *Grant) getCourseModelFromID(courseID uint) (models.Course, error) {
 }
 
 // TODO: Optimise to use (IN) query
-func (g *Grant) getCourseModels(courseIDs []uint) ([]models.Course, error) {
+func (g *Grant) Courses(courseIDs []uint) ([]models.Course, error) {
 	var courseModels []models.Course
 	for _, id := range courseIDs {
-		mod, err := g.getCourseModelFromID(id)
+		mod, err := g.Course(id)
 		if err != nil {
 			return []models.Course{}, err
 		}
@@ -313,7 +313,7 @@ func (g *Grant) getOnlineCourseFromCourseID(courseID uint) (models.OnlineCourse,
 }
 
 func (g *Grant) GetCourseFromID(courseID uint) (gentypes.Course, error) {
-	courseModel, err := g.getCourseModelFromID(courseID)
+	courseModel, err := g.Course(courseID)
 	return g.courseToGentype(courseModel), err
 }
 
@@ -383,25 +383,4 @@ func (g *Grant) isAuthorizedToBook(courses []models.Course) bool {
 		return true
 	}
 	return false
-}
-
-func (g *Grant) PurchaseCourses(input gentypes.PurchaseCoursesInput) (gentypes.PurchaseCoursesResponse, error) {
-	// Validate input
-	if ok, err := govalidator.ValidateStruct(input); !ok {
-		return gentypes.PurchaseCoursesResponse{}, err
-	}
-
-	// Find courses
-	courseModels, err := g.getCourseModels(helpers.Int32sToUints(input.Courses))
-	if err != nil {
-		return gentypes.PurchaseCoursesResponse{}, err
-	}
-
-	if !g.isAuthorizedToBook(courseModels) {
-		return gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
-	}
-
-	// Check users exist and are valid
-
-	//
 }

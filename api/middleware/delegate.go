@@ -51,8 +51,20 @@ func (g *Grant) delegatesToGentype(delegates []models.Delegate) []gentypes.Deleg
 	return genDelegates
 }
 
-func (g *Grant) delegateExists(email string, ttcId string) bool {
-	query := database.GormDB.Where("email = ? or ttc_id = ?", email, ttcId).First(&models.Delegate{})
+func (g *Grant) DelegateExists(email string, ttcId string) bool {
+	// Only managers and admins can check a delegate exists
+	if !g.IsManager || !g.IsAdmin {
+		return false
+	}
+
+	query := database.GormDB.Where("email = ? or ttc_id = ?", email, ttcId)
+
+	// Managers can only check inside their own company
+	if g.IsManager {
+		query = query.Where("company_uuid = ?", g.Claims.Company)
+	}
+
+	query = query.First(&models.Delegate{})
 	if query.Error != nil {
 		if query.RecordNotFound() {
 			return false
@@ -65,7 +77,7 @@ func (g *Grant) delegateExists(email string, ttcId string) bool {
 	return true
 }
 
-func (g *Grant) getDelegateModel(uuid gentypes.UUID) (models.Delegate, error) {
+func (g *Grant) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
 	var delegate models.Delegate
 	err := database.GormDB.Where("uuid = ?", uuid).Find(&delegate).Error
 	if err != nil {
@@ -87,7 +99,7 @@ func (g *Grant) getDelegateModel(uuid gentypes.UUID) (models.Delegate, error) {
 }
 
 func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
-	delegate, err := g.getDelegateModel(UUID)
+	delegate, err := g.Delegate(UUID)
 
 	if err != nil {
 		return gentypes.Delegate{}, err
@@ -194,7 +206,7 @@ func (g *Grant) GenerateFinaliseDelegateToken(delegateUUID gentypes.UUID) (strin
 		return "", &errors.ErrUnauthorized
 	}
 
-	delegate, err := g.getDelegateModel(delegateUUID)
+	delegate, err := g.Delegate(delegateUUID)
 	if err != nil {
 		return "", err
 	}

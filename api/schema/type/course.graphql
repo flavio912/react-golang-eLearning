@@ -118,7 +118,7 @@ input CreateCategoryInput {
 
 input PurchaseCoursesInput {
   courses: [Int!]!
-  users: [UUID!]! # List of users taking the course (can be delegates or individuals uuids)
+  users: [UUID!]! # List of delegates UUIDs
   extraInvoiceEmail: String
   acceptedTerms: Boolean!
   backgroundCheckConfirm: Boolean

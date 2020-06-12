@@ -25,7 +25,7 @@ func NewUserResolver(ctx context.Context, args NewUserArgs) (*UserResolver, erro
 			return &UserResolver{}, &errors.ErrUnauthorized
 		}
 
-		user, err := grant.GetCurrentUserByUUID(*args.UUID) // TODO: Use Dataloaders
+		user, err := grant.GetCurrentUser() // TODO: Use Dataloaders
 		if err != nil {
 			return &UserResolver{}, err
 		}

@@ -11,13 +11,15 @@ import (
 
 type Individual struct {
 	Base
-	FirstName string
-	LastName  string
-	JobTitle  string
-	Telephone string
-	LastLogin time.Time
-	Password  string
-	Email     string `gorm:"unique"`
+	FirstName     string
+	LastName      string
+	JobTitle      string
+	Telephone     string
+	LastLogin     time.Time
+	Password      string
+	Email         string `gorm:"unique"`
+	CourseTaker   CourseTaker
+	CourseTakerID uint
 }
 
 func (individual *Individual) getHash() string {
