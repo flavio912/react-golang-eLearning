@@ -19,6 +19,7 @@ type Grant struct {
 	IsManager    bool
 	IsDelegate   bool
 	IsIndividual bool
+	IsPublic     bool
 	// contains the sentry hub
 	Logger logging.Logger
 }

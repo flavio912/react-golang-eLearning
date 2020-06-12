@@ -10,7 +10,7 @@ import (
 	"github.com/stripe/stripe-go/paymentintent"
 )
 
-func (g *Grant) CreatePendingOrder(price float64, courseIds []uint, courseTakerIDs []uint, extraInvoiceEmail string) (*stripe.PaymentIntent, error) {
+func (g *Grant) CreatePendingOrder(price float64, courseIds []uint, courseTakerIDs []uint, extraInvoiceEmail *string) (*stripe.PaymentIntent, error) {
 	pennyPrice := int64(price * 100) // This will discard any digit after two decimal places
 
 	params := &stripe.PaymentIntentParams{

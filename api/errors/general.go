@@ -139,8 +139,8 @@ var (
 		Type:    "ErrNotAllFound",
 		Message: "Not all items you were looking for were found",
 	}
-	ErrDelegateDoesNotExist = func(uuid string) SimpleError {
-		return SimpleError{
+	ErrDelegateDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
 			Type:    "ErrDelegateDoesNotExist",
 			Message: fmt.Sprintf("The given delegate does not exist: %s", uuid),
 		}

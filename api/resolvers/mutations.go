@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/app/courses"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -353,5 +355,5 @@ func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Inp
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
 	}
 
-	return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
+	return courses.PurchaseCourses(grant, args.Input)
 }

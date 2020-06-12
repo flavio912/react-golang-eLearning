@@ -19,7 +19,8 @@ func (g *Grant) courseToGentype(courseInfo models.Course) gentypes.Course {
 	// Get bullet points
 	var requirementModels []models.RequirementBullet
 	if err := database.GormDB.Where("course_id = ?", courseInfo.ID).Find(&requirementModels).Error; err != nil {
-		// Unable to get courseInfo
+		g.Logger.Log(sentry.LevelError, err, "Unable to get requirements")
+		return gentypes.Course{}
 	}
 
 	sort.SliceStable(requirementModels, func(i, j int) bool {
@@ -34,7 +35,8 @@ func (g *Grant) courseToGentype(courseInfo models.Course) gentypes.Course {
 	// Get WhatYouLearn bullet points
 	var learnModels []models.WhatYouLearnBullet
 	if err := database.GormDB.Where("course_id = ?", courseInfo.ID).Find(&learnModels).Error; err != nil {
-		// Unable to get courseInfo
+		g.Logger.Log(sentry.LevelError, err, "Unable to get learn models")
+		return gentypes.Course{}
 	}
 
 	sort.SliceStable(learnModels, func(i, j int) bool {
@@ -371,7 +373,7 @@ func (g *Grant) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, o
 	}, nil
 }
 
-func (g *Grant) isAuthorizedToBook(courses []models.Course) bool {
+func (g *Grant) IsAuthorizedToBook(courses []models.Course) bool {
 	if g.IsManager || g.IsIndividual {
 		for _, course := range courses {
 			if course.AccessType == gentypes.Restricted {
