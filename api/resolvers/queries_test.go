@@ -1218,7 +1218,7 @@ func TestGetCourses(t *testing.T) {
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Should return all courses",
-			Context: adminContext(),
+			Context: publicContext(),
 			Schema:  schema,
 			Query: `
 				{
