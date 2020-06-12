@@ -309,17 +309,25 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		return gentypes.Delegate{}, nil, err
 	}
 
+	// Add link manually because gorm doesn't like blank associations
+	var courseTaker = models.CourseTaker{}
+	if err := tx.Create(&courseTaker).Error; err != nil {
+		tx.Rollback()
+		g.Logger.Log(sentry.LevelError, err, "Unable to create courseTaker")
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+	}
+
 	delegate := models.Delegate{
-		FirstName:   delegateDetails.FirstName,
-		LastName:    delegateDetails.LastName,
-		JobTitle:    delegateDetails.JobTitle,
-		Telephone:   delegateDetails.Telephone,
-		Password:    password,
-		Email:       delegateDetails.Email,
-		CompanyUUID: companyUUID,
-		TtcId:       ttcId,
-		ProfileKey:  s3UploadKey,
-		CourseTaker: g.ComposeNewCourseTaker(),
+		FirstName:     delegateDetails.FirstName,
+		LastName:      delegateDetails.LastName,
+		JobTitle:      delegateDetails.JobTitle,
+		Telephone:     delegateDetails.Telephone,
+		Password:      password,
+		Email:         delegateDetails.Email,
+		CompanyUUID:   companyUUID,
+		TtcId:         ttcId,
+		ProfileKey:    s3UploadKey,
+		CourseTakerID: courseTaker.ID,
 	}
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {
