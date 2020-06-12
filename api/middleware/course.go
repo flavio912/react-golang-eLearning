@@ -14,8 +14,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-/* Course Info CRUD */
-
 func (g *Grant) courseToGentype(courseInfo models.Course) gentypes.Course {
 
 	// Get bullet points
@@ -287,6 +285,19 @@ func (g *Grant) getCourseModelFromID(courseID uint) (models.Course, error) {
 	return course, nil
 }
 
+// TODO: Optimise to use (IN) query
+func (g *Grant) getCourseModels(courseIDs []uint) ([]models.Course, error) {
+	var courseModels []models.Course
+	for _, id := range courseIDs {
+		mod, err := g.getCourseModelFromID(id)
+		if err != nil {
+			return []models.Course{}, err
+		}
+		courseModels = append(courseModels, mod)
+	}
+	return courseModels, nil
+}
+
 func (g *Grant) getOnlineCourseFromCourseID(courseID uint) (models.OnlineCourse, error) {
 	var onlineCourse models.OnlineCourse
 	query := database.GormDB.Where("course_id = ?", courseID).First(&onlineCourse)
@@ -360,15 +371,37 @@ func (g *Grant) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, o
 	}, nil
 }
 
-// func (g *Grant) PurchaseCourses(input gentypes.PurchaseCoursesInput) (gentypes.PurchaseCoursesResponse, error) {
-// 	// Validate input
-// 	if ok, err := govalidator.ValidateStruct(input); !ok {
-// 		return gentypes.PurchaseCoursesResponse{}, err
-// 	}
+func (g *Grant) isAuthorizedToBook(courses []models.Course) bool {
+	if g.IsManager || g.IsIndividual {
+		for _, course := range courses {
+			if course.AccessType == gentypes.Restricted {
+				if !g.IsFullyApproved() {
+					return false
+				}
+			}
+		}
+		return true
+	}
+	return false
+}
 
-// 	// Find courses
+func (g *Grant) PurchaseCourses(input gentypes.PurchaseCoursesInput) (gentypes.PurchaseCoursesResponse, error) {
+	// Validate input
+	if ok, err := govalidator.ValidateStruct(input); !ok {
+		return gentypes.PurchaseCoursesResponse{}, err
+	}
 
-// 	// Find users
+	// Find courses
+	courseModels, err := g.getCourseModels(helpers.Int32sToUints(input.Courses))
+	if err != nil {
+		return gentypes.PurchaseCoursesResponse{}, err
+	}
 
-// 	//
-// }
+	if !g.isAuthorizedToBook(courseModels) {
+		return gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
+	}
+
+	// Check users exist and are valid
+
+	//
+}

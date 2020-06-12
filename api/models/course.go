@@ -1,15 +1,11 @@
 package models
 
 import (
-	"time"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
 type Course struct {
-	ID              uint
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+	Base
 	Name            string         // The course name/title
 	Price           float64        // 0.00 if free course
 	Color           string         // The primary color for the course

@@ -1,11 +1,13 @@
 package middleware
 
 import (
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func (g *Grant) GetUserByUUID(uuid gentypes.UUID) (gentypes.User, error) {
+func (g *Grant) GetCurrentUserByUUID(uuid gentypes.UUID) (gentypes.User, error) {
 	if g.IsDelegate {
 		delegate, err := g.GetDelegateByUUID(uuid)
 
@@ -41,4 +43,15 @@ func (g *Grant) GetUserByUUID(uuid gentypes.UUID) (gentypes.User, error) {
 	}
 
 	return gentypes.User{}, &errors.ErrUnauthorized
+}
+
+func (g *Grant) UsersByUUID(uuids []gentypes.UUID) ([]gentypes.User, error) {
+	// Check delegates
+	var delegates models.Delegate
+	database.GormDB.Where("uuid IN (?)", uuids).Find(&delegates)
+
+	// Check individuals
+
+	// Check managers
+
 }

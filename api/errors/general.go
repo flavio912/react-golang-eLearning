@@ -127,4 +127,8 @@ var (
 		Type:    "ErrCSRFTokenInvalid",
 		Message: "The given CSRF token was blank or invalid",
 	}
+	ErrUnauthorizedToBook = SimpleError{
+		Type:    "ErrUnauthorizedToBook",
+		Message: "You cannot book these courses as you are not authorized",
+	}
 )
