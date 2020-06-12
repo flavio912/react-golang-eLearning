@@ -127,4 +127,10 @@ var (
 		Type:    "ErrCSRFTokenInvalid",
 		Message: "The given CSRF token was blank or invalid",
 	}
+	ErrLessonNotFound = FullError{
+		Type:     "ErrLessonNotFound",
+		Message:  "There is no lesson matching the information given",
+		Title:    "Could no find the specified lesson",
+		HelpText: "Oi, this lesson does not exist. Check the details and try again",
+	}
 )

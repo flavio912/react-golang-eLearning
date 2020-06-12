@@ -32,3 +32,15 @@ func (c *CreateLessonInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }
+
+type UpdateLessonInput struct {
+	UUID  UUID `valid:"required"`
+	Title *string
+	Text  *string `valid:"json"`
+	Tags  *[]UUID
+}
+
+func (u *UpdateLessonInput) Validate() error {
+	_, err := govalidator.ValidateStruct(u)
+	return err
+}

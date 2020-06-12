@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
@@ -83,7 +84,7 @@ func TestGetLessonByUUID(t *testing.T) {
 		uuid := gentypes.MustParseToUUID("10000000-0000-0000-0000-000000000001")
 		lesson, err := adminGrant.GetLessonByUUID(uuid)
 
-		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, &errors.ErrLessonNotFound, err)
 		assert.Equal(t, gentypes.Lesson{}, lesson)
 	})
 
@@ -245,4 +246,66 @@ func TestGetLessons(t *testing.T) {
 
 	})
 
+}
+
+func TestUpdateLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		l, err := nonAdminGrant.UpdateLesson(gentypes.UpdateLessonInput{})
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+		assert.Equal(t, gentypes.Lesson{}, l)
+	})
+
+	t.Run("Input must be valid", func(t *testing.T) {
+		invalidInput := gentypes.UpdateLessonInput{
+			Text: helpers.StringPointer("{"),
+		}
+
+		l, err := adminGrant.UpdateLesson(invalidInput)
+		assert.Equal(t, invalidInput.Validate(), err)
+		assert.Equal(t, gentypes.Lesson{}, l)
+	})
+
+	t.Run("Lesson must exist", func(t *testing.T) {
+		l, err := adminGrant.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrLessonNotFound, err)
+		assert.Equal(t, gentypes.Lesson{}, l)
+	})
+
+	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
+	input := gentypes.UpdateLessonInput{
+		UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Title: helpers.StringPointer("Diagonalizing Matrices"),
+		Text:  helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags:  &tags,
+	}
+	t.Run("Updates existing lesson", func(t *testing.T) {
+		lesson, err := adminGrant.UpdateLesson(input)
+
+		expected := gentypes.Lesson{
+			UUID:  input.UUID,
+			Title: *input.Title,
+			Text:  *input.Text,
+			Tags: []gentypes.Tag{
+				{
+					UUID:  tags[0],
+					Name:  "Fancy tag for cool people",
+					Color: "#123",
+				},
+			},
+		}
+
+		assert.Nil(t, err)
+		assert.Equal(t, expected, lesson)
+
+		lesson, err = adminGrant.GetLessonByUUID(input.UUID)
+		assert.Nil(t, err)
+
+		_tags, tag_err := adminGrant.GetTagsByLessonUUID(input.UUID.String())
+		lesson.Tags = _tags
+
+		assert.Nil(t, tag_err)
+		assert.Equal(t, expected, lesson)
+	})
 }

@@ -78,7 +78,7 @@ func (g *Grant) GetLessonByUUID(UUID gentypes.UUID) (gentypes.Lesson, error) {
 	query := database.GormDB.Where("uuid = ?", UUID).First(&lesson)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return gentypes.Lesson{}, &errors.ErrNotFound
+			return gentypes.Lesson{}, &errors.ErrLessonNotFound
 		}
 
 		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get lesson")
@@ -166,4 +166,57 @@ func (g *Grant) GetLessons(
 		Limit:  limit,
 		Given:  int32(len(lessons)),
 	}, nil
+}
+
+// UpdateLesson updates an existing lesson
+func (g *Grant) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error) {
+	if !g.IsAdmin {
+		return gentypes.Lesson{}, &errors.ErrUnauthorized
+	}
+
+	// Validate input
+	if err := input.Validate(); err != nil {
+		return gentypes.Lesson{}, err
+	}
+
+	var lesson models.Lesson
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&lesson)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return gentypes.Lesson{}, &errors.ErrLessonNotFound
+		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find lesson to update with UUID: %s", input.UUID)
+		return gentypes.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	if input.Title != nil {
+		lesson.Title = *input.Title
+	}
+	if input.Text != nil {
+		lesson.Text = *input.Text
+	}
+	if input.Tags != nil {
+		tags, err := g.CheckTagsExist(*input.Tags)
+
+		if err != nil {
+			return gentypes.Lesson{}, err
+		}
+		lesson.Tags = tags
+
+		remove := database.GormDB.Delete(models.LessonTagsLink{}, "lesson_uuid = ?", lesson.UUID)
+		if remove.Error != nil {
+			g.Logger.Logf(sentry.LevelError, remove.Error, "Error updating tags linked with lesson %s", lesson.UUID)
+			return gentypes.Lesson{}, remove.Error
+		}
+
+	}
+
+	save := database.GormDB.Model(&models.Lesson{}).Where("uuid = ?", lesson.UUID).Updates(&lesson)
+	if save.Error != nil {
+		g.Logger.Logf(sentry.LevelError, save.Error, "Error updating lesson with UUID: %s", input.UUID)
+		return gentypes.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	return g.lessonToGentype(lesson), nil
 }

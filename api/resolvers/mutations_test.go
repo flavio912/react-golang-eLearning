@@ -1263,3 +1263,105 @@ func TestCreateCategory(t *testing.T) {
 	// 	CleanDB:         false,
 	// })
 }
+
+func TestUpdateLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						title: "Backtracking"
+					}) {
+						uuid
+						title
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"title": "Backtracking"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000003"
+						title: "Jacobian Matrix"
+						text: "{\"space\":\"time\"}"
+						tags: ["00000000-0000-0000-0000-000000000001"]
+					}) {
+						uuid
+						title
+						text
+						tags {
+							uuid
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson" : {
+						"uuid" : "00000000-0000-0000-0000-000000000003",
+						"title": "Jacobian Matrix",
+						"text": "{\"space\":\"time\"}",
+						"tags": [
+							{
+								"uuid": "00000000-0000-0000-0000-000000000001"
+							}
+						]
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Lesson does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: &errors.ErrLessonNotFound,
+					Path:          []interface{}{"updateLesson"},
+				},
+			},
+		},
+	})
+
+	// t.Run("Test loaders reset", func(t *testing.T) {
+	// 	prepareTestDatabase()
+
+	// 	gqltest.RunTests(t, []*gqltest.Test{
+	// 		{
+	// 			Name: "",
+	// 		}
+	// 	})
+	// })
+}

@@ -40,4 +40,5 @@ type Mutation {
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
   createLesson(input: CreateLessonInput!): Lesson
+  updateLesson(input: UpdateLessonInput!): Lesson
 }
