@@ -309,3 +309,35 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Equal(t, expected, lesson)
 	})
 }
+
+func TestDeleteLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must be admin", func(t *testing.T) {
+		b, err := nonAdminGrant.DeleteLesson(gentypes.DeleteLessonInput{})
+
+		assert.Equal(t, &errors.ErrUnauthorized, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Must delete lesson", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
+
+		b, err := adminGrant.DeleteLesson(gentypes.DeleteLessonInput{
+			UUID: uuid,
+		})
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		lesson, get_err := adminGrant.GetLessonByUUID(uuid)
+
+		assert.Equal(t, &errors.ErrLessonNotFound, get_err)
+		assert.Equal(t, gentypes.Lesson{}, lesson)
+
+		tags, _ := adminGrant.GetTagsByLessonUUID(uuid.String())
+
+		assert.Equal(t, []gentypes.Tag{}, tags)
+	})
+
+}

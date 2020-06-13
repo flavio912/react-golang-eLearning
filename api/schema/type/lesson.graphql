@@ -22,3 +22,7 @@ input UpdateLessonInput {
   text: String
   tags: [UUID!]
 }
+
+input DeleteLessonInput {
+  uuid: UUID!
+}

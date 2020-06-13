@@ -44,3 +44,12 @@ func (u *UpdateLessonInput) Validate() error {
 	_, err := govalidator.ValidateStruct(u)
 	return err
 }
+
+type DeleteLessonInput struct {
+	UUID UUID `valid:"required"`
+}
+
+func (d *DeleteLessonInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
+	return err
+}

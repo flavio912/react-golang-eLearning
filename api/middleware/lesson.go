@@ -207,7 +207,7 @@ func (g *Grant) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson,
 		remove := database.GormDB.Delete(models.LessonTagsLink{}, "lesson_uuid = ?", lesson.UUID)
 		if remove.Error != nil {
 			g.Logger.Logf(sentry.LevelError, remove.Error, "Error updating tags linked with lesson %s", lesson.UUID)
-			return gentypes.Lesson{}, remove.Error
+			return gentypes.Lesson{}, &errors.ErrDeleteFailed
 		}
 
 	}
@@ -219,4 +219,34 @@ func (g *Grant) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson,
 	}
 
 	return g.lessonToGentype(lesson), nil
+}
+
+func (g *Grant) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
+	if !g.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	query := database.GormDB.Begin().Delete(models.LessonTagsLink{}, "lesson_uuid = ?", input.UUID)
+	if query.Error != nil {
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to remove tags linked with lesson: %s", input.UUID)
+		return false, &errors.ErrDeleteFailed
+	}
+
+	query = query.Delete(models.Lesson{}, "uuid = ?", input.UUID)
+	if query.Error != nil {
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete lesson: %s", input.UUID)
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if query.RowsAffected == 0 {
+		g.Logger.Logf(sentry.LevelError, &errors.ErrLessonNotFound, "Unable to delete non-existant lesson: %s", input.UUID)
+		return false, &errors.ErrLessonNotFound
+	}
+
+	if err := query.Commit().Error; err != nil {
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to commit transaction of deleting lesson %s", input.UUID)
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }
