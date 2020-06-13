@@ -1365,3 +1365,42 @@ func TestUpdateLesson(t *testing.T) {
 	// 	})
 	// })
 }
+
+func TestDeleteLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete lesson",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteLesson": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteLesson(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteLesson"},
+		AdminAllowed:    true,
+		MustAuth:        true,
+		DelegateAllowed: false,
+		ManagerAllowed:  false,
+	})
+}

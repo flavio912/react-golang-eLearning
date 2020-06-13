@@ -41,4 +41,5 @@ type Mutation {
   createCategory(input: CreateCategoryInput!): Category
   createLesson(input: CreateLessonInput!): Lesson
   updateLesson(input: UpdateLessonInput!): Lesson
+  deleteLesson(input: DeleteLessonInput!): Boolean!
 }
