@@ -41,4 +41,5 @@ type Mutation {
   createCategory(input: CreateCategoryInput!): Category
   createLesson(input: CreateLessonInput!): Lesson
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+  createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
 }

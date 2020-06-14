@@ -23,23 +23,39 @@ var (
 
 	adminGrant    = middleware.Grant{auth.UserClaims{}, true, false, false, false, false, logging.Logger{}}
 	nonAdminGrant = middleware.Grant{auth.UserClaims{}, false, true, true, false, false, logging.Logger{}}
-	managerGrant  = middleware.Grant{auth.UserClaims{
-		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-		Role:    auth.ManagerRole,
-	}, false, true, false, false, false, logging.Logger{}}
-	delegateGrant = middleware.Grant{auth.UserClaims{
-		UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-		Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-		Role:    auth.DelegateRole,
-	}, false, false, true, false, false, logging.Logger{}}
+	managerGrant  = middleware.Grant{
+		Claims: auth.UserClaims{
+			UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Role:    auth.ManagerRole,
+		},
+		Logger:    logging.Logger{},
+		IsManager: true,
+	}
+	delegateGrant = middleware.Grant{
+		Claims: auth.UserClaims{
+			UUID:    gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Company: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Role:    auth.DelegateRole,
+		},
+		Logger:     logging.Logger{},
+		IsDelegate: true,
+	}
+	individualGrant = middleware.Grant{
+		Claims: auth.UserClaims{
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000012"),
+			Role: auth.IndividualRole,
+		},
+		Logger:       logging.Logger{},
+		IsIndividual: true,
+	}
 	publicGrant = middleware.Grant{IsPublic: true}
 	uuidZero    = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
 )
 
 func TestMain(m *testing.M) {
 	var err error
-	fixtures, err = testhelpers.SetupTestDatabase(true, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}

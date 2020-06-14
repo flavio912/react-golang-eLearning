@@ -1,0 +1,20 @@
+- uuid: 00000000-0000-0000-0000-000000000012
+  created_at: 2020-01-08 13:53:37.338775+00
+  updated_at: 2020-01-08 13:53:37.338775+00
+  email: individual@individual.com
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: Nice
+  last_name: Sharron
+  telephone: 07912935287
+  job_title: Cool Person
+  course_taker_id: 2
+- uuid: 00000000-0000-0000-0000-000000000013
+  created_at: 2020-01-08 13:53:37.338775+00
+  updated_at: 2020-01-08 13:53:37.338775+00
+  email: funnyflo@gmail.com
+  password: $2a$12$GWhTzhA26ERKsRyaTBAdP.cBB4Ruej6/Ee8e/0HrJP3Sxe7yYYcZm #Hashed version of `iamamanager`
+  first_name: Funny
+  last_name: Florence
+  telephone: 07912935287
+  job_title: Cool Person
+  course_taker_id: 3

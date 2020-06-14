@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/app/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/app/courses"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -356,4 +358,27 @@ func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Inp
 	}
 
 	return courses.PurchaseCourses(grant, args.Input)
+}
+
+type CreateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
+	Input gentypes.CreateIndividualInput
+}) (*CreateIndividualResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+
+	user, err := users.CreateIndividual(grant, args.Input)
+	if err != nil {
+		return &CreateIndividualResponse{}, err
+	}
+
+	res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &CreateIndividualResponse{
+		User: res,
+	}, err
 }

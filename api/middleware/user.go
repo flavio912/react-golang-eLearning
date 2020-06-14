@@ -25,6 +25,18 @@ func (g *Grant) ManagerToUser(delegate models.Delegate) gentypes.User {
 	}
 }
 
+func (g *Grant) IndividualToUser(individual models.Individual) gentypes.User {
+	return gentypes.User{
+		Type:      gentypes.IndividualType,
+		Email:     &individual.Email,
+		FirstName: individual.FirstName,
+		LastName:  individual.LastName,
+		Telephone: individual.Telephone,
+		JobTitle:  individual.JobTitle,
+		LastLogin: individual.LastLogin.String(),
+	}
+}
+
 func (g *Grant) GetCurrentUser() (gentypes.User, error) {
 	if g.IsDelegate {
 		delegate, err := g.GetDelegateByUUID(g.Claims.UUID)
@@ -37,7 +49,8 @@ func (g *Grant) GetCurrentUser() (gentypes.User, error) {
 	}
 
 	if g.IsIndividual {
-		// individual, err := g.GetIndividualByUUID(uuid)
+		individual, err := g.Individual(g.Claims.UUID)
+		return g.IndividualToUser(individual), err
 	}
 
 	return gentypes.User{}, &errors.ErrUnauthorized
