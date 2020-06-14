@@ -57,7 +57,19 @@ func PurchaseCourses(grant *middleware.Grant, input gentypes.PurchaseCoursesInpu
 
 	// If manager is part of a contract company don't charge them and fulfil immediately
 	if grant.IsManager {
-		//TODO: check if contract customer
+		manager, err := grant.Manager(grant.Claims.UUID)
+		if err != nil {
+			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
+		}
+
+		company, err := grant.Company(manager.CompanyUUID)
+		if err != nil {
+			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
+		}
+
+		if company.IsContract {
+			// TODO: Fulfil immediately
+		}
 	}
 
 	// If normal purchasing applies

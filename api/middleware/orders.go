@@ -1,7 +1,10 @@
 package middleware
 
 import (
+	"fmt"
+
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -57,6 +60,43 @@ func (g *Grant) CreatePendingOrder(price float64, courseIds []uint, courseTakerI
 	return intent, nil
 }
 
-func (g *Grant) FulfilPendingOrder() {
+// FulfilPendingOrder gives the users the courses they purchased, should only be run after payment confirmation
+func FulfilPendingOrder(clientSecret string) error {
 
+	var pendingOrder models.PendingOrder
+	query := database.GormDB.
+		Preload("Courses").
+		Preload("CourseTakers").
+		Where("stripe_client_secret = ?", clientSecret).
+		Find(&pendingOrder)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return &errors.ErrNotFound
+		}
+
+		sentry.CaptureException(query.Error)
+		return &errors.ErrWhileHandling
+	}
+
+	for _, courseTaker := range pendingOrder.CourseTakers {
+		var activeCourses []models.ActiveCourse
+
+		for _, course := range pendingOrder.Courses {
+			activeCourses = append(activeCourses, models.ActiveCourse{
+				CourseTakerID: courseTaker.ID,
+				CourseID:      course.ID,
+			})
+		}
+
+		courseTaker.ActiveCourses = activeCourses
+		if err := database.GormDB.Save(&courseTaker).Error; err != nil {
+			sentry.CaptureException(err)
+			sentry.CaptureMessage(fmt.Sprintf("Unable to fulfil pending order: %s", clientSecret))
+			glog.Errorf("Unable to fufil pending order: %s : %s", err.Error(), clientSecret)
+			return &errors.ErrWhileHandling
+		}
+	}
+
+	return nil
 }

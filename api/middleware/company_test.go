@@ -7,6 +7,7 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -171,19 +172,19 @@ func TestGetCompaniesByUUID(t *testing.T) {
 	// TODO: Test for managers + delegates access to companies
 }
 
-func TestGetCompanyByUUID(t *testing.T) {
+func TestCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Admin can get company", func(t *testing.T) {
-		company, err := adminGrant.GetCompanyByUUID(realCompany)
+		company, err := adminGrant.Company(realCompany)
 		assert.Nil(t, err)
 		assert.Equal(t, realCompany, company.UUID)
 	})
 
 	t.Run("Get non-existant company", func(t *testing.T) {
-		company, err := adminGrant.GetCompanyByUUID(fakeCompany)
+		company, err := adminGrant.Company(fakeCompany)
 		assert.Equal(t, &errors.ErrCompanyNotFound, err)
-		assert.Equal(t, gentypes.Company{}, company)
+		assert.Equal(t, models.Company{}, company)
 	})
 
 	// TODO: Test if manager can get own company
@@ -314,15 +315,9 @@ func TestCreateCompanyRequest(t *testing.T) {
 
 		// get the latest company
 		ids, _, _ := adminGrant.GetCompanyUUIDs(nil, nil, nil)
-		company, _ := adminGrant.GetCompanyByUUID(ids[len(ids)-1])
-		approved := false
-		assert.Equal(t, gentypes.Company{
-			UUID:      company.UUID,
-			CreatedAt: company.CreatedAt,
-			Name:      newCompInput.CompanyName,
-			Approved:  &approved,
-			AddressID: company.AddressID,
-		}, company)
+		company, _ := adminGrant.Company(ids[len(ids)-1])
+		assert.Equal(t, false, company.Approved)
+		assert.Equal(t, newCompInput.CompanyName, company.Name)
 
 		// check address
 		addresses, err := adminGrant.GetAddressesByIDs([]uint{company.AddressID})
@@ -341,7 +336,7 @@ func TestCreateCompanyRequest(t *testing.T) {
 		managers, _, err := adminGrant.GetManagerIDsByCompany(company.UUID, nil, nil, nil)
 		require.Nil(t, err)
 		require.Len(t, managers, 1, "Should return the new manager")
-		manager, err := adminGrant.GetManagerByUUID(managers[0])
+		manager, err := adminGrant.Manager(managers[0])
 		assert.Nil(t, err)
 		assert.Equal(t, gentypes.Manager{
 			CreatedAt:       manager.CreatedAt,

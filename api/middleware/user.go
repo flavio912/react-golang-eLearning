@@ -44,7 +44,7 @@ func (g *Grant) GetCurrentUser() (gentypes.User, error) {
 	}
 
 	if g.IsManager {
-		manager, err := g.GetManagerByUUID(g.Claims.UUID)
+		manager, err := g.Manager(g.Claims.UUID)
 		return gentypes.ManagerToUser(manager), err
 	}
 

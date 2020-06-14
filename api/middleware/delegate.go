@@ -261,7 +261,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	}
 
 	// Get company
-	comp, err := g.GetCompanyByUUID(companyUUID)
+	comp, err := g.Company(companyUUID)
 	if err != nil {
 		return gentypes.Delegate{}, nil, err
 	}

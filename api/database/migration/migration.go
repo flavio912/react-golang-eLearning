@@ -16,7 +16,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Delegate{})
 	database.GormDB.AutoMigrate(&models.CourseTaker{})
 
-	database.GormDB.Model(&models.Delegate{}).AddForeignKey("course_taker_id", "course_taker(id)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.Delegate{}).AddForeignKey("course_taker_id", "course_takers(id)", "CASCADE", "RESTRICT")
 
 	// Courses
 	database.GormDB.AutoMigrate(&models.Course{})
@@ -31,6 +31,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Test{})
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
+	database.GormDB.AutoMigrate(&models.ActiveCourse{})
 
 	// If course is deleted, delete the requirements and what you learn too
 	database.GormDB.Model(&models.RequirementBullet{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")

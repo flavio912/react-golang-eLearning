@@ -117,7 +117,7 @@ func filterManager(query *gorm.DB, filter *gentypes.ManagersFilter) *gorm.DB {
 	return query
 }
 
-func (g *Grant) GetManagerByUUID(UUID gentypes.UUID) (gentypes.Manager, error) {
+func (g *Grant) Manager(UUID gentypes.UUID) (gentypes.Manager, error) {
 	// Admins can get any manager data
 	// Managers can only get their own uuid
 	if g.IsAdmin || (g.IsManager && UUID == g.Claims.UUID) {
@@ -182,7 +182,7 @@ func (g *Grant) GetManagerSelf() (gentypes.Manager, error) {
 		return gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := g.GetManagerByUUID(g.Claims.UUID)
+	manager, err := g.Manager(g.Claims.UUID)
 	if err != nil {
 		return gentypes.Manager{}, err
 	}
