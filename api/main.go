@@ -114,6 +114,7 @@ func main() {
 		Loaders: loaders,
 	}
 	http.Handle("/graphql", handler.CORSMiddleware(sentryHandler.Handle(auth.Handler(handle.Serve()))))
+	http.Handle("/stripe", handler.ServeStripeWebook())
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

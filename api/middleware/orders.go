@@ -100,3 +100,19 @@ func FulfilPendingOrder(clientSecret string) error {
 
 	return nil
 }
+
+// CancelPendingOrder deletes a pending order from the DB. Usually after stripe
+// has confirmed the payment has failed for some reason
+func CancelPendingOrder(clientSecret string) error {
+	query := database.GormDB.Where("stripe_client_secret = ?", clientSecret).Delete(&models.PendingOrder{})
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return &errors.ErrNotFound
+		}
+
+		sentry.CaptureException(query.Error)
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}
