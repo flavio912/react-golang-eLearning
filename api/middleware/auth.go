@@ -5,7 +5,6 @@ import (
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -91,34 +90,6 @@ func GetIndividualAccessToken(email string, password string) (string, error) {
 		return "", &errors.ErrAuthFailed
 	}
 	return token, nil
-}
-
-// HasFullRestrictedAccess returns true if the user has access to all restricted courses
-func (g *Grant) HasFullRestrictedAccess() bool {
-	if g.IsAdmin {
-		return true
-	}
-
-	// If a managers company is authorized a manager can view all restricted courses
-	if g.IsManager {
-		company := models.Company{}
-		query := database.GormDB.Where("uuid = ?", g.Claims.Company).First(&company)
-		if query.Error != nil {
-			g.Logger.Log(sentry.LevelError, query.Error, "Unable to get manager's company")
-			return false
-		}
-
-		if company.Approved {
-			return true
-		}
-	}
-
-	// Delegates cannot access restricted courses unless specifically assigned them
-	if g.IsDelegate {
-		return false
-	}
-
-	return false
 }
 
 func (g *Grant) GenerateCSRFToken() (string, error) {

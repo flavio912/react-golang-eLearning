@@ -27,13 +27,14 @@ var (
 	schema             *graphql.Schema = helpers.ParseSchema(s.String(), &resolvers.RootResolver{})
 	baseAdminContext   context.Context
 	baseManagerContext context.Context
+	basePublicContext  context.Context
 )
 
 func TestMain(m *testing.M) {
 	var err error
 
 	// Load in the config.yaml file
-	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(false, "resolvers_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}
@@ -47,7 +48,10 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		return
 	}
-
+	basePublicContext, err = addPublicCreds(context.Background())
+	if err != nil {
+		return
+	}
 	os.Exit(m.Run())
 }
 
@@ -63,6 +67,10 @@ func defaultContext() context.Context {
 
 func adminContext() context.Context {
 	return attachLoaders(baseAdminContext)
+}
+
+func publicContext() context.Context {
+	return attachLoaders(basePublicContext)
 }
 
 func managerContext() context.Context {
@@ -103,6 +111,10 @@ func addManagerCreds(ctx context.Context) (context.Context, error) {
 	}
 
 	return context.WithValue(ctx, auth.GrantKey, grant), nil
+}
+
+func addPublicCreds(ctx context.Context) (context.Context, error) {
+	return context.WithValue(ctx, auth.GrantKey, &middleware.Grant{IsPublic: true}), nil
 }
 
 func prepareTestDatabase() {

@@ -3,6 +3,10 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/courses"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -110,10 +114,11 @@ func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input g
 
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+		return nil, &errors.ErrUnauthorized
 	}
+	adminFuncs := application.NewAdminApp(grant)
 
-	admin, addErr := grant.CreateAdmin(args.Input)
+	admin, addErr := adminFuncs.CreateAdmin(args.Input)
 	if addErr != nil {
 		return nil, addErr
 	}
@@ -130,10 +135,11 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+		return nil, &errors.ErrUnauthorized
 	}
 
-	admin, err := grant.UpdateAdmin(args.Input)
+	adminFuncs := application.NewAdminApp(grant)
+	admin, err := adminFuncs.UpdateAdmin(args.Input)
 	if err != nil {
 		return nil, err
 	}
@@ -148,8 +154,8 @@ func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input g
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
 	}
-
-	success, err := grant.DeleteAdmin(args.Input.UUID)
+	adminFuncs := application.NewAdminApp(grant)
+	success, err := adminFuncs.DeleteAdmin(args.Input.UUID)
 	return success, err
 }
 
@@ -269,37 +275,37 @@ func (m *MutationResolver) SaveOnlineCourse(
 	ctx context.Context,
 	args struct {
 		Input gentypes.SaveOnlineCourseInput
-	}) (*OnlineCourseResolver, error) {
+	}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &OnlineCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
 	course, err := grant.SaveOnlineCourse(args.Input)
 	if err != nil {
-		return &OnlineCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{
-		OnlineCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
 	Input gentypes.SaveClassroomCourseInput
-}) (*ClassroomCourseResolver, error) {
+}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &ClassroomCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
 	course, err := grant.SaveClassroomCourse(args.Input)
 	if err != nil {
-		return &ClassroomCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{
-		ClassroomCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
@@ -344,5 +350,41 @@ func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input 
 
 	return &LessonResolver{
 		Lesson: lesson,
+	}, err
+}
+
+func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Input gentypes.PurchaseCoursesInput }) (*gentypes.PurchaseCoursesResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
+	}
+
+	courseApp := courses.NewCourseApp(grant)
+	return courseApp.PurchaseCourses(args.Input)
+}
+
+type CreateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
+	Input gentypes.CreateIndividualInput
+}) (*CreateIndividualResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
+	}
+
+	user, err := users.CreateIndividual(grant, args.Input)
+	if err != nil {
+		return &CreateIndividualResponse{}, err
+	}
+
+	res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &CreateIndividualResponse{
+		User: res,
 	}, err
 }

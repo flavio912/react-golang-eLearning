@@ -15,12 +15,23 @@ const (
 	LessonType StructureElement = "lesson"
 )
 
+type CourseType string
+
+const (
+	ClassroomCourseType CourseType = "classroom"
+	OnlineCourseType    CourseType = "online"
+)
+
 type CourseInput struct {
-	UUID               *UUID
+	ID                 *uint
 	Name               *string
 	CategoryUUID       *UUID
 	Excerpt            *string `valid:"json"`
 	Introduction       *string `valid:"json"`
+	HowToComplete      *string `valid:"json"`
+	HoursToComplete    *float64
+	WhatYouLearn       *[]string
+	Requirements       *[]string
 	BackgroundCheck    *bool
 	AccessType         *AccessType
 	Price              *float64
@@ -41,28 +52,43 @@ type ModuleItem struct {
 	UUID UUID
 }
 
-type CourseInfo struct {
+type Course struct {
 	ID              uint
 	Name            string
 	AccessType      AccessType
+	CourseType      CourseType
+	AllowedToBuy    bool // Helper field, true if current user is allowed to buy this course
 	BackgroundCheck bool
 	Price           float64
 	Tags            []Tag
 	Color           string `valid:"hexcolor"`
 	Introduction    string `valid:"json"`
+	HowToComplete   string `valid:"json"`
+	HoursToComplete float64
+	WhatYouLearn    []string
+	Requirements    []string
 	Excerpt         string `valid:"json"`
 	SpecificTerms   string `valid:"json"`
 	CategoryUUID    *UUID
 }
 
-type Course struct {
-	UUID         UUID
-	CourseInfoID uint
-}
-
-type CourseInfoFilter struct {
+type CourseFilter struct {
 	Name            *string
 	AccessType      *AccessType
 	BackgroundCheck *bool
 	Price           *float64
+	AllowedToBuy    *bool
+}
+
+type PurchaseCoursesInput struct {
+	Courses                []int32
+	Users                  []UUID
+	ExtraInvoiceEmail      *string `valid:"email"`
+	AcceptedTerms          bool
+	BackgroundCheckConfirm *bool
+}
+
+type PurchaseCoursesResponse struct {
+	TransactionComplete bool
+	StripeClientSecret  *string
 }

@@ -51,21 +51,7 @@ func (g *Grant) delegatesToGentype(delegates []models.Delegate) []gentypes.Deleg
 	return genDelegates
 }
 
-func (g *Grant) delegateExists(email string, ttcId string) bool {
-	query := database.GormDB.Where("email = ? or ttc_id = ?", email, ttcId).First(&models.Delegate{})
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return false
-		}
-
-		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find delegate for Email: %s", email)
-		return false
-	}
-
-	return true
-}
-
-func (g *Grant) getDelegateModel(uuid gentypes.UUID) (models.Delegate, error) {
+func (g *Grant) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
 	var delegate models.Delegate
 	err := database.GormDB.Where("uuid = ?", uuid).Find(&delegate).Error
 	if err != nil {
@@ -86,8 +72,34 @@ func (g *Grant) getDelegateModel(uuid gentypes.UUID) (models.Delegate, error) {
 	return delegate, nil
 }
 
+func (g *Grant) DelegateExists(email string, ttcId string) bool {
+	// Only managers and admins can check a delegate exists
+	if !g.IsManager || !g.IsAdmin {
+		return false
+	}
+
+	query := database.GormDB.Where("email = ? or ttc_id = ?", email, ttcId)
+
+	// Managers can only check inside their own company
+	if g.IsManager {
+		query = query.Where("company_uuid = ?", g.Claims.Company)
+	}
+
+	query = query.First(&models.Delegate{})
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return false
+		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find delegate for Email: %s", email)
+		return false
+	}
+
+	return true
+}
+
 func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
-	delegate, err := g.getDelegateModel(UUID)
+	delegate, err := g.Delegate(UUID)
 
 	if err != nil {
 		return gentypes.Delegate{}, err
@@ -194,7 +206,7 @@ func (g *Grant) GenerateFinaliseDelegateToken(delegateUUID gentypes.UUID) (strin
 		return "", &errors.ErrUnauthorized
 	}
 
-	delegate, err := g.getDelegateModel(delegateUUID)
+	delegate, err := g.Delegate(delegateUUID)
 	if err != nil {
 		return "", err
 	}
@@ -249,7 +261,7 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 	}
 
 	// Get company
-	comp, err := g.GetCompanyByUUID(companyUUID)
+	comp, err := g.Company(companyUUID)
 	if err != nil {
 		return gentypes.Delegate{}, nil, err
 	}
@@ -297,16 +309,25 @@ func (g *Grant) CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (ge
 		return gentypes.Delegate{}, nil, err
 	}
 
+	// Add link manually because gorm doesn't like blank associations
+	var courseTaker = models.CourseTaker{}
+	if err := tx.Create(&courseTaker).Error; err != nil {
+		tx.Rollback()
+		g.Logger.Log(sentry.LevelError, err, "Unable to create courseTaker")
+		return gentypes.Delegate{}, nil, &errors.ErrWhileHandling
+	}
+
 	delegate := models.Delegate{
-		FirstName:   delegateDetails.FirstName,
-		LastName:    delegateDetails.LastName,
-		JobTitle:    delegateDetails.JobTitle,
-		Telephone:   delegateDetails.Telephone,
-		Password:    password,
-		Email:       delegateDetails.Email,
-		CompanyUUID: companyUUID,
-		TtcId:       ttcId,
-		ProfileKey:  s3UploadKey,
+		FirstName:     delegateDetails.FirstName,
+		LastName:      delegateDetails.LastName,
+		JobTitle:      delegateDetails.JobTitle,
+		Telephone:     delegateDetails.Telephone,
+		Password:      password,
+		Email:         delegateDetails.Email,
+		CompanyUUID:   companyUUID,
+		TtcId:         ttcId,
+		ProfileKey:    s3UploadKey,
+		CourseTakerID: courseTaker.ID,
 	}
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {

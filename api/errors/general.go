@@ -1,5 +1,9 @@
 package errors
 
+import (
+	"fmt"
+)
+
 var (
 	// ErrUserNotFound given when database could not find a user
 	ErrUserNotFound = FullError{
@@ -126,5 +130,19 @@ var (
 	ErrCSRFTokenInvalid = SimpleError{
 		Type:    "ErrCSRFTokenInvalid",
 		Message: "The given CSRF token was blank or invalid",
+	}
+	ErrUnauthorizedToBook = SimpleError{
+		Type:    "ErrUnauthorizedToBook",
+		Message: "You cannot book these courses as you are not authorized",
+	}
+	ErrNotAllFound = SimpleError{
+		Type:    "ErrNotAllFound",
+		Message: "Not all items you were looking for were found",
+	}
+	ErrDelegateDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrDelegateDoesNotExist",
+			Message: fmt.Sprintf("The given delegate does not exist: %s", uuid),
+		}
 	}
 )

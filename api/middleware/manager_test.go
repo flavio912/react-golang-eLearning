@@ -68,7 +68,7 @@ func TestCreateManager(t *testing.T) {
 	}
 }
 
-func TestGetManagerByUUID(t *testing.T) {
+func TestManager(t *testing.T) {
 	prepareTestDatabase()
 
 	tests := []struct {
@@ -112,7 +112,7 @@ func TestGetManagerByUUID(t *testing.T) {
 	// these only check the uuid returned is correct
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			m, err := test.grant.GetManagerByUUID(test.uuid)
+			m, err := test.grant.Manager(test.uuid)
 			assert.Equal(t, test.wantErr, err)
 			if test.wantErr == nil {
 				assert.Equal(t, test.uuid, m.UUID)
@@ -193,7 +193,7 @@ func TestGetManagerSelf(t *testing.T) {
 	}{
 		{
 			"Must be manager",
-			middleware.Grant{auth.UserClaims{}, true, false, true, false, logging.Logger{}},
+			middleware.Grant{auth.UserClaims{}, true, false, true, false, false, logging.Logger{}},
 			"",
 			&errors.ErrUnauthorized,
 		},
@@ -263,7 +263,7 @@ func TestDeleteManager(t *testing.T) {
 			if test.wantErr == nil {
 				// check deleted
 				assert.Equal(t, true, ret)
-				_, err := test.grant.GetManagerByUUID(test.uuid)
+				_, err := test.grant.Manager(test.uuid)
 				assert.Equal(t, err, &errors.ErrNotFound)
 			} else {
 				// should return a blank manager if it errors
@@ -386,7 +386,7 @@ func TestUpdateManager(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, outputWant, manager)
 
-		manager, err = adminGrant.GetManagerByUUID(input.UUID)
+		manager, err = adminGrant.Manager(input.UUID)
 		assert.Nil(t, err)
 		assert.Equal(t, outputWant, manager)
 	})

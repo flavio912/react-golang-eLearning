@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -25,10 +26,11 @@ func (q *QueryResolver) Info(ctx context.Context) (string, error) {
 func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.Page }) (*AdminPageResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &AdminPageResolver{}, &errors.ErrUnauthorized
+		return nil, &errors.ErrUnauthorized
 	}
 
-	admins, page, err := grant.GetAdmins(args.Page, nil)
+	adminFuncs := application.NewAdminApp(grant)
+	admins, page, err := adminFuncs.PageAdmins(args.Page, nil)
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{
@@ -47,7 +49,6 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 // Admin gets a single admin
 func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UUID }) (*AdminResolver, error) {
 	admin, err := loader.LoadAdmin(ctx, args.UUID.String())
-
 	return &AdminResolver{admin: admin}, err
 }
 
@@ -178,69 +179,6 @@ func (q *QueryResolver) Company(ctx context.Context, args struct{ UUID string })
 	})
 }
 
-func (q *QueryResolver) OnlineCourses(ctx context.Context, args struct {
-	Page    *gentypes.Page
-	Filter  *gentypes.OnlineCourseFilter
-	OrderBy *gentypes.OrderBy
-}) (*OnlineCoursePageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &OnlineCoursePageResolver{}, &errors.ErrUnauthorized
-	}
-
-	courses, pageInfo, err := grant.GetOnlineCourses(args.Page, args.Filter, args.OrderBy)
-	if err != nil {
-		return &OnlineCoursePageResolver{}, err
-	}
-
-	var courseResolvers []*OnlineCourseResolver
-	for _, course := range courses {
-		resolver, err := NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{OnlineCourse: course})
-		if err != nil {
-			return &OnlineCoursePageResolver{}, err
-		}
-		courseResolvers = append(courseResolvers, resolver)
-	}
-
-	return &OnlineCoursePageResolver{
-		edges: &courseResolvers,
-		pageInfo: &PageInfoResolver{
-			pageInfo: &pageInfo,
-		}}, nil
-
-}
-
-func (q *QueryResolver) ClassroomCourses(ctx context.Context, args struct {
-	Page    *gentypes.Page
-	Filter  *gentypes.ClassroomCourseFilter
-	OrderBy *gentypes.OrderBy
-}) (*ClassroomCoursePageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &ClassroomCoursePageResolver{}, &errors.ErrUnauthorized
-	}
-
-	courses, pageInfo, err := grant.GetClassroomCourses(args.Page, args.Filter, args.OrderBy)
-	if err != nil {
-		return &ClassroomCoursePageResolver{}, err
-	}
-
-	var courseResolvers []*ClassroomCourseResolver
-	for _, course := range courses {
-		resolver, err := NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{ClassroomCourse: course})
-		if err != nil {
-			return &ClassroomCoursePageResolver{}, err
-		}
-		courseResolvers = append(courseResolvers, resolver)
-	}
-
-	return &ClassroomCoursePageResolver{
-		edges: &courseResolvers,
-		pageInfo: &PageInfoResolver{
-			pageInfo: &pageInfo,
-		}}, nil
-}
-
 func (q *QueryResolver) User(ctx context.Context) (*UserResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
@@ -289,6 +227,33 @@ func (q *QueryResolver) Lessons(ctx context.Context, args struct {
 
 	return &LessonPageResolver{
 		edges: &lessonResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Courses(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.CourseFilter
+	OrderBy *gentypes.OrderBy
+}) (*CoursePageResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &CoursePageResolver{}, &errors.ErrUnauthorized
+	}
+
+	courses, page, err := grant.GetCourses(args.Page, args.Filter, args.OrderBy)
+
+	var courseResolvers []*CourseResolver
+	for _, course := range courses {
+		courseResolvers = append(courseResolvers, &CourseResolver{
+			Course: course,
+		})
+	}
+
+	return &CoursePageResolver{
+		edges: &courseResolvers,
 		pageInfo: &PageInfoResolver{
 			&page,
 		},

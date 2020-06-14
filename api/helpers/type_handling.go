@@ -58,6 +58,21 @@ func UintPointer(unsignedInt uint) *uint {
 	return &_unsignedInt
 }
 
+func Int32ToUint(integer32 int32) uint {
+	if integer32 < 0 {
+		return 0
+	}
+	return uint(integer32)
+}
+
+func Int32sToUints(integer32s []int32) []uint {
+	var res = make([]uint, len(integer32s))
+	for index, val := range integer32s {
+		res[index] = Int32ToUint(val)
+	}
+	return res
+}
+
 func UUIDPointer(uuid gentypes.UUID) *gentypes.UUID {
 	_uuid := uuid
 	return &_uuid

@@ -3,41 +3,54 @@ package middleware
 import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func (g *Grant) GetUserByUUID(uuid gentypes.UUID) (gentypes.User, error) {
-	if g.IsDelegate {
-		delegate, err := g.GetDelegateByUUID(uuid)
+func (g *Grant) DelegateToUser(delegate models.Delegate) gentypes.User {
+	genDelegate := g.delegateToGentype(delegate)
+	return gentypes.DelegateToUser(genDelegate)
+}
 
-		return gentypes.User{
-			Type:            gentypes.DelegateType,
-			Email:           delegate.Email,
-			FirstName:       delegate.FirstName,
-			LastName:        delegate.LastName,
-			Telephone:       delegate.Telephone,
-			JobTitle:        &delegate.JobTitle,
-			LastLogin:       delegate.LastLogin,
-			ProfileImageUrl: delegate.ProfileImageURL,
-		}, err
+func (g *Grant) ManagerToUser(delegate models.Delegate) gentypes.User {
+	genDelegate := g.delegateToGentype(delegate)
+	return gentypes.User{
+		Type:            gentypes.DelegateType,
+		Email:           genDelegate.Email,
+		FirstName:       genDelegate.FirstName,
+		LastName:        genDelegate.LastName,
+		Telephone:       genDelegate.Telephone,
+		JobTitle:        &genDelegate.JobTitle,
+		LastLogin:       genDelegate.LastLogin,
+		ProfileImageUrl: genDelegate.ProfileImageURL,
+	}
+}
+
+func (g *Grant) IndividualToUser(individual models.Individual) gentypes.User {
+	return gentypes.User{
+		Type:      gentypes.IndividualType,
+		Email:     &individual.Email,
+		FirstName: individual.FirstName,
+		LastName:  individual.LastName,
+		Telephone: individual.Telephone,
+		JobTitle:  individual.JobTitle,
+		LastLogin: individual.LastLogin.String(),
+	}
+}
+
+func (g *Grant) GetCurrentUser() (gentypes.User, error) {
+	if g.IsDelegate {
+		delegate, err := g.GetDelegateByUUID(g.Claims.UUID)
+		return gentypes.DelegateToUser(delegate), err
 	}
 
 	if g.IsManager {
-		manager, err := g.GetManagerByUUID(uuid)
-
-		return gentypes.User{
-			Type:            gentypes.ManagerType,
-			Email:           &manager.Email,
-			FirstName:       manager.FirstName,
-			LastName:        manager.LastName,
-			Telephone:       &manager.Telephone,
-			JobTitle:        &manager.JobTitle,
-			LastLogin:       manager.LastLogin,
-			ProfileImageUrl: manager.ProfileImageURL,
-		}, err
+		manager, err := g.Manager(g.Claims.UUID)
+		return gentypes.ManagerToUser(manager), err
 	}
 
 	if g.IsIndividual {
-		// individual, err := g.GetIndividualByUUID(uuid)
+		individual, err := g.Individual(g.Claims.UUID)
+		return g.IndividualToUser(individual), err
 	}
 
 	return gentypes.User{}, &errors.ErrUnauthorized

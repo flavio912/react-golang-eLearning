@@ -44,6 +44,25 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 	return genCompanies
 }
 
+func (g *Grant) Company(uuid gentypes.UUID) (models.Company, error) {
+	if !g.ManagesCompany(uuid) {
+		return models.Company{}, &errors.ErrUnauthorized
+	}
+
+	var company models.Company
+	query := database.GormDB.Where("uuid = ?", uuid).First(&company)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Company{}, &errors.ErrCompanyNotFound
+		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Error finding company by uuid: %s", uuid)
+		return models.Company{}, &errors.ErrWhileHandling
+	}
+
+	return company, nil
+}
+
 // companyExists checks if a companyUUID exists in the DB
 func (g *Grant) companyExists(companyUUID gentypes.UUID) bool {
 	var company models.Company
@@ -67,7 +86,7 @@ func (g *Grant) IsCompanyDelegate(companyUUID gentypes.UUID) bool {
 // ManagesCompany is an access-control helper to work out if the current grant
 // is authorized to manage the given company uuid.
 func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
-	return g.IsAdmin || g.IsManager && g.Claims.Company == uuid
+	return g.IsAdmin || (g.IsManager && g.Claims.Company == uuid)
 }
 
 func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error) {
@@ -101,25 +120,6 @@ func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, e
 	}
 
 	return g.companiesToGentype(companies), nil
-}
-
-func (g *Grant) GetCompanyByUUID(uuid gentypes.UUID) (gentypes.Company, error) {
-	if !g.ManagesCompany(uuid) {
-		return gentypes.Company{}, &errors.ErrUnauthorized
-	}
-
-	var company models.Company
-	query := database.GormDB.Where("uuid = ?", uuid).First(&company)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return gentypes.Company{}, &errors.ErrCompanyNotFound
-		}
-
-		g.Logger.Logf(sentry.LevelError, query.Error, "Error finding company by uuid: %s", uuid)
-		return gentypes.Company{}, &errors.ErrWhileHandling
-	}
-
-	return g.companyToGentype(company), nil
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company
@@ -324,7 +324,8 @@ func CreateCompanyRequest(ctx context.Context, company gentypes.CreateCompanyInp
 			PostCode:     company.PostCode,
 			Country:      company.Country,
 		},
-		Approved: false,
+		Approved:   false,
+		IsContract: false,
 		Managers: []models.Manager{
 			models.Manager{
 				FirstName: manager.FirstName,
@@ -363,5 +364,28 @@ func (g *Grant) ApproveCompany(companyUUID gentypes.UUID) (gentypes.Company, err
 		return gentypes.Company{}, &errors.ErrWhileHandling
 	}
 
-	return g.GetCompanyByUUID(companyUUID)
+	comp, err := g.Company(companyUUID)
+	if err != nil {
+		return gentypes.Company{}, &errors.ErrWhileHandling
+	}
+
+	return g.companyToGentype(comp), nil
+}
+
+// IsFullyApproved checks if a user is approved to view all restricted courses
+func (g *Grant) IsFullyApproved() bool {
+	if g.IsAdmin {
+		return true
+	}
+	if !g.IsManager {
+		return false
+	}
+
+	var company, err = g.Company(g.Claims.Company)
+	if err != nil {
+		g.Logger.Log(sentry.LevelError, err, "Unable to check if manager is approved")
+		return false
+	}
+
+	return company.Approved
 }
