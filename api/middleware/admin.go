@@ -27,7 +27,7 @@ type adminRepository struct {
 	Logger *logging.Logger
 }
 
-func NewAdminRepository(logger *logging.Logger) *adminRepository {
+func NewAdminRepository(logger *logging.Logger) AdminRepository {
 	return &adminRepository{
 		Logger: logger,
 	}

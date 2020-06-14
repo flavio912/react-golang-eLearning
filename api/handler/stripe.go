@@ -8,10 +8,13 @@ import (
 	"os"
 
 	"github.com/getsentry/sentry-go"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/stripe/stripe-go"
 )
+
+var ordersRepository = middleware.NewOrdersRepository(&logging.Logger{Hub: sentry.CurrentHub()})
 
 func ServeStripeWebook() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -44,7 +47,7 @@ func ServeStripeWebook() http.Handler {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if err := middleware.FulfilPendingOrder(paymentIntent.ClientSecret); err != nil {
+			if err := ordersRepository.FulfilPendingOrder(paymentIntent.ClientSecret); err != nil {
 				sentry.CaptureMessage(fmt.Sprintf("Unable to fulfil order from stripe: %s", paymentIntent.ClientSecret))
 				w.WriteHeader(http.StatusServiceUnavailable)
 				return
@@ -58,7 +61,7 @@ func ServeStripeWebook() http.Handler {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if err := middleware.CancelPendingOrder(paymentIntent.ClientSecret); err != nil {
+			if err := ordersRepository.CancelPendingOrder(paymentIntent.ClientSecret); err != nil {
 				sentry.CaptureMessage(fmt.Sprintf("Unable to cancel order from stripe: %s", paymentIntent.ClientSecret))
 				w.WriteHeader(http.StatusServiceUnavailable)
 				return

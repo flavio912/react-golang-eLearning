@@ -7,61 +7,78 @@ import (
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
-
-	"github.com/stripe/stripe-go"
-	"github.com/stripe/stripe-go/paymentintent"
 )
 
-func (g *Grant) CreatePendingOrder(price float64, courseIds []uint, courseTakerIDs []uint, extraInvoiceEmail *string) (*stripe.PaymentIntent, error) {
+type OrdersRepository interface {
+	CreatePendingOrder(clientSecret string, courseIds []uint, courseTakerIds []uint, extraInvoiceEmail *string) error
+	FulfilPendingOrder(clientSecret string) error
+	CancelPendingOrder(clientSecret string) error
+}
+
+type ordersRepositoryImpl struct {
+	Logger *logging.Logger
+}
+
+func NewOrdersRepository(logger *logging.Logger) OrdersRepository {
+	return &ordersRepositoryImpl{
+		Logger: logger,
+	}
+}
+
+func (o *ordersRepositoryImpl) CreatePendingOrder(clientSecret string, courseIDs []uint, courseTakerIDs []uint, extraInvoiceEmail *string) error {
 	// Input validation
-	if len(courseIds) == 0 || len(courseTakerIDs) == 0 {
-		g.Logger.LogMessage(sentry.LevelWarning, "CourseIds or takers empty")
-		return &stripe.PaymentIntent{}, &errors.ErrNotFound
+	if len(courseIDs) == 0 || len(courseTakerIDs) == 0 {
+		o.Logger.LogMessage(sentry.LevelWarning, "CourseIDs or takers empty")
+		return &errors.ErrNotFound
 	}
 
-	pennyPrice := int64(price * 100) // This will discard any digit after two decimal places
-
-	params := &stripe.PaymentIntentParams{
-		Amount:   stripe.Int64(pennyPrice), // Convert to pence
-		Currency: stripe.String(string(stripe.CurrencyGBP)),
+	var numFoundCourses int
+	if err := database.GormDB.Model(models.Course{}).Where("id IN (?)", courseIDs).Count(&numFoundCourses).Error; err != nil {
+		o.Logger.Log(sentry.LevelWarning, err, "Unable to get courses for pending order")
+		return err
+	}
+	if numFoundCourses != len(courseIDs) {
+		return &errors.ErrNotAllFound
 	}
 
-	intent, err := paymentintent.New(params)
-	if err != nil {
-		g.Logger.Log(sentry.LevelError, err, "Unable to create payment intent")
-		return &stripe.PaymentIntent{}, &errors.ErrWhileHandling
+	var numFoundTakers int
+	if err := database.GormDB.Model(models.CourseTaker{}).Where("id IN (?)", courseTakerIDs).Count(&numFoundTakers).Error; err != nil {
+		o.Logger.Log(sentry.LevelInfo, err, "Unable to get course takers for pending order")
+		return err
+	}
+	if numFoundTakers != len(courseTakerIDs) {
+		return &errors.ErrNotAllFound
 	}
 
-	courses, err := g.Courses(courseIds)
-	if err != nil {
-		g.Logger.Log(sentry.LevelInfo, err, "Unable to get courses for pending order")
-		return &stripe.PaymentIntent{}, err
+	courses := make([]models.Course, len(courseIDs))
+	for index, id := range courseIDs {
+		courses[index] = models.Course{ID: id}
 	}
 
-	takers, err := g.CourseTakers(courseTakerIDs)
-	if err != nil {
-		g.Logger.Log(sentry.LevelInfo, err, "Unable to get course takers for pending order")
-		return &stripe.PaymentIntent{}, err
+	takers := make([]models.CourseTaker, len(courseTakerIDs))
+	for index, id := range courseIDs {
+		takers[index] = models.CourseTaker{ID: id}
 	}
 
 	pendingOrder := models.PendingOrder{
-		StripeClientSecret: intent.ClientSecret,
+		StripeClientSecret: clientSecret,
 		Courses:            courses,
 		CourseTakers:       takers,
 		ExtraInvoiceEmail:  extraInvoiceEmail,
 	}
 
 	if err := database.GormDB.Create(&pendingOrder).Error; err != nil {
-		g.Logger.Log(sentry.LevelError, err, "Unable to create pending order")
-		return &stripe.PaymentIntent{}, &errors.ErrWhileHandling
+		o.Logger.Log(sentry.LevelError, err, "Unable to create pending order")
+		return &errors.ErrWhileHandling
 	}
 
-	return intent, nil
+	return nil
 }
 
 // FulfilPendingOrder gives the users the courses they purchased, should only be run after payment confirmation
-func FulfilPendingOrder(clientSecret string) error {
+func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
 
 	var pendingOrder models.PendingOrder
 	query := database.GormDB.
@@ -103,7 +120,7 @@ func FulfilPendingOrder(clientSecret string) error {
 
 // CancelPendingOrder deletes a pending order from the DB. Usually after stripe
 // has confirmed the payment has failed for some reason
-func CancelPendingOrder(clientSecret string) error {
+func (o *ordersRepositoryImpl) CancelPendingOrder(clientSecret string) error {
 	query := database.GormDB.Where("stripe_client_secret = ?", clientSecret).Delete(&models.PendingOrder{})
 	if query.Error != nil {
 		if query.RecordNotFound() {

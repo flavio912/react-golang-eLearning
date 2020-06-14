@@ -359,7 +359,8 @@ func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Inp
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
 	}
 
-	return courses.PurchaseCourses(grant, args.Input)
+	courseApp := courses.NewCourseApp(grant)
+	return courseApp.PurchaseCourses(args.Input)
 }
 
 type CreateIndividualResponse struct {
@@ -370,6 +371,9 @@ func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
 	Input gentypes.CreateIndividualInput
 }) (*CreateIndividualResponse, error) {
 	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
+	}
 
 	user, err := users.CreateIndividual(grant, args.Input)
 	if err != nil {
