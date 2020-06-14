@@ -3,9 +3,9 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/golang/glog"
 
@@ -25,11 +25,12 @@ func (q *QueryResolver) Info(ctx context.Context) (string, error) {
 // Admins - Get a list of admins
 func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.Page }) (*AdminPageResolver, error) {
 	grant := auth.GrantFromContext(ctx)
-	adminFuncs, err := middleware.NewAdminRepository(grant)
-	if err != nil {
-		return &AdminPageResolver{}, err
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
 	}
-	admins, page, err := adminFuncs.GetAdmins(args.Page, nil)
+
+	adminFuncs := application.NewAdminApp(grant)
+	admins, page, err := adminFuncs.PageAdmins(args.Page, nil)
 	adminResolvers := []*AdminResolver{}
 	for _, admin := range admins {
 		adminResolvers = append(adminResolvers, &AdminResolver{

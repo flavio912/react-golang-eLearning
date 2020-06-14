@@ -3,9 +3,9 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/app/users"
-
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/app/courses"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/courses"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -113,10 +113,10 @@ func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input g
 	}
 
 	grant := auth.GrantFromContext(ctx)
-	adminFuncs, err := middleware.NewAdminRepository(grant)
-	if err != nil {
-		return &AdminResolver{}, err
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
 	}
+	adminFuncs := application.NewAdminApp(grant)
 
 	admin, addErr := adminFuncs.CreateAdmin(args.Input)
 	if addErr != nil {
@@ -134,12 +134,11 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 	}
 
 	grant := auth.GrantFromContext(ctx)
-
-	adminFuncs, err := middleware.NewAdminRepository(grant)
-	if err != nil {
-		return &AdminResolver{}, err
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
 	}
 
+	adminFuncs := application.NewAdminApp(grant)
 	admin, err := adminFuncs.UpdateAdmin(args.Input)
 	if err != nil {
 		return nil, err
@@ -152,12 +151,10 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 
 func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.DeleteAdminInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
-
-	adminFuncs, err := middleware.NewAdminRepository(grant)
-	if err != nil {
-		return false, err
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
 	}
-
+	adminFuncs := application.NewAdminApp(grant)
 	success, err := adminFuncs.DeleteAdmin(args.Input.UUID)
 	return success, err
 }

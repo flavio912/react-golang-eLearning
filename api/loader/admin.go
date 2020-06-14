@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/golang/glog"
 	"github.com/graph-gophers/dataloader"
@@ -32,16 +32,20 @@ func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*da
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	adminFuncs, err := middleware.NewAdminRepository(grant)
-	if err != nil {
-		return loadBatchError(err, n)
+	// Convert keys back to UUIDS
+	uuids := make([]gentypes.UUID, n)
+	for index, key := range keys.Keys() {
+		uuids[index] = gentypes.MustParseToUUID(key)
 	}
 
-	admins, err := adminFuncs.GetAdminsByUUID(keys.Keys())
+	// Get admins from application
+	adminFuncs := application.NewAdminApp(grant)
+	admins, err := adminFuncs.Admins(uuids)
 	if err != nil {
 		glog.Infof("error getting admins: %s", err.Error())
 		return loadBatchError(err, n)
 	}
+
 	res := make([]*dataloader.Result, n)
 	for _, admin := range admins {
 		// results must be in the same order as keys
