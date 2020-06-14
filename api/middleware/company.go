@@ -44,6 +44,25 @@ func (g *Grant) companiesToGentype(companies []models.Company) []gentypes.Compan
 	return genCompanies
 }
 
+func (g *Grant) Company(uuid gentypes.UUID) (models.Company, error) {
+	if !g.ManagesCompany(uuid) {
+		return models.Company{}, &errors.ErrUnauthorized
+	}
+
+	var company models.Company
+	query := database.GormDB.Where("uuid = ?", uuid).First(&company)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Company{}, &errors.ErrCompanyNotFound
+		}
+
+		g.Logger.Logf(sentry.LevelError, query.Error, "Error finding company by uuid: %s", uuid)
+		return models.Company{}, &errors.ErrWhileHandling
+	}
+
+	return company, nil
+}
+
 // companyExists checks if a companyUUID exists in the DB
 func (g *Grant) companyExists(companyUUID gentypes.UUID) bool {
 	var company models.Company
@@ -101,25 +120,6 @@ func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, e
 	}
 
 	return g.companiesToGentype(companies), nil
-}
-
-func (g *Grant) Company(uuid gentypes.UUID) (models.Company, error) {
-	if !g.ManagesCompany(uuid) {
-		return models.Company{}, &errors.ErrUnauthorized
-	}
-
-	var company models.Company
-	query := database.GormDB.Where("uuid = ?", uuid).First(&company)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return models.Company{}, &errors.ErrCompanyNotFound
-		}
-
-		g.Logger.Logf(sentry.LevelError, query.Error, "Error finding company by uuid: %s", uuid)
-		return models.Company{}, &errors.ErrWhileHandling
-	}
-
-	return company, nil
 }
 
 // GetManagerIDsByCompany returns the uuids for the managers of a company

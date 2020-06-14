@@ -51,6 +51,27 @@ func (g *Grant) delegatesToGentype(delegates []models.Delegate) []gentypes.Deleg
 	return genDelegates
 }
 
+func (g *Grant) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
+	var delegate models.Delegate
+	err := database.GormDB.Where("uuid = ?", uuid).Find(&delegate).Error
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return models.Delegate{}, &errors.ErrNotFound
+		}
+
+		g.Logger.Log(sentry.LevelError, err, "Unable to find delegate")
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	if !g.IsAdmin &&
+		!(g.IsManager && g.Claims.Company == delegate.CompanyUUID) &&
+		!(g.IsDelegate && g.Claims.UUID == delegate.UUID) {
+		return models.Delegate{}, &errors.ErrUnauthorized
+	}
+
+	return delegate, nil
+}
+
 func (g *Grant) DelegateExists(email string, ttcId string) bool {
 	// Only managers and admins can check a delegate exists
 	if !g.IsManager || !g.IsAdmin {
@@ -75,27 +96,6 @@ func (g *Grant) DelegateExists(email string, ttcId string) bool {
 	}
 
 	return true
-}
-
-func (g *Grant) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
-	var delegate models.Delegate
-	err := database.GormDB.Where("uuid = ?", uuid).Find(&delegate).Error
-	if err != nil {
-		if gorm.IsRecordNotFoundError(err) {
-			return models.Delegate{}, &errors.ErrNotFound
-		}
-
-		g.Logger.Log(sentry.LevelError, err, "Unable to find delegate")
-		return models.Delegate{}, &errors.ErrWhileHandling
-	}
-
-	if !g.IsAdmin &&
-		!(g.IsManager && g.Claims.Company == delegate.CompanyUUID) &&
-		!(g.IsDelegate && g.Claims.UUID == delegate.UUID) {
-		return models.Delegate{}, &errors.ErrUnauthorized
-	}
-
-	return delegate, nil
 }
 
 func (g *Grant) GetDelegateByUUID(UUID gentypes.UUID) (gentypes.Delegate, error) {
