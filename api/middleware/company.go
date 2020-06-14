@@ -67,7 +67,7 @@ func (g *Grant) IsCompanyDelegate(companyUUID gentypes.UUID) bool {
 // ManagesCompany is an access-control helper to work out if the current grant
 // is authorized to manage the given company uuid.
 func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
-	return g.IsAdmin || g.IsManager && g.Claims.Company == uuid
+	return g.IsAdmin || (g.IsManager && g.Claims.Company == uuid)
 }
 
 func (g *Grant) GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error) {
@@ -324,7 +324,8 @@ func CreateCompanyRequest(ctx context.Context, company gentypes.CreateCompanyInp
 			PostCode:     company.PostCode,
 			Country:      company.Country,
 		},
-		Approved: false,
+		Approved:   false,
+		IsContract: false,
 		Managers: []models.Manager{
 			models.Manager{
 				FirstName: manager.FirstName,

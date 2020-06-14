@@ -2,6 +2,7 @@ package courses
 
 import (
 	"github.com/asaskevich/govalidator"
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -31,10 +32,14 @@ func PurchaseCourses(grant *middleware.Grant, input gentypes.PurchaseCoursesInpu
 
 	var courseTakerIDs []uint
 
-	// TODO: If you are an individual you can only purchase for yourself so ignore users
+	//	Individual can only book courses for themselves
 	if grant.IsIndividual {
-		// courseTakerIDs = grant.Individual(grant.Claims.UUID).CourseTakerID
-		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
+		ind, err := grant.Individual(grant.Claims.UUID)
+		if err != nil {
+			grant.Logger.Log(sentry.LevelError, err, "Unable to get current user")
+			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
+		}
+		courseTakerIDs = []uint{ind.CourseTakerID}
 	}
 
 	// Managers can only purchase for users that exist and that they are manager of
@@ -68,7 +73,16 @@ func PurchaseCourses(grant *middleware.Grant, input gentypes.PurchaseCoursesInpu
 		}
 
 		if company.IsContract {
-			// TODO: Fulfil immediately
+			err := middleware.FulfilPendingOrder(intent.ClientSecret)
+			if err != nil {
+				grant.Logger.Log(sentry.LevelError, err, "Unable to fulfil contract order")
+				return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
+			}
+
+			return &gentypes.PurchaseCoursesResponse{
+				StripeClientSecret:  nil,
+				TransactionComplete: true, // As customer doesn't need to pay
+			}, nil
 		}
 	}
 

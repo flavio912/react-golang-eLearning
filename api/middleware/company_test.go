@@ -384,6 +384,13 @@ func TestApproveCompany(t *testing.T) {
 			true,
 			nil,
 		},
+		{
+			"Cannot be public",
+			publicGrant,
+			"00000000-0000-0000-0000-000000000004",
+			false,
+			&errors.ErrUnauthorized,
+		},
 	}
 
 	for _, test := range tests {
