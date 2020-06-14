@@ -11,6 +11,20 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
+type adminRepository struct {
+	Grant Grant
+}
+
+func NewAdminRepository(grant *Grant) (adminRepository, error) {
+	if grant == nil {
+		return adminRepository{}, &errors.ErrUnauthorized
+	}
+
+	return adminRepository{
+		Grant: *grant,
+	}, nil
+}
+
 // Take in a model, retuns the gentype for it
 func adminToGentype(modAdmin models.Admin) gentypes.Admin {
 	return gentypes.Admin{
@@ -36,15 +50,15 @@ type AdminFilter struct {
 }
 
 // GetAdminsByUUID
-func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
-	if !g.IsAdmin {
+func (a *adminRepository) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
+	if !a.Grant.IsAdmin {
 		return []gentypes.Admin{}, &errors.ErrUnauthorized
 	}
 
 	var admins []models.Admin
 	q := database.GormDB.Where("uuid IN (?)", uuids).Find(&admins)
 	if q.Error != nil {
-		g.Logger.Log(sentry.LevelError, q.Error, "Unable to get admins by UUID")
+		a.Grant.Logger.Log(sentry.LevelError, q.Error, "Unable to get admins by UUID")
 		return []gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -56,36 +70,36 @@ func (g *Grant) GetAdminsByUUID(uuids []string) ([]gentypes.Admin, error) {
 
 // adminExists returns true if the given uuid is an admin
 // NB: Uses a DB query, so use sparingly
-func (g *Grant) adminExists(uuid gentypes.UUID) bool {
+func (a *adminRepository) adminExists(uuid gentypes.UUID) bool {
 	query := database.GormDB.Where("uuid = ?", uuid).First(&models.Admin{})
 	if query.Error != nil {
 		if query.RecordNotFound() {
 			return false
 		}
 		// If some other error occurs log it
-		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for UUID: %s", uuid)
+		a.Grant.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for UUID: %s", uuid)
 		return false
 	}
 
 	return true
 }
 
-func (g *Grant) adminEmailExists(email string) bool {
+func (a *adminRepository) adminEmailExists(email string) bool {
 	query := database.GormDB.Where("email = ?", email).First(&models.Admin{})
 	if query.Error != nil {
 		if query.RecordNotFound() {
 			return false
 		}
 		// If some other error occurs log it
-		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for Email: %s", email)
+		a.Grant.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin for Email: %s", email)
 		return false
 	}
 	return true
 }
 
 // GetAdmins
-func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, gentypes.PageInfo, error) {
-	if !g.IsAdmin {
+func (a *adminRepository) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.Admin, gentypes.PageInfo, error) {
+	if !a.Grant.IsAdmin {
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
@@ -104,7 +118,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	var count int32
 	countErr := query.Model(&models.Admin{}).Count(&count).Error
 	if countErr != nil {
-		g.Logger.Log(sentry.LevelError, countErr, "Unable to count records for admin")
+		a.Grant.Logger.Log(sentry.LevelError, countErr, "Unable to count records for admin")
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -113,7 +127,7 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 	query, limit, offset := getPage(query, page)
 	err := query.Find(&admins).Error
 	if err != nil {
-		g.Logger.Log(sentry.LevelError, err, "Unable to find admins")
+		a.Grant.Logger.Log(sentry.LevelError, err, "Unable to find admins")
 		return []gentypes.Admin{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -126,13 +140,13 @@ func (g *Grant) GetAdmins(page *gentypes.Page, filter *AdminFilter) ([]gentypes.
 }
 
 // CreateAdmin allows current admins to create new ones
-func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, error) {
-	if !g.IsAdmin {
+func (a *adminRepository) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, error) {
+	if !a.Grant.IsAdmin {
 		return gentypes.Admin{}, &errors.ErrUnauthorized
 	}
 
 	// Check if email already exists
-	if g.adminEmailExists(input.Email) {
+	if a.adminEmailExists(input.Email) {
 		return gentypes.Admin{}, &errors.ErrUserExists
 	}
 
@@ -145,15 +159,15 @@ func (g *Grant) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, er
 
 	query := database.GormDB.Create(&admin)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create admin")
+		a.Grant.Logger.Log(sentry.LevelError, query.Error, "Unable to create admin")
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
 	return adminToGentype(admin), nil
 }
 
-func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, error) {
-	if !g.IsAdmin {
+func (a *adminRepository) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, error) {
+	if !a.Grant.IsAdmin {
 		return gentypes.Admin{}, &errors.ErrUnauthorized
 	}
 
@@ -164,7 +178,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 			return gentypes.Admin{}, &errors.ErrAdminNotFound
 		}
 
-		g.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin to update with UUID: %s", input.UUID)
+		a.Grant.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin to update with UUID: %s", input.UUID)
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -190,7 +204,7 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 
 	save := database.GormDB.Save(admin)
 	if save.Error != nil {
-		g.Logger.Logf(sentry.LevelError, save.Error, "Error updating Admin with UUID: %s", input.UUID)
+		a.Grant.Logger.Logf(sentry.LevelError, save.Error, "Error updating Admin with UUID: %s", input.UUID)
 		return gentypes.Admin{}, &errors.ErrWhileHandling
 	}
 
@@ -198,19 +212,19 @@ func (g *Grant) UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, er
 }
 
 // DeleteAdmin allows admins to delete other admins
-func (g *Grant) DeleteAdmin(uuid gentypes.UUID) (bool, error) {
-	if !g.IsAdmin {
+func (a *adminRepository) DeleteAdmin(uuid gentypes.UUID) (bool, error) {
+	if !a.Grant.IsAdmin {
 		return false, &errors.ErrUnauthorized
 	}
 
 	// Check admin exists
-	if !g.adminExists(uuid) {
+	if !a.adminExists(uuid) {
 		return false, &errors.ErrAdminNotFound
 	}
 
 	query := database.GormDB.Where("uuid = ?", uuid).Delete(models.Admin{})
 	if query.Error != nil {
-		g.Logger.Logf(sentry.LevelError, query.Error, "Error updating Admin with UUID: %s", uuid)
+		a.Grant.Logger.Logf(sentry.LevelError, query.Error, "Error updating Admin with UUID: %s", uuid)
 		return false, &errors.ErrDeleteFailed
 	}
 

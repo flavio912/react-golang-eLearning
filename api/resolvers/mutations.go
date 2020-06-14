@@ -113,11 +113,12 @@ func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input g
 	}
 
 	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+	adminFuncs, err := middleware.NewAdminRepository(grant)
+	if err != nil {
+		return &AdminResolver{}, err
 	}
 
-	admin, addErr := grant.CreateAdmin(args.Input)
+	admin, addErr := adminFuncs.CreateAdmin(args.Input)
 	if addErr != nil {
 		return nil, addErr
 	}
@@ -133,11 +134,13 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 	}
 
 	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+
+	adminFuncs, err := middleware.NewAdminRepository(grant)
+	if err != nil {
+		return &AdminResolver{}, err
 	}
 
-	admin, err := grant.UpdateAdmin(args.Input)
+	admin, err := adminFuncs.UpdateAdmin(args.Input)
 	if err != nil {
 		return nil, err
 	}
@@ -149,11 +152,13 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 
 func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input gentypes.DeleteAdminInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return false, &errors.ErrUnauthorized
+
+	adminFuncs, err := middleware.NewAdminRepository(grant)
+	if err != nil {
+		return false, err
 	}
 
-	success, err := grant.DeleteAdmin(args.Input.UUID)
+	success, err := adminFuncs.DeleteAdmin(args.Input.UUID)
 	return success, err
 }
 

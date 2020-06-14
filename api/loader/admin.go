@@ -7,6 +7,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/golang/glog"
 	"github.com/graph-gophers/dataloader"
@@ -31,7 +32,12 @@ func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*da
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	admins, err := grant.GetAdminsByUUID(keys.Keys())
+	adminFuncs, err := middleware.NewAdminRepository(grant)
+	if err != nil {
+		return loadBatchError(err, n)
+	}
+
+	admins, err := adminFuncs.GetAdminsByUUID(keys.Keys())
 	if err != nil {
 		glog.Infof("error getting admins: %s", err.Error())
 		return loadBatchError(err, n)
