@@ -1,4 +1,4 @@
-package middleware
+package course
 
 import (
 	"github.com/asaskevich/govalidator"
@@ -11,25 +11,12 @@ import (
 
 /* Classroom Course CRUD */
 
-// SaveClassroomCourse is a wrapper around CreateClassroomCourse and UpdateClassroomCourse to
-// update the course if a uuid is provided, otherwise it will create a new one
-func (g *Grant) SaveClassroomCourse(course gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
-	if course.ID != nil {
-		return g.UpdateClassroomCourse(course)
-	}
-	return g.CreateClassroomCourse(course)
-}
-
 // CreateClassroomCourse makes a new classroom course
-func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
-	if !g.IsAdmin {
-		return gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
+func (c *coursesRepoImpl) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error) {
 	// Validate
 	_, err := govalidator.ValidateStruct(courseInfo)
 	if err != nil {
-		return gentypes.Course{}, err
+		return models.Course{}, err
 	}
 
 	classroomCourse := models.ClassroomCourse{}
@@ -48,7 +35,7 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 	}
 
 	var courseType = gentypes.ClassroomCourseType
-	course, err := g.ComposeCourse(CourseInput{
+	course, err := c.ComposeCourse(CourseInput{
 		Name:            courseInfo.Name,
 		Price:           courseInfo.Price,
 		Color:           courseInfo.Color,
@@ -62,33 +49,29 @@ func (g *Grant) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		CourseType:      &courseType,
 	})
 	if err != nil {
-		return gentypes.Course{}, err
+		return models.Course{}, err
 	}
 
 	course.ClassroomCourse = classroomCourse
 
 	query := database.GormDB.Create(&course)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to create classroom course")
-		return gentypes.Course{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to create classroom course")
+		return models.Course{}, &errors.ErrWhileHandling
 	}
 
-	return g.courseToGentype(course), nil
+	return course, nil
 }
 
 // UpdateClassroomCourse updates the given classroom course
-func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error) {
-	if !g.IsAdmin {
-		return gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
+func (c *coursesRepoImpl) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error) {
 	// An id is required for this function
 	if courseInfo.ID == nil {
-		return gentypes.Course{}, &errors.ErrUUIDInvalid
+		return models.Course{}, &errors.ErrUUIDInvalid
 	}
 
 	// Update courseInfo
-	course, err := g.UpdateCourse(*courseInfo.ID, CourseInput{
+	course, err := c.UpdateCourse(*courseInfo.ID, CourseInput{
 		Name:            courseInfo.Name,
 		CategoryUUID:    courseInfo.CategoryUUID,
 		Excerpt:         courseInfo.Excerpt,
@@ -101,7 +84,7 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		Tags:            courseInfo.Tags,
 	})
 	if err != nil {
-		return gentypes.Course{}, err
+		return models.Course{}, err
 	}
 
 	var updates models.ClassroomCourse
@@ -127,9 +110,9 @@ func (g *Grant) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInp
 		Updates(&courseModel).
 		Find(&courseModel)
 	if q.Error != nil {
-		g.Logger.Log(sentry.LevelError, q.Error, "Unable to update course")
-		return gentypes.Course{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, q.Error, "Unable to update course")
+		return models.Course{}, &errors.ErrWhileHandling
 	}
 
-	return g.courseToGentype(courseModel), nil
+	return courseModel, nil
 }

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/courses"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -281,7 +281,8 @@ func (m *MutationResolver) SaveOnlineCourse(
 		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
-	course, err := grant.SaveOnlineCourse(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	course, err := courseFuncs.SaveOnlineCourse(args.Input)
 	if err != nil {
 		return &CourseResolver{}, err
 	}
@@ -299,7 +300,8 @@ func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct 
 		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
-	course, err := grant.SaveClassroomCourse(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	course, err := courseFuncs.SaveClassroomCourse(args.Input)
 	if err != nil {
 		return &CourseResolver{}, err
 	}
@@ -315,7 +317,8 @@ func (m *MutationResolver) CreateTag(ctx context.Context, args struct{ Input gen
 		return &TagResolver{}, &errors.ErrUnauthorized
 	}
 
-	tag, err := grant.CreateTag(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	tag, err := courseFuncs.CreateTag(args.Input)
 	return &TagResolver{
 		Tag: tag,
 	}, err
@@ -343,7 +346,8 @@ func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input 
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
-	lesson, err := grant.CreateLesson(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	lesson, err := courseFuncs.CreateLesson(args.Input)
 	if err != nil {
 		return &LessonResolver{}, err
 	}
@@ -359,7 +363,7 @@ func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Inp
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
 	}
 
-	courseApp := courses.NewCourseApp(grant)
+	courseApp := course.NewCourseApp(grant)
 	return courseApp.PurchaseCourses(args.Input)
 }
 

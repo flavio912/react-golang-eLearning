@@ -9,6 +9,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
@@ -22,6 +23,20 @@ type Grant struct {
 	IsPublic     bool
 	// contains the sentry hub
 	Logger logging.Logger
+}
+
+func (g *Grant) IsAuthorizedToBook(courses []models.Course) bool {
+	if g.IsManager || g.IsIndividual {
+		for _, course := range courses {
+			if course.AccessType == gentypes.Restricted {
+				if !g.IsFullyApproved() {
+					return false
+				}
+			}
+		}
+		return true
+	}
+	return false
 }
 
 // Authenticate is used to verify and get access to middleware functions
@@ -65,8 +80,8 @@ func Authenticate(jwt string) (*Grant, error) {
 // MaxPageLimit is the maximum amount of returned datapoints
 const MaxPageLimit = int32(100)
 
-// getPage adds limit and offset to a query
-func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
+// GetPage adds limit and offset to a query
+func GetPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	var (
 		limit  = MaxPageLimit
 		offset int32
@@ -85,11 +100,11 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	return query, limit, offset
 }
 
-/* getOrdering adds orderBy to a query,
+/* GetOrdering adds orderBy to a query,
 
 In no circumstances is "allowedFields" to be given by the user
 */
-func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
+func GetOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
 	if orderBy != nil {
 		var allowed bool
 		for _, field := range allowedFields {

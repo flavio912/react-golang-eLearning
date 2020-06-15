@@ -1,23 +1,44 @@
-package middleware_test
+package course_test
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/testhelpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
-
+	"github.com/go-testfixtures/testfixtures/v3"
 	"github.com/stretchr/testify/assert"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 )
+
+var fixtures *testfixtures.Loader
+
+func TestMain(m *testing.M) {
+	var err error
+	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	if err != nil {
+		panic("Failed to init test db")
+	}
+
+	os.Exit(m.Run())
+}
+
+func prepareTestDatabase() {
+	if err := fixtures.Load(); err != nil {
+		fmt.Printf("Unable to load fixtures for test: %s", err.Error())
+		panic("cannot load test fixtures")
+	}
+}
 
 func TestUpdateCourse(t *testing.T) {
 	t.Run("Updates existing course", func(t *testing.T) {
 		prepareTestDatabase()
 		open := gentypes.Open
-		inp := middleware.CourseInput{
+		inp := course.CourseInput{
 			Name:         helpers.StringPointer("UpdatedCourse"),
 			Price:        helpers.FloatPointer(43.4),
 			Color:        helpers.StringPointer("#ffffff"),
@@ -36,10 +57,10 @@ func TestUpdateCourse(t *testing.T) {
 			BackgroundCheck: helpers.BoolPointer(false),
 			SpecificTerms:   helpers.StringPointer("{}"),
 		}
-		_, err := adminGrant.UpdateCourse(1, inp)
+		_, err := courseRepo.UpdateCourse(1, inp)
 		assert.Nil(t, err)
 
-		info, err := adminGrant.GetCourseFromID(1)
+		info, err := courseRepo.Course(1)
 		assert.Nil(t, err)
 		assert.Equal(t, *inp.Name, info.Name)
 		assert.Equal(t, *inp.AccessType, info.AccessType)
@@ -48,44 +69,40 @@ func TestUpdateCourse(t *testing.T) {
 		assert.Equal(t, *inp.Color, info.Color)
 		assert.Equal(t, *inp.Introduction, info.Introduction)
 		assert.Equal(t, *inp.Excerpt, info.Excerpt)
-		assert.Equal(t, *inp.WhatYouLearn, info.WhatYouLearn)
-		assert.Equal(t, *inp.Requirements, info.Requirements)
+
+		var learnStrings []string
+		bullets, err := courseRepo.LearnBullets(1)
+		assert.Nil(t, err)
+		for _, learnBullet := range bullets {
+			learnStrings = append(learnStrings, learnBullet.Text)
+		}
+		assert.Equal(t, *inp.WhatYouLearn, learnStrings)
+
+		var requireBullets []string
+		reqBullets, err := courseRepo.RequirementBullets(1)
+		assert.Nil(t, err)
+		for _, bullet := range reqBullets {
+			requireBullets = append(requireBullets, bullet.Text)
+		}
+		assert.Equal(t, *inp.Requirements, requireBullets)
 		assert.Equal(t, *inp.SpecificTerms, info.SpecificTerms)
 	})
 
 	t.Run("Doesn't update nil fields", func(t *testing.T) {
 		prepareTestDatabase()
 
-		prevInfo, err := adminGrant.GetCourseFromID(1)
+		prevInfo, err := courseRepo.Course(1)
 		assert.Nil(t, err)
 
-		inp := middleware.CourseInput{
+		inp := course.CourseInput{
 			Color: helpers.StringPointer("#ffffff"),
 		}
-		_, err = adminGrant.UpdateCourse(1, inp)
+		_, err = courseRepo.UpdateCourse(1, inp)
 		assert.Nil(t, err)
 
-		info, err := adminGrant.GetCourseFromID(1)
+		info, err := courseRepo.Course(1)
 		assert.Nil(t, err)
 		assert.Equal(t, prevInfo.Name, info.Name)
-	})
-
-	t.Run("Access Control Tests", func(t *testing.T) {
-		prepareTestDatabase()
-
-		// Manager should fail
-		inp := middleware.CourseInput{
-			Name: helpers.StringPointer("New Course name"),
-		}
-		_, err := managerGrant.UpdateCourse(1, inp)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-
-		// delegate should fail
-		inp = middleware.CourseInput{
-			Name: helpers.StringPointer("New Course name"),
-		}
-		_, err = delegateGrant.UpdateCourse(1, inp)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 }
@@ -96,7 +113,7 @@ func TestComposeCourse(t *testing.T) {
 
 		var open = gentypes.Open
 		var courseType = gentypes.ClassroomCourseType
-		inp := middleware.CourseInput{
+		inp := course.CourseInput{
 			Name:            helpers.StringPointer("Correct model course"),
 			Price:           helpers.FloatPointer(32.3),
 			Color:           helpers.StringPointer("#fff"),
@@ -118,7 +135,7 @@ func TestComposeCourse(t *testing.T) {
 			CourseType:      &courseType,
 		}
 
-		info, err := adminGrant.ComposeCourse(inp)
+		info, err := courseRepo.ComposeCourse(inp)
 		assert.Nil(t, err)
 
 		// Expected requirements

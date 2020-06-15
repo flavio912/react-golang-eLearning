@@ -117,7 +117,7 @@ func (a *adminRepository) PageAdmins(page *gentypes.Page, filter *gentypes.Admin
 
 	query = query.Order("created_at DESC")
 
-	query, limit, offset := getPage(query, page)
+	query, limit, offset := GetPage(query, page)
 	err := query.Find(&admins).Error
 	if err != nil {
 		a.Logger.Log(sentry.LevelError, err, "Unable to find admins")

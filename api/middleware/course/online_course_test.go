@@ -1,19 +1,16 @@
-package middleware_test
+package course_test
 
 import (
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCreateOnlineCourse(t *testing.T) {
-
-	grant := adminGrant
 
 	name := "Pies"
 	excerpt := "{}"
@@ -31,11 +28,11 @@ func TestCreateOnlineCourse(t *testing.T) {
 
 	t.Run("Create course with name", func(t *testing.T) {
 		prepareTestDatabase()
-		course, err := grant.CreateOnlineCourse(inp)
+		course, err := courseRepo.CreateOnlineCourse(inp)
 		assert.Nil(t, err)
 		assert.NotNil(t, course.ID)
 
-		info, err := grant.GetCourseFromID(course.ID)
+		info, err := courseRepo.Course(course.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, info.Name, name)
 	})
@@ -54,11 +51,11 @@ func TestCreateOnlineCourse(t *testing.T) {
 
 	t.Run("Create course with full info", func(t *testing.T) {
 		prepareTestDatabase()
-		course, err := grant.CreateOnlineCourse(inp)
+		course, err := courseRepo.CreateOnlineCourse(inp)
 		assert.Nil(t, err)
 		assert.NotNil(t, course.ID)
 
-		info, err := grant.GetCourseFromID(course.ID)
+		info, err := courseRepo.Course(course.ID)
 		assert.Nil(t, err)
 		assert.Equal(t, name, info.Name)
 		assert.Equal(t, info.AccessType, accessType)
@@ -78,7 +75,7 @@ func TestCreateOnlineCourse(t *testing.T) {
 			tagUUID,
 			tagUUID2,
 		}
-		course, err := adminGrant.CreateOnlineCourse(gentypes.SaveOnlineCourseInput{
+		course, err := courseRepo.CreateOnlineCourse(gentypes.SaveOnlineCourseInput{
 			CourseInput: gentypes.CourseInput{
 				Name: helpers.StringPointer("course with fantastic tags"),
 				Tags: &tags,
@@ -88,21 +85,9 @@ func TestCreateOnlineCourse(t *testing.T) {
 		assert.Nil(t, err)
 
 		// Get tags
-		tagsMap, err := adminGrant.GetTagsByCourseInfoIDs([]uint{course.ID})
+		tagsMap, err := courseRepo.GetTagsByCourseInfoIDs([]uint{course.ID})
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(tagsMap[course.ID]))
-	})
-
-	t.Run("Access Control Tests", func(t *testing.T) {
-		prepareTestDatabase()
-
-		// Manager should fail
-		_, err := managerGrant.CreateOnlineCourse(inp)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-
-		// Delegate should fail
-		_, err = delegateGrant.CreateOnlineCourse(inp)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
 	})
 
 }

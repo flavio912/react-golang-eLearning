@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+
 	"github.com/graph-gophers/dataloader"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -40,7 +42,8 @@ func (l *lessonLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*d
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	lessons, err := grant.GetLessonsByUUID(keys.Keys())
+	courseFuncs := course.NewCourseApp(grant)
+	lessons, err := courseFuncs.GetLessonsByUUID(keys.Keys())
 	if err != nil {
 		return loadBatchError(err, n)
 	}

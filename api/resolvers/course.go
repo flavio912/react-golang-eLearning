@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -28,7 +30,8 @@ func NewCourseResolver(ctx context.Context, args NewCourseArgs) (*CourseResolver
 			return &CourseResolver{}, &errors.ErrUnauthorized
 		}
 
-		info, err := grant.GetCourseFromID(*args.ID)
+		courseFuncs := course.NewCourseApp(grant)
+		info, err := courseFuncs.Course(*args.ID)
 		if err != nil {
 			return &CourseResolver{}, err
 		}

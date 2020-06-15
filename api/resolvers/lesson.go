@@ -5,6 +5,7 @@ import (
 
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -87,7 +88,8 @@ func (l *LessonResolver) Tags(ctx context.Context) ([]*TagResolver, error) {
 		return nil, &errors.ErrUnauthorized
 	}
 
-	tags, err := grant.GetTagsByLessonUUID(l.UUID().String())
+	courseFuncs := course.NewCourseApp(grant)
+	tags, err := courseFuncs.GetTagsByLessonUUID(l.UUID().String())
 	if err != nil {
 		glog.Info("Unable to resolve tags")
 		return nil, err

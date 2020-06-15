@@ -1,4 +1,4 @@
-package middleware
+package course
 
 import (
 	"github.com/asaskevich/govalidator"
@@ -14,11 +14,11 @@ import (
 
 // CheckTagsExist returns a slice of tags if all the given tag uuids are in the database
 // If *any* are not found it returns an error and no tags
-func (g *Grant) CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
+func (c *coursesRepoImpl) CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
 	var tagModels []models.Tag
 	query := database.GormDB.Where("uuid IN (?)", tags).Find(&tagModels)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Error while checking tags exist")
+		c.Logger.Log(sentry.LevelError, query.Error, "Error while checking tags exist")
 		return []models.Tag{}, &errors.ErrWhileHandling
 	}
 
@@ -28,30 +28,10 @@ func (g *Grant) CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
 	return tagModels, nil
 }
 
-func tagToGentype(tag models.Tag) gentypes.Tag {
-	return gentypes.Tag{
-		UUID:  tag.UUID,
-		Name:  tag.Name,
-		Color: tag.Color,
-	}
-}
-
-func tagsToGentypes(tags []models.Tag) []gentypes.Tag {
-	var genTags = make([]gentypes.Tag, len(tags))
-	for i, tag := range tags {
-		genTags[i] = tagToGentype(tag)
-	}
-	return genTags
-}
-
 // CreateTag makes a new course/module tag
-func (g *Grant) CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error) {
-	if !g.IsAdmin {
-		return gentypes.Tag{}, &errors.ErrUnauthorized
-	}
-
+func (c *coursesRepoImpl) CreateTag(input gentypes.CreateTagInput) (models.Tag, error) {
 	if _, err := govalidator.ValidateStruct(input); err != nil {
-		return gentypes.Tag{}, err
+		return models.Tag{}, err
 	}
 
 	tag := models.Tag{
@@ -60,30 +40,27 @@ func (g *Grant) CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error) {
 	}
 	if query := database.GormDB.Create(&tag); query.Error != nil {
 		if errors.CodeUniqueViolation == query.Error.(*pq.Error).Code {
-			return gentypes.Tag{}, &errors.ErrTagAlreadyExists
+			return models.Tag{}, &errors.ErrTagAlreadyExists
 		}
 
-		g.Logger.Log(sentry.LevelError, query.Error, "Could not create tag")
-		return gentypes.Tag{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Could not create tag")
+		return models.Tag{}, &errors.ErrWhileHandling
 	}
 
-	return tagToGentype(tag), nil
+	return tag, nil
 }
 
 // GetTagsByCourseInfoIDs takes a list of courseInfo ids and returns a mapping
 // of a courseInfo Id to a slice of tags
-func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, error) {
+func (c *coursesRepoImpl) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]models.Tag, error) {
 	// TODO: Check if user has access to this particular course
-	if !g.IsAdmin {
-		return map[uint][]gentypes.Tag{}, &errors.ErrUnauthorized
-	}
 
 	// Find the table links
 	var links []models.CourseTagsLink
 	query := database.GormDB.Where("course_id IN (?)", ids).Find(&links)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags links")
-		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags links")
+		return map[uint][]models.Tag{}, &errors.ErrWhileHandling
 	}
 
 	var tagUUIDs []gentypes.UUID
@@ -95,8 +72,8 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 	var tags []models.Tag
 	query = database.GormDB.Where("uuid IN (?)", tagUUIDs).Find(&tags)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags")
-		return map[uint][]gentypes.Tag{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags")
+		return map[uint][]models.Tag{}, &errors.ErrWhileHandling
 	}
 
 	var tagsMap = make(map[gentypes.UUID]models.Tag)
@@ -104,14 +81,14 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 		tagsMap[tag.UUID] = tag
 	}
 
-	// Put tags into map: courseIDs > gentypes.Tag
-	var courseInfoIdsToTags = make(map[uint][]gentypes.Tag, len(tagUUIDs))
+	// Put tags into map: courseIDs > models.Tag
+	var courseInfoIdsToTags = make(map[uint][]models.Tag, len(tagUUIDs))
 	for _, link := range links {
 		id := link.CourseID
 		if _, ok := courseInfoIdsToTags[id]; ok {
-			courseInfoIdsToTags[id] = append(courseInfoIdsToTags[id], tagToGentype(tagsMap[link.TagUUID]))
+			courseInfoIdsToTags[id] = append(courseInfoIdsToTags[id], tagsMap[link.TagUUID])
 		} else {
-			courseInfoIdsToTags[id] = []gentypes.Tag{tagToGentype(tagsMap[link.TagUUID])}
+			courseInfoIdsToTags[id] = []models.Tag{tagsMap[link.TagUUID]}
 		}
 	}
 	return courseInfoIdsToTags, nil
@@ -119,32 +96,24 @@ func (g *Grant) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, err
 
 // TODO: Finish func
 // GetTags returns a slice of tags
-func (g *Grant) GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]gentypes.Tag, error) {
-	if !g.IsAdmin {
-		return []gentypes.Tag{}, &errors.ErrUnauthorized
-	}
-
-	return []gentypes.Tag{}, nil
+func (c *coursesRepoImpl) GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]models.Tag, error) {
+	return []models.Tag{}, nil
 }
 
 // GetTagsByLessonUUID returns a slice of tags associated with a given lesson
-func (g *Grant) GetTagsByLessonUUID(uuid string) ([]gentypes.Tag, error) {
-	if !g.IsAdmin {
-		return []gentypes.Tag{}, &errors.ErrUnauthorized
-	}
-
+func (c *coursesRepoImpl) GetTagsByLessonUUID(uuid string) ([]models.Tag, error) {
 	var tags []models.Tag
 	query := database.GormDB.Table("tags").
 		Joins("JOIN lesson_tags_link ON lesson_tags_link.tag_uuid = tags.uuid AND lesson_tags_link.lesson_uuid = ?", uuid).Find(&tags)
 
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return []gentypes.Tag{}, &errors.ErrNotFound
+			return []models.Tag{}, &errors.ErrNotFound
 		}
 
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to finds tags associated with lesson "+uuid)
-		return []gentypes.Tag{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to finds tags associated with lesson "+uuid)
+		return []models.Tag{}, &errors.ErrWhileHandling
 	}
 
-	return tagsToGentypes(tags), nil
+	return tags, nil
 }

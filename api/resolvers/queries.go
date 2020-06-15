@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -217,7 +219,8 @@ func (q *QueryResolver) Lessons(ctx context.Context, args struct {
 		return &LessonPageResolver{}, &errors.ErrUnauthorized
 	}
 
-	lessons, page, err := grant.GetLessons(args.Page, args.Filter, args.OrderBy)
+	courseFuncs := course.NewCourseApp(grant)
+	lessons, page, err := courseFuncs.GetLessons(args.Page, args.Filter, args.OrderBy)
 	var lessonResolvers []*LessonResolver
 	for _, lesson := range lessons {
 		lessonResolvers = append(lessonResolvers, &LessonResolver{
@@ -243,7 +246,8 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 		return &CoursePageResolver{}, &errors.ErrUnauthorized
 	}
 
-	courses, page, err := grant.GetCourses(args.Page, args.Filter, args.OrderBy)
+	courseFuncs := course.NewCourseApp(grant)
+	courses, page, err := courseFuncs.GetCourses(args.Page, args.Filter, args.OrderBy)
 
 	var courseResolvers []*CourseResolver
 	for _, course := range courses {

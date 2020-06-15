@@ -145,12 +145,12 @@ func (g *Grant) GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilt
 		return []gentypes.Delegate{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title", "ttc_id"}, "created_at DESC")
+	query, orderErr := GetOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title", "ttc_id"}, "created_at DESC")
 	if orderErr != nil {
 		return []gentypes.Delegate{}, gentypes.PageInfo{}, orderErr
 	}
 
-	query, limit, offset := getPage(query, page)
+	query, limit, offset := GetPage(query, page)
 	query = query.Find(&delegates)
 	if query.Error != nil {
 		if query.RecordNotFound() {

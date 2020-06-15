@@ -1,4 +1,4 @@
-package middleware_test
+package course_test
 
 import (
 	"testing"
@@ -7,7 +7,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 )
+
+var courseRepo = course.NewCoursesRepository(&logging.Logger{})
 
 func TestCreateClassroomCourse(t *testing.T) {
 	t.Run("Check classroom course created correctly", func(t *testing.T) {
@@ -31,7 +35,7 @@ func TestCreateClassroomCourse(t *testing.T) {
 			Location:        helpers.StringPointer("A cool new place"),
 		}
 
-		course, err := adminGrant.CreateClassroomCourse(inp)
+		course, err := courseRepo.CreateClassroomCourse(inp)
 		assert.Nil(t, err)
 		assert.Equal(t, *inp.CourseInput.Name, course.Name)
 		// TODO: UPDATE TEST
@@ -59,7 +63,7 @@ func TestUpdateClassroomCourse(t *testing.T) {
 			Location:        helpers.StringPointer("A new place"),
 			MaxParticipants: helpers.IntPointer(2),
 		}
-		course, err := adminGrant.UpdateClassroomCourse(updates)
+		course, err := courseRepo.UpdateClassroomCourse(updates)
 		assert.Nil(t, err)
 		assert.Equal(t, *updates.Name, course.Name)
 		// TODO Update test

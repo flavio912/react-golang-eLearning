@@ -1,4 +1,4 @@
-package middleware
+package course
 
 import (
 	"github.com/getsentry/sentry-go"
@@ -12,7 +12,7 @@ import (
 
 // duplicateModule copys a module and its stucture
 // TODO: This really isn't nice, make more efficient
-func (g *Grant) duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
+func (c *coursesRepoImpl) duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
 	newModule := models.Module{
 		Template:   template,
 		TemplateID: &module.UUID,
@@ -20,7 +20,7 @@ func (g *Grant) duplicateModule(tx *gorm.DB, module models.Module, template bool
 
 	query := tx.Create(&newModule)
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to save duplicated module")
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to save duplicated module")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
@@ -37,7 +37,7 @@ func (g *Grant) duplicateModule(tx *gorm.DB, module models.Module, template bool
 		}
 		query := tx.Create(&structure)
 		if query.Error != nil {
-			g.Logger.Log(sentry.LevelError, query.Error, "Unable to save module structure while duplicating")
+			c.Logger.Log(sentry.LevelError, query.Error, "Unable to save module structure while duplicating")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}
@@ -46,7 +46,7 @@ func (g *Grant) duplicateModule(tx *gorm.DB, module models.Module, template bool
 }
 
 // GetModuleByUUID gets a module by its UUID
-func (g *Grant) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
+func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
 	var module models.Module
 	query := database.GormDB.Where("uuid = ?", moduleUUID).Find(&module)
 	if query.Error != nil {
@@ -54,7 +54,7 @@ func (g *Grant) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 			return module, &errors.ErrNotFound
 		}
 
-		g.Logger.Log(sentry.LevelError, query.Error, "Error getting module by UUID")
+		c.Logger.Log(sentry.LevelError, query.Error, "Error getting module by UUID")
 		return module, &errors.ErrWhileHandling
 	}
 
@@ -62,14 +62,14 @@ func (g *Grant) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 }
 
 // GetModuleStructure builds the structure of the module into gentype form
-func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error) {
+func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error) {
 	var moduleChildren []models.ModuleStructure
 	query := database.GormDB.Where("module_uuid = ?", moduleUUID).
 		Order("rank DESC").
 		Find(&moduleChildren)
 
 	if query.Error != nil {
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get module structure")
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get module structure")
 		return gentypes.CourseItem{}, &errors.ErrWhileHandling
 	}
 
@@ -86,7 +86,7 @@ func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseIte
 				UUID: *child.TestUUID,
 			})
 		} else {
-			g.Logger.LogMessage(sentry.LevelError, "Blank Module structure item found")
+			c.Logger.LogMessage(sentry.LevelError, "Blank Module structure item found")
 		}
 	}
 
@@ -99,14 +99,11 @@ func (g *Grant) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseIte
 
 // UpdateModuleStructure takes in a transaction, its your job to rollback that transaction if this function returns an error
 // or panics
-func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error) {
-	if !g.IsAdmin {
-		return models.Module{}, &errors.ErrUnauthorized
-	}
+func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error) {
 
 	// Check it is actually a module
 	if moduleItem.Type != gentypes.ModuleType {
-		g.Logger.LogMessage(sentry.LevelWarning, "UpdateModule given type other than ModuleItem")
+		c.Logger.LogMessage(sentry.LevelWarning, "UpdateModule given type other than ModuleItem")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
@@ -118,13 +115,13 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 			return models.Module{}, &errors.ErrNotFound
 		}
 
-		g.Logger.Log(sentry.LevelError, query.Error, "Unable to get module")
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get module")
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
 	// Module templates should be duplicated
 	if duplicateTemplates && moduleModel.Template {
-		newmod, err := g.duplicateModule(tx, moduleModel, false, false)
+		newmod, err := c.duplicateModule(tx, moduleModel, false, false)
 		if err != nil {
 			return models.Module{}, err
 		}
@@ -133,7 +130,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 	} else {
 		query = tx.Where("module_uuid = ?", moduleItem.UUID).Delete(models.ModuleStructure{})
 		if query.Error != nil {
-			g.Logger.Log(sentry.LevelError, query.Error, "Error deleting old module")
+			c.Logger.Log(sentry.LevelError, query.Error, "Error deleting old module")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}
@@ -152,7 +149,7 @@ func (g *Grant) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseIte
 		}
 
 		if err := tx.Save(&structureItem).Error; err != nil {
-			g.Logger.Log(sentry.LevelError, err, "Unable to save structure item")
+			c.Logger.Log(sentry.LevelError, err, "Unable to save structure item")
 			return models.Module{}, &errors.ErrWhileHandling
 		}
 	}

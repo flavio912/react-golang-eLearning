@@ -1,10 +1,10 @@
-package middleware_test
+package course_test
 
 import (
 	"testing"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
 	"github.com/stretchr/testify/assert"
 
@@ -21,7 +21,7 @@ func TestCreateTag(t *testing.T) {
 			Color: "#123",
 		}
 
-		tag, err := adminGrant.CreateTag(tagInput)
+		tag, err := courseRepo.CreateTag(tagInput)
 
 		assert.Nil(t, err)
 		assert.Equal(t, tagInput.Name, tag.Name, "Tag should have correct name")
@@ -36,34 +36,16 @@ func TestCreateTag(t *testing.T) {
 			Color: "#234",
 		}
 
-		tag, err := adminGrant.CreateTag(tagInput)
+		tag, err := courseRepo.CreateTag(tagInput)
 		assert.NotNil(t, err)
 		assert.Equal(t, &errors.ErrTagAlreadyExists, err, "Should return tag exists err")
-		assert.Equal(t, gentypes.Tag{}, tag)
-	})
-
-	t.Run("Access Control Tests", func(t *testing.T) {
-		prepareTestDatabase()
-
-		tagInput := gentypes.CreateTagInput{
-			Name:  "Fancy new tag",
-			Color: "#234",
-		}
-
-		tag, err := delegateGrant.CreateTag(tagInput)
-		assert.Equal(t, &errors.ErrUnauthorized, err, "Delegate cannot create tags")
-		assert.Equal(t, gentypes.Tag{}, tag)
-
-		tag, err = managerGrant.CreateTag(tagInput)
-		assert.Equal(t, &errors.ErrUnauthorized, err, "Manager cannot create tags")
-		assert.Equal(t, gentypes.Tag{}, tag)
-
+		assert.Equal(t, models.Tag{}, tag)
 	})
 }
 
 func TestGetTagsByCourseInfoIDs(t *testing.T) {
 	prepareTestDatabase()
-	courseToTags, err := adminGrant.GetTagsByCourseInfoIDs([]uint{3, 2})
+	courseToTags, err := courseRepo.GetTagsByCourseInfoIDs([]uint{3, 2})
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(courseToTags[2]))
 	assert.Equal(t, 3, len(courseToTags[3]))
@@ -99,28 +81,18 @@ func TestGetTagsByLessonUUID(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		grant   middleware.Grant
 		uuid    string
 		wantErr interface{}
 		wantLen int
 	}{
 		{
-			"Must be admin",
-			nonAdminGrant,
-			"00000000-0000-0000-0000-000000000001",
-			&errors.ErrUnauthorized,
-			0,
-		},
-		{
 			"UUID must be valid",
-			adminGrant,
 			"ayyyyyyy",
 			&errors.ErrWhileHandling,
 			0,
 		},
 		{
 			"Get all tags",
-			adminGrant,
 			"00000000-0000-0000-0000-000000000002",
 			nil,
 			3,
@@ -129,7 +101,7 @@ func TestGetTagsByLessonUUID(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			tags, err := test.grant.GetTagsByLessonUUID(test.uuid)
+			tags, err := courseRepo.GetTagsByLessonUUID(test.uuid)
 
 			assert.Equal(t, test.wantErr, err)
 			assert.Len(t, tags, test.wantLen)

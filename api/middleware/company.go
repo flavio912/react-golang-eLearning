@@ -148,12 +148,12 @@ func (g *Grant) GetManagerIDsByCompany(
 		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "first_name", "last_name"}, "created_at DESC")
+	query, orderErr := GetOrdering(query, orderBy, []string{"created_at", "first_name", "last_name"}, "created_at DESC")
 	if orderErr != nil {
 		return []gentypes.UUID{}, gentypes.PageInfo{}, orderErr
 	}
 
-	query, limit, offset := getPage(query, page)
+	query, limit, offset := GetPage(query, page)
 	query.Find(&managers)
 	if query.Error != nil {
 		if query.RecordNotFound() {
@@ -185,7 +185,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
 
-	query, err := getOrdering(query, orderBy, []string{"created_at", "name"}, "created_at DESC")
+	query, err := GetOrdering(query, orderBy, []string{"created_at", "name"}, "created_at DESC")
 	if err != nil {
 		return []gentypes.UUID{}, gentypes.PageInfo{}, err
 	}
@@ -208,7 +208,7 @@ func (g *Grant) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFil
 		g.Logger.Log(sentry.LevelError, countErr, "Error getting company uuids")
 		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
-	query, limit, offset := getPage(query, page)
+	query, limit, offset := GetPage(query, page)
 
 	query.Find(&companies)
 

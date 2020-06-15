@@ -153,12 +153,12 @@ func (g *Grant) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter
 		return []gentypes.Manager{}, gentypes.PageInfo{}, countErr
 	}
 
-	query, orderErr := getOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"}, "created_at DESC")
+	query, orderErr := GetOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"}, "created_at DESC")
 	if orderErr != nil {
 		return []gentypes.Manager{}, gentypes.PageInfo{}, orderErr
 	}
 
-	query, limit, offset := getPage(query, page)
+	query, limit, offset := GetPage(query, page)
 	query = query.Find(&managers)
 	if query.Error != nil {
 		if query.RecordNotFound() {
