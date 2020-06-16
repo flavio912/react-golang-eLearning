@@ -9,6 +9,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 func TestCreateLesson(t *testing.T) {
@@ -56,7 +57,7 @@ func TestGetLessonByUUID(t *testing.T) {
 		lesson, err := courseRepo.GetLessonByUUID(uuid)
 
 		assert.Equal(t, &errors.ErrLessonNotFound, err)
-		assert.Equal(t, gentypes.Lesson{}, lesson)
+		assert.Equal(t, models.Lesson{}, lesson)
 	})
 
 	t.Run("Must get correct lesson", func(t *testing.T) {
@@ -192,26 +193,21 @@ func TestGetLessons(t *testing.T) {
 func TestUpdateLesson(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		l, err := nonAdminGrant.UpdateLesson(gentypes.UpdateLessonInput{})
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-		assert.Equal(t, gentypes.Lesson{}, l)
-	})
-
 	t.Run("Input must be valid", func(t *testing.T) {
 		invalidInput := gentypes.UpdateLessonInput{
 			Text: helpers.StringPointer("{"),
 		}
 
-		l, err := adminGrant.UpdateLesson(invalidInput)
+		l, err := courseRepo.UpdateLesson(invalidInput)
 		assert.Equal(t, invalidInput.Validate(), err)
-		assert.Equal(t, gentypes.Lesson{}, l)
+		assert.Equal(t, models.Lesson{}, l)
 	})
 
 	t.Run("Lesson must exist", func(t *testing.T) {
-		l, err := adminGrant.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
+		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+		l, err := courseRepo.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
 		assert.Equal(t, &errors.ErrLessonNotFound, err)
-		assert.Equal(t, gentypes.Lesson{}, l)
+		assert.Equal(t, models.Lesson{}, l)
 	})
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
@@ -222,63 +218,51 @@ func TestUpdateLesson(t *testing.T) {
 		Tags:  &tags,
 	}
 	t.Run("Updates existing lesson", func(t *testing.T) {
-		lesson, err := adminGrant.UpdateLesson(input)
-
-		expected := gentypes.Lesson{
-			UUID:  input.UUID,
-			Title: *input.Title,
-			Text:  *input.Text,
-			Tags: []gentypes.Tag{
-				{
-					UUID:  tags[0],
-					Name:  "Fancy tag for cool people",
-					Color: "#123",
-				},
-			},
-		}
+		lesson, err := courseRepo.UpdateLesson(input)
 
 		assert.Nil(t, err)
-		assert.Equal(t, expected, lesson)
+		assert.Equal(t, input.UUID, lesson.UUID)
+		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
+		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
 
-		lesson, err = adminGrant.GetLessonByUUID(input.UUID)
+		lesson, err = courseRepo.GetLessonByUUID(input.UUID)
 		assert.Nil(t, err)
 
-		_tags, tag_err := adminGrant.GetTagsByLessonUUID(input.UUID.String())
+		_tags, tag_err := courseRepo.GetTagsByLessonUUID(input.UUID.String())
 		lesson.Tags = _tags
 
 		assert.Nil(t, tag_err)
-		assert.Equal(t, expected, lesson)
+		assert.Equal(t, input.UUID, lesson.UUID)
+		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
+		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
 	})
 }
 
 func TestDeleteLesson(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		b, err := nonAdminGrant.DeleteLesson(gentypes.DeleteLessonInput{})
-
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-		assert.False(t, b)
-	})
-
 	t.Run("Must delete lesson", func(t *testing.T) {
 		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
 
-		b, err := adminGrant.DeleteLesson(gentypes.DeleteLessonInput{
+		b, err := courseRepo.DeleteLesson(gentypes.DeleteLessonInput{
 			UUID: uuid,
 		})
 
 		assert.Nil(t, err)
 		assert.True(t, b)
 
-		lesson, get_err := adminGrant.GetLessonByUUID(uuid)
+		lesson, get_err := courseRepo.GetLessonByUUID(uuid)
 
 		assert.Equal(t, &errors.ErrLessonNotFound, get_err)
-		assert.Equal(t, gentypes.Lesson{}, lesson)
+		assert.Equal(t, models.Lesson{}, lesson)
 
-		tags, _ := adminGrant.GetTagsByLessonUUID(uuid.String())
+		tags, _ := courseRepo.GetTagsByLessonUUID(uuid.String())
 
-		assert.Equal(t, []gentypes.Tag{}, tags)
+		assert.Equal(t, []models.Tag{}, tags)
 	})
 
 }

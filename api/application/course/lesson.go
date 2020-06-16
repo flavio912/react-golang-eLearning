@@ -57,3 +57,21 @@ func (c *courseAppImpl) GetLessons(
 	lessons, pageInfo, err := c.coursesRepository.GetLessons(page, filter, orderBy)
 	return c.lessonsToGentype(lessons), pageInfo, err
 }
+
+func (c *courseAppImpl) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Lesson{}, &errors.ErrUnauthorized
+	}
+
+	lesson, err := c.coursesRepository.UpdateLesson(input)
+	return c.lessonToGentype(lesson), err
+}
+
+func (c *courseAppImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	b, err := c.coursesRepository.DeleteLesson(input)
+	return b, err
+}

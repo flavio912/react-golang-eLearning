@@ -40,6 +40,8 @@ type Mutation {
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
   createLesson(input: CreateLessonInput!): Lesson
+  updateLesson(input: UpdateLessonInput!): Lesson
+  deleteLesson(input: DeleteLessonInput!): Boolean!
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
 }

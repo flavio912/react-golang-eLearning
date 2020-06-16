@@ -403,13 +403,31 @@ func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
 	}, err
 }
 
+func (m *MutationResolver) UpdateLesson(ctx context.Context, args struct{ Input gentypes.UpdateLessonInput }) (*LessonResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &LessonResolver{}, &errors.ErrUnauthorized
+	}
+
+	courseFuncs := course.NewCourseApp(grant)
+	lesson, err := courseFuncs.UpdateLesson(args.Input)
+	if err != nil {
+		return &LessonResolver{}, err
+	}
+
+	return &LessonResolver{
+		Lesson: lesson,
+	}, nil
+}
+
 func (m *MutationResolver) DeleteLesson(ctx context.Context, args struct{ Input gentypes.DeleteLessonInput }) (bool, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
 	}
 
-	b, err := grant.DeleteLesson(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	b, err := courseFuncs.DeleteLesson(args.Input)
 	if err != nil {
 		return false, err
 	}
