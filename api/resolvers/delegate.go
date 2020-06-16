@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -25,7 +27,8 @@ func NewDelegateResolver(ctx context.Context, args NewDelegateArgs) (*DelegateRe
 			return &DelegateResolver{}, &errors.ErrUnauthorized
 		}
 
-		delegate, err := grant.GetDelegateByUUID(*args.UUID) // TODO: Use Dataloaders
+		usersApp := users.NewUsersApp(grant)
+		delegate, err := usersApp.Delegate(*args.UUID) // TODO: Use Dataloaders
 		if err != nil {
 			return &DelegateResolver{}, err
 		}

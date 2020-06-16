@@ -5,6 +5,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/paymentintent"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -27,7 +28,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		price = price + course.Price
 	}
 
-	if !c.grant.IsAuthorizedToBook(courseModels) {
+	if application.IsAuthorizedToBook(&c.usersRepository, c.grant, courseModels) {
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
 	}
 
@@ -35,7 +36,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 
 	//	Individual can only book courses for themselves
 	if c.grant.IsIndividual {
-		ind, err := c.grant.Individual(c.grant.Claims.UUID)
+		ind, err := c.usersRepository.Individual(c.grant.Claims.UUID)
 		if err != nil {
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to get current user")
 			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
@@ -46,7 +47,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 	// Managers can only purchase for users that exist and that they are manager of
 	if c.grant.IsManager {
 		for _, uuid := range input.Users {
-			delegate, err := c.grant.Delegate(uuid)
+			delegate, err := c.usersRepository.Delegate(uuid)
 			if err != nil {
 				return &gentypes.PurchaseCoursesResponse{}, errors.ErrDelegateDoesNotExist(uuid.String())
 			}
@@ -77,12 +78,12 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 
 	// If manager is part of a contract company don't charge them and fulfil immediately
 	if c.grant.IsManager {
-		manager, err := c.grant.Manager(c.grant.Claims.UUID)
+		manager, err := c.usersRepository.Manager(c.grant.Claims.UUID)
 		if err != nil {
 			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 		}
 
-		company, err := c.grant.Company(manager.CompanyUUID)
+		company, err := c.usersRepository.Company(manager.CompanyUUID)
 		if err != nil {
 			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 		}

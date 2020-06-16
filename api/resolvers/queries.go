@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
@@ -82,7 +84,8 @@ func (q *QueryResolver) Delegates(ctx context.Context, args struct {
 		}
 	}
 
-	delegates, pageInfo, err := grant.GetDelegates(args.Page, args.Filter, args.OrderBy)
+	usersApp := users.NewUsersApp(grant)
+	delegates, pageInfo, err := usersApp.GetDelegates(args.Page, args.Filter, args.OrderBy)
 	if err != nil {
 		return &DelegatePageResolver{}, err
 	}
@@ -140,7 +143,8 @@ func (q *QueryResolver) Managers(ctx context.Context, args struct {
 		return &ManagerPageResolver{}, &errors.ErrUnauthorized
 	}
 
-	managers, page, err := grant.GetManagers(args.Page, args.Filter, args.OrderBy)
+	usersApp := users.NewUsersApp(grant)
+	managers, page, err := usersApp.GetManagers(args.Page, args.Filter, args.OrderBy)
 	var managerResolvers []*ManagerResolver
 	for _, manager := range managers {
 		managerResolvers = append(managerResolvers, &ManagerResolver{
@@ -166,7 +170,8 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 		return &CompanyPageResolver{}, &errors.ErrUnauthorized
 	}
 
-	companies, page, err := grant.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
+	usersApp := users.NewUsersApp(grant)
+	companies, page, err := usersApp.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
 	if err != nil {
 		return &CompanyPageResolver{}, err
 	}

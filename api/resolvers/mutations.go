@@ -63,7 +63,8 @@ func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.CreateManager(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	manager, err := usersApp.CreateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -87,7 +88,8 @@ func (m *MutationResolver) UpdateManager(ctx context.Context, args struct{ Input
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.UpdateManager(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	manager, err := usersApp.UpdateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -103,7 +105,8 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 		return false, &errors.ErrUnauthorized
 	}
 
-	success, err := grant.DeleteManager(args.Input.UUID)
+	usersApp := users.NewUsersApp(grant)
+	success, err := usersApp.DeleteManager(args.Input.UUID)
 	return success, err
 }
 
@@ -168,7 +171,8 @@ func (m *MutationResolver) ProfileImageUploadRequest(
 		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
 	}
 
-	url, successToken, err := grant.ProfileUploadRequest(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	url, successToken, err := usersApp.ProfileUploadRequest(args.Input)
 	return &gentypes.UploadFileResp{
 		URL:          url,
 		SuccessToken: successToken,
@@ -184,7 +188,8 @@ func (m *MutationResolver) UpdateManagerProfileImage(
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	err := grant.ManagerProfileUploadSuccess(args.Input.SuccessToken)
+	usersApp := users.NewUsersApp(grant)
+	err := usersApp.ManagerProfileUploadSuccess(args.Input.SuccessToken)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -210,7 +215,8 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.CreateCompany(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.CreateCompany(args.Input)
 	if err != nil {
 		return &CompanyResolver{}, err
 	}
@@ -229,7 +235,8 @@ func (m *MutationResolver) UpdateCompany(ctx context.Context, args struct{ Input
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.UpdateCompany(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.UpdateCompany(args.Input)
 	if err != nil {
 		return &CompanyResolver{}, err
 	}
@@ -246,13 +253,14 @@ type companyRequestInput struct {
 // CreateCompanyRequest is used to request that an admin allows you to create company
 func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args companyRequestInput) (bool, error) {
 	// TODO: Check recaptcha token
-
-	err := middleware.CreateCompanyRequest(ctx, args.Company, args.Manager)
-	if err != nil {
-		return false, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
 	}
 
-	return true, nil
+	usersApp := users.NewUsersApp(grant)
+	success, err := usersApp.CreateCompanyRequest(args.Company, args.Manager)
+	return success, err
 }
 
 func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID gentypes.UUID }) (*CompanyResolver, error) {
@@ -261,7 +269,8 @@ func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.ApproveCompany(args.UUID)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.ApproveCompany(args.UUID)
 	if err != nil {
 		return nil, err
 	}
@@ -379,7 +388,8 @@ func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
 		return nil, &errors.ErrUnauthorized
 	}
 
-	user, err := users.CreateIndividual(grant, args.Input)
+	usersApp := users.NewUsersApp(grant)
+	user, err := usersApp.CreateIndividual(args.Input)
 	if err != nil {
 		return &CreateIndividualResponse{}, err
 	}

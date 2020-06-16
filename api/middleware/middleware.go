@@ -9,7 +9,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 // Grant - CREATE A LITERAL OF THIS AT YOUR PERIL
@@ -25,18 +24,15 @@ type Grant struct {
 	Logger logging.Logger
 }
 
-func (g *Grant) IsAuthorizedToBook(courses []models.Course) bool {
-	if g.IsManager || g.IsIndividual {
-		for _, course := range courses {
-			if course.AccessType == gentypes.Restricted {
-				if !g.IsFullyApproved() {
-					return false
-				}
-			}
-		}
-		return true
-	}
-	return false
+//IsCompanyDelegate returns true if the grant user is a delegate of the given company uuid
+func (g *Grant) IsCompanyDelegate(companyUUID gentypes.UUID) bool {
+	return g.IsDelegate && g.Claims.Company == companyUUID
+}
+
+// ManagesCompany is an access-control helper to work out if the current grant
+// is authorized to manage the given company uuid.
+func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
+	return g.IsAdmin || (g.IsManager && g.Claims.Company == uuid)
 }
 
 // Authenticate is used to verify and get access to middleware functions
@@ -80,7 +76,7 @@ func Authenticate(jwt string) (*Grant, error) {
 // MaxPageLimit is the maximum amount of returned datapoints
 const MaxPageLimit = int32(100)
 
-// GetPage adds limit and offset to a query
+// getPage adds limit and offset to a query
 func GetPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	var (
 		limit  = MaxPageLimit
@@ -132,7 +128,7 @@ func GetOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	return query, nil
 }
 
-func filterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
+func FilterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
 	if filter != nil {
 		if filter.Name != nil && *filter.Name != "" {
 			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")

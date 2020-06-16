@@ -1,7 +1,6 @@
-package middleware_test
+package user_test
 
 import (
-	"context"
 	"fmt"
 	"testing"
 
@@ -11,8 +10,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
 var realCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001") // A company that exists
@@ -30,67 +27,13 @@ var fakeCompany = gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999
 // 	})
 // }
 
-func TestIsCompanyDelegate(t *testing.T) {
-	assert.True(t, delegateGrant.IsCompanyDelegate(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")))
-	assert.False(t, delegateGrant.IsCompanyDelegate(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")))
-	// should only happen for delegates
-	assert.False(t, managerGrant.IsCompanyDelegate(realCompany))
-	assert.False(t, adminGrant.IsCompanyDelegate(realCompany))
-}
-
-func TestManagesCompany(t *testing.T) {
-	tests := []struct {
-		name  string
-		grant middleware.Grant
-		uuid  gentypes.UUID
-		want  bool
-	}{
-		{
-			"Admin always true",
-			adminGrant,
-			uuidZero,
-			true,
-		},
-		{
-			"Delegate always false",
-			delegateGrant,
-			uuidZero,
-			false,
-		},
-		{
-			"Manager must be part of company",
-			managerGrant,
-			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-			true,
-		},
-		{
-			"Should fail if not managers company",
-			managerGrant,
-			gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-			false,
-		},
-	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			ret := test.grant.ManagesCompany(test.uuid)
-			assert.Equal(t, test.want, ret)
-		})
-	}
-}
-
 func TestGetManagerIDsByCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	company1 := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
-	t.Run("Must be admin", func(t *testing.T) {
-		ids, _, err := nonAdminGrant.GetManagerIDsByCompany(uuidZero, nil, nil, nil)
-		assert.Len(t, ids, 0)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
 
 	t.Run("Should return all managers", func(t *testing.T) {
-		ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, nil, nil)
+		ids, _, err := usersRepo.GetManagerIDsByCompany(company1, nil, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, ids, 2)
 	})
@@ -98,7 +41,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(1)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		ids, pageInfo, err := adminGrant.GetManagerIDsByCompany(company1, &page, nil, nil)
+		ids, pageInfo, err := usersRepo.GetManagerIDsByCompany(company1, &page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, ids, 1)
 		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 2, Given: 1, Limit: limit})
@@ -107,7 +50,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 	t.Run("Should order", func(t *testing.T) {
 		order := gentypes.OrderBy{Field: "first_name"}
 
-		ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, nil, &order)
+		ids, _, err := usersRepo.GetManagerIDsByCompany(company1, nil, nil, &order)
 		assert.Nil(t, err)
 		assert.Len(t, ids, 2)
 		assert.Equal(t, "00000000-0000-0000-0000-000000000002", ids[0].String())
@@ -142,7 +85,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 
 		for _, test := range filterTests {
 			t.Run(test.name, func(t *testing.T) {
-				ids, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &test.filter, nil)
+				ids, _, err := usersRepo.GetManagerIDsByCompany(company1, nil, &test.filter, nil)
 				assert.Nil(t, err)
 				require.Len(t, ids, 1)
 				assert.Equal(t, manager.UUID, ids[0])
@@ -152,7 +95,7 @@ func TestGetManagerIDsByCompany(t *testing.T) {
 		t.Run("return mutiple", func(t *testing.T) {
 			email := ".com"
 			filter := gentypes.ManagersFilter{Email: &email}
-			managers, _, err := adminGrant.GetManagerIDsByCompany(company1, nil, &filter, nil)
+			managers, _, err := usersRepo.GetManagerIDsByCompany(company1, nil, &filter, nil)
 			assert.Nil(t, err)
 			require.Len(t, managers, 2)
 		})
@@ -163,7 +106,7 @@ func TestGetCompaniesByUUID(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Admin can get companies", func(t *testing.T) {
-		comp, err := adminGrant.GetCompaniesByUUID([]gentypes.UUID{realCompany})
+		comp, err := usersRepo.GetCompaniesByUUID([]gentypes.UUID{realCompany})
 		assert.Nil(t, err)
 		assert.Len(t, comp, 1)
 		assert.Equal(t, realCompany, comp[0].UUID)
@@ -175,14 +118,14 @@ func TestGetCompaniesByUUID(t *testing.T) {
 func TestCompany(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Admin can get company", func(t *testing.T) {
-		company, err := adminGrant.Company(realCompany)
+	t.Run("Can get company", func(t *testing.T) {
+		company, err := usersRepo.Company(realCompany)
 		assert.Nil(t, err)
 		assert.Equal(t, realCompany, company.UUID)
 	})
 
 	t.Run("Get non-existant company", func(t *testing.T) {
-		company, err := adminGrant.Company(fakeCompany)
+		company, err := usersRepo.Company(fakeCompany)
 		assert.Equal(t, &errors.ErrCompanyNotFound, err)
 		assert.Equal(t, models.Company{}, company)
 	})
@@ -193,13 +136,8 @@ func TestCompany(t *testing.T) {
 func TestGetCompanyUUIDs(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		_, _, err := nonAdminGrant.GetCompanyUUIDs(nil, nil, nil)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
 	t.Run("Should return all companies", func(t *testing.T) {
-		ids, _, err := adminGrant.GetCompanyUUIDs(nil, nil, nil)
+		ids, _, err := usersRepo.GetCompanyUUIDs(nil, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, ids, 4)
 	})
@@ -207,7 +145,7 @@ func TestGetCompanyUUIDs(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(2)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		ids, pageInfo, err := adminGrant.GetCompanyUUIDs(&page, nil, nil)
+		ids, pageInfo, err := usersRepo.GetCompanyUUIDs(&page, nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, ids, 2)
 		assert.Equal(t, pageInfo, gentypes.PageInfo{Total: 4, Given: 2, Limit: limit})
@@ -217,7 +155,7 @@ func TestGetCompanyUUIDs(t *testing.T) {
 		asc := true
 		order := gentypes.OrderBy{Field: "name", Ascending: &asc}
 
-		ids, _, err := adminGrant.GetCompanyUUIDs(nil, nil, &order)
+		ids, _, err := usersRepo.GetCompanyUUIDs(nil, nil, &order)
 		assert.Nil(t, err)
 		require.Len(t, ids, 4)
 		assert.Equal(t, "00000000-0000-0000-0000-000000000003", ids[0].String())
@@ -240,7 +178,7 @@ func TestGetCompanyUUIDs(t *testing.T) {
 
 		for _, test := range filterTests {
 			t.Run(test.name, func(t *testing.T) {
-				ids, _, err := adminGrant.GetCompanyUUIDs(nil, &test.filter, nil)
+				ids, _, err := usersRepo.GetCompanyUUIDs(nil, &test.filter, nil)
 				assert.Nil(t, err)
 				require.Len(t, ids, test.wantLen)
 			})
@@ -260,40 +198,21 @@ var newCompInput = gentypes.CreateCompanyInput{
 func TestCreateCompany(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		_, err := nonAdminGrant.CreateCompany(gentypes.CreateCompanyInput{})
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
-	// TODO
-	// t.Run("Must validate input",  {
-	// })
-
-	approved := true
-
 	t.Run("Check company and address are created", func(t *testing.T) {
-		company, err := adminGrant.CreateCompany(newCompInput)
+		company, err := usersRepo.CreateCompany(newCompInput)
 		assert.Nil(t, err)
-		assert.Equal(t, gentypes.Company{
-			UUID:      company.UUID,
-			CreatedAt: company.CreatedAt,
-			Name:      newCompInput.CompanyName,
-			Approved:  &approved,
-			AddressID: company.AddressID,
-		}, company)
+		assert.Equal(t, newCompInput.CompanyName, company.Name)
+		assert.Equal(t, true, company.Approved)
 
 		// check address
-		addresses, err := adminGrant.GetAddressesByIDs([]uint{company.AddressID})
+		addresses, err := usersRepo.GetAddressesByIDs([]uint{company.AddressID})
 		assert.Nil(t, err)
 		require.Len(t, addresses, 1)
-		assert.Equal(t, gentypes.Address{
-			ID:           company.AddressID,
-			AddressLine1: newCompInput.AddressLine1,
-			AddressLine2: newCompInput.AddressLine2,
-			County:       newCompInput.County,
-			PostCode:     newCompInput.PostCode,
-			Country:      newCompInput.Country,
-		}, addresses[0])
+		assert.Equal(t, newCompInput.AddressLine1, addresses[0].AddressLine1)
+		assert.Equal(t, newCompInput.AddressLine2, addresses[0].AddressLine2)
+		assert.Equal(t, company.AddressID, addresses[0].ID)
+		assert.Equal(t, newCompInput.Country, addresses[0].Country)
+		assert.Equal(t, newCompInput.PostCode, addresses[0].PostCode)
 	})
 }
 
@@ -310,46 +229,34 @@ func TestCreateCompanyRequest(t *testing.T) {
 	}
 
 	t.Run("Should create company, address, and manager", func(t *testing.T) {
-		err := middleware.CreateCompanyRequest(context.Background(), newCompInput, managerInput)
+		err := usersRepo.CreateCompanyRequest(newCompInput, managerInput)
 		assert.Nil(t, err)
 
 		// get the latest company
-		ids, _, _ := adminGrant.GetCompanyUUIDs(nil, nil, nil)
-		company, _ := adminGrant.Company(ids[len(ids)-1])
+		ids, _, _ := usersRepo.GetCompanyUUIDs(nil, nil, nil)
+		company, _ := usersRepo.Company(ids[len(ids)-1])
 		assert.Equal(t, false, company.Approved)
 		assert.Equal(t, newCompInput.CompanyName, company.Name)
 
 		// check address
-		addresses, err := adminGrant.GetAddressesByIDs([]uint{company.AddressID})
+		addresses, err := usersRepo.GetAddressesByIDs([]uint{company.AddressID})
 		assert.Nil(t, err)
 		require.Len(t, addresses, 1, "Should have created an address")
-		assert.Equal(t, gentypes.Address{
-			ID:           company.AddressID,
-			AddressLine1: newCompInput.AddressLine1,
-			AddressLine2: newCompInput.AddressLine2,
-			County:       newCompInput.County,
-			PostCode:     newCompInput.PostCode,
-			Country:      newCompInput.Country,
-		}, addresses[0])
+		assert.Equal(t, newCompInput.AddressLine1, addresses[0].AddressLine1)
+		assert.Equal(t, newCompInput.AddressLine2, addresses[0].AddressLine2)
+		assert.Equal(t, newCompInput.PostCode, addresses[0].PostCode)
+		assert.Equal(t, newCompInput.Country, addresses[0].Country)
+		assert.Equal(t, newCompInput.County, addresses[0].County)
 
 		// check it created a manager
-		managers, _, err := adminGrant.GetManagerIDsByCompany(company.UUID, nil, nil, nil)
+		managers, _, err := usersRepo.GetManagerIDsByCompany(company.UUID, nil, nil, nil)
 		require.Nil(t, err)
 		require.Len(t, managers, 1, "Should return the new manager")
-		manager, err := adminGrant.Manager(managers[0])
+		manager, err := usersRepo.Manager(managers[0])
 		assert.Nil(t, err)
-		assert.Equal(t, gentypes.Manager{
-			CreatedAt:       manager.CreatedAt,
-			UUID:            manager.UUID,
-			FirstName:       managerInput.FirstName,
-			LastName:        managerInput.LastName,
-			Telephone:       managerInput.Telephone,
-			JobTitle:        managerInput.JobTitle,
-			LastLogin:       manager.LastLogin,
-			Email:           managerInput.Email,
-			ProfileImageURL: manager.ProfileImageURL,
-			CompanyUUID:     company.UUID,
-		}, manager)
+		assert.Equal(t, manager.Email, managerInput.Email)
+		assert.Equal(t, manager.JobTitle, managerInput.JobTitle)
+		assert.Equal(t, manager.Telephone, managerInput.Telephone)
 	})
 }
 
@@ -358,48 +265,31 @@ func TestApproveCompany(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		grant   middleware.Grant
 		uuid    string
 		want    bool
 		wantErr interface{}
 	}{
 		{
-			"Must be admin",
-			nonAdminGrant,
-			"00000000-0000-0000-0000-000000000000",
-			false,
-			&errors.ErrUnauthorized,
-		},
-		{
 			"company must exist",
-			adminGrant,
 			"00000000-0000-0000-0000-000000000000",
 			false,
 			&errors.ErrCompanyNotFound,
 		},
 		{
 			"Should set approved to true",
-			adminGrant,
 			"00000000-0000-0000-0000-000000000004",
 			true,
 			nil,
-		},
-		{
-			"Cannot be public",
-			publicGrant,
-			"00000000-0000-0000-0000-000000000004",
-			false,
-			&errors.ErrUnauthorized,
 		},
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			comp, err := test.grant.ApproveCompany(gentypes.MustParseToUUID(test.uuid))
+			comp, err := usersRepo.ApproveCompany(gentypes.MustParseToUUID(test.uuid))
 			assert.Equal(t, test.wantErr, err)
 			if err == nil {
 				assert.Equal(t, gentypes.MustParseToUUID(test.uuid), comp.UUID)
-				assert.Equal(t, &test.want, comp.Approved)
+				assert.Equal(t, test.want, comp.Approved)
 			}
 		})
 	}

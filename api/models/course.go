@@ -16,16 +16,16 @@ type Course struct {
 	Category        Category       // The category that the course belongs to
 	CategoryUUID    *gentypes.UUID // FKEY
 	Tags            []Tag          `gorm:"many2many:course_tags_link;"`
-	Excerpt         string         `sql:"json"` // Excert quill json
-	Introduction    string         `sql:"json"` // Introduction quill json
-	HowToComplete   string         `sql:"json"`
+	Excerpt         string
+	Introduction    string
+	HowToComplete   string
 	HoursToComplete float64
 	WhatYouLearn    []WhatYouLearnBullet
 	Requirements    []RequirementBullet
 	AccessType      gentypes.AccessType // Restricted or Open Access
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
-	SpecificTerms   string              `sql:"json"` // Terms specific to this course in quill json
+	SpecificTerms   string              // Terms specific to this course
 	Published       bool                // If not published users can't see this course
 	CourseType      gentypes.CourseType // classroom or online course
 	OnlineCourse    OnlineCourse

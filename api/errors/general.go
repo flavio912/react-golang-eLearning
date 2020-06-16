@@ -145,4 +145,10 @@ var (
 			Message: fmt.Sprintf("The given delegate does not exist: %s", uuid),
 		}
 	}
+	ErrRequiredField = func(name string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrRequiredField",
+			Message: fmt.Sprintf("The field '%s', is required", name),
+		}
+	}
 )
