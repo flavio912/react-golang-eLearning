@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
 import Icon from 'sharedComponents/core/Icon/Icon';
 import Button from 'sharedComponents/core/Input/Button';
-import CircleBorder from 'sharedComponents/core/CircleBorder';
+import CheckoutPopup, { BasketItem } from './CheckoutPopup';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -48,6 +48,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
+  checkoutPopup: {
+    right: 285,
+  },
   title: {
     fontSize: theme.fontSizes.large,
     fontWeight: "500",
@@ -78,13 +81,16 @@ type Props = {
   tabs: Array<Tab>;
   selected: Tab;
   onClick?: (tab: Tab) => void;
-  basketItems?: number;
+  basketItems?: BasketItem[];
+  onCheckout: () => void;
   className?: string;
 };
 
-function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) {
+function HeaderMenu({ tabs, selected, onClick, basketItems, onCheckout, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const [showPopup, setShowPopup ] = React.useState(false);
 
   return (
     <div className={classNames(classes.root, className)}>
@@ -106,10 +112,16 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, className }: Props) 
               ))}
           </div>
           <div className={classes.row}>
-            {basketItems && basketItems > 0 && 
-              <div>
-                <div className={classes.notification}>{basketItems}</div>
-                <Icon name="Basket" className={classes.basket} size={38} />
+            {basketItems && basketItems.length > 0 &&
+              <div onClick={() => setShowPopup(!showPopup)}>
+                <div className={classes.notification}>{basketItems.length}</div>
+                <Icon name="Basket" className={classes.basket} style={{ cursor: "pointer" }} size={38} />
+                {showPopup && (
+                  <CheckoutPopup
+                    className={classes.checkoutPopup}
+                    basketItems={basketItems}
+                    onCheckout={onCheckout}
+                  />)}
               </div>
             }
             <div className={classes.tab}>Login</div>
