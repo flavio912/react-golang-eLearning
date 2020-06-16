@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -56,7 +58,8 @@ func (l *addressLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*
 		ids = append(ids, uint(n))
 	}
 
-	addresses, err := grant.GetAddressesByIDs(ids)
+	usersApp := users.NewUsersApp(grant)
+	addresses, err := usersApp.GetAddressesByIDs(ids)
 	if err != nil {
 		return loadBatchError(err, n)
 	}

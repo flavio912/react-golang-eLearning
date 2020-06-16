@@ -890,135 +890,10 @@ func TestCompanies(t *testing.T) {
 			Path:            []interface{}{"companies"},
 			MustAuth:        true,
 			AdminAllowed:    true,
-			ManagerAllowed:  false,
+			ManagerAllowed:  true, // Manager should only be able to own company
 			DelegateAllowed: false,
 		},
 	)
-}
-
-func TestOnlineCourses(t *testing.T) {
-	prepareTestDatabase()
-
-	gqltest.RunTests(t, []*gqltest.Test{
-		{
-			Name:    "Should return all online courses",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-					{
-						onlineCourses {
-							edges {
-								uuid
-							}
-							pageInfo {
-								total
-								offset
-								limit
-								given
-							}
-						}
-					}
-				`,
-			ExpectedResult: `
-					{
-						"onlineCourses":{
-							"edges":[
-								{"uuid":"00000000-0000-0000-0000-000000000001"},
-								{"uuid":"00000000-0000-0000-0000-000000000002"},
-								{"uuid":"00000000-0000-0000-0000-000000000003"}
-							],
-							"pageInfo": {
-								"given": 3,
-								"limit": 100,
-								"offset": 0,
-								"total": 3
-							}
-						}
-					}
-				`,
-		},
-		{
-			Name:    "Should return unrestricted courses",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-					{
-						onlineCourses {
-							edges {
-								uuid
-							}
-							pageInfo {
-								total
-								offset
-								limit
-								given
-							}
-						}
-					}
-				`,
-			ExpectedResult: `
-					{
-						"onlineCourses":{
-							"edges":[
-								{"uuid":"00000000-0000-0000-0000-000000000001"},
-								{"uuid":"00000000-0000-0000-0000-000000000002"},
-								{"uuid":"00000000-0000-0000-0000-000000000003"}
-							],
-							"pageInfo": {
-								"given": 3,
-								"limit": 100,
-								"offset": 0,
-								"total": 3
-							}
-						}
-					}
-				`,
-		},
-	})
-}
-
-func TestClassroomCourses(t *testing.T) {
-	prepareTestDatabase()
-
-	gqltest.RunTests(t, []*gqltest.Test{
-		{
-			Name:    "Should return all classroom courses",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-					{
-						classroomCourses {
-							edges {
-								uuid
-							}
-							pageInfo {
-								total
-								offset
-								limit
-								given
-							}
-						}
-					}
-				`,
-			ExpectedResult: `
-					{
-						"classroomCourses":{
-							"edges":[
-								{"uuid":"00000000-0000-0000-0000-000000000014"},
-								{"uuid":"00000000-0000-0000-0000-000000000013"},
-								{"uuid":"00000000-0000-0000-0000-000000000012"}
-							],
-							"pageInfo": {
-								"given": 3,
-								"limit": 100,
-								"offset": 0,
-								"total": 3
-							}
-						}
-					}
-				`,
-		},
-	})
 }
 
 func TestGetUser(t *testing.T) {
@@ -1335,4 +1210,61 @@ func TestLessons(t *testing.T) {
 			DelegateAllowed: false,
 		},
 	)
+}
+
+func TestGetCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all courses",
+			Context: publicContext(),
+			Schema:  schema,
+			Query: `
+				{
+					courses {
+						edges {
+							id
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"courses":{
+						"edges": [
+							{"id":1},
+							{"id":2},
+							{"id":3},
+							{"id":4},
+							{"id":5}
+						],
+						"pageInfo": {
+							"total": 5,
+							"offset": 0,
+							"limit": 100,
+							"given": 5
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	// accessTest(
+	// 	t, schema, accessTestOpts{
+	// 		Query:           `{lessons { edges { uuid } }}`,
+	// 		Path:            []interface{}{"lessons"},
+	// 		MustAuth:        true,
+	// 		AdminAllowed:    true,
+	// 		ManagerAllowed:  false,
+	// 		DelegateAllowed: false,
+	// 	},
+	// )
 }

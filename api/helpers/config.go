@@ -44,6 +44,11 @@ type Sentry struct {
 	Environment string `yaml:"environment"`
 }
 
+type Stripe struct {
+	PublishableKey string `yaml:"publishableKey"`
+	SecretKey      string `yaml:"secretKey"`
+}
+
 type yamlConfig struct {
 	IsTesting    bool     `yaml:"isTesting"`
 	IsDev        bool     `yaml:"isDev"`
@@ -54,6 +59,7 @@ type yamlConfig struct {
 	AWS          AWS      `yaml:"aws"`
 	Imgix        Imgix    `yaml:"imgix"`
 	Sentry       Sentry   `yaml:"sentry"`
+	Stripe       Stripe   `yaml:"stripe"`
 }
 
 // Config - The config variable can be used by other packages to get config data
@@ -108,6 +114,10 @@ func LoadConfig() error {
 		Sentry: Sentry{
 			DSN:         getStringEnv("SENTRY_DSN"),
 			Environment: getStringEnv("SENTRY_ENVIRONMENT"),
+		},
+		Stripe: Stripe{
+			PublishableKey: getStringEnv("STRIPE_PUBLISHABLE_KEY"),
+			SecretKey:      getStringEnv("STRIPE_SECRET_KEY"),
 		},
 	}
 

@@ -35,10 +35,11 @@ type Mutation {
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: UUID!): Company
-  saveOnlineCourse(input: SaveOnlineCourseInput!): OnlineCourse
-  saveClassroomCourse(input: SaveClassroomCourseInput!): ClassroomCourse
+  saveOnlineCourse(input: SaveOnlineCourseInput!): Course
+  saveClassroomCourse(input: SaveClassroomCourseInput!): Course
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
   createLesson(input: CreateLessonInput!): Lesson
-  updateLesson(input: UpdateLessonInput!): Lesson
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+  createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
 }

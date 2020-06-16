@@ -1,6 +1,6 @@
 - uuid: 00000000-0000-0000-0000-000000000001
-  course_info_id: 1
+  course_id: 1
 - uuid: 00000000-0000-0000-0000-000000000002
-  course_info_id: 4
+  course_id: 4
 - uuid: 00000000-0000-0000-0000-000000000003
-  course_info_id: 5
+  course_id: 5

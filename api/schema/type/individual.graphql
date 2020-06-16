@@ -1,0 +1,12 @@
+input CreateIndividualInput {
+  firstName: String!
+  lastName: String!
+  jobTitle: String
+  telephone: String
+  email: String!
+  password: String!
+}
+
+type CreateIndividualResponse {
+  user: User
+}

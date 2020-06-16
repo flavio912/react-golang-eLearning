@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -31,11 +32,20 @@ func (l *adminLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*da
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	admins, err := grant.GetAdminsByUUID(keys.Keys())
+	// Convert keys back to UUIDS
+	uuids := make([]gentypes.UUID, n)
+	for index, key := range keys.Keys() {
+		uuids[index] = gentypes.MustParseToUUID(key)
+	}
+
+	// Get admins from application
+	adminFuncs := application.NewAdminApp(grant)
+	admins, err := adminFuncs.Admins(uuids)
 	if err != nil {
 		glog.Infof("error getting admins: %s", err.Error())
 		return loadBatchError(err, n)
 	}
+
 	res := make([]*dataloader.Result, n)
 	for _, admin := range admins {
 		// results must be in the same order as keys

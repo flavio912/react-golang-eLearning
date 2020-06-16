@@ -35,5 +35,8 @@ ENV IMGIX_BASE_URL="https://ttc-dev.imgix.net/"
 ENV SENTRY_DSN=""
 ENV SENTRY_ENVIRONMENT=""
 
+ENV STRIPE_PUBLISHABLE_KEY=""
+ENV STRIPE_SECRET_KEY=""
+
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv

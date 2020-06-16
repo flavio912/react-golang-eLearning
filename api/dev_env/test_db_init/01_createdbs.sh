@@ -12,6 +12,7 @@ function create_user_and_database() {
 	    CREATE USER $database WITH PASSWORD '$database';
 	    CREATE DATABASE $database;
 	    GRANT ALL PRIVILEGES ON DATABASE $database TO $database;
+			ALTER ROLE $database SUPERUSER;
 EOSQL
   psql --username "$POSTGRES_USER" -v -d "$database" -f /init.sql
 }

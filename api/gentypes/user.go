@@ -36,3 +36,29 @@ type CreateUserInput struct {
 	Telephone string `valid:"numeric"`
 	Password  string `valid:"required,stringlength(5|30)"`
 }
+
+func DelegateToUser(delegate Delegate) User {
+	return User{
+		Type:            DelegateType,
+		Email:           delegate.Email,
+		FirstName:       delegate.FirstName,
+		LastName:        delegate.LastName,
+		Telephone:       delegate.Telephone,
+		JobTitle:        &delegate.JobTitle,
+		LastLogin:       delegate.LastLogin,
+		ProfileImageUrl: delegate.ProfileImageURL,
+	}
+}
+
+func ManagerToUser(manager Manager) User {
+	return User{
+		Type:            ManagerType,
+		Email:           &manager.Email,
+		FirstName:       manager.FirstName,
+		LastName:        manager.LastName,
+		Telephone:       &manager.Telephone,
+		JobTitle:        &manager.JobTitle,
+		LastLogin:       manager.LastLogin,
+		ProfileImageUrl: manager.ProfileImageURL,
+	}
+}
