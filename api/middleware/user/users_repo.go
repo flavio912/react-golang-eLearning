@@ -45,6 +45,11 @@ type UsersRepository interface {
 	UpdateManagerProfileKey(managerUUID gentypes.UUID, newKey *string) error
 
 	GetAddressesByIDs(ids []uint) ([]models.Address, error)
+
+	TakerActivity(courseTaker gentypes.UUID) ([]models.CourseTakerActivity, error)
+	TakerActivitys(courseTakers []gentypes.UUID) ([]models.CourseTakerActivity, error)
+	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)
+	DeleteTakerActivity(activityUUID gentypes.UUID) error
 }
 
 type usersRepoImpl struct {

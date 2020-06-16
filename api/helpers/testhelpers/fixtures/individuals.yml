@@ -7,7 +7,7 @@
   last_name: Sharron
   telephone: 07912935287
   job_title: Cool Person
-  course_taker_id: 2
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
 - uuid: 00000000-0000-0000-0000-000000000013
   created_at: 2020-01-08 13:53:37.338775+00
   updated_at: 2020-01-08 13:53:37.338775+00
@@ -17,4 +17,4 @@
   last_name: Florence
   telephone: 07912935287
   job_title: Cool Person
-  course_taker_id: 3
+  course_taker_uuid: 2c90d590-dbe1-425b-ad5c-eebf7abcf9da

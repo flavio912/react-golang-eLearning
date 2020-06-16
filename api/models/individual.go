@@ -3,6 +3,8 @@ package models
 import (
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -11,15 +13,15 @@ import (
 
 type Individual struct {
 	Base
-	FirstName     string
-	LastName      string
-	JobTitle      *string
-	Telephone     *string
-	LastLogin     time.Time
-	Password      string
-	Email         string `gorm:"unique"`
-	CourseTaker   CourseTaker
-	CourseTakerID uint
+	FirstName       string
+	LastName        string
+	JobTitle        *string
+	Telephone       *string
+	LastLogin       time.Time
+	Password        string
+	Email           string `gorm:"unique"`
+	CourseTaker     CourseTaker
+	CourseTakerUUID gentypes.UUID
 }
 
 func (individual *Individual) getHash() string {
