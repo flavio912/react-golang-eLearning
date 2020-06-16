@@ -362,3 +362,17 @@ func (m *MutationResolver) UpdateLesson(ctx context.Context, args struct{ Input 
 		Lesson: lesson,
 	}, nil
 }
+
+func (m *MutationResolver) DeleteLesson(ctx context.Context, args struct{ Input gentypes.DeleteLessonInput }) (bool, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
+	}
+
+	b, err := grant.DeleteLesson(args.Input)
+	if err != nil {
+		return false, err
+	}
+
+	return b, nil
+}
