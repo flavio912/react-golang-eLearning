@@ -11,13 +11,15 @@ import (
 
 type Individual struct {
 	Base
-	FirstName string
-	LastName  string
-	JobTitle  string
-	Telephone string
-	LastLogin time.Time
-	Password  string
-	Email     string `gorm:"unique"`
+	FirstName     string
+	LastName      string
+	JobTitle      *string
+	Telephone     *string
+	LastLogin     time.Time
+	Password      string
+	Email         string `gorm:"unique"`
+	CourseTaker   CourseTaker
+	CourseTakerID uint
 }
 
 func (individual *Individual) getHash() string {
@@ -33,7 +35,7 @@ func (*Individual) FindUser(email string) (*Individual, error) {
 	return &individual, nil
 }
 
-// ValidatePassword - Check if a password and email for a manager is valid
+// ValidatePassword - Check if a password and email is valid
 func (*Individual) ValidatePassword(email string, password string) error {
 
 	// Find the user

@@ -1264,106 +1264,59 @@ func TestCreateCategory(t *testing.T) {
 	// })
 }
 
-func TestUpdateLesson(t *testing.T) {
+func TestSaveOnlineCourse(t *testing.T) {
 	prepareTestDatabase()
 
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
-			Name:    "Update a field",
+			Name:    "Create online course",
 			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				mutation {
-					updateLesson(input: {
-						uuid: "00000000-0000-0000-0000-000000000001"
-						title: "Backtracking"
-					}) {
-						uuid
-						title
-					}
-				}
-			`,
-			ExpectedResult: `
-				{
-					"updateLesson":{
-						"uuid": "00000000-0000-0000-0000-000000000001",
-						"title": "Backtracking"
-					}
-				}
-			`,
-		},
-		{
-			Name:    "Update all fields",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-				mutation {
-					updateLesson(input: {
-						uuid: "00000000-0000-0000-0000-000000000003"
-						title: "Jacobian Matrix"
-						text: "{\"space\":\"time\"}"
-						tags: ["00000000-0000-0000-0000-000000000001"]
-					}) {
-						uuid
-						title
-						text
-						tags {
-							uuid
+					saveOnlineCourse(
+						input:{
+							name: "Test online course",
+							excerpt: "{}",
+							introduction:"{}",
+							backgroundCheck: true,
+							accessType: open,
+							price: 34.3,
+							color: "#fff",
+							howToComplete: "{}",
+        			whatYouLearn: ["What 1", "What 2"],
+        			requirements: ["req 1", "req 2"]
 						}
+					) {
+						name
+						excerpt
+						introduction
+						backgroundCheck
+						price
+						color
+						howToComplete
+						whatYouLearn
+						requirements
 					}
 				}
 			`,
 			ExpectedResult: `
 				{
-					"updateLesson" : {
-						"uuid" : "00000000-0000-0000-0000-000000000003",
-						"title": "Jacobian Matrix",
-						"text": "{\"space\":\"time\"}",
-						"tags": [
-							{
-								"uuid": "00000000-0000-0000-0000-000000000001"
-							}
-						]
+					"saveOnlineCourse":{
+							"name": "Test online course",
+							"excerpt": "{}",
+							"introduction":"{}",
+							"backgroundCheck": true,
+							"price": 34.3,
+							"color": "#fff",
+							"howToComplete": "{}",
+							"whatYouLearn": ["What 1", "What 2"],
+							"requirements": ["req 1", "req 2"]
 					}
 				}
 			`,
-		},
-		{
-			Name:    "Lesson does not exist",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-				mutation {
-					updateLesson(input: {
-						uuid: "00000000-0000-0000-0000-000000000000"
-					}) {
-						uuid
-					}
-				}
-			`,
-			ExpectedResult: `
-				{
-					"updateLesson": null
-				}
-			`,
-			ExpectedErrors: []gqltest.TestQueryError{
-				{
-					ResolverError: &errors.ErrLessonNotFound,
-					Path:          []interface{}{"updateLesson"},
-				},
-			},
 		},
 	})
-
-	// t.Run("Test loaders reset", func(t *testing.T) {
-	// 	prepareTestDatabase()
-
-	// 	gqltest.RunTests(t, []*gqltest.Test{
-	// 		{
-	// 			Name: "",
-	// 		}
-	// 	})
-	// })
 }
 
 func TestDeleteLesson(t *testing.T) {

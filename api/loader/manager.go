@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -44,7 +46,18 @@ func (l *managerLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	managers, err := grant.GetManagersByUUID(keys.Keys())
+	k := keys.Keys()
+	uuidKeys := make([]gentypes.UUID, len(k))
+	for i, stringK := range k {
+		uuid, err := gentypes.StringToUUID(stringK)
+		if err != nil {
+			return loadBatchError(&errors.ErrUUIDInvalid, n)
+		}
+		uuidKeys[i] = uuid
+	}
+
+	usersApp := users.NewUsersApp(grant)
+	managers, err := usersApp.GetManagersByUUID(uuidKeys)
 	if err != nil {
 		return loadBatchError(err, n)
 	}

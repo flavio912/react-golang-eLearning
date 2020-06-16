@@ -32,6 +32,9 @@ ENV IMGIX_BASE_URL="https://ttc-dev.imgix.net/"
 ENV SENTRY_DSN="https://c6a2d188cc104df5bf18ba78ed1d55a5@o109340.ingest.sentry.io/5197155"
 ENV SENTRY_ENVIRONMENT="dev"
 
+ENV STRIPE_PUBLISHABLE_KEY="pk_test_T5ZBhTO9Lq709gdga8c9aoPN00PnTm0tfU"
+ENV STRIPE_SECRET_KEY="sk_test_PfIjVtw1HYwp9vKgOmOHG9DJ00ogycW552"
+
 RUN ["chmod", "+x", "dev_env/entrypoint.sh"]
 
 RUN ["go", "get", "github.com/cespare/reflex"]

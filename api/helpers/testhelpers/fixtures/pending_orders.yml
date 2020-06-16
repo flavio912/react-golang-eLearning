@@ -1,0 +1,3 @@
+- uuid: 00000000-0000-0000-0000-000000000001
+  stripe_client_secret: supersecretclientsecret
+  extra_invoice_email: null

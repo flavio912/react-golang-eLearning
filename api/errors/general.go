@@ -1,5 +1,9 @@
 package errors
 
+import (
+	"fmt"
+)
+
 var (
 	// ErrUserNotFound given when database could not find a user
 	ErrUserNotFound = FullError{
@@ -132,5 +136,25 @@ var (
 		Message:  "There is no lesson matching the information given",
 		Title:    "Could no find the specified lesson",
 		HelpText: "Oi, this lesson does not exist. Check the details and try again",
+	}
+	ErrUnauthorizedToBook = SimpleError{
+		Type:    "ErrUnauthorizedToBook",
+		Message: "You cannot book these courses as you are not authorized",
+	}
+	ErrNotAllFound = SimpleError{
+		Type:    "ErrNotAllFound",
+		Message: "Not all items you were looking for were found",
+	}
+	ErrDelegateDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrDelegateDoesNotExist",
+			Message: fmt.Sprintf("The given delegate does not exist: %s", uuid),
+		}
+	}
+	ErrRequiredField = func(name string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrRequiredField",
+			Message: fmt.Sprintf("The field '%s', is required", name),
+		}
 	}
 )
