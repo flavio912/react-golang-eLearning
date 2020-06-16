@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -54,7 +55,9 @@ func (l *companyLoader) loadCompanyBatch(ctx context.Context, keys dataloader.Ke
 		}
 		uuidKeys[i] = uuid
 	}
-	companies, err := grant.GetCompaniesByUUID(uuidKeys)
+
+	userFuncs := users.NewUsersApp(grant)
+	companies, err := userFuncs.GetCompaniesByUUID(uuidKeys)
 	if err != nil {
 		return loadBatchError(err, n)
 	}

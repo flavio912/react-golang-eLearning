@@ -3,10 +3,12 @@ package course
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -38,6 +40,7 @@ type courseAppImpl struct {
 	grant             *middleware.Grant
 	ordersRepository  middleware.OrdersRepository
 	coursesRepository course.CoursesRepository
+	usersRepository   user.UsersRepository
 }
 
 func NewCourseApp(grant *middleware.Grant) CourseApp {
@@ -45,7 +48,26 @@ func NewCourseApp(grant *middleware.Grant) CourseApp {
 		grant:             grant,
 		ordersRepository:  middleware.NewOrdersRepository(&grant.Logger),
 		coursesRepository: course.NewCoursesRepository(&grant.Logger),
+		usersRepository:   user.NewUsersRepository(&grant.Logger),
 	}
+}
+
+// IsFullyApproved checks if a user is approved to view all restricted courses
+func (c *courseAppImpl) IsFullyApproved() bool {
+	if c.grant.IsAdmin {
+		return true
+	}
+	if !c.grant.IsManager {
+		return false
+	}
+
+	var company, err = c.usersRepository.Company(c.grant.Claims.Company)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to check if manager is approved")
+		return false
+	}
+
+	return company.Approved
 }
 
 func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Course {
@@ -75,7 +97,7 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 
 	var allowedToBuy = true
 	if courseInfo.AccessType == gentypes.Restricted {
-		allowedToBuy = c.grant.IsFullyApproved()
+		allowedToBuy = application.IsFullyApproved(&c.usersRepository, c.grant)
 	}
 
 	// TODO: Check if user has access to this course
@@ -127,7 +149,7 @@ func (c *courseAppImpl) Courses(courseIDs []uint) ([]gentypes.Course, error) {
 }
 
 func (c *courseAppImpl) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error) {
-	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, c.grant.IsFullyApproved())
+	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, application.IsFullyApproved(&c.usersRepository, c.grant))
 
 	return c.coursesToGentypes(courses), pageInfo, err
 }

@@ -48,8 +48,9 @@ func ServeStripeWebook() http.Handler {
 				return
 			}
 			if err := ordersRepository.FulfilPendingOrder(paymentIntent.ClientSecret); err != nil {
+				sentry.CaptureException(err)
 				sentry.CaptureMessage(fmt.Sprintf("Unable to fulfil order from stripe: %s", paymentIntent.ClientSecret))
-				w.WriteHeader(http.StatusServiceUnavailable)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
@@ -62,13 +63,14 @@ func ServeStripeWebook() http.Handler {
 				return
 			}
 			if err := ordersRepository.CancelPendingOrder(paymentIntent.ClientSecret); err != nil {
+				sentry.CaptureException(err)
 				sentry.CaptureMessage(fmt.Sprintf("Unable to cancel order from stripe: %s", paymentIntent.ClientSecret))
-				w.WriteHeader(http.StatusServiceUnavailable)
+				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
 		default:
-			fmt.Fprintf(os.Stderr, "Unexpected event type: %s\n", event.Type)
+			// fmt.Fprintf(os.Stderr, "Unexpected event type: %s\n", event.Type)
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}

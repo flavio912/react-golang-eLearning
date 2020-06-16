@@ -109,7 +109,7 @@ func CheckErrors(t *testing.T, want []TestQueryError, got []*gqlerrors.QueryErro
 	if len(want) != len(gotTestErrors) {
 		t.Error("Unequal number of errors:")
 		t.Errorf("want: %#v", want)
-		t.Error("got:")
+		t.Errorf("got: %#v", gotTestErrors)
 	}
 
 	for i, g := range gotTestErrors {

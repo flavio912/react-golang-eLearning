@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -122,7 +124,8 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	}
 
 	// TODO: N+1 problem - get it to use dataloaders
-	managers, pageInfo, _ := grant.GetManagerIDsByCompany(r.company.UUID, args.Page, args.Filter, args.OrderBy)
+	usersApp := users.NewUsersApp(grant)
+	managers, pageInfo, _ := usersApp.GetManagerIDsByCompany(r.company.UUID, args.Page, args.Filter, args.OrderBy)
 	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
 	if err != nil {
 		glog.Info("Unable to resolve a manager: ")

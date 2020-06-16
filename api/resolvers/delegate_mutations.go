@@ -3,6 +3,7 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -34,6 +35,7 @@ func (m *MutationResolver) CreateDelegate(ctx context.Context, args struct{ Inpu
 		return &CreateDelegateResponse{}, &errors.ErrUnauthorized
 	}
 
-	delegate, password, err := grant.CreateDelegate(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	delegate, password, err := usersApp.CreateDelegate(args.Input)
 	return &CreateDelegateResponse{delegate: delegate, generatedPassword: password}, err
 }

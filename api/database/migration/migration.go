@@ -15,6 +15,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Address{})
 	database.GormDB.AutoMigrate(&models.Delegate{})
 	database.GormDB.AutoMigrate(&models.CourseTaker{})
+	database.GormDB.AutoMigrate(&models.CourseTakerActivity{})
 
 	database.GormDB.Model(&models.Delegate{}).AddForeignKey("course_taker_id", "course_takers(id)", "CASCADE", "RESTRICT")
 

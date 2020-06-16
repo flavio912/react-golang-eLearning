@@ -91,16 +91,16 @@ type CourseInput struct {
 	Color             *string `valid:"hexcolor"`
 	CategoryUUID      *gentypes.UUID
 	Tags              *[]gentypes.UUID
-	Excerpt           *string `valid:"json"`
-	Introduction      *string `valid:"json"`
-	HowToComplete     *string `valid:"json"`
+	Excerpt           *string
+	Introduction      *string
+	HowToComplete     *string
 	HoursToComplete   *float64
 	WhatYouLearn      *[]string
 	Requirements      *[]string
 	AccessType        *gentypes.AccessType
 	ImageSuccessToken *string
 	BackgroundCheck   *bool
-	SpecificTerms     *string `valid:"json"`
+	SpecificTerms     *string
 	CourseType        *gentypes.CourseType
 }
 

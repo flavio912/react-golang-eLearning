@@ -15,6 +15,15 @@ const (
 	LessonType StructureElement = "lesson"
 )
 
+type ActivityType string
+
+const (
+	ActivityNewCourse ActivityType = "newCourse"
+	ActivityActivated ActivityType = "activated"
+	ActivityCompleted ActivityType = "completedCourse"
+	ActivityFailed    ActivityType = "failedCourse"
+)
+
 type CourseType string
 
 const (
@@ -26,9 +35,9 @@ type CourseInput struct {
 	ID                 *uint
 	Name               *string
 	CategoryUUID       *UUID
-	Excerpt            *string `valid:"json"`
-	Introduction       *string `valid:"json"`
-	HowToComplete      *string `valid:"json"`
+	Excerpt            *string
+	Introduction       *string
+	HowToComplete      *string
 	HoursToComplete    *float64
 	WhatYouLearn       *[]string
 	Requirements       *[]string
@@ -37,7 +46,7 @@ type CourseInput struct {
 	Price              *float64
 	Color              *string `valid:"hexcolor"`
 	Tags               *[]UUID
-	SpecificTerms      *string `valid:"json"`
+	SpecificTerms      *string
 	BannerImageSuccess *string
 }
 
@@ -62,13 +71,13 @@ type Course struct {
 	Price           float64
 	Tags            []Tag
 	Color           string `valid:"hexcolor"`
-	Introduction    string `valid:"json"`
-	HowToComplete   string `valid:"json"`
+	Introduction    string
+	HowToComplete   string
 	HoursToComplete float64
 	WhatYouLearn    []string
 	Requirements    []string
-	Excerpt         string `valid:"json"`
-	SpecificTerms   string `valid:"json"`
+	Excerpt         string
+	SpecificTerms   string
 	CategoryUUID    *UUID
 }
 
