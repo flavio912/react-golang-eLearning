@@ -18,14 +18,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
         color: theme.colors.primaryWhite
     },
     image: {
-        height: '140px',
-        width: '240px',
+        height: '151px',
+        width: '300px',
         margin: '60px 0 0 50px',
         borderRadius: '20px 20px 0 0'
     },
     spacer: {
         flex: 1,
-        height: '200px' // image height + padding
+        height: '210px' // image height + padding, removes extra space below image
     }
 }));
 
