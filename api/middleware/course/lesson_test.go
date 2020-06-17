@@ -193,16 +193,6 @@ func TestGetLessons(t *testing.T) {
 func TestUpdateLesson(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Input must be valid", func(t *testing.T) {
-		invalidInput := gentypes.UpdateLessonInput{
-			Text: helpers.StringPointer("{"),
-		}
-
-		l, err := courseRepo.UpdateLesson(invalidInput)
-		assert.Equal(t, invalidInput.Validate(), err)
-		assert.Equal(t, models.Lesson{}, l)
-	})
-
 	t.Run("Lesson must exist", func(t *testing.T) {
 		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
 		l, err := courseRepo.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
