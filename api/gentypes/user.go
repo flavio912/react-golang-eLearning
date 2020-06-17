@@ -8,10 +8,27 @@ const (
 	IndividualType UserType = "individual"
 )
 
+type ActivityType string
+
+const (
+	ActivityNewCourse ActivityType = "newCourse"
+	ActivityActivated ActivityType = "activated"
+	ActivityCompleted ActivityType = "completedCourse"
+	ActivityFailed    ActivityType = "failedCourse"
+)
+
+type Activity struct {
+	UUID            UUID
+	CreatedAt       string
+	ActivityType    ActivityType
+	CourseTakerUUID UUID
+	CourseID        *uint
+}
+
 // User - User graphQL interface
 type User struct {
+	UUID            UUID
 	CreatedAt       *string
-	UUID            *UUID
 	Type            UserType
 	Email           *string
 	FirstName       string
@@ -20,6 +37,7 @@ type User struct {
 	JobTitle        *string
 	LastLogin       string
 	ProfileImageUrl *string
+	CourseTakerUUID *UUID
 }
 
 type UserFilter struct {
@@ -35,30 +53,4 @@ type CreateUserInput struct {
 	JobTitle  string `valid:"required"`
 	Telephone string `valid:"numeric"`
 	Password  string `valid:"required,stringlength(5|30)"`
-}
-
-func DelegateToUser(delegate Delegate) User {
-	return User{
-		Type:            DelegateType,
-		Email:           delegate.Email,
-		FirstName:       delegate.FirstName,
-		LastName:        delegate.LastName,
-		Telephone:       delegate.Telephone,
-		JobTitle:        &delegate.JobTitle,
-		LastLogin:       delegate.LastLogin,
-		ProfileImageUrl: delegate.ProfileImageURL,
-	}
-}
-
-func ManagerToUser(manager Manager) User {
-	return User{
-		Type:            ManagerType,
-		Email:           &manager.Email,
-		FirstName:       manager.FirstName,
-		LastName:        manager.LastName,
-		Telephone:       &manager.Telephone,
-		JobTitle:        &manager.JobTitle,
-		LastLogin:       manager.LastLogin,
-		ProfileImageUrl: manager.ProfileImageURL,
-	}
 }

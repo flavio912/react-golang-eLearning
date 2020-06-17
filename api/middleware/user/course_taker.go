@@ -6,6 +6,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -21,29 +22,50 @@ func (u *usersRepoImpl) CourseTakers(uuids []gentypes.UUID) ([]models.CourseTake
 	return courseTakers, nil
 }
 
-func (u *usersRepoImpl) TakerActivity(courseTaker gentypes.UUID) ([]models.CourseTakerActivity, error) {
-	activityItems, err := u.TakerActivitys([]gentypes.UUID{courseTaker})
+func (u *usersRepoImpl) TakerActivity(courseTaker gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error) {
+	activityItems, pageInfo, err := u.TakerActivitys([]gentypes.UUID{courseTaker}, page)
 	if err != nil && err != &errors.ErrNotFound {
-		return []models.CourseTakerActivity{}, err
+		return []models.CourseTakerActivity{}, gentypes.PageInfo{}, err
 	}
 
-	return activityItems, nil
+	return activityItems, pageInfo, nil
 }
 
-func (u *usersRepoImpl) TakerActivitys(courseTakers []gentypes.UUID) ([]models.CourseTakerActivity, error) {
+func (u *usersRepoImpl) TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error) {
+
+	query := database.GormDB.Where("course_taker_uuid IN (?)", courseTakers)
+
+	// Get total before paging
+	var count int32
+	if err := query.Model(models.CourseTakerActivity{}).Count(&count).Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to count takers activity")
+		return []models.CourseTakerActivity{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	var limit = count
+	var offset int32
+	if page != nil {
+		query, limit, offset = middleware.GetPage(query, page)
+	}
+
 	var activityItems []models.CourseTakerActivity
-	err := database.GormDB.Where("course_taker_uuid IN (?)", courseTakers).Find(&activityItems).Error
+	err := query.Find(&activityItems).Error
 
 	if err != nil {
 		if gorm.IsRecordNotFoundError(err) {
-			return []models.CourseTakerActivity{}, &errors.ErrNotFound
+			return []models.CourseTakerActivity{}, gentypes.PageInfo{}, &errors.ErrNotFound
 		}
 
 		u.Logger.Log(sentry.LevelError, err, "Unable to get takers activity")
-		return []models.CourseTakerActivity{}, &errors.ErrWhileHandling
+		return []models.CourseTakerActivity{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
-	return activityItems, nil
+	return activityItems, gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(activityItems)),
+	}, nil
 }
 
 func (u *usersRepoImpl) CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error) {

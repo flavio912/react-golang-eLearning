@@ -7,10 +7,9 @@ import (
 )
 
 type CourseTaker struct {
-	UUID           gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	MinutesTracked float64
-	ActiveCourses  []ActiveCourse
-	Activity       CourseTakerActivity
+	UUID          gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	ActiveCourses []ActiveCourse
+	Activity      CourseTakerActivity
 }
 
 // ActiveCourse represents a course the taker is assigned and can complete
@@ -20,6 +19,7 @@ type ActiveCourse struct {
 	Course          Course
 	CourseID        uint `gorm:"primary_key;auto_increment:false"` // FKEY
 	CurrentAttempt  uint `gorm:"default:1"`
+	MinutesTracked  float64
 }
 
 type CourseTakerActivity struct {
