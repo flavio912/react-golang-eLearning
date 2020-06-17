@@ -86,6 +86,8 @@ type Props = {
   setSelected: (
     selected: ((current: DropdownOption) => DropdownOption) | DropdownOption
   ) => void;
+  boxStyle?: string;
+  fontStyle?: string;
   className?: string;
 };
 
@@ -94,6 +96,8 @@ function Dropdown({
   options,
   selected,
   setSelected,
+  boxStyle,
+  fontStyle,
   className
 }: Props) {
   const classes = useStyles();
@@ -103,10 +107,10 @@ function Dropdown({
     <>
       <div className={classNames(classes.container, className)}>
         <div
-          className={classes.clickableBox}
+          className={classNames(classes.clickableBox, boxStyle)}
           onClick={() => setOpen((o) => !o)}
         >
-          <p className={classes.title}>
+          <p className={classNames(classes.title, fontStyle)}>
             {selected ? selected.title : placeholder}
           </p>
           <div className={isOpen ? classes.triangleUp : classes.triangleDown} />
@@ -123,7 +127,7 @@ function Dropdown({
                     setOpen(false);
                   }}
                 >
-                  <span className={classes.title}>
+                  <span className={classNames(classes.title, fontStyle)}>
                     {component ? component : title}
                   </span>
                 </div>
