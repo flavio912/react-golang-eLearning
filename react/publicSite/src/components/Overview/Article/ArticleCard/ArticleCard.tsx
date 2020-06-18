@@ -10,7 +10,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        boxShadow: '4px 9px 39px -22px rgba(0,0,0,0.18)',
         borderRadius: '3px'
     },
     image: {

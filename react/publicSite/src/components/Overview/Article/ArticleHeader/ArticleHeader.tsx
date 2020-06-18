@@ -11,15 +11,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
-        padding: '140px 200px 75px 200px'
+        padding: '110px 0 60px 180px'
     },
     row: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
+    padding: {
+        padding: '120px 0 80px 180px'
+    },
     title: {
-        fontSize: 46,
+        fontSize: 40,
         fontWeight: '800',
         color: theme.colors.primaryWhite,
         maxWidth: '615px',
@@ -63,7 +66,7 @@ function ArticleHeader({ title, date, image, featured, genre, author, className 
 
   return (
       <div
-        className={classNames(classes.root, className)}
+        className={classNames(classes.root, featured && classes.padding, className)}
         style={{ backgroundImage: `url(${image})` }}
     >
           {featured && (
