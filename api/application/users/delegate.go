@@ -33,6 +33,7 @@ func (u *usersAppImpl) delegateToGentype(delegate models.Delegate) gentypes.Dele
 		TTC_ID:          delegate.TtcId,
 		ProfileImageURL: profileURL,
 		LastLogin:       lastLogin,
+		CourseTakerUUID: delegate.CourseTakerUUID,
 	}
 }
 

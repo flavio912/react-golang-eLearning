@@ -54,6 +54,11 @@ func (d *DelegateResolver) Company(ctx context.Context) (*CompanyResolver, error
 		UUID: d.delegate.CompanyUUID.String(),
 	})
 }
+func (d *DelegateResolver) Activity(ctx context.Context, args struct{ Page *gentypes.Page }) (*ActivityPageResolver, error) {
+	return NewActivityPageResolver(ctx, NewActivityPageArgs{
+		CourseTakerUUID: &d.delegate.CourseTakerUUID,
+	}, args.Page)
+}
 
 type DelegatePageResolver struct {
 	edges    *[]*DelegateResolver

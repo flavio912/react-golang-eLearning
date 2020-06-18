@@ -1,4 +1,4 @@
-type Delegate  {
+type Delegate {
   uuid: UUID!
   createdAt: String
   TTC_ID: String!
@@ -10,6 +10,7 @@ type Delegate  {
   jobTitle: String!
   company: Company!
   profileImageUrl: String
+  activity(page: Page): ActivityPage
 }
 
 input CreateDelegateInput {
@@ -24,7 +25,7 @@ input CreateDelegateInput {
 }
 
 type CreateDelegateResponse {
-  delegate: Delegate!,
+  delegate: Delegate!
   generatedPassword: String
 }
 
