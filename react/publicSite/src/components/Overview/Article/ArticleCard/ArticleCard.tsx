@@ -10,7 +10,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
-        borderRadius: '3px'
+        borderRadius: '3px',
+        '&:hover': {
+            boxShadow: '4px 9px 39px -22px rgba(0,0,0,0.18)'
+        }
     },
     image: {
         height: '241px',
