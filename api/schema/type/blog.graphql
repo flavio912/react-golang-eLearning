@@ -1,0 +1,22 @@
+type BlogAuthor {
+  firstName: String!
+  lastName: String!
+  profilePicURL: String
+}
+
+type Blog {
+  uuid: UUID!
+  title: String!
+  body: String!
+  category: Category!
+  headerImageURL: String!
+  author: BlogAuthor!
+}
+
+input CreateBlogInput {
+  title: String!
+  body: String!
+  categoryUUID: UUID!
+  headerImageURL: String!
+  authorUUID: UUID
+}

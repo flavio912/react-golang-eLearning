@@ -33,6 +33,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
+	database.GormDB.AutoMigrate(&models.Blog{})
 
 	// If course is deleted, delete the requirements and what you learn too
 	database.GormDB.Model(&models.RequirementBullet{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
