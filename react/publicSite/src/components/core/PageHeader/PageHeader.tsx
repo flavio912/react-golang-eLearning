@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
+import { useRouter } from 'found';
 import { Theme } from "helpers/theme";
 import Button from "sharedComponents/core/Input/Button";
 import Icon from "sharedComponents/core/Icon";
@@ -122,7 +123,7 @@ type Props = {
     buttons?: ButtonLink[];
     estimatedTime?: string;
     lastUpdated?: string;
-    sideComponent?: React.Component;
+    sideComponent?: React.ReactNode;
     className?: string;
 };
 
@@ -132,6 +133,11 @@ function PageHeader({ title, description, archetype, history, buttons, estimated
 
     const titleStyle = classes[archetype + "Title"];
     const descStyle = classes[archetype + "Desc"];
+
+    const { router } = useRouter();
+    const onClick = (link?: string) => {
+        link && router.push(link);
+    }
 
   return (
       <div className={classNames(classes.root, className)}>
@@ -164,7 +170,7 @@ function PageHeader({ title, description, archetype, history, buttons, estimated
                         {buttons && buttons.map((buttonLink: ButtonLink) => (
                             <Button
                                 className={classNames(classes.button, classes.extraLarge)}
-                                onClick={() => console.log(buttonLink.link)}
+                                onClick={() => onClick(buttonLink.link)}
                             >
                                 {buttonLink.title}
                             </Button>
