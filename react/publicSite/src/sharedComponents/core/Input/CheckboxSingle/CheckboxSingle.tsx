@@ -51,7 +51,7 @@ function CheckboxSingle({
 
   return (
     <div className={classNames(classes.container, className)}>
-      <div className={classes.checkbox} key={label} onClick={() => _onClick()}>
+      <div className={classNames(classes.checkbox, className)} key={label} onClick={() => _onClick()}>
         <Icon
           name={isChecked ? 'FormCheckbox_Checked' : 'FormCheckbox_Unchecked'}
           size={size}

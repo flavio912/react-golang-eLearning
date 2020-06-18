@@ -3,15 +3,14 @@ import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
 import { Theme } from "helpers/theme";
 import CoreInput from "sharedComponents/core/Input/CoreInput";
-import Dropdown from "sharedComponents/core/Input/Dropdown";
-import { DropdownOption } from "sharedComponents/core/Input/Dropdown/Dropdown";
+import Dropdown, { DropdownOption } from "sharedComponents/core/Input/Dropdown";
 import CheckboxSingle from "sharedComponents/core/Input/CheckboxSingle";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '50px 60px',
+        padding: '40px',
         borderRadius: '14px',
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
     },
@@ -21,12 +20,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
         justifyContent: 'space-between'
     },
     header: {
-        fontSize: '40px',
+        fontSize: theme.fontSizes.heading,
         fontWeight: '900',
         marginBottom: '50px'
     },
     input: {
-        fontSize: theme.fontSizes.xSmallHeading,
+        fontSize: theme.fontSizes.large,
         padding: '15px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px',
@@ -36,26 +35,31 @@ const useStyles = createUseStyles((theme: Theme) => ({
         marginLeft: '27px'
     },
     dropdown: {
-        marginBottom: '41px',
         flex: 1.05
     },
     dropdownBox: {
-        height: '56px',
+        height: '50px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px'
     },
     dropdownText: {
-        fontSize: theme.fontSizes.xSmallHeading,
+        fontSize: theme.fontSizes.large,
+        fontWeight: '400',
         color: theme.colors.textGrey
     },
     checkbox: {
-        flex: 1.05
+        flex: 1.05,
+        alignItems: 'flex-start',
+        marginLeft: '13.5px'
     },
     checkboxText: {
-        fontSize: theme.fontSizes.extraLarge,
+        fontSize: theme.fontSizes.default,
         color: theme.colors.textGrey,
-        marginLeft: '23px'
-    }
+        margin: '0 0 0 23px'
+    },
+    height: {
+        height: '20px'
+    },
 }));
 
 export type BillingDetails = {
@@ -197,11 +201,11 @@ function BillingCard({ billingDetails, className }: Props) {
                 type="text"
                 onChange={(text: string) => setPostcode(text)}
                 value={postcode}
-                className={classes.input}
+                className={classNames(classes.input, classes.height)}
             />
 
             <CheckboxSingle
-                className={classNames(classes.checkbox, classes.marginLeft)}
+                className={classes.checkbox}
                 fontStyle={classes.checkboxText}
                 size={30}
                 onChange={() => setContact(!contact)}

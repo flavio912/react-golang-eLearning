@@ -7,7 +7,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '50px 60px',
+        padding: '40px',
         borderRadius: '14px',
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
     },
@@ -19,38 +19,40 @@ const useStyles = createUseStyles((theme: Theme) => ({
     row: {
         display: 'flex',
         flexDirection: 'row',
+        alignItems: 'center'
     },
     header: {
-        fontSize: '40px',
+        fontSize: theme.fontSizes.heading,
         fontWeight: '900',
         marginBottom: '50px'
     },
     tableHeader: {
         textAlign: 'center',
-        fontSize: theme.fontSizes.xSmallHeading,
+        fontSize: theme.fontSizes.default,
         color: theme.colors.textGrey
     },
     name: {
-        fontSize: theme.fontSizes.heading,
-        fontWeight: '600'
+        fontSize: theme.fontSizes.large,
+        fontWeight: '700'
     },
     id: {
-        fontSize: theme.fontSizes.heading,
-        color: theme.colors.textGrey
+        fontSize: theme.fontSizes.large,
+        color: theme.colors.textGrey,
+        marginTop: '5px'
     },
     image: {
-        height: '72px',
-        width: '80px',
+        height: '50px',
+        width: '54px',
         borderRadius: '5px',
-        marginRight: '35px'
+        marginRight: '15px'
     },
     detail: {
         textAlign: 'center',
-        fontSize: theme.fontSizes.heading,
+        fontSize: theme.fontSizes.large,
         color: theme.colors.textGrey
     },
     padding: {
-        padding: '31px 0 31px 0'
+        padding: '20px 0 20px 0'
     },
     border: {
         paddingBottom: '20px',

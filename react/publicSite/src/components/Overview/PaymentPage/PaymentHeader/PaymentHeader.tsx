@@ -12,9 +12,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     header: {
         flex: 1,
-        fontSize: '46px',
+        fontSize: theme.fontSizes.extraLargeHeading,
         fontWeight: '800',
-        marginTop: '10px',
         color: theme.colors.primaryWhite
     },
     image: {

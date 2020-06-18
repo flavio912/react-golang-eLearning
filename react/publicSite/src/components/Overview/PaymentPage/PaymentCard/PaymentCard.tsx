@@ -15,7 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         
     },
     padded: {
-        padding: '50px 60px'
+        padding: '40px'
     },
     column: {
         display: 'flex',
@@ -28,18 +28,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
         justifyContent: 'space-between'
     },
     header: {
-        fontSize: '40px',
+        fontSize: theme.fontSizes.heading,
         fontWeight: '900',
         marginBottom: '50px'
     },
     total: {
-        fontSize: theme.fontSizes.heading,
+        fontSize: theme.fontSizes.extraLarge,
         fontWeight: '500',
         color: theme.colors.textGrey,
-        marginBottom: '20px'
+        marginBottom: '10px'
     },
     border: {
-        paddingTop: '10px',
+        padding: '10px 0 20px 0',
         borderBottom: ['1px', 'solid', theme.colors.borderGrey],
     },
     blue: {
@@ -48,12 +48,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
         margin: '30px 0 0 0'
     },
     cardType: {
-        fontSize: theme.fontSizes.heading,
+        fontSize: theme.fontSizes.extraLarge,
         fontWeight: '800',
-        margin: '15px 0'
+        margin: '15px 0 25px 0'
     },
     terms: {
-        fontSize: theme.fontSizes.tinyHeading,
+        fontSize: theme.fontSizes.default,
         fontWeight: '800',
         color: theme.colors.textGrey
     },
@@ -63,12 +63,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
         color: theme.colors.textBlue
     },
     background: {
-        padding: '30px 60px 50px 60px',
+        padding: '20px 40px 40px 40px',
         backgroundColor: theme.colors.backgroundGrey
     },
     input: {
         backgroundColor: theme.colors.primaryWhite,
-        padding: '15px',
+        padding: '10px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px',
         margin: '30px 0 20px 0',
@@ -82,9 +82,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
         color: theme.colors.primaryRed
     },
     button: {
-        height: '100px',
+        height: '55px',
         width: '100%',
-        fontSize: 30,
+        fontSize: theme.fontSizes.tinyHeading,
         fontWeight: '800',
         marginTop: '20px'
     }
