@@ -32,7 +32,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         borderRight: "12px solid transparent",
         borderLeft: "12px solid transparent",
         borderBottom: ["20px", "solid", theme.colors.primaryWhite],
-        filter: 'drop-shadow(1px -1px 1px rgba(0,0,0,.15))',
+        filter: 'drop-shadow(1px -1px 1px rgba(0,0,0,0.09))',
         position: 'absolute',
         top: -18,
         right: 75
@@ -96,7 +96,7 @@ type Props = {
     className?: string;
 };
 
-function CheckoutPopup({ basketItems, onCheckout, className }: Props) {
+const CheckoutPopup = React.forwardRef(({ basketItems, onCheckout, className }: Props, ref: React.Ref<HTMLDivElement>) => {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
@@ -108,7 +108,7 @@ function CheckoutPopup({ basketItems, onCheckout, className }: Props) {
     }
 
   return (
-      <div className={classNames(classes.root, className)}>
+      <div className={classNames(classes.root, className)} ref={ref}>
           <div className={classes.triangle} />
           {basketItems && basketItems.map((item: BasketItem) => (
               <div key={item.id} className={classNames(classes.row, classes.item, classes.start)}>
@@ -131,6 +131,6 @@ function CheckoutPopup({ basketItems, onCheckout, className }: Props) {
           </div>
       </div>
   );
-}
+});
 
 export default CheckoutPopup;

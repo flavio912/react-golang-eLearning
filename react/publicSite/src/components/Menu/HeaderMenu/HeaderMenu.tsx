@@ -37,7 +37,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   notification: {
     position: 'absolute',
-    marginLeft: '25px',
+    marginLeft: '35px',
     backgroundColor: theme.colors.navyBlue,
     color: theme.colors.primaryWhite,
     fontSize: theme.fontSizes.default,
@@ -49,7 +49,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center'
   },
   checkoutPopup: {
-    right: 285,
+    right: 291,
   },
   title: {
     fontSize: theme.fontSizes.large,
@@ -71,6 +71,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
+/**
+ * Hook that alerts clicks outside of the passed ref
+ */
+function useOutsideAlerter(ref: any) {
+  
+}
+
 export interface Tab {
   id: number;
   title: string;
@@ -83,6 +90,7 @@ type Props = {
   onClick?: (tab: Tab) => void;
   basketItems?: BasketItem[];
   onCheckout: () => void;
+  children?: React.ReactNode;
   className?: string;
 };
 
@@ -91,6 +99,14 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, onCheckout, classNam
   const classes = useStyles({ theme });
 
   const [showPopup, setShowPopup ] = React.useState(false);
+  const externalRef = React.useRef<HTMLDivElement>(null);
+  
+  React.useEffect(() => {
+    document.addEventListener("mousedown", () => setShowPopup(false));
+    return () => {
+        document.removeEventListener("mousedown", () => setShowPopup(false));
+    };
+  }, []);
 
   return (
     <div className={classNames(classes.root, className)}>
@@ -115,12 +131,13 @@ function HeaderMenu({ tabs, selected, onClick, basketItems, onCheckout, classNam
             {basketItems && basketItems.length > 0 &&
               <div onClick={() => setShowPopup(!showPopup)}>
                 <div className={classes.notification}>{basketItems.length}</div>
-                <Icon name="Basket" className={classes.basket} style={{ cursor: "pointer" }} size={38} />
+                <Icon name="Basket" className={classes.basket} style={{ cursor: "pointer" }} size={50} />
                 {showPopup && (
                   <CheckoutPopup
                     className={classes.checkoutPopup}
                     basketItems={basketItems}
                     onCheckout={onCheckout}
+                    ref={externalRef}
                   />)}
               </div>
             }

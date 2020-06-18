@@ -52,6 +52,7 @@ export const AppHolder = ({ children }: Props) => {
               break;
           }
         }}
+        onCheckout={() => console.log('Checkout')}
       />
       <div className={classes.appHolder}>{children}</div>
     </div>
