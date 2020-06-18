@@ -7,7 +7,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '40px',
+        padding: '25px 25px 10px 25px',
         borderRadius: '14px',
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
     },
@@ -24,19 +24,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     header: {
         fontSize: theme.fontSizes.heading,
         fontWeight: '900',
-        marginBottom: '50px'
+        marginBottom: '25px'
     },
     tableHeader: {
         textAlign: 'center',
-        fontSize: theme.fontSizes.default,
+        fontSize: theme.fontSizes.xSmall,
         color: theme.colors.textGrey
     },
     name: {
-        fontSize: theme.fontSizes.large,
+        fontSize: theme.fontSizes.default,
         fontWeight: '700'
     },
     id: {
-        fontSize: theme.fontSizes.large,
+        fontSize: theme.fontSizes.default,
         color: theme.colors.textGrey,
         marginTop: '5px'
     },
@@ -48,7 +48,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     detail: {
         textAlign: 'center',
-        fontSize: theme.fontSizes.large,
+        fontSize: theme.fontSizes.default,
         color: theme.colors.textGrey
     },
     padding: {

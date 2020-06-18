@@ -12,10 +12,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         borderRadius: '14px',
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)',
-        
     },
     padded: {
-        padding: '40px'
+        padding: '25px 25px 15px 25px'
     },
     column: {
         display: 'flex',
@@ -30,30 +29,32 @@ const useStyles = createUseStyles((theme: Theme) => ({
     header: {
         fontSize: theme.fontSizes.heading,
         fontWeight: '900',
-        marginBottom: '50px'
+        marginBottom: '25px'
     },
     total: {
-        fontSize: theme.fontSizes.extraLarge,
+        fontSize: theme.fontSizes.default,
         fontWeight: '500',
         color: theme.colors.textGrey,
         marginBottom: '10px'
     },
     border: {
-        padding: '10px 0 20px 0',
+        marginBottom: 0,
+        paddingBottom: '10px',
         borderBottom: ['1px', 'solid', theme.colors.borderGrey],
     },
     blue: {
+        fontSize: 15,
         color: theme.colors.navyBlue,
         fontWeight: '700',
-        margin: '30px 0 0 0'
+        marginTop: '15px'
     },
     cardType: {
-        fontSize: theme.fontSizes.extraLarge,
+        fontSize: theme.fontSizes.default,
         fontWeight: '800',
-        margin: '15px 0 25px 0'
+        margin: '20px 0 10px 0'
     },
     terms: {
-        fontSize: theme.fontSizes.default,
+        fontSize: theme.fontSizes.small,
         fontWeight: '800',
         color: theme.colors.textGrey
     },
@@ -63,7 +64,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         color: theme.colors.textBlue
     },
     background: {
-        padding: '20px 40px 40px 40px',
+        padding: '10px 25px 25px 25px',
         backgroundColor: theme.colors.backgroundGrey
     },
     input: {
@@ -71,21 +72,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
         padding: '10px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px',
-        margin: '30px 0 20px 0',
+        margin: '20px 0',
         alignItems: 'center'
     },
     error: {
         borderColor: theme.colors.primaryRed
     },
     errorText: {
-        fontSize: theme.fontSizes.extraLarge,
+        fontSize: theme.fontSizes.large,
         color: theme.colors.primaryRed
     },
     button: {
-        height: '55px',
+        height: '50px',
         width: '100%',
-        fontSize: theme.fontSizes.tinyHeading,
-        fontWeight: '800',
+        fontSize: theme.fontSizes.extraLarge,
+        fontWeight: '600',
         marginTop: '20px'
     }
 }));
@@ -96,7 +97,8 @@ const CARD_ELEMENT_OPTIONS = {
         color: '#32325d',
         fontFamily: '"Helvetica Neue", Helvetica, sans-serif',
         fontSmoothing: 'antialiased',
-        fontSize: '21px',
+        fontWeight: '500',
+        fontSize: '16px',
         '::placeholder': {
           color: '#aab7c4'
         }
@@ -154,7 +156,7 @@ function PaymentCard({ total, className }: Props) {
             </div>
         </div>
 
-        <div className={classNames(classes.background, classes.padded)}>
+        <div className={classes.background}>
             <div className={classes.cardType}>Credit or Debit Card</div>
             <div className={classes.terms}>{`By completing your purchase you agree to these `}
                 <span

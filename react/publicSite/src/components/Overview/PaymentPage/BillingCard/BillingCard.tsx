@@ -10,7 +10,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     root: {
         display: 'flex',
         flexDirection: 'column',
-        padding: '40px',
+        padding: '25px',
         borderRadius: '14px',
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
     },
@@ -22,14 +22,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     header: {
         fontSize: theme.fontSizes.heading,
         fontWeight: '900',
-        marginBottom: '50px'
+        marginBottom: '30px'
     },
     input: {
-        fontSize: theme.fontSizes.large,
-        padding: '15px',
+        fontSize: theme.fontSizes.default,
+        padding: '11px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px',
-        marginBottom: '21px'
+        marginBottom: '15px'
     },
     marginLeft: {
         marginLeft: '27px'
@@ -38,28 +38,27 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flex: 1.05
     },
     dropdownBox: {
-        height: '50px',
         border: ['2px', 'solid', theme.colors.borderGrey],
         borderRadius: '6px'
     },
     dropdownText: {
-        fontSize: theme.fontSizes.large,
+        fontSize: theme.fontSizes.default,
         fontWeight: '400',
         color: theme.colors.textGrey
     },
     checkbox: {
-        flex: 1.05,
+        flex: 2,
         alignItems: 'flex-start',
         marginLeft: '13.5px'
     },
     checkboxText: {
-        fontSize: theme.fontSizes.default,
+        fontSize: theme.fontSizes.small,
         color: theme.colors.textGrey,
-        margin: '0 0 0 23px'
+        margin: '0 15px'
     },
-    height: {
-        height: '20px'
-    },
+    last: {
+        marginBottom: 0
+    }
 }));
 
 export type BillingDetails = {
@@ -201,13 +200,13 @@ function BillingCard({ billingDetails, className }: Props) {
                 type="text"
                 onChange={(text: string) => setPostcode(text)}
                 value={postcode}
-                className={classNames(classes.input, classes.height)}
+                className={classNames(classes.input, classes.last)}
             />
-
+            <div style={{ flex: 1 }} />
             <CheckboxSingle
                 className={classes.checkbox}
                 fontStyle={classes.checkboxText}
-                size={30}
+                size={18}
                 onChange={() => setContact(!contact)}
                 label="By checking this box you confirm you are happy for our team to contact you during the registration period"
             />
