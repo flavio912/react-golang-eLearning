@@ -62,9 +62,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type BillingDetails = {
-    email: string;
-    companyName: string;
-    phoneNumber: string;
     firstName: string;
     lastName: string;
     adressOne: string;
@@ -85,9 +82,6 @@ function BillingCard({ billingDetails, className }: Props) {
     const classes = useStyles({ theme });
 
     // Form Data
-    const [email, setEmail] = React.useState("");
-    const [companyName, setCompanyName] = React.useState("");
-    const [phoneNumber, setPhoneNumber] = React.useState("");
     const [firstName, setFirstName] = React.useState("");
     const [lastName, setLastName] = React.useState("");
     const [adressOne, setAddressOne] = React.useState("");
@@ -99,9 +93,6 @@ function BillingCard({ billingDetails, className }: Props) {
 
     React.useEffect(() => {
         billingDetails = {
-            email,
-            companyName,
-            phoneNumber,
             firstName,
             lastName,
             adressOne,
@@ -117,29 +108,6 @@ function BillingCard({ billingDetails, className }: Props) {
     <form className={classNames(classes.root, className)}>   
         <div className={classes.header}>Billing Address</div>
 
-        <CoreInput
-            placeholder="Company Email Address"
-            type="text"
-            onChange={(text: string) => setEmail(text)}
-            value={email}
-            className={classes.input}
-        />
-
-        <CoreInput
-            placeholder="Company Name"
-            type="text"
-            onChange={(text: string) => setCompanyName(text)}
-            value={companyName}
-            className={classes.input}
-        />
-
-        <CoreInput
-            placeholder="Contact Telephone Number"
-            type="text"
-            onChange={(text: string) => setPhoneNumber(text)}
-            value={phoneNumber}
-            className={classes.input}
-        />
         <div className={classes.row}>
             <CoreInput
                 placeholder="First Name"
