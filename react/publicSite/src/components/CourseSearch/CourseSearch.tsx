@@ -12,6 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column'
   },
   tabBar: {
+    flexWrap: 'wrap',
     borderBottom: ['1px', 'solid', theme.colors.borderGrey],
     justifyContent: 'space-evenly',
   },
@@ -23,7 +24,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     textAlign: 'center',
     padding: '14px 20px',
     opacity: 0.4,
-    transition: 'opacity 0.5s linear'
+    transition: 'opacity 0.5s linear',
+    '@media (max-width: 700px)': {
+      width: '30%'
+    }
   },
   selected: {
     borderBottom: ['3.5px', 'solid', theme.colors.primaryGreen],
@@ -82,25 +86,25 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-type TabNames = 'All Courses' | 'Regulated Agents' | 'Known Consignor' | 'GSAT';
-
 export type Tab = {
-  name: TabNames;
+  name: string;
   value: string;
 };
 
 type Props = {
   tabs: Tab[];
+  selectedTab: Tab;
+  onChangeTab: (tab: Tab) => void;
   courses: CourseProps[];
+  moreToShow: boolean;
+  onMore: () => void;
   className?: string;
 };
 
-function CourseSearch({ tabs, courses, className }: Props) {
+function CourseSearch({ tabs, selectedTab, onChangeTab, courses, moreToShow, onMore, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
-  const [selectedTab, setSelectedTab] = React.useState(tabs[0]);
-  const [showLimit, setShowLimit] = React.useState(5);
   const [showFilter, setShowFilter] = React.useState({
     id: 0,
     title: 'Show All'
@@ -114,11 +118,6 @@ function CourseSearch({ tabs, courses, className }: Props) {
   const showOptions: DropdownOption[] = [];
   const priceOptions: DropdownOption[] = [];
 
-  const filteredCourses =
-    selectedTab.name !== 'All Courses'
-      ? courses.filter((x) => x.type === selectedTab.name)
-      : courses;
-
   return (
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.tabBar, classes.row)}>
@@ -129,7 +128,7 @@ function CourseSearch({ tabs, courses, className }: Props) {
               index === tabs.length - 1 && classes.noMargin,
               selectedTab === tab && classes.selected
             )}
-            onClick={() => setSelectedTab(tab)}
+            onClick={() => onChangeTab(tab)}
           >
             {tab.name}
           </div>
@@ -139,7 +138,7 @@ function CourseSearch({ tabs, courses, className }: Props) {
         <div className={classes.listOptions}>
           <div
             className={classes.searchText}
-          >{`${filteredCourses.length} ${selectedTab.value} Courses Available`}</div>
+          >{`${courses.length} ${selectedTab.value} Courses Available`}</div>
           <div className={classes.row}>
             <Dropdown
               placeholder="Show All"
@@ -160,7 +159,7 @@ function CourseSearch({ tabs, courses, className }: Props) {
             />
           </div>
         </div>
-        {filteredCourses.slice(0, showLimit).map((courseItem: CourseProps) => (
+        {courses && courses.map((courseItem: CourseProps) => (
           <div className={classes.listItem}>
             <CourseItem
               title={courseItem.title}
@@ -175,15 +174,15 @@ function CourseSearch({ tabs, courses, className }: Props) {
             />
           </div>
         ))}
-        {showLimit < filteredCourses.length && (
+        {moreToShow && (
           <div className={classes.row}>
             <div className={classes.line} />
             <Button
               className={classes.button}
               small
-              onClick={() => setShowLimit(showLimit + 5)}
+              onClick={onMore}
             >
-              {`Show More (${filteredCourses.length - showLimit})`}
+              {`Show More`}
             </Button>
             <div className={classes.line} />
           </div>

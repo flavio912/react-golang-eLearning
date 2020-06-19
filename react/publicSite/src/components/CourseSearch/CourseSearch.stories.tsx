@@ -38,13 +38,21 @@ const defaultCourseItems: CourseProps[] = [
     defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem,defaultCourseItem
 ]
 
-export const search = () => {
+export const search = React.createElement(() => {
     const tabs: Tab[] = object("Tabs", defaultTabs);
+
+    // Search state
+    const [selectedTab, setSelectedTab] = React.useState(tabs[0]);
+
   return <CourseSearch 
         tabs={tabs}
         courses={defaultCourseItems}
+        selectedTab={selectedTab}
+        onChangeTab={(tab: Tab) => setSelectedTab(tab)}
+        moreToShow={true}
+        onMore={() => console.log("More")}
     />;
-};
+});
 
 export const item = () => {
     const title: string = text("Title", "Cargo Manager (CM) – VC, HS, XRY, EDS");
