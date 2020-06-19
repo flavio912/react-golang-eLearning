@@ -8,14 +8,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'row',
-    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
     backgroundColor: theme.colors.primaryWhite,
     boxShadow: '4px 2px 10px -2px rgba(0,0,0,0.06)',
     border: ['1px', 'solid', theme.colors.borderGrey],
     borderRadius: '13px',
-    padding: '24px 22px 24px 42px'
+    padding: '24px 22px 24px 42px',
+    '@media (max-width: 700px)': {
+      flexDirection: 'column'
+    }
   },
   title: {
     fontSize: theme.fontSizes.heading,
@@ -42,12 +44,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)',
     margin: '0 20px 20px 0',
     fontSize: theme.fontSizes.large,
-    fontWeight: '800'
+    fontWeight: '800',
+    '@media (max-width: 700px)': {
+      width: '100%'
+    }
   },
   extraShadow: {
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)'
   },
   image: {
+    order: 1,
     display: 'flex',
     height: '240px',
     width: '287px',
@@ -72,14 +78,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
-    alignItems: 'flex-start'
+    alignItems: 'flex-start',
+    '@media (max-width: 700px)': {
+      order: 2,
+      marginTop: '25px'
+    }
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    '@media (max-width: 700px)': {
+      alignSelf: 'center'
+    }
   }
 }));
 

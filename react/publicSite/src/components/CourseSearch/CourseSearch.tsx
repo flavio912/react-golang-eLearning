@@ -12,7 +12,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column'
   },
   tabBar: {
-    borderBottom: ['1px', 'solid', theme.colors.borderGrey]
+    borderBottom: ['1px', 'solid', theme.colors.borderGrey],
+    justifyContent: 'space-evenly',
   },
   tab: {
     cursor: 'pointer',
@@ -20,7 +21,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryBlack,
     fontWeight: 400,
     textAlign: 'center',
-    marginRight: 65,
     padding: '14px 20px',
     opacity: 0.4,
     transition: 'opacity 0.5s linear'
@@ -66,7 +66,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   row: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'center',
     alignItems: 'center'
   },
   button: {
@@ -122,7 +121,7 @@ function CourseSearch({ tabs, courses, className }: Props) {
 
   return (
     <div className={classNames(classes.root, className)}>
-      <div className={classNames(classes.row, classes.tabBar)}>
+      <div className={classNames(classes.tabBar, classes.row)}>
         {tabs.map((tab: Tab, index: number) => (
           <div
             className={classNames(
