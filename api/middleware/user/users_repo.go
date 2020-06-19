@@ -45,6 +45,14 @@ type UsersRepository interface {
 	UpdateManagerProfileKey(managerUUID gentypes.UUID, newKey *string) error
 
 	GetAddressesByIDs(ids []uint) ([]models.Address, error)
+
+	TakerActivity(courseTaker gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
+	TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
+	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)
+	DeleteTakerActivity(activityUUID gentypes.UUID) error
+
+	// Returns true if all course takers are part of the company
+	CompanyManagesCourseTakers(companyUUID gentypes.UUID, courseTakerUUIDs []gentypes.UUID) (bool, error)
 }
 
 type usersRepoImpl struct {

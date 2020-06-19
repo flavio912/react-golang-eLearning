@@ -15,15 +15,6 @@ const (
 	LessonType StructureElement = "lesson"
 )
 
-type ActivityType string
-
-const (
-	ActivityNewCourse ActivityType = "newCourse"
-	ActivityActivated ActivityType = "activated"
-	ActivityCompleted ActivityType = "completedCourse"
-	ActivityFailed    ActivityType = "failedCourse"
-)
-
 type CourseType string
 
 const (

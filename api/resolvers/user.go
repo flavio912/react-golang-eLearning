@@ -57,3 +57,8 @@ func (u *UserResolver) Company(ctx context.Context) (*CompanyResolver, error) {
 		UUID: grant.Claims.Company.String(),
 	})
 }
+func (u *UserResolver) Activity(ctx context.Context, args struct{ Page *gentypes.Page }) (*ActivityPageResolver, error) {
+	return NewActivityPageResolver(ctx, NewActivityPageArgs{
+		CourseTakerUUID: u.user.CourseTakerUUID,
+	}, args.Page)
+}

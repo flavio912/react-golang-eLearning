@@ -32,7 +32,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
 	}
 
-	var courseTakerIDs []uint
+	var courseTakerIDs []gentypes.UUID
 
 	//	Individual can only book courses for themselves
 	if c.grant.IsIndividual {
@@ -41,7 +41,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to get current user")
 			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 		}
-		courseTakerIDs = []uint{ind.CourseTakerID}
+		courseTakerIDs = []gentypes.UUID{ind.CourseTakerUUID}
 	}
 
 	// Managers can only purchase for users that exist and that they are manager of
@@ -52,7 +52,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 				return &gentypes.PurchaseCoursesResponse{}, errors.ErrDelegateDoesNotExist(uuid.String())
 			}
 
-			courseTakerIDs = append(courseTakerIDs, delegate.CourseTakerID)
+			courseTakerIDs = append(courseTakerIDs, delegate.CourseTakerUUID)
 		}
 	}
 

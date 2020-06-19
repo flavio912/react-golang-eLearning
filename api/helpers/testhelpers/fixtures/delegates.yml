@@ -9,7 +9,7 @@
   telephone: 07912935287
   job_title: Doer
   company_uuid: 00000000-0000-0000-0000-000000000001
-  course_taker_id: 1
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
 - uuid: 00000000-0000-0000-0000-000000000002
   created_at: 2020-02-08 13:53:37.338775+00
   updated_at: 2020-02-08 13:53:37.338775+00
@@ -21,6 +21,7 @@
   telephone: 07912938287
   job_title: Maker
   company_uuid: 00000000-0000-0000-0000-000000000001
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
 - uuid: 00000000-0000-0000-0000-000000000003
   created_at: 2020-03-08 13:53:37.338775+00
   updated_at: 2020-03-08 13:53:37.338775+00
@@ -32,6 +33,7 @@
   telephone: 07912968287
   job_title: Thing
   company_uuid: 00000000-0000-0000-0000-000000000002
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
 - uuid: 00000000-0000-0000-0000-000000000004
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -43,6 +45,7 @@
   telephone: 07212938287
   job_title: Problem Solver
   company_uuid: 00000000-0000-0000-0000-000000000002
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
 - uuid: 00000000-0000-0000-0000-000000000005
   created_at: 2020-04-08 13:53:37.338775+00
   updated_at: 2020-04-08 13:53:37.338775+00
@@ -54,3 +57,4 @@
   telephone: 07212938287
   job_title: Problem Solver
   company_uuid: 00000000-0000-0000-0000-000000000002
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
