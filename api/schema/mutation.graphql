@@ -42,4 +42,6 @@ type Mutation {
   createLesson(input: CreateLessonInput!): Lesson
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  createTest(input: CreateTestInput!): CreateTestPayload
+  # updateTest(input: UpdateTestInput!): UpdateTestPayload
 }
