@@ -1579,3 +1579,67 @@ func TestDeleteLesson(t *testing.T) {
 		ManagerAllowed:  false,
 	})
 }
+
+func TestCreateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	// TODO: Add a validation test and Create blog with no given authorUUID
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create blog given authorUUID",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: "How NOT to golang"
+						body: "{}"
+						headerImageURL: "https://images4.alphacoders.com/909/thumb-1920-909185.jpg"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+						authorUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						title
+						body
+						author {
+							firstName
+							lastName
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createBlog":{
+						"title": "How NOT to golang",
+						"body": "{}",
+						"author": {
+							"firstName": "Jim",
+							"lastName": "User"
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createBlog(input: {
+					title: "How NOT to golang"
+					body: "{}"
+					headerImageURL: "https://images4.alphacoders.com/909/thumb-1920-909185.jpg"
+					categoryUUID: "00000000-0000-0000-0000-000000000001"
+					authorUUID: "00000000-0000-0000-0000-000000000001"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"createBlog"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		DelegateAllowed: false,
+		ManagerAllowed:  false,
+	})
+}

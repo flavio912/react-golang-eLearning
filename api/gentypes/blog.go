@@ -23,7 +23,7 @@ type CreateBlogInput struct {
 	Title          string
 	Body           string `valid:"json"`
 	CategoryUUID   UUID
-	HeaderImageURL *string
+	HeaderImageURL string
 	AuthorUUID     *UUID
 }
 

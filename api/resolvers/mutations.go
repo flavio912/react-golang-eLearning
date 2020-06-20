@@ -434,3 +434,20 @@ func (m *MutationResolver) DeleteLesson(ctx context.Context, args struct{ Input 
 
 	return b, nil
 }
+
+func (m *MutationResolver) CreateBlog(ctx context.Context, args struct{ Input gentypes.CreateBlogInput }) (*BlogResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &BlogResolver{}, &errors.ErrUnauthorized
+	}
+
+	courseFuncs := course.NewCourseApp(grant)
+	blog, err := courseFuncs.CreateBlog(args.Input)
+	if err != nil {
+		return &BlogResolver{}, err
+	}
+
+	return &BlogResolver{
+		Blog: blog,
+	}, nil
+}

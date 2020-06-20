@@ -31,6 +31,8 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
+
+	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
 }
 
 type courseAppImpl struct {
