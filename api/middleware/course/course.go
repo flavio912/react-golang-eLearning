@@ -50,6 +50,7 @@ type CoursesRepository interface {
 	UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error)
 
 	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
+	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
 }
 
 type coursesRepoImpl struct {

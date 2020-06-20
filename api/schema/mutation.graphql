@@ -45,4 +45,5 @@ type Mutation {
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
   createBlog(input: CreateBlogInput!): Blog
+  blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
 }

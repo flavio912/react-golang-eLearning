@@ -19,12 +19,18 @@ type Blog struct {
 	Author         BlogAuthor
 }
 
+type BlogImage struct {
+	JsonID string
+	Token  string
+}
+
 type CreateBlogInput struct {
 	Title          string
 	Body           string `valid:"json"`
 	CategoryUUID   UUID
 	HeaderImageURL string
 	AuthorUUID     *UUID
+	BodyImages     *[]BlogImage
 }
 
 func (c *CreateBlogInput) Validate() error {

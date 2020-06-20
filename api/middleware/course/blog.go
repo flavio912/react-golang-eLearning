@@ -45,3 +45,22 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 
 	return blog, nil
 }
+
+func (c *coursesRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
+	query := database.GormDB.Begin()
+	for k, v := range imgs {
+		img := models.BlogImage{
+			BlogUUID: blog,
+			BodyID:   k,
+			S3key:    v,
+		}
+		query = query.Create(&img)
+	}
+
+	if err := query.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to upload blog images")
+		return err
+	}
+
+	return nil
+}

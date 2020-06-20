@@ -11,3 +11,9 @@ type Blog struct {
 	HeaderImageURL string
 	Author         Admin `gorm:"foreignkey:BlogUUID"`
 }
+
+type BlogImage struct {
+	BlogUUID gentypes.UUID
+	BodyID   string
+	S3key    string
+}

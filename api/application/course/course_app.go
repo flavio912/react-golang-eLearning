@@ -33,6 +33,7 @@ type CourseApp interface {
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
 	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
+	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 }
 
 type courseAppImpl struct {
