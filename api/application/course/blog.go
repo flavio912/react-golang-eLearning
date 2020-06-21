@@ -10,11 +10,13 @@ import (
 )
 
 func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
+	url := uploads.GetImgixURL(blog.HeaderImageKey)
+
 	return gentypes.Blog{
 		UUID:           blog.UUID,
 		Title:          blog.Title,
 		Body:           blog.Body,
-		HeaderImageURL: blog.HeaderImageURL,
+		HeaderImageURL: url,
 		Category: gentypes.Category{
 			UUID: blog.CategoryUUID,
 		},
@@ -62,7 +64,7 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 		return gentypes.Blog{}, err
 	}
 
-	err = c.BlogHeaderImageUploadSuccess(blog.UUID, input.HeaderImageURL)
+	err = c.BlogHeaderImageUploadSuccess(blog.UUID, input.HeaderImageToken)
 
 	if err != nil {
 		return gentypes.Blog{}, err

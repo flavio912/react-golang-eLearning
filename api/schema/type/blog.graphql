@@ -22,7 +22,7 @@ input CreateBlogInput {
   title: String!
   body: String!
   categoryUUID: UUID!
-  headerImageURL: String!
+  headerImageToken: String!
   authorUUID: UUID
   bodyImages: [BlogImage!]
 }

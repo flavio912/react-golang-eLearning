@@ -47,7 +47,7 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 }
 
 func (c *coursesRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
-	query := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blogUUID).Update("header_image_url", key)
+	query := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blogUUID).Update("header_image_key", key)
 	if query.Error != nil {
 		if query.RecordNotFound() {
 			return errors.ErrBlogNotFound(blogUUID.String())

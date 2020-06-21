@@ -8,7 +8,7 @@ type Blog struct {
 	Body           string `sql:"json"`
 	Category       Category
 	CategoryUUID   gentypes.UUID
-	HeaderImageURL string
+	HeaderImageKey string
 	Author         Admin `gorm:"foreignkey:BlogUUID"`
 }
 
