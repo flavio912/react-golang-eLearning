@@ -64,10 +64,12 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 		return gentypes.Blog{}, err
 	}
 
-	err = c.BlogHeaderImageUploadSuccess(blog.UUID, input.HeaderImageToken)
+	if input.HeaderImageToken != nil {
+		err = c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
 
-	if err != nil {
-		return gentypes.Blog{}, err
+		if err != nil {
+			return gentypes.Blog{}, err
+		}
 	}
 
 	if input.BodyImages != nil {
@@ -100,7 +102,7 @@ func (c *courseAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFi
 	return url, successToken, err
 }
 
-func (c *courseAppImpl) BlogHeaderImageUploadSuccess(blogUUID gentypes.UUID, token string) error {
+func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) error {
 	if !c.grant.IsAdmin {
 		return &errors.ErrUnauthorized
 	}

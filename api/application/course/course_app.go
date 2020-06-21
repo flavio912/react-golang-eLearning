@@ -34,6 +34,7 @@ type CourseApp interface {
 
 	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
 	BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+	UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) error
 	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 }
 

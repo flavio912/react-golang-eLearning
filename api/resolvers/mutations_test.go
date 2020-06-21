@@ -1594,7 +1594,6 @@ func TestCreateBlog(t *testing.T) {
 					createBlog(input: {
 						title: "How NOT to golang"
 						body: "{}"
-						headerImageToken: "https://images4.alphacoders.com/909/thumb-1920-909185.jpg"
 						categoryUUID: "00000000-0000-0000-0000-000000000001"
 						authorUUID: "00000000-0000-0000-0000-000000000001"
 					}) {
@@ -1628,7 +1627,6 @@ func TestCreateBlog(t *testing.T) {
 				createBlog(input: {
 					title: "How NOT to golang"
 					body: "{}"
-					headerImageToken: "https://images4.alphacoders.com/909/thumb-1920-909185.jpg"
 					categoryUUID: "00000000-0000-0000-0000-000000000001"
 					authorUUID: "00000000-0000-0000-0000-000000000001"
 				}) {
