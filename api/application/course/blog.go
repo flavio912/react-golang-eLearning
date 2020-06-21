@@ -109,7 +109,9 @@ func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []genty
 
 	err := c.coursesRepository.UploadBlogImages(blog, keyMap)
 	if err != nil {
-		//TODO Delete s3 images
+		for _, v := range keyMap {
+			_ = uploads.DeleteImageFromKey(v)
+		}
 		return map[string]string{}, &errors.ErrWhileHandling
 	}
 
