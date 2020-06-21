@@ -62,6 +62,12 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 		return gentypes.Blog{}, err
 	}
 
+	err = c.BlogHeaderImageUploadSuccess(blog.UUID, input.HeaderImageURL)
+
+	if err != nil {
+		return gentypes.Blog{}, err
+	}
+
 	if input.BodyImages != nil {
 		imgs, err := c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
 
@@ -73,6 +79,41 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 	}
 
 	return c.blogToGentype(blog), err
+}
+
+func (c *courseAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,
+		imageMeta.ContentLength,
+		[]string{"jpg", "png"},
+		int32(15000000),
+		"blog_header_image",
+		"blogHeaderImage",
+	)
+
+	return url, successToken, err
+}
+
+func (c *courseAppImpl) BlogHeaderImageUploadSuccess(blogUUID gentypes.UUID, token string) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
+	s3key, err := uploads.VerifyUploadSuccess(token, "blogHeaderImage")
+	if err != nil {
+		return err
+	}
+
+	err = c.coursesRepository.UploadHeaderImage(blogUUID, s3key)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (c *courseAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {

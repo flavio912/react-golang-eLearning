@@ -29,7 +29,7 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of admin %s", *input.AuthorUUID)
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
-	// TODO: Upload HeaderImage as well as body images if they exist
+
 	blog := models.Blog{
 		Title:        input.Title,
 		Body:         input.Body,
@@ -44,6 +44,20 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 	}
 
 	return blog, nil
+}
+
+func (c *coursesRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
+	query := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blogUUID).Update("header_image_url", key)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return errors.ErrBlogNotFound(blogUUID.String())
+		}
+
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to upload blog header image")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
 }
 
 func (c *coursesRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {

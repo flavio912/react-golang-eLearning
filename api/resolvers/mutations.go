@@ -452,6 +452,23 @@ func (m *MutationResolver) CreateBlog(ctx context.Context, args struct{ Input ge
 	}, nil
 }
 
+func (m *MutationResolver) BlogHeaderImageUploadSuccess(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
+	}
+
+	courseApp := course.NewCourseApp(grant)
+	url, successToken, err := courseApp.BlogHeaderImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
 func (m *MutationResolver) BlogBodyImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
