@@ -1583,7 +1583,6 @@ func TestDeleteLesson(t *testing.T) {
 func TestCreateBlog(t *testing.T) {
 	prepareTestDatabase()
 
-	// TODO: Add a validation test and Create blog with no given authorUUID
 	gqltest.RunTests(t, []*gqltest.Test{
 		{
 			Name:    "Create blog given authorUUID",
@@ -1618,6 +1617,58 @@ func TestCreateBlog(t *testing.T) {
 					}
 				}
 			`,
+		},
+		{
+			Name:    "Create blog with no given authorUUID",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: "How NOT to golang"
+						body: "{}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						author {
+							firstName
+							lastName
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createBlog":{
+						"author": {
+							"firstName": "Jim",
+							"lastName": "User"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should validate input",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: ""
+						body: "not json"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}){
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `{"createBlog":null}`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					Message: helpers.StringPointer("Body: not json does not validate as json"),
+					Path:    []interface{}{"createBlog"},
+				},
+			},
 		},
 	})
 

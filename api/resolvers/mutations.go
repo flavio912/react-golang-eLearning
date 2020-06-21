@@ -486,6 +486,7 @@ func (m *MutationResolver) UpdateBlogHeaderImage(
 		return &BlogResolver{}, err
 	}
 
+	// TODO: Need to get updated blog
 	return &BlogResolver{}, nil
 }
 
