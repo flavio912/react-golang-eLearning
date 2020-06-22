@@ -1,17 +1,18 @@
 import * as React from 'react';
-import Card, { PaddingOptions } from '../../core/Card';
+import Card, { PaddingOptions } from '../../core/Cards/Card';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
-import Button from '../../core/Button';
+import Button from '../../core/Input/Button';
 import Icon from '../../core/Icon';
 import { Theme } from 'helpers/theme';
 import FooterIcon from './FooterIcon';
-import CourseCompletion from 'sharedComponents/core/Table/CourseCompletion';
+import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
+    transition: '0.2s all',
     '&:hover': {
       boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
     }
@@ -199,7 +200,7 @@ function CourseCard({
             size={18}
           />
         </div>
-        {course.price && (
+        {course.price !== undefined && (
           <div className={classNames(classes.price)}>
             £{course.price?.toFixed(2)}
           </div>

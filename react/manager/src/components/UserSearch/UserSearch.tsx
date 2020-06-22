@@ -1,52 +1,53 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
 
-import { Theme } from "helpers/theme";
-import Icon from "sharedComponents/core/Icon";
-import CoreInput from "components/core/CoreInput";
-import UserResults from "./UserResults";
+import { Theme } from 'helpers/theme';
+import Icon from 'sharedComponents/core/Icon';
+import CoreInput from 'components/core/Input/CoreInput';
+import UserResults from './UserResults';
+import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    border: [1, "solid", theme.colors.borderGrey],
+    border: [1, 'solid', theme.colors.borderGrey],
     borderRadius: theme.primaryBorderRadius,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    background: "white",
-    position: "relative",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    background: 'white',
+    position: 'relative'
   },
   rootFocused: {
-    extend: "root",
-    boxShadow: theme.shadows.primary,
+    extend: 'root',
+    boxShadow: theme.shadows.primary
   },
   search: {
-    display: "flex",
-    alignItems: "center",
+    display: 'flex',
+    alignItems: 'center',
     flex: 1,
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   searchInput: {
     fontSize: theme.fontSizes.default,
     fontWeight: 200,
-    paddingLeft: theme.spacing(1),
+    paddingLeft: theme.spacing(1)
   },
   openDelegate: {
     background: theme.colors.primaryBlue,
-    color: "white",
-    alignItems: "center",
+    color: 'white',
+    alignItems: 'center',
     padding: [0, 38],
-    display: "flex",
+    display: 'flex',
     fontWeight: 600,
     fontSize: theme.fontSizes.default,
     borderRadius: [0, theme.primaryBorderRadius, theme.primaryBorderRadius, 0],
-    cursor: "pointer",
+    cursor: 'pointer'
   },
   buttonCont: {
-    display: "flex",
-    justifyContent: "space-between",
+    display: 'flex',
+    justifyContent: 'space-between'
   },
-  ttcID: {},
+  ttcID: {}
 }));
 
 export type ResultItem = {
@@ -63,10 +64,11 @@ type Props = {
 function UserSearch({
   companyName,
   searchFunction,
-  debounceTime = 600,
+  debounceTime = 400
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+  const { router } = useRouter();
 
   const [selection, setSelection]: [
     ResultItem | undefined,
@@ -75,16 +77,16 @@ function UserSearch({
   const [loading, setLoading]: [boolean, any] = React.useState(false);
   const [focus, setFocus]: [boolean, any] = React.useState(false);
   const [results, setResults]: [ResultItem[], any] = React.useState([]);
-  const [input, setInput]: [string, any] = React.useState("");
+  const [input, setInput]: [string, any] = React.useState('');
   const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
 
   const onFocus = () => {
     setFocus(true);
-    onChange("");
+    onChange('');
 
     // Reset the input when focusing again
     if (selection !== undefined) {
-      setInput("");
+      setInput('');
       setSelection(undefined);
     }
   };
@@ -111,6 +113,9 @@ function UserSearch({
     setInput(result.key);
   };
 
+  const onOpenDelegate = () => {
+    router.push('/app/delegates/asda');
+  };
   return (
     <div>
       <div />
@@ -130,7 +135,9 @@ function UserSearch({
             />
           </div>
           {selection && (
-            <div className={classes.openDelegate}>Show Delegate</div>
+            <div className={classes.openDelegate} onClick={onOpenDelegate}>
+              Show Delegate
+            </div>
           )}
         </div>
         {focus && (

@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import Heading from 'components/Heading';
-import SelectButton from 'components/core/SelectButton';
-import Dropdown, { DropdownOption } from 'sharedComponents/core/Dropdown';
+import Heading from 'components/core/Heading';
+import SelectButton from 'components/core/Input/SelectButton';
+import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import CourseCard from 'sharedComponents/Overview/CourseCard';
 import { Course } from 'sharedComponents/Overview/CourseCard/CourseCard';
-import Paginator from 'sharedComponents/Paginator';
+import Paginator from 'sharedComponents/Pagination/Paginator';
 import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -47,7 +47,7 @@ type Props = {
   className?: string;
 };
 
-const defaultComponent = () => <div>PlaceHolder Name</div>;
+const defaultComponent = () => <div>Dangerous Goods Air</div>;
 
 const defaultOption: DropdownOption = {
   id: 1,
@@ -77,17 +77,22 @@ function OnlineCourses({ className }: Props) {
   const userName = 'James';
 
   const selectOptions = ['Active Courses', 'Completed Courses'];
+  const [selectedOption, setSelectedOption] = React.useState(selectOptions[0]);
 
-  const filterOptions = [defaultOption, defaultOption];
+  const filterOptions = [defaultOption];
 
-  const courses = [
-    defaultCourse,
-    defaultCourse,
-    defaultCourse,
-    defaultCourse,
-    defaultCourse,
-    defaultCourse
-  ];
+  let courses = [defaultCourse, defaultCourse, defaultCourse, defaultCourse];
+
+  if (selectedOption == selectOptions[0]) {
+    courses = [
+      defaultCourse,
+      defaultCourse,
+      defaultCourse,
+      defaultCourse,
+      defaultCourse,
+      defaultCourse
+    ];
+  }
 
   return (
     <div className={classes.onlineCoursesRoot}>
@@ -104,8 +109,10 @@ function OnlineCourses({ className }: Props) {
       <div className={classes.filterRow}>
         <SelectButton
           options={selectOptions}
-          selected={selectOptions[0]}
-          onClick={() => {}}
+          selected={selectedOption}
+          onClick={(option: string) => {
+            setSelectedOption(option);
+          }}
           className={classes.selectButton}
         />
         <Dropdown

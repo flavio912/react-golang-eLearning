@@ -3,6 +3,9 @@ package middleware_test
 import (
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -10,9 +13,10 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 )
 
+var adminRepository = middleware.NewAdminRepository(&logging.Logger{})
+
 func TestCreateAdmin(t *testing.T) {
 	prepareTestDatabase()
-
 	newAdmin := gentypes.CreateAdminInput{
 		Email:     "admi1n@admin.com",
 		Password:  "aderrmin123",
@@ -20,28 +24,20 @@ func TestCreateAdmin(t *testing.T) {
 		LastName:  "Man",
 	}
 
-	t.Run("Must be admin to add user", func(t *testing.T) {
-		_, err := nonAdminGrant.CreateAdmin(newAdmin)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
 	t.Run("Check Admin is created", func(t *testing.T) {
-		createdAdmin, err := adminGrant.CreateAdmin(newAdmin)
+		createdAdmin, err := adminRepository.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
-		assert.Equal(t, gentypes.Admin{
-			UUID:      createdAdmin.UUID,
-			Email:     newAdmin.Email,
-			FirstName: newAdmin.FirstName,
-			LastName:  newAdmin.LastName,
-		}, createdAdmin)
+		assert.Equal(t, newAdmin.Email, createdAdmin.Email)
+		assert.Equal(t, newAdmin.FirstName, createdAdmin.FirstName)
+		assert.Equal(t, newAdmin.LastName, createdAdmin.LastName)
 	})
 
 	newAdmin.Email = "email2@admin.com"
 	t.Run("Check email must be unique", func(t *testing.T) {
-		_, err := adminGrant.CreateAdmin(newAdmin)
+		_, err := adminRepository.CreateAdmin(newAdmin)
 		assert.Nil(t, err)
-		a, err := adminGrant.CreateAdmin(newAdmin)
-		assert.Equal(t, gentypes.Admin{}, a, "should return blank")
+		a, err := adminRepository.CreateAdmin(newAdmin)
+		assert.Equal(t, models.Admin{}, a, "should return blank")
 		assert.Equal(t, &errors.ErrUserExists, err)
 	})
 }
@@ -53,13 +49,8 @@ func TestUpdateAdmin(t *testing.T) {
 		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000001999"), // non-existant uuid
 	}
 
-	t.Run("Must be admin to update", func(t *testing.T) {
-		_, err := nonAdminGrant.UpdateAdmin(updateAdmin)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := adminGrant.UpdateAdmin(updateAdmin)
+		_, err := adminRepository.UpdateAdmin(updateAdmin)
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
@@ -75,47 +66,39 @@ func TestUpdateAdmin(t *testing.T) {
 		updateAdmin.FirstName = &testAdmin.FirstName
 		updateAdmin.LastName = &testAdmin.LastName
 		updateAdmin.Email = &testAdmin.Email
-
-		updatedAdmin, err := adminGrant.UpdateAdmin(updateAdmin)
+		updatedAdmin, err := adminRepository.UpdateAdmin(updateAdmin)
 		assert.Nil(t, err)
-		assert.Equal(t, testAdmin, updatedAdmin)
+		assert.Equal(t, testAdmin.Email, updatedAdmin.Email)
+		assert.Equal(t, testAdmin.UUID, updatedAdmin.UUID)
+		assert.Equal(t, testAdmin.FirstName, updatedAdmin.FirstName)
+		assert.Equal(t, testAdmin.LastName, updatedAdmin.LastName)
 	})
 }
 
 func TestDeleteAdmin(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin to delete", func(t *testing.T) {
-		_, err := nonAdminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
 	t.Run("Admin must exist", func(t *testing.T) {
-		_, err := adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999"))
+		_, err := adminRepository.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000999"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 
 	t.Run("Check it deletes the admin", func(t *testing.T) {
-		out, err := adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
+		out, err := adminRepository.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Nil(t, err)
 		assert.True(t, out)
 
 		// trying to delete again then causes not found
-		_, err = adminGrant.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
+		_, err = adminRepository.DeleteAdmin(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"))
 		assert.Equal(t, &errors.ErrAdminNotFound, err)
 	})
 }
 
-func TestGetAdmins(t *testing.T) {
+func TestPageAdmins(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		_, _, err := nonAdminGrant.GetAdmins(nil, nil)
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
 	t.Run("Should return all admins", func(t *testing.T) {
-		admins, _, err := adminGrant.GetAdmins(nil, nil)
+		admins, _, err := adminRepository.PageAdmins(nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 4)
 	})
@@ -130,27 +113,28 @@ func TestGetAdmins(t *testing.T) {
 
 		filterTests := []struct {
 			name   string
-			filter middleware.AdminFilter
+			filter gentypes.AdminFilter
 		}{
-			{"Email", middleware.AdminFilter{Email: admin.Email}},
-			{"FirstName", middleware.AdminFilter{Name: "Rodger"}},
-			{"LastName", middleware.AdminFilter{Name: "Van"}},
-			{"First and Last", middleware.AdminFilter{Name: "Rodger Van"}},
-			{"Full", middleware.AdminFilter{Name: "Rodger Van", Email: admin.Email}},
+			{"Email", gentypes.AdminFilter{Email: admin.Email}},
+			{"FirstName", gentypes.AdminFilter{Name: "Rodger"}},
+			{"LastName", gentypes.AdminFilter{Name: "Van"}},
+			{"First and Last", gentypes.AdminFilter{Name: "Rodger Van"}},
+			{"Full", gentypes.AdminFilter{Name: "Rodger Van", Email: admin.Email}},
 		}
 
 		for _, test := range filterTests {
 			t.Run(test.name, func(t *testing.T) {
-				admins, _, err := adminGrant.GetAdmins(nil, &test.filter)
+				admins, _, err := adminRepository.PageAdmins(nil, &test.filter)
 				assert.Nil(t, err)
 				require.Len(t, admins, 1)
-				assert.Equal(t, admin, admins[0])
+				assert.Equal(t, admin.UUID, admins[0].UUID)
+				assert.Equal(t, admin.Email, admins[0].Email)
 			})
 		}
 
 		t.Run("return mutiple", func(t *testing.T) {
-			filter := middleware.AdminFilter{Email: ".com"}
-			admins, _, err := adminGrant.GetAdmins(nil, &filter)
+			filter := gentypes.AdminFilter{Email: ".com"}
+			admins, _, err := adminRepository.PageAdmins(nil, &filter)
 			assert.Nil(t, err)
 			require.Len(t, admins, 4)
 		})
@@ -159,7 +143,7 @@ func TestGetAdmins(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(2)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		admins, pageinfo, err := adminGrant.GetAdmins(&page, nil)
+		admins, pageinfo, err := adminRepository.PageAdmins(&page, nil)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 2)
 		assert.Equal(t, gentypes.PageInfo{
@@ -171,35 +155,24 @@ func TestGetAdmins(t *testing.T) {
 	})
 }
 
-func TestGetAdminsByUUID(t *testing.T) {
+func TestAdmins(t *testing.T) {
 	prepareTestDatabase()
 
-	t.Run("Must be admin", func(t *testing.T) {
-		_, err := nonAdminGrant.GetAdminsByUUID([]string{""})
-		assert.Equal(t, &errors.ErrUnauthorized, err)
-	})
-
-	uuids := []string{
-		"00000000-0000-0000-0000-000000000001",
-		"00000000-0000-0000-0000-000000000002",
+	uuids := []gentypes.UUID{
+		gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+		gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 	}
 
 	t.Run("Should get admins", func(t *testing.T) {
-		admins, err := adminGrant.GetAdminsByUUID(uuids)
+		admins, err := adminRepository.Admins(uuids)
 		assert.Nil(t, err)
 		assert.Len(t, admins, 2)
 	})
 
 	t.Run("Should return errs", func(t *testing.T) {
 		t.Run("not found", func(t *testing.T) {
-			admins, err := adminGrant.GetAdminsByUUID([]string{"00000000-0000-0000-0000-000000000000"})
+			admins, err := adminRepository.Admins([]gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")})
 			assert.Equal(t, &errors.ErrNotFound, err)
-			assert.Len(t, admins, 0)
-		})
-		t.Run("err while handling", func(t *testing.T) {
-			// fake non validated uuid will cause db to bug out
-			admins, err := adminGrant.GetAdminsByUUID([]string{"asdfasdf-asdfasdf"})
-			assert.Equal(t, &errors.ErrWhileHandling, err)
 			assert.Len(t, admins, 0)
 		})
 	})

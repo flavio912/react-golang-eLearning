@@ -137,6 +137,24 @@ func TestManagerLogin(t *testing.T) {
 		}, *grant)
 	})
 
+	t.Run("noResp param is respected", func(t *testing.T) {
+		gqltest.RunTest(t, &gqltest.Test{
+
+			Name:    "Blank response expected",
+			Context: defaultContext(),
+			Schema:  schema,
+			Query: `
+					mutation {
+						managerLogin(input:{email: "man@managers.com", password: "iamamanager", noResp: true}) {
+							token
+						}
+					}
+				`,
+			ExpectedResult: `{"managerLogin":{"token":""}}`,
+			ExpectedErrors: nil,
+		})
+	})
+
 	t.Run("must fail properly", func(t *testing.T) {
 		gqltest.RunTests(t, []*gqltest.Test{
 			{
@@ -1244,4 +1262,59 @@ func TestCreateCategory(t *testing.T) {
 	// 	DelegateAllowed: false,
 	// 	CleanDB:         false,
 	// })
+}
+
+func TestSaveOnlineCourse(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create online course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					saveOnlineCourse(
+						input:{
+							name: "Test online course",
+							excerpt: "{}",
+							introduction:"{}",
+							backgroundCheck: true,
+							accessType: open,
+							price: 34.3,
+							color: "#fff",
+							howToComplete: "{}",
+        			whatYouLearn: ["What 1", "What 2"],
+        			requirements: ["req 1", "req 2"]
+						}
+					) {
+						name
+						excerpt
+						introduction
+						backgroundCheck
+						price
+						color
+						howToComplete
+						whatYouLearn
+						requirements
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"saveOnlineCourse":{
+							"name": "Test online course",
+							"excerpt": "{}",
+							"introduction":"{}",
+							"backgroundCheck": true,
+							"price": 34.3,
+							"color": "#fff",
+							"howToComplete": "{}",
+							"whatYouLearn": ["What 1", "What 2"],
+							"requirements": ["req 1", "req 2"]
+					}
+				}
+			`,
+		},
+	})
 }

@@ -5,6 +5,11 @@ type Lesson {
   text: String!
 }
 
+type LessonPage implements PaginatedQuery {
+  edges: [Lesson]
+  pageInfo: PageInfo
+}
+
 input CreateLessonInput {
   title: String!
   tags: [UUID!]

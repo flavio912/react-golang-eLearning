@@ -14,39 +14,36 @@ enum ModuleElement {
   lesson
 }
 
-type CourseInfo {
-  name: String
+enum CourseType {
+  online
+  classroom
+}
+
+type Course {
+  id: Int!
+  type: CourseType!
+  name: String!
   backgroundCheck: Boolean
-  price: Float
+  price: Float!
   color: String
   excerpt: String
   introduction: String
+  howToComplete: String
+  hoursToComplete: Float
+  whatYouLearn: [String!]
+  requirements: [String!]
   specificTerms: String
   category: Category
+  allowedToBuy: Boolean
 }
 
-type OnlineCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type OnlineCoursePage implements PaginatedQuery {
-  edges: [OnlineCourse]
-  pageInfo: PageInfo
-}
-
-type ClassroomCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type ClassroomCoursePage implements PaginatedQuery {
-  edges: [ClassroomCourse]
+type CoursePage implements PaginatedQuery {
+  edges: [Course]
   pageInfo: PageInfo
 }
 
 input SaveClassroomCourseInput {
-  uuid: UUID
+  id: Int
   name: String
   categoryUUID: UUID
   excerpt: String
@@ -66,11 +63,16 @@ input SaveClassroomCourseInput {
 }
 
 input SaveOnlineCourseInput {
-  uuid: UUID
+  id: Int
   name: String
   categoryUUID: UUID
-  excerpt: String
-  introduction: String
+  # secondaryCategoryUUID: UUID
+  excerpt: String # Short description of course
+  introduction: String # 'About this course' section
+  howToComplete: String # 'How to complete this course' section
+  hoursToComplete: Float # Estimated hours to complete this course
+  whatYouLearn: [String!] # 'What you'll learn' bullet points
+  requirements: [String!] # 'Requirements' bullet points
   backgroundCheck: Boolean
   accessType: AccessType
   price: Float
@@ -78,7 +80,7 @@ input SaveOnlineCourseInput {
   tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
-  structure: [CourseItem!] # Only for online courses
+  structure: [CourseItem!] 
 }
 
 input CourseItem {
@@ -112,6 +114,19 @@ type Category {
 input CreateCategoryInput {
   name: String!
   color: String!
+}
+
+input PurchaseCoursesInput {
+  courses: [Int!]!
+  users: [UUID!]! # List of delegates UUIDs
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
 }
 
 # [ EXAMPLE COURSE STRUCTURE

@@ -1,12 +1,13 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
-import CoreInput, { InputTypes } from 'sharedComponents/core/CoreInput';
+import CoreInput, { InputTypes } from 'sharedComponents/core/Input/CoreInput';
 import classnames from 'classnames';
 import { Theme } from 'helpers/theme';
-import Heading from 'components/Heading';
+import Heading from 'components/core/Heading';
 import QuickInfo from 'components/Overview/QuickInfo';
 import TopInfo from './TopInfo';
-import CardItem from 'components/CardItem';
+import CardItem from 'components/core/Cards/CardItem';
+import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -57,6 +58,7 @@ type Props = {};
 function TrainingZone({}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+  const { router } = useRouter();
 
   const userName = 'James';
   return (
@@ -75,7 +77,12 @@ function TrainingZone({}: Props) {
         description={
           'Find all of the online courses you have been enrolled on here'
         }
-        buttonProps={{ title: 'View Courses', onClick: () => {} }}
+        buttonProps={{
+          title: 'View Courses',
+          onClick: () => {
+            router.push('/app/courses');
+          }
+        }}
       />
       <CardItem
         className={classes.card2}

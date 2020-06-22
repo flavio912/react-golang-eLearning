@@ -6,8 +6,18 @@ import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { useDispatch } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
-import { Button, TextField } from '@material-ui/core';
-import { login } from 'src/actions';
+import { Button, TextField, Typography } from '@material-ui/core';
+
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+
+const ADMIN_LOGIN = gql`
+  mutation AdminLogin($email: String!, $pass: String!) {
+    adminLogin(input: { email: $email, password: $pass }) {
+      token
+    }
+  }
+`;
 
 const schema = {
   email: {
@@ -19,7 +29,7 @@ const schema = {
   }
 };
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {},
   fields: {
     margin: theme.spacing(-1),
@@ -39,18 +49,21 @@ const useStyles = makeStyles((theme) => ({
 function LoginForm({ className, ...rest }) {
   const classes = useStyles();
   const history = useHistory();
-  const dispatch = useDispatch();
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
     touched: {},
     errors: {}
   });
+  const [
+    adminLogin,
+    { loading: isAuthenticating, error: authError }
+  ] = useMutation(ADMIN_LOGIN);
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     event.persist();
 
-    setFormState((prevFormState) => ({
+    setFormState(prevFormState => ({
       ...prevFormState,
       values: {
         ...prevFormState.values,
@@ -66,18 +79,37 @@ function LoginForm({ className, ...rest }) {
     }));
   };
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async event => {
     event.preventDefault();
-    // dispatch(login());
-    history.push('/');
+    try {
+      const resp = await adminLogin({
+        variables: {
+          email: formState.values.email,
+          pass: formState.values.password
+        }
+      });
+      localStorage.setItem('auth', resp.data?.adminLogin?.token);
+      console.log(resp);
+      history.push('/');
+    } catch (err) {
+      setFormState(prevFormState => ({
+        ...prevFormState,
+        isValid: false,
+        errors: {
+          email: [err?.graphQLErrors[0]?.message]
+        }
+      }));
+      console.warn(err);
+    }
   };
 
-  const hasError = (field) => (!!(formState.touched[field] && formState.errors[field]));
+  const hasError = field =>
+    !!(formState.touched[field] && formState.errors[field]);
 
   useEffect(() => {
     const errors = validate(formState.values, schema);
 
-    setFormState((prevFormState) => ({
+    setFormState(prevFormState => ({
       ...prevFormState,
       isValid: !errors,
       errors: errors || {}

@@ -1,0 +1,59 @@
+<html>
+  <body>
+    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tr>
+        <td width="100%" align="center">
+          <table
+            width="100%"
+            style="
+              border-collapse: collapse;
+              border-spacing: 0px;
+              width: 450px;
+              height: 100%;
+              background: repeat center top;
+              margin: 0;
+              padding: 0;
+            "
+          >
+            <tr
+              style="border-bottom: 1px solid #f0f3f7; padding-bottom: 20px;"
+              height="100px"
+            >
+              <td align="center">
+                <!-- TODO: Change the link below to be more static (an s3 bucket or something) -->
+                <img
+                  src="http://ttc-manager.devserver.london/static/media/ttc-logo-icon.555d61c4.svg"
+                  style="height: 45px;"
+                  alt="ttc logo"
+                />
+              </td>
+            </tr>
+            <tr style="padding-bottom: 20px;" height="150px">
+              <td>
+                <h2 style="color: #0c152e;">
+                  Finalise your account
+                </h2>
+                <p style="color: #4f5a68;">
+                  Hi {{.FName}}, </br> </br>
+                  
+                  Welcome to TTC – we’re thrilled to have you on board. 
+                  To finalise your account please follow the link below and set a password. </br></br>
+
+                  <a href="https://ttc-delegate.devserver.london/finalise/{{.Token}}">Finalise my account</a>
+                </p>
+              </td>
+            </tr>
+            <tr style="border-top: 1px solid #f0f3f7; padding-top: 10px;">
+              <td>
+                <p style="color: #8593a6; font-size: 12px;">
+                  This email was sent to you as a registed member of
+                  ttc-hub.com. To update your email preferences
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

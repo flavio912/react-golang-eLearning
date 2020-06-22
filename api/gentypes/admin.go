@@ -20,6 +20,11 @@ type AdminPage struct {
 	PageInfo PageInfo
 }
 
+type AdminFilter struct {
+	Email string
+	Name  string
+}
+
 // AdminLoginInput -
 type AdminLoginInput struct {
 	Email    string

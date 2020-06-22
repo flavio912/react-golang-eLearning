@@ -6,30 +6,51 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
-type CourseInfo struct {
+type Course struct {
 	ID              uint
 	CreatedAt       time.Time
 	UpdatedAt       time.Time
-	Name            string              // The course name/title
-	Price           float64             // 0.00 if free course
-	Color           string              // The primary color for the course
-	Category        Category            // The category that the course belongs to
-	CategoryUUID    *gentypes.UUID      // FKEY
-	Tags            []Tag               `gorm:"many2many:course_tags_link;"`
-	Excerpt         string              `sql:"json"` // Excert quill json
-	Introduction    string              `sql:"json"` // Introduction quill json
+	Name            string         // The course name/title
+	Price           float64        // 0.00 if free course
+	Color           string         // The primary color for the course
+	Category        Category       // The category that the course belongs to
+	CategoryUUID    *gentypes.UUID // FKEY
+	Tags            []Tag          `gorm:"many2many:course_tags_link;"`
+	Excerpt         string
+	Introduction    string
+	HowToComplete   string
+	HoursToComplete float64
+	WhatYouLearn    []WhatYouLearnBullet
+	Requirements    []RequirementBullet
 	AccessType      gentypes.AccessType // Restricted or Open Access
 	ImageKey        *string             // S3 Key for the course image
 	BackgroundCheck bool                // Is a background check required
-	SpecificTerms   string              `sql:"json"` // Terms specific to this course in qull json
+	SpecificTerms   string              // Terms specific to this course
 	Published       bool                // If not published users can't see this course
+	CourseType      gentypes.CourseType // classroom or online course
+	OnlineCourse    OnlineCourse
+	ClassroomCourse ClassroomCourse
+}
+
+type RequirementBullet struct {
+	ID       uint
+	OrderID  int // The precedence of the bullet point in the list
+	CourseID uint
+	Text     string
+}
+
+type WhatYouLearnBullet struct {
+	ID       uint
+	OrderID  int // The precedence of the bullet point in the list
+	CourseID uint
+	Text     string
 }
 
 // CourseTagsLink is not needed to create the table, but
 // is used to extract information about the course_tags_link table
 type CourseTagsLink struct {
-	CourseInfoID uint
-	TagUUID      gentypes.UUID
+	CourseID uint
+	TagUUID  gentypes.UUID
 }
 
 func (CourseTagsLink) TableName() string {
@@ -50,9 +71,8 @@ type Tag struct {
 
 type OnlineCourse struct {
 	Base
-	CourseInfo   CourseInfo
-	CourseInfoID uint // FKEY
-	Structure    []CourseStructure
+	CourseID  uint // FKEY
+	Structure []CourseStructure
 }
 
 type CourseStructure struct {
@@ -65,8 +85,7 @@ type CourseStructure struct {
 
 type ClassroomCourse struct {
 	Base
-	CourseInfo   CourseInfo
-	CourseInfoID uint
+	CourseID uint
 	//Tutor      Tutor // The tutor user running this course
 	StartDate       gentypes.Time
 	EndDate         gentypes.Time

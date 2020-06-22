@@ -1,5 +1,9 @@
 package errors
 
+import (
+	"fmt"
+)
+
 var (
 	// ErrUserNotFound given when database could not find a user
 	ErrUserNotFound = FullError{
@@ -112,5 +116,39 @@ var (
 	ErrCategoryAlreadyExists = SimpleError{
 		Type:    "ErrCategoryAlreadyExists",
 		Message: "Could not create category as it already exists",
+	}
+	ErrNoEmailProvided = FullError{
+		Type:     "ErrNoEmailProvided",
+		Message:  "If not email is provided, you must have a password generated for the user",
+		Title:    "No email or generated password",
+		HelpText: "You must either have a password generated for the user or provide an email address",
+	}
+	ErrDelegateFinalised = SimpleError{
+		Type:    "ErrDelegateFinalised",
+		Message: "Delegate already has a password set, please use reset password to reset it instead",
+	}
+	ErrCSRFTokenInvalid = SimpleError{
+		Type:    "ErrCSRFTokenInvalid",
+		Message: "The given CSRF token was blank or invalid",
+	}
+	ErrUnauthorizedToBook = SimpleError{
+		Type:    "ErrUnauthorizedToBook",
+		Message: "You cannot book these courses as you are not authorized",
+	}
+	ErrNotAllFound = SimpleError{
+		Type:    "ErrNotAllFound",
+		Message: "Not all items you were looking for were found",
+	}
+	ErrDelegateDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrDelegateDoesNotExist",
+			Message: fmt.Sprintf("The given delegate does not exist: %s", uuid),
+		}
+	}
+	ErrRequiredField = func(name string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrRequiredField",
+			Message: fmt.Sprintf("The field '%s', is required", name),
+		}
 	}
 )

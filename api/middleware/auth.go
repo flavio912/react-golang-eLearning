@@ -4,7 +4,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -72,30 +72,35 @@ func GetDelegateAccessToken(ttcId string, password string) (string, error) {
 	return token, nil
 }
 
-// HasFullRestrictedAccess returns true if the user has access to all restricted courses
-func (g *Grant) HasFullRestrictedAccess() bool {
-	if g.IsAdmin {
-		return true
-	}
-
-	// If a managers company is authorized a manager can view all restricted courses
-	if g.IsManager {
-		company := models.Company{}
-		query := database.GormDB.Where("uuid = ?", g.Claims.Company).First(&company)
-		if query.Error != nil {
-			g.Logger.Log(sentry.LevelError, query.Error, "Unable to get manager's company")
-			return false
+func GetIndividualAccessToken(email string, password string) (string, error) {
+	ind := &models.Individual{}
+	individual, err := ind.FindUser(email)
+	if err != nil {
+		if gorm.IsRecordNotFoundError(err) {
+			return "", &errors.ErrUserNotFound
 		}
 
-		if company.Approved {
-			return true
-		}
+		glog.Info(err.Error())
+		return "", &errors.ErrAuthFailed
 	}
 
-	// Delegates cannot access restricted courses unless specifically assigned them
-	if g.IsDelegate {
-		return false
+	token, err := individual.GenerateToken(password)
+	if err != nil {
+		glog.Info(err.Error())
+		return "", &errors.ErrAuthFailed
+	}
+	return token, nil
+}
+
+func (g *Grant) GenerateCSRFToken() (string, error) {
+	token, err := auth.GenerateCSRFToken(auth.CSRFClaims{
+		UUID: g.Claims.UUID,
+	})
+
+	if err != nil {
+		g.Logger.Log(sentry.LevelInfo, err, "Unable to generate CSRF token for user")
+		return "", &errors.ErrWhileHandling
 	}
 
-	return false
+	return token, nil
 }

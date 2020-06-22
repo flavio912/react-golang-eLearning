@@ -1,6 +1,6 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
-import CoreInput, { InputTypes } from "sharedComponents/core/CoreInput";
+import CoreInput, { InputTypes } from "sharedComponents/core/Input/CoreInput";
 import classnames from "classnames";
 import { Theme } from "helpers/theme";
 

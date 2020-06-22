@@ -15,11 +15,24 @@ import (
 type Grant struct {
 	Claims auth.UserClaims
 	// Convenience fields for checking auth
-	IsAdmin    bool
-	IsManager  bool
-	IsDelegate bool
+	IsAdmin      bool
+	IsManager    bool
+	IsDelegate   bool
+	IsIndividual bool
+	IsPublic     bool
 	// contains the sentry hub
 	Logger logging.Logger
+}
+
+//IsCompanyDelegate returns true if the grant user is a delegate of the given company uuid
+func (g *Grant) IsCompanyDelegate(companyUUID gentypes.UUID) bool {
+	return g.IsDelegate && g.Claims.Company == companyUUID
+}
+
+// ManagesCompany is an access-control helper to work out if the current grant
+// is authorized to manage the given company uuid.
+func (g *Grant) ManagesCompany(uuid gentypes.UUID) bool {
+	return g.IsAdmin || (g.IsManager && g.Claims.Company == uuid)
 }
 
 // Authenticate is used to verify and get access to middleware functions
@@ -27,13 +40,16 @@ func Authenticate(jwt string) (*Grant, error) {
 	claims, err := auth.ValidateToken(jwt)
 	if err != nil {
 		glog.Infof("Authentication failed: %s", err.Error())
-		return &Grant{}, &errors.ErrTokenInvalid
+		return &Grant{
+			IsPublic: true,
+		}, &errors.ErrTokenInvalid
 	}
 
 	var (
-		isAdmin    bool
-		isManager  bool
-		isDelegate bool
+		isAdmin      bool
+		isManager    bool
+		isDelegate   bool
+		isIndividual bool
 	)
 
 	switch claims.Role {
@@ -43,13 +59,17 @@ func Authenticate(jwt string) (*Grant, error) {
 		isManager = true
 	case auth.DelegateRole:
 		isDelegate = true
+	case auth.IndividualRole:
+		isIndividual = true
 	}
 
 	return &Grant{
-		Claims:     claims,
-		IsAdmin:    isAdmin,
-		IsManager:  isManager,
-		IsDelegate: isDelegate,
+		Claims:       claims,
+		IsAdmin:      isAdmin,
+		IsManager:    isManager,
+		IsDelegate:   isDelegate,
+		IsIndividual: isIndividual,
+		IsPublic:     false,
 	}, nil
 }
 
@@ -57,7 +77,7 @@ func Authenticate(jwt string) (*Grant, error) {
 const MaxPageLimit = int32(100)
 
 // getPage adds limit and offset to a query
-func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
+func GetPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	var (
 		limit  = MaxPageLimit
 		offset int32
@@ -76,11 +96,11 @@ func getPage(query *gorm.DB, page *gentypes.Page) (*gorm.DB, int32, int32) {
 	return query, limit, offset
 }
 
-/* getOrdering adds orderBy to a query,
+/* GetOrdering adds orderBy to a query,
 
 In no circumstances is "allowedFields" to be given by the user
 */
-func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
+func GetOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []string, defaultOrdering string) (*gorm.DB, error) {
 	if orderBy != nil {
 		var allowed bool
 		for _, field := range allowedFields {
@@ -108,11 +128,8 @@ func getOrdering(query *gorm.DB, orderBy *gentypes.OrderBy, allowedFields []stri
 	return query, nil
 }
 
-func filterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
+func FilterUser(query *gorm.DB, filter *gentypes.UserFilter) *gorm.DB {
 	if filter != nil {
-		if filter.Email != nil && *filter.Email != "" {
-			query = query.Where("email ILIKE ?", "%%"+*filter.Email+"%%")
-		}
 		if filter.Name != nil && *filter.Name != "" {
 			query = query.Where("first_name || ' ' || last_name ILIKE ?", "%%"+*filter.Name+"%%")
 		}

@@ -6,5 +6,37 @@ COPY go.sum .
 
 ENV CGO_ENABLED=0
 
+ENV IS_TESTING=true
+ENV IS_DEV=false
+ENV COOKIE_DOMAIN=".ttc.devserver.london"
+
+ENV DB_HOST=test_db
+ENV DB_USER=test
+ENV DB_PASSWORD="test"
+ENV DB_NAME="testdb"
+ENV DB_PORT=5432
+
+ENV DEV_ADMIN_EMAIL="admin@admin.com"
+ENV DEV_ADMIN_FIRST_NAME="Dev"
+ENV DEV_ADMIN_LAST_NAME="Admin"
+ENV DEV_ADMIN_PASSWORD="iamasuperadmin"
+
+ENV JWT_SECRET="asdha8s7dgbuida89s7dba9hdsn8basd"
+ENV JWT_UPLOADS_SECRET="asasdasdadahs98db7asvd8a9sghdjas90h8d7gasd21dscdvf"
+ENV JWT_FINALISE_DELEGATE_SECRET="asasdasdadaasdjhifnsjdhiujfnkdhusdf"
+ENV JWT_CSRF_SECRET="asasdasdadahs98db7asvd8a9sghdjas90h8d7gasdasdaasd2e"
+ENV JWT_TOKEN_EXPIRATION_HOURS="3"
+
+ENV AWS_UPLOADS_BUCKET="ttc-platform-uploads-test"
+ENV AWS_SES_SEND_ADDRESS=""
+
+ENV IMGIX_BASE_URL="https://ttc-dev.imgix.net/"
+
+ENV SENTRY_DSN=""
+ENV SENTRY_ENVIRONMENT=""
+
+ENV STRIPE_PUBLISHABLE_KEY=""
+ENV STRIPE_SECRET_KEY=""
+
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv

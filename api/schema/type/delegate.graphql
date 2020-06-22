@@ -1,29 +1,41 @@
-type Delegate implements User {
+type Delegate {
   uuid: UUID!
   createdAt: String
   TTC_ID: String!
-  email: String!
+  email: String
   firstName: String!
   lastName: String!
-  telephone: String!
+  telephone: String
   lastLogin: String!
   jobTitle: String!
   company: Company!
   profileImageUrl: String
+  activity(page: Page): ActivityPage
 }
 
 input CreateDelegateInput {
   companyUUID: UUID
-  TTC_ID: String!
   firstName: String!
   lastName: String!
-  email: String!
+  email: String
   jobTitle: String!
-  telephone: String!
-  password: String!
+  telephone: String
+  generatePassword: Boolean
+  profileImageUploadToken: String
+}
+
+type CreateDelegateResponse {
+  delegate: Delegate!
+  generatedPassword: String
 }
 
 type DelegatePage implements PaginatedQuery {
   edges: [Delegate]
   pageInfo: PageInfo
+}
+
+input DelegateLogin {
+  TTC_ID: String!
+  password: String!
+  noResp: Boolean
 }

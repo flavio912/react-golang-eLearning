@@ -3,6 +3,10 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -20,20 +24,30 @@ type AuthToken struct {
 }
 
 // AdminLogin - Resolver for getting an authToken
-func (m *MutationResolver) AdminLogin(args struct{ Input gentypes.AdminLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) AdminLogin(ctx context.Context, args struct{ Input gentypes.AdminLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetAdminAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
+	auth.SetAuthCookies(ctx, token)
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
 // ManagerLogin - Resolver for getting an authToken
-func (m *MutationResolver) ManagerLogin(args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
+func (m *MutationResolver) ManagerLogin(ctx context.Context, args struct{ Input gentypes.ManagerLoginInput }) (*gentypes.AuthToken, error) {
 	token, err := middleware.GetManagerAccessToken(args.Input.Email, args.Input.Password)
 	if err != nil {
 		return nil, err
 	}
+
+	auth.SetAuthCookies(ctx, token)
+
+	// If NoResp given return a blank token in the response - @temmerson
+	if args.Input.NoResp != nil && *args.Input.NoResp {
+		return &gentypes.AuthToken{Token: ""}, nil
+	}
+
 	return &gentypes.AuthToken{Token: token}, nil
 }
 
@@ -49,7 +63,8 @@ func (m *MutationResolver) CreateManager(ctx context.Context, args struct{ Input
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.CreateManager(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	manager, err := usersApp.CreateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -73,7 +88,8 @@ func (m *MutationResolver) UpdateManager(ctx context.Context, args struct{ Input
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	manager, err := grant.UpdateManager(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	manager, err := usersApp.UpdateManager(args.Input)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -89,7 +105,8 @@ func (m *MutationResolver) DeleteManager(ctx context.Context, args struct{ Input
 		return false, &errors.ErrUnauthorized
 	}
 
-	success, err := grant.DeleteManager(args.Input.UUID)
+	usersApp := users.NewUsersApp(grant)
+	success, err := usersApp.DeleteManager(args.Input.UUID)
 	return success, err
 }
 
@@ -100,10 +117,11 @@ func (m *MutationResolver) CreateAdmin(ctx context.Context, args struct{ Input g
 
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+		return nil, &errors.ErrUnauthorized
 	}
+	adminFuncs := application.NewAdminApp(grant)
 
-	admin, addErr := grant.CreateAdmin(args.Input)
+	admin, addErr := adminFuncs.CreateAdmin(args.Input)
 	if addErr != nil {
 		return nil, addErr
 	}
@@ -120,10 +138,11 @@ func (m *MutationResolver) UpdateAdmin(ctx context.Context, args struct{ Input g
 
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &AdminResolver{}, &errors.ErrUnauthorized
+		return nil, &errors.ErrUnauthorized
 	}
 
-	admin, err := grant.UpdateAdmin(args.Input)
+	adminFuncs := application.NewAdminApp(grant)
+	admin, err := adminFuncs.UpdateAdmin(args.Input)
 	if err != nil {
 		return nil, err
 	}
@@ -138,12 +157,12 @@ func (m *MutationResolver) DeleteAdmin(ctx context.Context, args struct{ Input g
 	if grant == nil {
 		return false, &errors.ErrUnauthorized
 	}
-
-	success, err := grant.DeleteAdmin(args.Input.UUID)
+	adminFuncs := application.NewAdminApp(grant)
+	success, err := adminFuncs.DeleteAdmin(args.Input.UUID)
 	return success, err
 }
 
-func (m *MutationResolver) ManagerProfileUploadRequest(
+func (m *MutationResolver) ProfileImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
 ) (*gentypes.UploadFileResp, error) {
@@ -152,14 +171,15 @@ func (m *MutationResolver) ManagerProfileUploadRequest(
 		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
 	}
 
-	url, successToken, err := grant.ManagerProfileUploadRequest(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	url, successToken, err := usersApp.ProfileUploadRequest(args.Input)
 	return &gentypes.UploadFileResp{
 		URL:          url,
 		SuccessToken: successToken,
 	}, err
 }
 
-func (m *MutationResolver) ManagerProfileUploadSuccess(
+func (m *MutationResolver) UpdateManagerProfileImage(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileSuccess },
 ) (*ManagerResolver, error) {
@@ -168,7 +188,8 @@ func (m *MutationResolver) ManagerProfileUploadSuccess(
 		return &ManagerResolver{}, &errors.ErrUnauthorized
 	}
 
-	err := grant.ManagerProfileUploadSuccess(args.Input.SuccessToken)
+	usersApp := users.NewUsersApp(grant)
+	err := usersApp.ManagerProfileUploadSuccess(args.Input.SuccessToken)
 	if err != nil {
 		return &ManagerResolver{}, err
 	}
@@ -194,7 +215,8 @@ func (m *MutationResolver) CreateCompany(ctx context.Context, args struct{ Input
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.CreateCompany(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.CreateCompany(args.Input)
 	if err != nil {
 		return &CompanyResolver{}, err
 	}
@@ -213,7 +235,8 @@ func (m *MutationResolver) UpdateCompany(ctx context.Context, args struct{ Input
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.UpdateCompany(args.Input)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.UpdateCompany(args.Input)
 	if err != nil {
 		return &CompanyResolver{}, err
 	}
@@ -230,13 +253,14 @@ type companyRequestInput struct {
 // CreateCompanyRequest is used to request that an admin allows you to create company
 func (m *MutationResolver) CreateCompanyRequest(ctx context.Context, args companyRequestInput) (bool, error) {
 	// TODO: Check recaptcha token
-
-	err := middleware.CreateCompanyRequest(ctx, args.Company, args.Manager)
-	if err != nil {
-		return false, err
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return false, &errors.ErrUnauthorized
 	}
 
-	return true, nil
+	usersApp := users.NewUsersApp(grant)
+	success, err := usersApp.CreateCompanyRequest(args.Company, args.Manager)
+	return success, err
 }
 
 func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID gentypes.UUID }) (*CompanyResolver, error) {
@@ -245,7 +269,8 @@ func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID
 		return &CompanyResolver{}, &errors.ErrUnauthorized
 	}
 
-	company, err := grant.ApproveCompany(args.UUID)
+	usersApp := users.NewUsersApp(grant)
+	company, err := usersApp.ApproveCompany(args.UUID)
 	if err != nil {
 		return nil, err
 	}
@@ -259,37 +284,39 @@ func (m *MutationResolver) SaveOnlineCourse(
 	ctx context.Context,
 	args struct {
 		Input gentypes.SaveOnlineCourseInput
-	}) (*OnlineCourseResolver, error) {
+	}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &OnlineCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
-	course, err := grant.SaveOnlineCourse(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	course, err := courseFuncs.SaveOnlineCourse(args.Input)
 	if err != nil {
-		return &OnlineCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewOnlineCourseResolver(ctx, NewOnlineCourseArgs{
-		OnlineCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
 func (m *MutationResolver) SaveClassroomCourse(ctx context.Context, args struct {
 	Input gentypes.SaveClassroomCourseInput
-}) (*ClassroomCourseResolver, error) {
+}) (*CourseResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
-		return &ClassroomCourseResolver{}, &errors.ErrUnauthorized
+		return &CourseResolver{}, &errors.ErrUnauthorized
 	}
 
-	course, err := grant.SaveClassroomCourse(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	course, err := courseFuncs.SaveClassroomCourse(args.Input)
 	if err != nil {
-		return &ClassroomCourseResolver{}, err
+		return &CourseResolver{}, err
 	}
 
-	return NewClassroomCourseResolver(ctx, NewClassroomCourseArgs{
-		ClassroomCourse: course,
+	return NewCourseResolver(ctx, NewCourseArgs{
+		Course: &course,
 	})
 }
 
@@ -299,7 +326,8 @@ func (m *MutationResolver) CreateTag(ctx context.Context, args struct{ Input gen
 		return &TagResolver{}, &errors.ErrUnauthorized
 	}
 
-	tag, err := grant.CreateTag(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	tag, err := courseFuncs.CreateTag(args.Input)
 	return &TagResolver{
 		Tag: tag,
 	}, err
@@ -327,12 +355,50 @@ func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input 
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
-	lesson, err := grant.CreateLesson(args.Input)
+	courseFuncs := course.NewCourseApp(grant)
+	lesson, err := courseFuncs.CreateLesson(args.Input)
 	if err != nil {
 		return &LessonResolver{}, err
 	}
 
 	return &LessonResolver{
 		Lesson: lesson,
+	}, err
+}
+
+func (m *MutationResolver) PurchaseCourses(ctx context.Context, args struct{ Input gentypes.PurchaseCoursesInput }) (*gentypes.PurchaseCoursesResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorized
+	}
+
+	courseApp := course.NewCourseApp(grant)
+	return courseApp.PurchaseCourses(args.Input)
+}
+
+type CreateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
+	Input gentypes.CreateIndividualInput
+}) (*CreateIndividualResponse, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return nil, &errors.ErrUnauthorized
+	}
+
+	usersApp := users.NewUsersApp(grant)
+	user, err := usersApp.CreateIndividual(args.Input)
+	if err != nil {
+		return &CreateIndividualResponse{}, err
+	}
+
+	res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &CreateIndividualResponse{
+		User: res,
 	}, err
 }

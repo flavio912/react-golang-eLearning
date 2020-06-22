@@ -127,3 +127,18 @@ func GetImgixURL(key string) string {
 	// always get a valid URL (or at least so we can log errors)
 	return helpers.Config.Imgix.BaseURL + key
 }
+
+// DeleteImageFromKey - Removes an image from AWS S3
+func DeleteImageFromKey(key string) error {
+	svc := s3.New(Session)
+	_, err := svc.DeleteObject(&s3.DeleteObjectInput{
+		Key: aws.String(key),
+	})
+
+	if err != nil {
+		glog.Errorf("Unable to delete image: %s - err: %s", key, err.Error())
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}

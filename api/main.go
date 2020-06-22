@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
@@ -17,6 +19,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/golang/glog"
+	"github.com/stripe/stripe-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database/migration"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -28,7 +31,7 @@ func updateOrCreateDevAdmin() {
 	adminUser := database.GormDB.Where("email = ?", helpers.Config.DevAdmin.Email).First(&models.Admin{})
 	newAdmin := &models.Admin{
 		Email:     helpers.Config.DevAdmin.Email,
-		Password:  helpers.Config.DevAdmin.Password,
+		Password:  &helpers.Config.DevAdmin.Password,
 		FirstName: helpers.Config.DevAdmin.FirstName,
 		LastName:  helpers.Config.DevAdmin.LastName,
 	}
@@ -53,7 +56,7 @@ func usage() {
 
 func setupConfig() {
 	// Load in the config.yaml file
-	if err := helpers.LoadConfig("config.yml"); err != nil {
+	if err := helpers.LoadConfig(); err != nil {
 		panic(err)
 	}
 }
@@ -81,6 +84,10 @@ func setupSentry() *sentryhttp.Handler {
 	return sentryHandler
 }
 
+func setupStripe() {
+	stripe.Key = helpers.Config.Stripe.SecretKey
+}
+
 func main() {
 	setupConfig()
 	flag.Usage = usage
@@ -91,8 +98,9 @@ func main() {
 	sentryHandler := setupSentry()
 
 	setupDatabase()
-
+	setupStripe()
 	uploads.Initialize()
+	email.Initialize()
 
 	loaders := loader.Init()
 
@@ -106,6 +114,7 @@ func main() {
 		Loaders: loaders,
 	}
 	http.Handle("/graphql", handler.CORSMiddleware(sentryHandler.Handle(auth.Handler(handle.Serve()))))
+	http.Handle("/stripe", handler.ServeStripeWebook())
 
 	log.Println("serving on 8080")
 	log.Fatal(http.ListenAndServe(":8080", nil))

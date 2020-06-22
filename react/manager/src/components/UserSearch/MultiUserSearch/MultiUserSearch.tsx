@@ -1,37 +1,39 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
-import SingleUserSearch from "./SingleUserSearch";
-import Button from "sharedComponents/core/Button";
-import { ResultItem } from "../UserSearch";
-import converter from "number-to-words";
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Theme } from 'helpers/theme';
+import SingleUserSearch from './SingleUserSearch';
+import Button from 'sharedComponents/core/Input/Button';
+import { ResultItem } from '../UserSearch';
+import converter from 'number-to-words';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "stretch",
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'stretch'
   },
   button: {
-    alignSelf: "flex-end",
+    alignSelf: 'flex-end'
   },
   section: {
-    marginBottom: 15,
+    marginBottom: 15
   },
   nthdelegate: {
-    textTransform: "capitalize",
+    textTransform: 'capitalize',
     fontSize: 15,
     margin: [theme.spacing(1), 0],
+    color: theme.colors.secondaryBlack,
+    fontWeight: 300
   },
   remove: {
     fontSize: theme.fontSizes.small,
     color: theme.colors.textGrey,
     marginLeft: theme.spacing(1),
-    cursor: "pointer",
-    "&:hover": {
-      textDecoration: "underline",
-    },
-  },
+    cursor: 'pointer',
+    '&:hover': {
+      textDecoration: 'underline'
+    }
+  }
 }));
 
 type Props = {
@@ -79,7 +81,7 @@ function MultiUserSearch({ searchFunction, users, setUsers, style }: Props) {
       {users.slice(-1)[0] !== undefined && (
         <Button
           archetype="grey"
-          icon={{ left: "AddDelegateRepeater" }}
+          icon={{ left: 'AddDelegateRepeater' }}
           onClick={() => setUsers([...users, undefined])}
           className={classes.button}
           bold

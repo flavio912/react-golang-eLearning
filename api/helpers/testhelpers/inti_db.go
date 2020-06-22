@@ -14,7 +14,7 @@ import (
 )
 
 func SetupTestDatabase(logMode bool, dbName string) (*testfixtures.Loader, error) {
-	if err := helpers.LoadConfig("../dev_env/test_config.yml"); err != nil {
+	if err := helpers.LoadConfig(); err != nil {
 		return nil, err
 	}
 	config := helpers.Config
