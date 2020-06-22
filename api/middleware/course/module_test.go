@@ -15,83 +15,70 @@ func TestUpdateModule(t *testing.T) {
 	lessonUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-00000000001")
 	lesson2UUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000002")
 	testUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
-	templateModuleUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
+	moduleUUID, _ := gentypes.StringToUUID("00000000-0000-0000-0000-000000000001")
 
-	t.Run("Duplicates + updates template correctly", func(t *testing.T) {
+	t.Run("Updates module structure correctly", func(t *testing.T) {
 		prepareTestDatabase()
-		// Get module to check for changes after
-		mod, err := courseRepo.GetModuleByUUID(templateModuleUUID)
-		assert.Nil(t, err)
-
-		modItem := gentypes.CourseItem{
-			Type: gentypes.ModuleType,
-			UUID: templateModuleUUID,
-			Items: []gentypes.ModuleItem{
-				gentypes.ModuleItem{
-					Type: gentypes.LessonType,
-					UUID: lessonUUID,
-				},
-				gentypes.ModuleItem{
-					Type: gentypes.LessonType,
-					UUID: lesson2UUID,
-				},
+		modItem := []gentypes.ModuleItem{
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleLesson,
+				UUID: lessonUUID,
+			},
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleLesson,
+				UUID: lesson2UUID,
+			},
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleTest,
+				UUID: testUUID,
 			},
 		}
 
-		updatedModule, err := courseRepo.UpdateModuleStructure(database.GormDB, modItem, true)
+		updatedModule, err := courseRepo.UpdateModuleStructure(database.GormDB, moduleUUID, modItem)
 		assert.Nil(t, err)
-		assert.False(t, updatedModule.Template)
 		assert.NotEqual(t, updatedModule.UUID, uuid.UUID{})
-		assert.NotNil(t, updatedModule.TemplateID)
-		assert.Equal(t, templateModuleUUID.String(), (*updatedModule.TemplateID).String())
 
-		_, err = courseRepo.UpdateModuleStructure(database.GormDB, modItem, true)
+		_, err = courseRepo.UpdateModuleStructure(database.GormDB, moduleUUID, modItem)
 		assert.Nil(t, err)
 
 		// Get structure
-		structure, err := courseRepo.GetModuleStructure(updatedModule.UUID)
+		structure, err := courseRepo.GetModuleStructure(moduleUUID)
 		assert.Nil(t, err)
-		assert.Equal(t, 2, len(structure.Items))
-		assert.Equal(t, lessonUUID, structure.Items[0].UUID)
-		assert.Equal(t, gentypes.LessonType, structure.Items[0].Type)
-		assert.Equal(t, lesson2UUID, structure.Items[1].UUID)
-		assert.Equal(t, gentypes.LessonType, structure.Items[1].Type)
-
-		templateMod, err := courseRepo.GetModuleByUUID(templateModuleUUID)
-		assert.Nil(t, err)
-		assert.Equal(t, mod, templateMod) // The template model shouldn't have changed
+		assert.Equal(t, 3, len(structure))
+		assert.Equal(t, lessonUUID, structure[0].UUID)
+		assert.Equal(t, gentypes.ModuleLesson, structure[0].Type)
+		assert.Equal(t, lesson2UUID, structure[1].UUID)
+		assert.Equal(t, gentypes.ModuleLesson, structure[1].Type)
+		assert.Equal(t, testUUID, structure[2].UUID)
+		assert.Equal(t, gentypes.ModuleTest, structure[2].Type)
 	})
 
 	t.Run("Update template in place", func(t *testing.T) {
 		prepareTestDatabase()
-		modItem := gentypes.CourseItem{
-			Type: gentypes.ModuleType,
-			UUID: templateModuleUUID,
-			Items: []gentypes.ModuleItem{
-				gentypes.ModuleItem{
-					Type: gentypes.LessonType,
-					UUID: lessonUUID,
-				},
-				gentypes.ModuleItem{
-					Type: gentypes.LessonType,
-					UUID: lesson2UUID,
-				},
-				gentypes.ModuleItem{
-					Type: gentypes.TestType,
-					UUID: testUUID,
-				},
+		modItems := []gentypes.ModuleItem{
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleLesson,
+				UUID: lessonUUID,
+			},
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleLesson,
+				UUID: lesson2UUID,
+			},
+			gentypes.ModuleItem{
+				Type: gentypes.ModuleTest,
+				UUID: testUUID,
 			},
 		}
-		module, err := courseRepo.UpdateModuleStructure(database.GormDB, modItem, false)
+		module, err := courseRepo.UpdateModuleStructure(database.GormDB, moduleUUID, modItems)
 		assert.Nil(t, err)
-		assert.Equal(t, module.UUID.String(), templateModuleUUID.String())
+		assert.Equal(t, module.UUID.String(), moduleUUID.String())
 
 		structure, err := courseRepo.GetModuleStructure(module.UUID)
 		assert.Nil(t, err)
-		assert.Equal(t, len(modItem.Items), len(structure.Items))
-		for i, item := range modItem.Items {
-			assert.Equal(t, item.Type, structure.Items[i].Type)
-			assert.Equal(t, item.UUID, structure.Items[i].UUID)
+		assert.Equal(t, len(modItems), len(structure))
+		for i, item := range modItems {
+			assert.Equal(t, item.Type, structure[i].Type)
+			assert.Equal(t, item.UUID, structure[i].UUID)
 		}
 	})
 }

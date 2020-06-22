@@ -4,48 +4,12 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
-
-// duplicateModule copys a module and its stucture
-// TODO: This really isn't nice, make more efficient
-func (c *coursesRepoImpl) duplicateModule(tx *gorm.DB, module models.Module, template bool, duplicateStructure bool) (models.Module, error) {
-	newModule := models.Module{
-		Template:   template,
-		TemplateID: &module.UUID,
-	}
-
-	query := tx.Create(&newModule)
-	if query.Error != nil {
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to save duplicated module")
-		return models.Module{}, &errors.ErrWhileHandling
-	}
-
-	if !duplicateStructure {
-		return newModule, nil
-	}
-
-	for _, item := range module.Structure {
-		structure := models.ModuleStructure{
-			ModuleUUID: newModule.UUID,
-			LessonUUID: item.LessonUUID,
-			TestUUID:   item.TestUUID,
-			Rank:       item.Rank,
-		}
-		query := tx.Create(&structure)
-		if query.Error != nil {
-			c.Logger.Log(sentry.LevelError, query.Error, "Unable to save module structure while duplicating")
-			return models.Module{}, &errors.ErrWhileHandling
-		}
-	}
-
-	return newModule, nil
-}
 
 // GetModuleByUUID gets a module by its UUID
 func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
@@ -64,7 +28,7 @@ func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Modu
 }
 
 // GetModuleStructure builds the structure of the module into gentype form
-func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error) {
+func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error) {
 	var moduleChildren []models.ModuleStructure
 	query := database.GormDB.Where("module_uuid = ?", moduleUUID).
 		Order("rank ASC").
@@ -72,19 +36,19 @@ func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes
 
 	if query.Error != nil {
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get module structure")
-		return gentypes.CourseItem{}, &errors.ErrWhileHandling
+		return []gentypes.ModuleItem{}, &errors.ErrWhileHandling
 	}
 
 	var structure []gentypes.ModuleItem
 	for _, child := range moduleChildren {
 		if child.LessonUUID != nil {
 			structure = append(structure, gentypes.ModuleItem{
-				Type: gentypes.LessonType,
+				Type: gentypes.ModuleLesson,
 				UUID: *child.LessonUUID,
 			})
 		} else if child.TestUUID != nil {
 			structure = append(structure, gentypes.ModuleItem{
-				Type: gentypes.TestType,
+				Type: gentypes.ModuleTest,
 				UUID: *child.TestUUID,
 			})
 		} else {
@@ -92,28 +56,17 @@ func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes
 		}
 	}
 
-	return gentypes.CourseItem{
-		Type:  gentypes.ModuleType,
-		UUID:  moduleUUID,
-		Items: structure,
-	}, nil
+	return structure, nil
 }
 
 // UpdateModuleStructure takes in a transaction, its your job to rollback that transaction if this function returns an error
 // or panics
-func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error) {
-
-	// Check it is actually a module
-	if moduleItem.Type != gentypes.ModuleType {
-		c.Logger.LogMessage(sentry.LevelWarning, "UpdateModule given type other than ModuleItem")
-		return models.Module{}, &errors.ErrWhileHandling
-	}
+func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error) {
 
 	var moduleModel models.Module
-	query := tx.Where("uuid = ?", moduleItem.UUID).First(&moduleModel)
+	query := tx.Where("uuid = ?", moduleUUID).First(&moduleModel)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			glog.Infof("Could not find uuid: %s", moduleItem.UUID)
 			return models.Module{}, &errors.ErrNotFound
 		}
 
@@ -121,33 +74,23 @@ func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes
 		return models.Module{}, &errors.ErrWhileHandling
 	}
 
-	// Module templates should be duplicated
-	if duplicateTemplates && moduleModel.Template {
-		newmod, err := c.duplicateModule(tx, moduleModel, false, false)
-		if err != nil {
-			return models.Module{}, err
-		}
-		moduleModel = newmod
-		moduleItem.UUID = moduleModel.UUID
-	} else {
-		query = tx.Where("module_uuid = ?", moduleItem.UUID).Delete(models.ModuleStructure{})
-		if query.Error != nil {
-			c.Logger.Log(sentry.LevelError, query.Error, "Error deleting old module")
-			return models.Module{}, &errors.ErrWhileHandling
-		}
+	query = tx.Where("module_uuid = ?", moduleUUID).Delete(models.ModuleStructure{})
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Error deleting previous module structure items")
+		return models.Module{}, &errors.ErrWhileHandling
 	}
 
-	for i, item := range moduleItem.Items {
+	for i, item := range moduleStructure {
 
 		// TODO check if lessons + tests exist
 		structureItem := models.ModuleStructure{
-			ModuleUUID: moduleItem.UUID,
+			ModuleUUID: moduleUUID,
 			Rank:       strconv.Itoa(i),
 		}
-		if item.Type == gentypes.LessonType {
+		if item.Type == gentypes.ModuleLesson {
 			structureItem.LessonUUID = &item.UUID
 		}
-		if item.Type == gentypes.TestType {
+		if item.Type == gentypes.ModuleTest {
 			structureItem.TestUUID = &item.UUID
 		}
 

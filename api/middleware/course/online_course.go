@@ -144,11 +144,6 @@ func (c *coursesRepoImpl) saveOnlineCourseStructure(courseUUID gentypes.UUID, st
 		// TODO: Check if these items exist
 		switch courseItem.Type {
 		case gentypes.ModuleType:
-			_, err := c.UpdateModuleStructure(tx, courseItem, true)
-			if err != nil {
-				tx.Rollback()
-				return err
-			}
 			structureItem.ModuleUUID = &courseItem.UUID
 		case gentypes.LessonType:
 			structureItem.LessonUUID = &courseItem.UUID

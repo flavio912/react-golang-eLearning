@@ -7,12 +7,19 @@ const (
 	Open       AccessType = "open"
 )
 
-type StructureElement string
+type CourseElement string
 
 const (
-	ModuleType StructureElement = "module"
-	TestType   StructureElement = "test"
-	LessonType StructureElement = "lesson"
+	ModuleType CourseElement = "module"
+	TestType   CourseElement = "test"
+	LessonType CourseElement = "lesson"
+)
+
+type ModuleElement string
+
+const (
+	ModuleTest   ModuleElement = "test"
+	ModuleLesson ModuleElement = "lesson"
 )
 
 type CourseType string
@@ -42,13 +49,12 @@ type CourseInput struct {
 }
 
 type CourseItem struct {
-	Type  StructureElement
-	UUID  UUID
-	Items []ModuleItem
+	Type CourseElement
+	UUID UUID
 }
 
 type ModuleItem struct {
-	Type StructureElement
+	Type ModuleElement
 	UUID UUID
 }
 

@@ -80,17 +80,11 @@ input SaveOnlineCourseInput {
   tags: [UUID!]
   specificTerms: String
   bannerImageSuccess: String
-  structure: [CourseItem!] 
+  structure: [CourseItem!]
 }
 
 input CourseItem {
   type: StructureElement!
-  uuid: UUID!
-  items: [ModuleItem!]!
-}
-
-input ModuleItem {
-  type: ModuleElement!
   uuid: UUID!
 }
 
@@ -131,20 +125,6 @@ type PurchaseCoursesResponse {
 
 # [ EXAMPLE COURSE STRUCTURE
 #   {type: "module", uuid: "34343-34343-34343-434343"},
-#   { type: "module",
-#     uuid: "1231231-12312312-123123-12313",
-#     items: [
-#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
-#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
-#     ]
-#   },
-#   { type: "module",
-#     uuid: "1231231-12312312-123123-12313", # if is template make a copy
-#     items: [
-#       {type: "lesson", uuid: "1212121-2121212-12121-21212"},
-#       {type: "test", uuid: "89898989-5656565-56656565-56565"},
-#     ]
-#   },
-#   {type: "lesson", uuid: "3343434-34343434-55454545-54545"},
+#   {type: "lesson", uuid: "1212121-2121212-12121-21212"},
 #   {type: "test", uuid: "89898989-5656565-56656565-56565"},
 # ]
