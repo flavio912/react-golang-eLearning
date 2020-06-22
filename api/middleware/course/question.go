@@ -20,7 +20,7 @@ func (c *coursesRepoImpl) Question(uuid gentypes.UUID) (models.Question, error) 
 	return question, nil
 }
 
-type AnswerArgs struct {
+type CreateAnswerArgs struct {
 	IsCorrect bool
 	Text      *string
 	ImageKey  *string
@@ -30,11 +30,11 @@ type CreateQuestionArgs struct {
 	Text             string
 	RandomiseAnswers bool
 	QuestionType     gentypes.QuestionType
-	Answers          []AnswerArgs
+	Answers          []CreateAnswerArgs
 	Tags             []gentypes.UUID
 }
 
-func answerArgsToModels(answers []AnswerArgs) []models.BasicAnswer {
+func answerArgsToModels(answers []CreateAnswerArgs) []models.BasicAnswer {
 	answerMods := []models.BasicAnswer{}
 	for i, answer := range answers {
 		answerMods = append(answerMods, models.BasicAnswer{
@@ -54,7 +54,15 @@ func (c *coursesRepoImpl) CreateQuestion(input CreateQuestionArgs) (models.Quest
 		return models.Question{}, &errors.ErrTagsNotFound
 	}
 
-	answers := answerArgsToModels(input.Answers)
+	answers := []models.BasicAnswer{}
+	for i, answer := range input.Answers {
+		answers = append(answers, models.BasicAnswer{
+			IsCorrect: answer.IsCorrect,
+			Text:      answer.Text,
+			ImageKey:  answer.ImageKey,
+			Rank:      strconv.Itoa(i),
+		})
+	}
 
 	question := models.Question{
 		Text:             input.Text,
@@ -88,7 +96,22 @@ type UpdateQuestionArgs struct {
 	Tags             *[]gentypes.UUID
 }
 
+func (u UpdateQuestionArgs) Validate() error {
+	if u.Answers != nil {
+		for _, ans := range *u.Answers {
+			if ans.UUID == nil && ans.IsCorrect == nil {
+				return errors.ErrInputValidation("Answers", "Cannot have undefined uuid and isCorrect")
+			}
+		}
+	}
+	return nil
+}
+
 func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Question, error) {
+	if err := input.Validate(); err != nil {
+		return models.Question{}, err
+	}
+
 	// Get Question
 	question, err := c.Question(input.UUID)
 	if err != nil {
@@ -148,7 +171,7 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 				newAns := models.BasicAnswer{
 					Text:      ans.Text,
 					ImageKey:  ans.ImageKey,
-					IsCorrect: *ans.IsCorrect,
+					IsCorrect: *ans.IsCorrect, // Checked in validation
 					Rank:      strconv.Itoa(i),
 				}
 				updatedAnswers = append(updatedAnswers, newAns)

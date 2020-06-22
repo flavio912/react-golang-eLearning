@@ -22,16 +22,16 @@ func TestCreateQuestion(t *testing.T) {
 			Text:             "Who is the queen of England?",
 			RandomiseAnswers: true,
 			QuestionType:     gentypes.SingleAnswerType,
-			Answers: []course.AnswerArgs{
-				course.AnswerArgs{
+			Answers: []course.CreateAnswerArgs{
+				course.CreateAnswerArgs{
 					IsCorrect: false,
 					Text:      helpers.StringPointer("Cheesecake"),
 				},
-				course.AnswerArgs{
+				course.CreateAnswerArgs{
 					IsCorrect: true,
 					Text:      helpers.StringPointer("Liz"),
 				},
-				course.AnswerArgs{
+				course.CreateAnswerArgs{
 					IsCorrect: true,
 					Text:      helpers.StringPointer("Tom Riddle"),
 				},

@@ -38,7 +38,7 @@ func (c *courseAppImpl) CreateQuestion(input gentypes.CreateQuestionInput) (gent
 		return gentypes.Question{}, err
 	}
 
-	var answerArgs []course.AnswerArgs
+	var answerArgs []course.CreateAnswerArgs
 	for _, answer := range input.Answers {
 		var imageKey *string
 		if answer.ImageToken != nil {
@@ -48,7 +48,7 @@ func (c *courseAppImpl) CreateQuestion(input gentypes.CreateQuestionInput) (gent
 			}
 			imageKey = &key
 		}
-		answerArgs = append(answerArgs, course.AnswerArgs{
+		answerArgs = append(answerArgs, course.CreateAnswerArgs{
 			Text:      answer.Text,
 			ImageKey:  imageKey,
 			IsCorrect: answer.IsCorrect,
