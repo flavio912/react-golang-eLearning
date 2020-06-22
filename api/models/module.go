@@ -11,14 +11,10 @@ type Module struct {
 
 type ModuleStructure struct {
 	Module     Module
-	ModuleUUID gentypes.UUID
+	ModuleUUID gentypes.UUID `gorm:"primary_key"`
 	Lesson     Lesson
 	LessonUUID *gentypes.UUID
 	Test       Test
 	TestUUID   *gentypes.UUID
-	Rank       string
-}
-
-type Test struct {
-	UUID gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Rank       string `gorm:"primary_key"`
 }

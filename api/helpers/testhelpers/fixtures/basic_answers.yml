@@ -1,0 +1,10 @@
+- uuid: 8deab18c-824f-4a45-9b65-d533833d80bf
+  question_uuid: d8ff8501-4381-4217-a332-8e87a64b968c
+  is_correct: false
+  text: 32 kcal
+  rank: "0"
+- uuid: 8901853c-e73e-46f9-b7a6-7cd6e714dbe0
+  question_uuid: d8ff8501-4381-4217-a332-8e87a64b968c
+  is_correct: true
+  text: 128 kcal
+  rank: "1"

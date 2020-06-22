@@ -17,6 +17,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.CourseTaker{})
 	database.GormDB.AutoMigrate(&models.CourseTakerActivity{})
 
+	// TODO: revisit cascade restrict, double check if cascade is the right choice for each
 	database.GormDB.Model(&models.Delegate{}).AddForeignKey("course_taker_uuid", "course_takers(uuid)", "CASCADE", "RESTRICT")
 	database.GormDB.Model(&models.CourseTakerActivity{}).AddForeignKey("course_taker_uuid", "course_takers(uuid)", "CASCADE", "RESTRICT")
 	database.GormDB.Model(&models.CourseTakerActivity{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
@@ -35,6 +36,15 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
+
+	// Tests
+	database.GormDB.AutoMigrate(&models.Question{})
+	database.GormDB.AutoMigrate(&models.BasicAnswer{})
+	database.GormDB.AutoMigrate(&models.TestQuestionsLink{})
+
+	database.GormDB.Model(&models.TestQuestionsLink{}).AddForeignKey("test_uuid", "tests(uuid)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.TestQuestionsLink{}).AddForeignKey("question_uuid", "questions(uuid)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.BasicAnswer{}).AddForeignKey("question_uuid", "questions(uuid)", "CASCADE", "RESTRICT")
 
 	// If course is deleted, delete the requirements and what you learn too
 	database.GormDB.Model(&models.RequirementBullet{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")

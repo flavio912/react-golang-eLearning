@@ -151,4 +151,10 @@ var (
 			Message: fmt.Sprintf("The field '%s', is required", name),
 		}
 	}
+	ErrInputValidation = func(paramName string, issue string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrInputValidation",
+			Message: fmt.Sprintf("The field '%s' is invalid: %s", paramName, issue),
+		}
+	}
 )

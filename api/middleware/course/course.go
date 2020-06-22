@@ -46,6 +46,10 @@ type CoursesRepository interface {
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error)
+
+	CreateTest(input CreateTestInput) (models.Test, error)
+	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
+	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 }
 
 type coursesRepoImpl struct {

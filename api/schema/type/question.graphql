@@ -1,0 +1,30 @@
+type Question {
+  text: String!
+  randomiseAnswers: Boolean
+  questionType: QuestionType!
+  answers: [Answer!]
+}
+
+type Answer {
+  isCorrect: Boolean
+  text: String
+  imageToken: String
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+}
+
+input CreateQuestionInput {
+  text: String!
+  randomiseAnswers: Boolean!
+  questionType: QuestionType!
+  answers: [CreateBasicAnswerInput!]!
+  tags: [UUID!]!
+}
+
+input CreateBasicAnswerInput {
+  isCorrect: Boolean! # defaults to false
+  text: String
+  imageToken: String
+}

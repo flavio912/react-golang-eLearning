@@ -1,41 +1,12 @@
 type Test {
-  uuid: String
+  uuid: UUID
   name: String!
   category: Category!
   attemptsAllowed: Int
   passPercentage: Float
   minQuestionsToAnswer: Int
-  randomiseAnswers: Bool
+  randomiseAnswers: Boolean
   questions: [Question!]
-}
-
-type Question {
-  text: String!
-  randomiseAnswers: Bool
-  questionType: QuestionType!
-  answers: [Answer!]
-}
-
-type Answer {
-  answerType: AnswerType!
-  isCorrect: Bool
-  text: String
-  imageToken: String
-}
-
-type UpdateTestPayload {
-  test: Test
-}
-
-input UpdateTestInput {
-  uuid: UUID! # Which test to update
-  name: String
-  category: UUID
-  attemptsAllowed: Int
-  passPercentage: Float
-  minQuestionsToAnswer: Int
-  randomiseAnswers: Bool # Overrides per question randomisation
-  questions: [CreateQuestionInput!]
 }
 
 type CreateTestPayload {
@@ -44,34 +15,10 @@ type CreateTestPayload {
 
 input CreateTestInput {
   name: String!
-  category: UUID!
+  category: UUID
   attemptsAllowed: Int!
   passPercentage: Float!
   minQuestionsToAnswer: Int!
-  randomiseAnswers: Bool! # Overrides per question randomisation
-  questions: [CreateQuestionInput!]!
-}
-
-enum QuestionType {
-  SINGLE_CHOICE
-}
-
-input CreateQuestionInput {
-  text: String!
-  randomiseAnswers: Bool!
-  questionType: QuestionType!
-  answers: [CreateAnswerInput!]!
-}
-
-enum AnswerType {
-  text
-  image
-  textAndImage
-}
-
-input CreateAnswerInput {
-  answerType: AnswerType!
-  isCorrect: Bool # defaults to false
-  text: String
-  imageToken: String
+  randomiseAnswers: Boolean! # Overrides per question randomisation
+  questions: [UUID!]!
 }

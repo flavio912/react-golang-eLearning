@@ -1,6 +1,8 @@
 package course
 
 import (
+	"strconv"
+
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
@@ -65,7 +67,7 @@ func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Modu
 func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error) {
 	var moduleChildren []models.ModuleStructure
 	query := database.GormDB.Where("module_uuid = ?", moduleUUID).
-		Order("rank DESC").
+		Order("rank ASC").
 		Find(&moduleChildren)
 
 	if query.Error != nil {
@@ -135,11 +137,12 @@ func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes
 		}
 	}
 
-	for _, item := range moduleItem.Items {
+	for i, item := range moduleItem.Items {
 
 		// TODO check if lessons + tests exist
 		structureItem := models.ModuleStructure{
 			ModuleUUID: moduleItem.UUID,
+			Rank:       strconv.Itoa(i),
 		}
 		if item.Type == gentypes.LessonType {
 			structureItem.LessonUUID = &item.UUID
