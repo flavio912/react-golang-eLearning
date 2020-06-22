@@ -72,12 +72,19 @@ func (c *coursesRepoImpl) CreateQuestion(input CreateQuestionArgs) (models.Quest
 	return question, nil
 }
 
+type UpdateAnswerArgs struct {
+	UUID      *gentypes.UUID
+	IsCorrect *bool
+	Text      *string
+	ImageKey  *string
+}
+
 type UpdateQuestionArgs struct {
 	UUID             gentypes.UUID
 	Text             *string
 	RandomiseAnswers *bool
 	QuestionType     *gentypes.QuestionType
-	Answers          *[]AnswerArgs
+	Answers          *[]UpdateAnswerArgs
 	Tags             *[]gentypes.UUID
 }
 
@@ -96,17 +103,71 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 		}
 	}()
 
-	// Delete all previous answers and replace with new ones
 	if input.Answers != nil {
-		err := tx.Where("question_uuid = ?", input.UUID).Delete(&models.BasicAnswer{}).Error
-		if err != nil {
-			c.Logger.Log(sentry.LevelError, err, "Unable to delete answers")
+		// Get all current answers
+		var currentAnswers []models.BasicAnswer
+		if err := tx.Model(question).Association("Answers").Find(&currentAnswers).Error; err != nil {
+			c.Logger.Log(sentry.LevelWarning, err, "Unable to get current answers")
 			tx.Rollback()
 			return models.Question{}, &errors.ErrWhileHandling
 		}
 
-		answers := answerArgsToModels(*input.Answers)
-		tx.Model(&question).Association("Answers").Replace(answers)
+		// We need to remove the deleted answers manually from the DB
+		var toDelete []gentypes.UUID
+		for _, currentAns := range currentAnswers {
+			var found = false
+			for _, updatedAns := range *input.Answers {
+				if updatedAns.UUID != nil && currentAns.UUID == *updatedAns.UUID {
+					found = true
+					break
+				}
+			}
+			if !found {
+				toDelete = append(toDelete, currentAns.UUID)
+			}
+		}
+
+		var updatedAnswers []models.BasicAnswer
+		for i, ans := range *input.Answers {
+			if ans.UUID != nil {
+				updates := map[string]interface{}{
+					"rank": strconv.Itoa(i),
+				}
+				if ans.Text != nil {
+					updates["text"] = *ans.Text
+				}
+				if ans.ImageKey != nil {
+					updates["image_key"] = *ans.ImageKey
+				}
+				if ans.IsCorrect != nil {
+					updates["is_correct"] = *ans.IsCorrect
+				}
+				tx.Model(&models.BasicAnswer{}).Where("uuid = ?", *ans.UUID).Updates(updates)
+				updatedAnswers = append(updatedAnswers, models.BasicAnswer{UUID: *ans.UUID})
+			} else {
+				newAns := models.BasicAnswer{
+					Text:      ans.Text,
+					ImageKey:  ans.ImageKey,
+					IsCorrect: *ans.IsCorrect,
+					Rank:      strconv.Itoa(i),
+				}
+				updatedAnswers = append(updatedAnswers, newAns)
+			}
+		}
+
+		err := tx.Model(&question).Association("Answers").Replace(updatedAnswers).Error
+		if err != nil {
+			c.Logger.Log(sentry.LevelWarning, err, "Unable replace answer associations")
+			tx.Rollback()
+			return models.Question{}, &errors.ErrWhileHandling
+		}
+
+		// Remove dangling answers
+		if err := tx.Where("uuid IN (?)", toDelete).Delete(&models.BasicAnswer{}).Error; err != nil {
+			c.Logger.Log(sentry.LevelWarning, err, "Unable delete dangling answers")
+			tx.Rollback()
+			return models.Question{}, &errors.ErrWhileHandling
+		}
 	}
 
 	// Update tags

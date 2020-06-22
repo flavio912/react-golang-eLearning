@@ -23,12 +23,12 @@ type Question struct {
 	Text             string
 	RandomiseAnswers bool
 	QuestionType     gentypes.QuestionType // e.g singleChoice
-	Answers          []BasicAnswer         `gorm:"foreignkey:QuestionUUID"`
+	Answers          []BasicAnswer         `gorm:"foreignkey:QuestionUUID;association_autoupdate:false"`
 	Tags             []Tag                 `gorm:"many2many:question_tags_link;"`
 }
 
 type BasicAnswer struct {
-	UUID         gentypes.UUID
+	UUID         gentypes.UUID `gorm:"primary_key;default:uuid_generate_v4()"`
 	QuestionUUID gentypes.UUID
 	IsCorrect    bool
 	Text         *string

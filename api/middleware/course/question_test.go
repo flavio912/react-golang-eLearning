@@ -68,18 +68,21 @@ func TestUpdateQuestion(t *testing.T) {
 	t.Run("Update existing question", func(t *testing.T) {
 		prepareTestDatabase()
 
-		answerArgs := []course.AnswerArgs{
-			course.AnswerArgs{
-				IsCorrect: false,
+		ansId := gentypes.MustParseToUUID("8901853c-e73e-46f9-b7a6-7cd6e714dbe0")
+		ansId1 := gentypes.MustParseToUUID("8deab18c-824f-4a45-9b65-d533833d80bf")
+		answerArgs := []course.UpdateAnswerArgs{
+			course.UpdateAnswerArgs{
+				UUID:      &ansId,
+				IsCorrect: helpers.BoolPointer(false),
 				Text:      helpers.StringPointer("Cheesecake"),
 			},
-			course.AnswerArgs{
-				IsCorrect: true,
+			course.UpdateAnswerArgs{
+				IsCorrect: helpers.BoolPointer(true),
 				Text:      helpers.StringPointer("Liz"),
 			},
-			course.AnswerArgs{
-				IsCorrect: true,
-				Text:      helpers.StringPointer("Tom Riddle"),
+			course.UpdateAnswerArgs{
+				UUID:      &ansId1,
+				IsCorrect: helpers.BoolPointer(false),
 			},
 		}
 
@@ -103,12 +106,12 @@ func TestUpdateQuestion(t *testing.T) {
 		assert.Equal(t, 3, len(answers))
 
 		assert.Equal(t, *answerArgs[0].Text, *answers[0].Text)
-		assert.Equal(t, answerArgs[0].IsCorrect, answers[0].IsCorrect)
+		assert.Equal(t, *answerArgs[0].IsCorrect, answers[0].IsCorrect)
 
 		assert.Equal(t, *answerArgs[1].Text, *answers[1].Text)
-		assert.Equal(t, answerArgs[1].IsCorrect, answers[1].IsCorrect)
+		assert.Equal(t, *answerArgs[1].IsCorrect, answers[1].IsCorrect)
 
-		assert.Equal(t, *answerArgs[2].Text, *answers[2].Text)
-		assert.Equal(t, answerArgs[2].IsCorrect, answers[2].IsCorrect)
+		assert.Equal(t, "32 kcal", *answers[2].Text)
+		assert.Equal(t, *answerArgs[2].IsCorrect, answers[2].IsCorrect)
 	})
 }
