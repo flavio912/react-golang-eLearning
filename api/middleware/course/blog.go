@@ -78,3 +78,15 @@ func (c *coursesRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]s
 
 	return nil
 }
+
+func (c *coursesRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error) {
+	var imgs []models.BlogImage
+	query := database.GormDB.Where("blog_uuid = ?", blogUUID).Find(&imgs)
+
+	if query.Error != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to get blog images of uuid %s", blogUUID)
+		return []models.BlogImage{}, query.Error
+	}
+
+	return imgs, nil
+}

@@ -11,9 +11,15 @@ type Blog {
   category: Category!
   headerImageURL: String!
   author: BlogAuthor!
+  blogBodyImages: [BlogImage!]
 }
 
-input BlogImage {
+type BlogImage {
+  jsonID: String!
+  url: String!
+}
+
+input BlogImageInput {
   jsonID: String!
   token: String!
 }
@@ -24,7 +30,7 @@ input CreateBlogInput {
   categoryUUID: UUID!
   headerImageToken: String
   authorUUID: UUID
-  bodyImages: [BlogImage!]
+  bodyImages: [BlogImageInput!]
 }
 
 input UpdateBlogHeaderImageInput {

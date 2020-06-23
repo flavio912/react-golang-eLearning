@@ -1,8 +1,6 @@
 package course
 
 import (
-	"encoding/json"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -25,29 +23,6 @@ func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 			LastName:  blog.Author.LastName,
 		},
 	}
-}
-
-// keysToURLsInJSON converts s3 keys into imgix urls and puts them in blog's body as JSON
-func (c *courseAppImpl) keysToURLsInJSON(body string, keys map[string]string) string {
-	var bodyMap map[string]interface{}
-
-	err := json.Unmarshal([]byte(body), &bodyMap)
-
-	if err != nil {
-		return body
-	}
-
-	for k, v := range keys {
-		url := uploads.GetImgixURL(v)
-		bodyMap[k] = url
-	}
-
-	out, err := json.Marshal(bodyMap)
-	if err != nil {
-		return body
-	}
-
-	return string(out)
 }
 
 func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error) {
@@ -73,9 +48,7 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 	}
 
 	if input.BodyImages != nil {
-		imgs, err := c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
-
-		blog.Body = c.keysToURLsInJSON(blog.Body, imgs)
+		err := c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
 
 		if err != nil {
 			return gentypes.Blog{}, err
@@ -138,16 +111,16 @@ func (c *courseAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFile
 }
 
 // BlogImagesUploadSuccess verifies tokens of images and uploads them to related blog
-func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []gentypes.BlogImage) (map[string]string, error) {
+func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []gentypes.BlogImageInput) error {
 	if !c.grant.IsAdmin {
-		return map[string]string{}, &errors.ErrUnauthorized
+		return &errors.ErrUnauthorized
 	}
 
 	keyMap := make(map[string]string)
 	for _, img := range imgs {
 		s3key, err := uploads.VerifyUploadSuccess(img.Token, "blogBodyImage")
 		if err != nil {
-			return map[string]string{}, err
+			return err
 		}
 		keyMap[img.JsonID] = s3key
 	}
@@ -157,8 +130,27 @@ func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []genty
 		for _, v := range keyMap {
 			_ = uploads.DeleteImageFromKey(v)
 		}
-		return map[string]string{}, &errors.ErrWhileHandling
+		return &errors.ErrWhileHandling
 	}
 
-	return keyMap, nil
+	return nil
+}
+
+func (c *courseAppImpl) GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error) {
+	imgs, err := c.coursesRepository.GetBlogImages(blogUUID)
+
+	if err != nil {
+		return []gentypes.BlogImage{}, err
+	}
+
+	var gens []gentypes.BlogImage
+	for _, img := range imgs {
+		url := uploads.GetImgixURL(img.S3key)
+		gens = append(gens, gentypes.BlogImage{
+			JsonID: img.BodyID,
+			Url:    url,
+		})
+	}
+
+	return gens, nil
 }

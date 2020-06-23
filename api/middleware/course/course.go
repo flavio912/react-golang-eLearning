@@ -52,6 +52,7 @@ type CoursesRepository interface {
 	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
 	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
 	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
+	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
 }
 
 type coursesRepoImpl struct {

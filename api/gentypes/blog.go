@@ -10,6 +10,11 @@ type BlogAuthor struct {
 	ProfilePicURL *string
 }
 
+type BlogImage struct {
+	JsonID string
+	Url    string
+}
+
 type Blog struct {
 	UUID           UUID
 	Title          string
@@ -17,9 +22,10 @@ type Blog struct {
 	Category       Category
 	HeaderImageURL string
 	Author         BlogAuthor
+	BlogBodyImages *[]BlogImage
 }
 
-type BlogImage struct {
+type BlogImageInput struct {
 	JsonID string
 	Token  string
 }
@@ -30,7 +36,7 @@ type CreateBlogInput struct {
 	CategoryUUID     UUID
 	HeaderImageToken *string
 	AuthorUUID       *UUID
-	BodyImages       *[]BlogImage
+	BodyImages       *[]BlogImageInput
 }
 
 func (c *CreateBlogInput) Validate() error {
