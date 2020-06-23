@@ -90,3 +90,15 @@ func (c *coursesRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogIm
 
 	return imgs, nil
 }
+
+func (c *coursesRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) {
+	var blogs []models.Blog
+	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&blogs)
+
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get blogs")
+		return []models.Blog{}, &errors.ErrWhileHandling
+	}
+
+	return blogs, nil
+}

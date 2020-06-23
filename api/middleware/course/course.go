@@ -53,6 +53,7 @@ type CoursesRepository interface {
 	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
 	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
 	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
+	GetBlogsByUUID(uuids []string) ([]models.Blog, error)
 }
 
 type coursesRepoImpl struct {

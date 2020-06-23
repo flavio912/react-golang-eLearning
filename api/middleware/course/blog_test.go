@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -42,6 +43,7 @@ func TestCreateBlog(t *testing.T) {
 }
 
 func TestGetBlogImages(t *testing.T) {
+	prepareTestDatabase()
 	keyMap := map[string]string{
 		"img1": "key1",
 		"img2": "key2",
@@ -55,4 +57,52 @@ func TestGetBlogImages(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Len(t, imgs, 2)
 	})
+}
+
+func TestGetBlogsByUUIDs(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name    string
+		uuids   []string
+		wantErr interface{}
+		wantLen int
+	}{
+		{
+			"UUIDs must be valid",
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"yoloo",
+			},
+			&errors.ErrWhileHandling,
+			0,
+		},
+		{
+			"Must get only existed blogs",
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"00000000-0000-0000-0000-000000000033",
+			},
+			nil,
+			1,
+		},
+		{
+			"Must get all blogs",
+			[]string{
+				"00000000-0000-0000-0000-000000000001",
+				"00000000-0000-0000-0000-000000000002",
+			},
+			nil,
+			2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			b, err := courseRepo.GetBlogsByUUID(test.uuids)
+
+			assert.Equal(t, test.wantErr, err)
+			assert.Len(t, b, test.wantLen)
+		})
+	}
 }

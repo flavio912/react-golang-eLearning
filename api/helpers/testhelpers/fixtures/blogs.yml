@@ -2,3 +2,8 @@
   title: How To Be Millionaire
   body: {}
   category_uuid: 00000000-0000-0000-0000-000000000001
+
+- uuid: 00000000-0000-0000-0000-000000000002
+  title: Everything About iOS 14
+  body: {}
+  category_uuid: 00000000-0000-0000-0000-000000000001
