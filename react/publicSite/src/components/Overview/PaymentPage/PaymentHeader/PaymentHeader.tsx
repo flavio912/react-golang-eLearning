@@ -1,0 +1,51 @@
+import * as React from "react";
+import { createUseStyles, useTheme } from "react-jss";
+import classNames from "classnames";
+import { Theme } from "helpers/theme";
+
+const useStyles = createUseStyles((theme: Theme) => ({
+    root: {
+        display: 'flex',
+        backgroundColor: theme.colors.navyBlue,
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+    },
+    header: {
+        flex: 1,
+        fontSize: theme.fontSizes.extraLargeHeading,
+        fontWeight: '800',
+        color: theme.colors.primaryWhite
+    },
+    image: {
+        height: '151px',
+        width: '300px',
+        margin: '60px 0 0 50px',
+        borderRadius: '20px 20px 0 0'
+    },
+    spacer: {
+        flex: 1,
+        height: '210px' // image height + padding, removes extra space below image
+    }
+}));
+
+type Props = {
+    text: string;
+    imageURL: string;
+    className?: string;
+};
+
+function PaymentHeader({ text, imageURL, className }: Props) {
+    const theme = useTheme();
+    const classes = useStyles({ theme });
+  return (
+      <div className={classNames(classes.root, className)}>
+          <div className={classes.spacer} />
+          <div className={classes.header}>{text}</div>
+          <div className={classes.spacer}>
+            <img className={classes.image} src={imageURL} />
+          </div>
+      </div>
+  );
+}
+
+export default PaymentHeader;
