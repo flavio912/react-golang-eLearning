@@ -44,4 +44,8 @@ type Mutation {
   deleteLesson(input: DeleteLessonInput!): Boolean!
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  createBlog(input: CreateBlogInput!): Blog
+  blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
+  blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
 }

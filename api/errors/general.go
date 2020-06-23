@@ -157,4 +157,10 @@ var (
 			Message: fmt.Sprintf("The field '%s', is required", name),
 		}
 	}
+	ErrBlogNotFound = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrBlogNotFound",
+			Message: fmt.Sprintf("The given blog does not exist: %s", uuid),
+		}
+	}
 )

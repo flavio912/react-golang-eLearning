@@ -48,6 +48,11 @@ type CoursesRepository interface {
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error)
+
+	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
+	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
+	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
+	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
 }
 
 type coursesRepoImpl struct {
