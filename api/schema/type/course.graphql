@@ -51,7 +51,7 @@ type Test implements SyllabusItem {
   tags: [Tag!]
   attemptsAllowed: Int
   passPercentage: Float
-  QuestionsToAnswer: Int
+  questionsToAnswer: Int
   randomiseAnswers: Boolean
   questions: [Question!]
 }
