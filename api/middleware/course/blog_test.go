@@ -40,3 +40,19 @@ func TestCreateBlog(t *testing.T) {
 		assert.Equal(t, input.CategoryUUID, blog.CategoryUUID)
 	})
 }
+
+func TestGetBlogImages(t *testing.T) {
+	keyMap := map[string]string{
+		"img1": "key1",
+		"img2": "key2",
+	}
+	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
+	_ = courseRepo.UploadBlogImages(blogUUID, keyMap)
+
+	t.Run("Gets all images of blog", func(t *testing.T) {
+		imgs, err := courseRepo.GetBlogImages(blogUUID)
+
+		assert.Nil(t, err)
+		assert.Len(t, imgs, 2)
+	})
+}
