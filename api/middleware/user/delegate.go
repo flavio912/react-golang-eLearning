@@ -149,16 +149,16 @@ func (u *usersRepoImpl) CreateDelegate(
 	}
 
 	delegate := models.Delegate{
-		FirstName:     delegateDetails.FirstName,
-		LastName:      delegateDetails.LastName,
-		JobTitle:      delegateDetails.JobTitle,
-		Telephone:     delegateDetails.Telephone,
-		Password:      password,
-		Email:         delegateDetails.Email,
-		CompanyUUID:   company.UUID,
-		TtcId:         ttcId,
-		ProfileKey:    s3UploadKey,
-		CourseTakerID: courseTaker.ID,
+		FirstName:       delegateDetails.FirstName,
+		LastName:        delegateDetails.LastName,
+		JobTitle:        delegateDetails.JobTitle,
+		Telephone:       delegateDetails.Telephone,
+		Password:        password,
+		Email:           delegateDetails.Email,
+		CompanyUUID:     company.UUID,
+		TtcId:           ttcId,
+		ProfileKey:      s3UploadKey,
+		CourseTakerUUID: courseTaker.UUID,
 	}
 	createErr := tx.Create(&delegate).Error
 	if createErr != nil {

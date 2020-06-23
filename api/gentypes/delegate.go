@@ -17,6 +17,7 @@ type Delegate struct {
 	Email           *string
 	CompanyUUID     UUID
 	ProfileImageURL *string
+	CourseTakerUUID UUID
 }
 
 type DelegatesFilter struct {

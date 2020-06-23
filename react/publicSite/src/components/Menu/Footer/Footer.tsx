@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
+import { useRouter } from 'found';
 import { Theme } from "helpers/theme";
 import Icon from "sharedComponents/core/Icon";
 
@@ -111,6 +112,11 @@ function Footer({ columns, className }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
+    const { router } = useRouter();
+    const onClick = (link?: string) => {
+        link && router.push(link);
+    }
+
   return (
       <div className={classNames(classes.root, className)}>
           <div className={classNames(classes.row, classes.border)}>
@@ -120,12 +126,12 @@ function Footer({ columns, className }: Props) {
                   <Icon name="AviationSecurityCert" style={{height: '74px', width: '152px'}} />
               </div>
               {columns && columns.map((column: Column) => (
-                  <div className={classes.column}>
+                  <div key={column.id} className={classes.column}>
                       <div className={classes.header}>{column.header}</div>
                       {column.links && column.links.map((link: Link) => (
-                          <div className={classNames(classes.row, classes.center)}>
+                          <div key={link.id} className={classNames(classes.row, classes.center)}>
                               <div
-                                onClick={() => console.log(link.link)}
+                                onClick={() => onClick(link.link)}
                                 className={classes.link}
                               >
                                   {link.name}

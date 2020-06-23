@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createUseStyles, useTheme } from "react-jss";
 import classNames from "classnames";
+import { useRouter } from 'found';
 import { Theme } from "helpers/theme";
 import Icon, { IconNames } from "sharedComponents/core/Icon";
 
@@ -96,6 +97,11 @@ type Props = {
 function ImageWithText({ title, subtitle, description, link, image, stack, textRight, className }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
+
+    const { router } = useRouter();
+    const onClick = (link?: string) => {
+        link && router.push(link);
+    }
     
   return (
       <div className={classNames(classes.root, textRight && classes.rowReverse, className)}>
@@ -104,7 +110,7 @@ function ImageWithText({ title, subtitle, description, link, image, stack, textR
                 {stack.map((row: Row, index: number) => (
                     <div className={classNames(classes.root, index !== stack.length - 1 && classes.margin)}>
                         <Icon name={row.iconName} size={68} style={{ marginRight: '40px' }} />
-                        <div>
+                        <div onClick={() => onClick(row.link?.link)}>
                             <div className={classes.link}>{row.link?.title}</div>
                             <div className={classes.text}>{row.text}</div>
                         </div>
@@ -116,7 +122,7 @@ function ImageWithText({ title, subtitle, description, link, image, stack, textR
                 <div className={classes.title}>{title}</div>
                 <div className={classes.subtitle}>{subtitle}</div>
                 <div className={classes.description}>{description}</div>
-                <div className={classes.link}>
+                <div className={classes.link} onClick={() => onClick(link?.link)}>
                     {link?.title}
                     {link && <Icon name="ArrowRightNavyBlue" size={10} style={{ margin: '0 0 1px 5px' }} />}
                 </div>

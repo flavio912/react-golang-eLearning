@@ -16,18 +16,18 @@ import (
 // Delegate - DB model for delegates
 type Delegate struct {
 	Base
-	FirstName     string
-	LastName      string
-	JobTitle      string
-	Telephone     *string
-	LastLogin     time.Time
-	Password      *string
-	Email         *string
-	TtcId         string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
-	CompanyUUID   gentypes.UUID
-	ProfileKey    *string // S3 Upload key for the profile image
-	CourseTaker   CourseTaker
-	CourseTakerID uint
+	FirstName       string
+	LastName        string
+	JobTitle        string
+	Telephone       *string
+	LastLogin       time.Time
+	Password        *string
+	Email           *string
+	TtcId           string `gorm:"unique"` // User identifier e.g Fedex_tom_emmerson1
+	CompanyUUID     gentypes.UUID
+	ProfileKey      *string // S3 Upload key for the profile image
+	CourseTaker     CourseTaker
+	CourseTakerUUID gentypes.UUID
 }
 
 /*GenerateToken - Create a JWT token for delegates
