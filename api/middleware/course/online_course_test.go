@@ -85,7 +85,7 @@ func TestCreateOnlineCourse(t *testing.T) {
 		assert.Nil(t, err)
 
 		// Get tags
-		tagsMap, err := courseRepo.GetTagsByCourseInfoIDs([]uint{course.ID})
+		tagsMap, err := courseRepo.ManyCourseTags([]uint{course.ID})
 		assert.Nil(t, err)
 		assert.Equal(t, 2, len(tagsMap[course.ID]))
 	})

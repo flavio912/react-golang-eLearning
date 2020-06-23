@@ -18,14 +18,14 @@ func TestCreateTest(t *testing.T) {
 			Name:                 "Awesome test",
 			AttemptsAllowed:      helpers.IntPointer(12),
 			PassPercentage:       23,
-			MinQuestionsToAnswer: 12,
+			QuestionsToAnswer: 12,
 			RandomiseAnswers:     false,
 		}
 		test, err := courseRepo.CreateTest(input)
 		assert.Nil(t, err)
 		assert.Equal(t, "Awesome test", test.Name)
 		assert.Equal(t, float32(23), test.PassPercentage)
-		assert.Equal(t, 12, test.MinQuestionsToAnswer)
+		assert.Equal(t, 12, test.QuestionsToAnswer)
 		assert.False(t, test.RandomiseAnswers)
 	})
 }

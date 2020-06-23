@@ -9,7 +9,7 @@ type Test struct {
 	Name                 string
 	AttemptsAllowed      *int
 	PassPercentage       *float32
-	MinQuestionsToAnswer *int
+	QuestionsToAnswer *int
 	RandomiseAnswers     *bool
 }
 
@@ -17,7 +17,7 @@ type CreateTestInput struct {
 	Name                 string
 	AttemptsAllowed      *int
 	PassPercentage       float32
-	MinQuestionsToAnswer int
+	QuestionsToAnswer int
 	RandomiseAnswers     bool
 	Questions            []UUID
 }
@@ -29,8 +29,8 @@ func (c CreateTestInput) Validate() error {
 		}
 	}
 
-	if c.MinQuestionsToAnswer <= 0 {
-		return errors.ErrInputValidation("MinQuestionsToAnswer", "Not greater than 0")
+	if c.QuestionsToAnswer <= 0 {
+		return errors.ErrInputValidation("QuestionsToAnswer", "Not greater than 0")
 	}
 
 	return nil

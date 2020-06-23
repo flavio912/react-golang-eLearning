@@ -1,10 +1,3 @@
-type Lesson {
-  uuid: UUID!
-  title: String!
-  tags: [Tag!]!
-  text: String!
-}
-
 type LessonPage implements PaginatedQuery {
   edges: [Lesson]
   pageInfo: PageInfo

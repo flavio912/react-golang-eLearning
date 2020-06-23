@@ -164,3 +164,12 @@ func (c *courseAppImpl) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCou
 
 	return c.courseToGentype(course), err
 }
+
+func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error) {
+	return []gentypes.CourseItem{
+		gentypes.CourseItem{
+			Type: gentypes.TestType,
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		},
+	}, nil
+}

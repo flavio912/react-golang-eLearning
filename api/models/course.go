@@ -76,11 +76,11 @@ type OnlineCourse struct {
 }
 
 type CourseStructure struct {
-	OnlineCourseUUID gentypes.UUID
+	OnlineCourseUUID gentypes.UUID `gorm:"primary_key;"`
 	ModuleUUID       *gentypes.UUID
 	LessonUUID       *gentypes.UUID
 	TestUUID         *gentypes.UUID
-	Rank             string
+	Rank             string `gorm:"primary_key;"`
 }
 
 type ClassroomCourse struct {

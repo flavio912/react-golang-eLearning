@@ -89,6 +89,9 @@ func (r *CourseResolver) Category(ctx context.Context) (*CategoryResolver, error
 func (r *CourseResolver) AllowedToBuy() *bool {
 	return helpers.BoolPointer(r.Course.AllowedToBuy)
 }
+func (r *CourseResolver) Syllabus(ctx context.Context) (*[]SyllabusResolver, error) {
+	return NewSyllabusResolvers(ctx, NewSyllabusArgs{CourseID: &r.Course.ID})
+}
 
 type CoursePageResolver struct {
 	edges    *[]*CourseResolver

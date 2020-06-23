@@ -1285,7 +1285,7 @@ func TestSaveOnlineCourse(t *testing.T) {
 							color: "#fff",
 							howToComplete: "{}",
         			whatYouLearn: ["What 1", "What 2"],
-        			requirements: ["req 1", "req 2"]
+							requirements: ["req 1", "req 2"]
 						}
 					) {
 						name

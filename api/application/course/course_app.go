@@ -13,12 +13,13 @@ type CourseApp interface {
 	Course(courseID uint) (gentypes.Course, error)
 	Courses(courseIDs []uint) ([]gentypes.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error)
+	CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error)
 
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
-	GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, error)
+	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]gentypes.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]gentypes.Tag, error)
 
@@ -29,6 +30,8 @@ type CourseApp interface {
 		filter *gentypes.LessonFilter,
 		orderBy *gentypes.OrderBy,
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
+
+	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 }
 
 type courseAppImpl struct {

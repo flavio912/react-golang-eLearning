@@ -14,7 +14,7 @@ func (c *courseAppImpl) testToGentype(test models.Test) gentypes.Test {
 			Name:                 test.Name,
 			AttemptsAllowed:      test.AttemptsAllowed,
 			PassPercentage:       &test.PassPercentage,
-			MinQuestionsToAnswer: &test.MinQuestionsToAnswer,
+			QuestionsToAnswer: &test.QuestionsToAnswer,
 			RandomiseAnswers:     &test.RandomiseAnswers,
 		}
 	}
@@ -36,7 +36,7 @@ func (c *courseAppImpl) CreateTest(input gentypes.CreateTestInput) (gentypes.Tes
 		Name:                 input.Name,
 		AttemptsAllowed:      input.AttemptsAllowed,
 		PassPercentage:       input.PassPercentage,
-		MinQuestionsToAnswer: input.MinQuestionsToAnswer,
+		QuestionsToAnswer: input.QuestionsToAnswer,
 		RandomiseAnswers:     input.RandomiseAnswers,
 		Questions:            input.Questions,
 	}
@@ -48,4 +48,17 @@ func (c *courseAppImpl) CreateTest(input gentypes.CreateTestInput) (gentypes.Tes
 	}
 
 	return c.testToGentype(test), nil
+}
+
+// Test gets a test from the db and applies applicable access control
+func (c *courseAppImpl) Test(testUUID gentypes.UUID) (gentypes.Test, error) {
+	// TODO; Should be allowed if user is assigned the course (but only get specific info)
+	if !c.grant.IsAdmin {
+		return gentypes.Test{}, &errors.ErrUnauthorized
+	}
+
+	return gentypes.Test{
+		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Name: "Cheseecake",
+	}, nil
 }

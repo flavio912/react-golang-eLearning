@@ -3,13 +3,13 @@ package models
 import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 
 type Test struct {
-	UUID                 gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-	Name                 string
-	Tags                 []Tag `gorm:"many2many:test_tags_link;"`
-	AttemptsAllowed      *int
-	PassPercentage       float32
-	MinQuestionsToAnswer int
-	RandomiseAnswers     bool
+	UUID              gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Name              string
+	Tags              []Tag `gorm:"many2many:test_tags_link;"`
+	AttemptsAllowed   *int
+	PassPercentage    float32
+	QuestionsToAnswer int
+	RandomiseAnswers  bool
 }
 
 type TestQuestionsLink struct {

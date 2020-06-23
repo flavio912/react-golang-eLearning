@@ -15,7 +15,7 @@ type CreateTestInput struct {
 	Name                 string
 	AttemptsAllowed      *int
 	PassPercentage       float32
-	MinQuestionsToAnswer int
+	QuestionsToAnswer int
 	RandomiseAnswers     bool
 	Questions            []gentypes.UUID
 }
@@ -26,7 +26,7 @@ func (c *coursesRepoImpl) CreateTest(input CreateTestInput) (models.Test, error)
 		Name:                 input.Name,
 		AttemptsAllowed:      input.AttemptsAllowed,
 		PassPercentage:       input.PassPercentage,
-		MinQuestionsToAnswer: input.MinQuestionsToAnswer,
+		QuestionsToAnswer: input.QuestionsToAnswer,
 		RandomiseAnswers:     input.RandomiseAnswers,
 	}
 

@@ -19,6 +19,43 @@ enum CourseType {
   classroom
 }
 
+interface SyllabusItem {
+  title: String!
+  uuid: UUID!
+  complete: Boolean
+}
+
+type Module implements SyllabusItem {
+  title: String!
+  uuid: UUID!
+  complete: Boolean
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  syllabus: [SyllabusItem!]
+}
+
+type Lesson implements SyllabusItem {
+  title: String!
+  uuid: UUID!
+  complete: Boolean
+  mp3URL: String
+  text: String!
+  tags: [Tag!]
+}
+
+type Test implements SyllabusItem {
+  title: String!
+  uuid: UUID!
+  complete: Boolean
+  tags: [Tag!]
+  attemptsAllowed: Int
+  passPercentage: Float
+  QuestionsToAnswer: Int
+  randomiseAnswers: Boolean
+  questions: [Question!]
+}
+
 type Course {
   id: Int!
   type: CourseType!
@@ -35,6 +72,7 @@ type Course {
   specificTerms: String
   category: Category
   allowedToBuy: Boolean
+  syllabus: [SyllabusItem!]
 }
 
 type CoursePage implements PaginatedQuery {

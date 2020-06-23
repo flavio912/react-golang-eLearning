@@ -22,6 +22,7 @@ type CoursesRepository interface {
 	UpdateCourse(courseID uint, infoChanges CourseInput) (models.Course, error)
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
+	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
@@ -39,7 +40,7 @@ type CoursesRepository interface {
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)
 	CreateTag(input gentypes.CreateTagInput) (models.Tag, error)
-	GetTagsByCourseInfoIDs(ids []uint) (map[uint][]models.Tag, error)
+	ManyCourseTags(ids []uint) (map[uint][]models.Tag, error)
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]models.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]models.Tag, error)
 
@@ -376,4 +377,22 @@ func (c *coursesRepoImpl) GetCourses(page *gentypes.Page, filter *gentypes.Cours
 		Limit:  limit,
 		Given:  int32(len(courses)),
 	}, nil
+}
+
+// ManyOnlineCourseStructures maps many given onlineCourseUUID to a slice of their respective course structures
+func (c *coursesRepoImpl) ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error) {
+	var structureItems []models.CourseStructure
+	query := database.GormDB.Where("online_course_uuid IN (?)", onlineCourseUUIDs).Order("online_course_uuid, rank ASC").Find(&structureItems)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get online course structures")
+		return map[gentypes.UUID][]models.CourseStructure{}, &errors.ErrWhileHandling
+	}
+
+	var syllabuses = make(map[gentypes.UUID][]models.CourseStructure)
+	for _, item := range structureItems {
+		id := item.OnlineCourseUUID
+		syllabuses[id] = append(syllabuses[id], item)
+	}
+
+	return syllabuses, nil
 }
