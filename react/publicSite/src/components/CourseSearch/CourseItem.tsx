@@ -34,7 +34,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     maxWidth: '600px',
     marginRight: '20px',
     '@media (max-width: 700px)': {
-      margin: '0 20px 20px 0'
+      margin: '0 0 20px 0'
     }
   },
   price: {
