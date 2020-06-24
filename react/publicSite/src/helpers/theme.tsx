@@ -36,6 +36,8 @@ export type Theme = {
     approxIron: string;
     approxZircon: string;
     secondaryDanger: string;
+    navyBlue2: string;
+    silver: string;
   };
   shadows: {
     primary: string;
@@ -80,14 +82,16 @@ const theme: Theme = {
     textBlue: '#1081AA',
     textGrey: '#737988',
     progressGrey: '#d2d6db',
-    lightBlue: "#E2E9F8",
+    lightBlue: '#E2E9F8',
     navyBlue: '#0E66E0',
     footerBlue: '#1D2B35',
     footerGrey: '#93A1B0',
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
     approxZircon: '#E9EBEB',
-    secondaryDanger: '#DB5C5D'
+    secondaryDanger: '#DB5C5D',
+    navyBlue2: '#0E63E8',
+    silver: '#BFBFBF'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
