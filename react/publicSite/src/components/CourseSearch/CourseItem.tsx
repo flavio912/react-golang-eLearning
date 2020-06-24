@@ -9,44 +9,52 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     backgroundColor: theme.colors.primaryWhite,
     boxShadow: '4px 2px 10px -2px rgba(0,0,0,0.06)',
     border: ['1px', 'solid', theme.colors.borderGrey],
     borderRadius: '13px',
-    padding: '24px 22px 24px 42px',
+    padding: '24px',
     '@media (max-width: 700px)': {
-      flexDirection: 'column'
+      flexDirection: 'column',
+      maxWidth: '300px'
     }
   },
   title: {
     fontSize: theme.fontSizes.heading,
     fontWeight: '800',
-    marginBottom: '20px',
-    color: theme.colors.primaryBlack
+    color: theme.colors.primaryBlack,
+    '@media (max-width: 700px)': {
+      marginBottom: '10px',
+    }
   },
   description: {
     fontSize: theme.fontSizes.default,
     fontWeight: '500',
     color: theme.colors.textGrey,
     maxWidth: '600px',
-    margin: '0 50px 20px 0'
+    marginRight: '20px',
+    '@media (max-width: 700px)': {
+      margin: '0 20px 20px 0'
+    }
   },
   price: {
     fontSize: theme.fontSizes.heading,
     fontWeight: '800',
     color: theme.colors.primaryBlue,
-    marginBottom: '20px'
+    '@media (max-width: 700px)': {
+      marginBottom: '20px',
+    }
   },
   button: {
     height: '52px',
     width: '182px',
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)',
-    margin: '0 20px 20px 0',
+    marginRight: '20px',
     fontSize: theme.fontSizes.large,
     fontWeight: '800',
     '@media (max-width: 700px)': {
-      width: '100%'
+      width: '100%',
+      margin: '0 0 20px 0'
     }
   },
   extraShadow: {
@@ -55,8 +63,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   image: {
     order: 1,
     display: 'flex',
-    height: '240px',
-    width: '287px',
+    height: '260px',
+    width: '300px',
     borderRadius: theme.secondaryBorderRadius,
     backgroundRepeat: 'no-repeat',
     backgroundSize: 'cover'
@@ -75,7 +83,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   column: {
     display: 'flex',
-    flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
