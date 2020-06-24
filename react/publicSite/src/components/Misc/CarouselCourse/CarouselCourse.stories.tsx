@@ -1,10 +1,10 @@
 import * as React from 'react';
 import CarouselCourse from './CarouselCourse';
-import { withKnobs, select, object, number } from '@storybook/addon-knobs';
-import CourseCard, { Course } from 'sharedComponents/Overview/CourseCard';
+import { withKnobs, object } from '@storybook/addon-knobs';
+import { Course } from 'sharedComponents/Overview/CourseCard';
 
 export default {
-  title: 'Overview/CarouselCourse',
+  title: 'Misc/CarouselCourse',
   decorators: [withKnobs]
 };
 
