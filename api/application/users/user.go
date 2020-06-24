@@ -77,3 +77,4 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
+

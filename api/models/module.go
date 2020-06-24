@@ -9,7 +9,7 @@ type Module struct {
 
 type ModuleStructure struct {
 	Module     Module
-	ModuleUUID gentypes.UUID `gorm:"primary_key"`
+	ModuleUUID gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	Lesson     Lesson
 	LessonUUID *gentypes.UUID
 	Test       Test

@@ -41,6 +41,10 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Question{})
 	database.GormDB.AutoMigrate(&models.BasicAnswer{})
 	database.GormDB.AutoMigrate(&models.TestQuestionsLink{})
+	database.GormDB.AutoMigrate(&models.TestMark{})
+
+	database.GormDB.Model(&models.TestMark{}).AddForeignKey("test_uuid", "tests(uuid)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.TestMark{}).AddForeignKey("active_course_uuid", "active_courses(uuid)", "CASCADE", "RESTRICT")
 
 	database.GormDB.Model(&models.TestQuestionsLink{}).AddForeignKey("test_uuid", "tests(uuid)", "CASCADE", "RESTRICT")
 	database.GormDB.Model(&models.TestQuestionsLink{}).AddForeignKey("question_uuid", "questions(uuid)", "CASCADE", "RESTRICT")

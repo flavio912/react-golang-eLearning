@@ -5,21 +5,21 @@ import (
 )
 
 type Test struct {
-	UUID                 UUID
-	Name                 string
-	AttemptsAllowed      *int
-	PassPercentage       *float32
+	UUID              UUID
+	Name              string
+	AttemptsAllowed   *int
+	PassPercentage    *float32
 	QuestionsToAnswer *int
-	RandomiseAnswers     *bool
+	RandomiseAnswers  *bool
 }
 
 type CreateTestInput struct {
-	Name                 string
-	AttemptsAllowed      *int
-	PassPercentage       float32
+	Name              string
+	AttemptsAllowed   *int
+	PassPercentage    float32
 	QuestionsToAnswer int
-	RandomiseAnswers     bool
-	Questions            []UUID
+	RandomiseAnswers  bool
+	Questions         []UUID
 }
 
 func (c CreateTestInput) Validate() error {
@@ -34,4 +34,15 @@ func (c CreateTestInput) Validate() error {
 	}
 
 	return nil
+}
+
+type QuestionAnswer struct {
+	QuestionUUID UUID
+	AnswerUUID   UUID
+}
+
+type SubmitTestInput struct {
+	CourseID uint
+	TestUUID UUID
+	Answers  []QuestionAnswer
 }

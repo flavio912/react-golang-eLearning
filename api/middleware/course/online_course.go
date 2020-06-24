@@ -15,6 +15,21 @@ import (
 
 /* Online Course CRUD */
 
+// OnlineCourse gets an onlineCourse from the courseID
+func (c *coursesRepoImpl) OnlineCourse(courseID uint) (models.OnlineCourse, error) {
+	var onlineCourse models.OnlineCourse
+	query := database.GormDB.Where("course_id = ?", courseID).Find(&onlineCourse)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.OnlineCourse{}, &errors.ErrNotFound
+		}
+		c.Logger.Log(sentry.LevelError, query.Error, "Could not find online course")
+		return models.OnlineCourse{}, &errors.ErrWhileHandling
+	}
+
+	return onlineCourse, nil
+}
+
 // CreateOnlineCourse creates a new online course
 func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error) {
 

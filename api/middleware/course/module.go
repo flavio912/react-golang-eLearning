@@ -27,6 +27,44 @@ func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Modu
 	return module, nil
 }
 
+// ManyModuleItems
+func (c *coursesRepoImpl) ManyModuleItems(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.ModuleItem, error) {
+	var structures []models.ModuleStructure
+	query := database.GormDB.Where("module_uuid IN (?)", moduleUUIDs).
+		Order("module_uuid, rank ASC").
+		Find(&structures)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return map[gentypes.UUID][]gentypes.ModuleItem{}, &errors.ErrNotFound
+		}
+
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get module structures")
+		return map[gentypes.UUID][]gentypes.ModuleItem{}, &errors.ErrWhileHandling
+	}
+
+	var uuidToModules = make(map[gentypes.UUID][]gentypes.ModuleItem)
+	for _, structure := range structures {
+		var item gentypes.ModuleItem
+		if structure.LessonUUID != nil {
+			item = gentypes.ModuleItem{
+				Type: gentypes.ModuleLesson,
+				UUID: *structure.LessonUUID,
+			}
+		} else if structure.TestUUID != nil {
+			item = gentypes.ModuleItem{
+				Type: gentypes.ModuleTest,
+				UUID: *structure.TestUUID,
+			}
+		} else {
+			c.Logger.LogMessage(sentry.LevelError, "Blank Module structure item found")
+		}
+		uuidToModules[structure.ModuleUUID] = append(uuidToModules[structure.ModuleUUID], item)
+	}
+
+	return uuidToModules, nil
+}
+
 // GetModuleStructure builds the structure of the module into gentype form
 func (c *coursesRepoImpl) GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error) {
 	var moduleChildren []models.ModuleStructure

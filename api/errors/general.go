@@ -157,4 +157,12 @@ var (
 			Message: fmt.Sprintf("The field '%s' is invalid: %s", paramName, issue),
 		}
 	}
+	ErrAlreadyTakenTest = SimpleError{
+		Type:    "ErrAlreadyTakenTest",
+		Message: "You cannot take this test again",
+	}
+	ErrNotEnoughAnswersGiven = SimpleError{
+		Type:    "ErrNotEnoughAnswersGiven",
+		Message: "Not enough answers were given to complete the test, please try again",
+	}
 )

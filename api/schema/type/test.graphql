@@ -20,5 +20,9 @@ input QuestionAnswer {
 input AnswerTest {
   courseUUID: UUID! # UUID of the course the user is taking the test in
   testUUID: UUID! # UUID of the test you are answering
-  answers: [QuestionAnswer!]!
+  answers: [QuestionAnswer!]! # Your answers to the test
+}
+
+type SubmitTestPayload {
+  success: Boolean!
 }

@@ -13,7 +13,7 @@ type Test struct {
 }
 
 type TestQuestionsLink struct {
-	TestUUID     gentypes.UUID `gorm:"primary_key"`
+	TestUUID     gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	QuestionUUID gentypes.UUID
 	Rank         string `gorm:"primary_key"`
 }

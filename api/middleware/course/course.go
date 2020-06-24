@@ -23,6 +23,8 @@ type CoursesRepository interface {
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
 	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
+	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
+	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
@@ -48,7 +50,12 @@ type CoursesRepository interface {
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 
+	Test(testUUID gentypes.UUID) (models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
+	TestQuestions(testUUID gentypes.UUID) ([]models.Question, error)
+	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
+
+	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 }
@@ -395,4 +402,18 @@ func (c *coursesRepoImpl) ManyOnlineCourseStructures(onlineCourseUUIDs []gentype
 	}
 
 	return syllabuses, nil
+}
+
+// OnlineCourseStructure gets ordered structure items for a course
+func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error) {
+	structures, err := c.ManyOnlineCourseStructures([]gentypes.UUID{onlineCourseUUID})
+	if err != nil {
+		return []models.CourseStructure{}, err
+	}
+
+	if _, ok := structures[onlineCourseUUID]; ok {
+		return structures[onlineCourseUUID], nil
+	}
+
+	return []models.CourseStructure{}, nil
 }
