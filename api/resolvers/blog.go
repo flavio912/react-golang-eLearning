@@ -15,6 +15,8 @@ type BlogResolver struct {
 	Blog gentypes.Blog
 }
 
+func (b *BlogResolver) CreatedAt() string      { return b.Blog.CreatedAt }
+func (b *BlogResolver) UpdatedAt() *string     { return b.Blog.UpdatedAt }
 func (b *BlogResolver) UUID() gentypes.UUID    { return b.Blog.UUID }
 func (b *BlogResolver) Title() string          { return b.Blog.Title }
 func (b *BlogResolver) Body() string           { return b.Blog.Body }

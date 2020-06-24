@@ -5,6 +5,8 @@ type BlogAuthor {
 }
 
 type Blog {
+  createdAt: String!
+  updatedAt: String
   uuid: UUID!
   title: String!
   body: String!

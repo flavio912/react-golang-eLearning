@@ -1,6 +1,8 @@
 package course
 
 import (
+	"time"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -10,7 +12,11 @@ import (
 func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 	url := uploads.GetImgixURL(blog.HeaderImageKey)
 
+	createdAt := blog.CreatedAt.Format(time.RFC3339)
+	updatedAt := blog.UpdatedAt.Format(time.RFC3339)
 	return gentypes.Blog{
+		CreatedAt:      createdAt,
+		UpdatedAt:      &updatedAt,
 		UUID:           blog.UUID,
 		Title:          blog.Title,
 		Body:           blog.Body,

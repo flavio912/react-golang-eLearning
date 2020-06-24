@@ -16,6 +16,8 @@ type BlogImage struct {
 }
 
 type Blog struct {
+	CreatedAt      string
+	UpdatedAt      *string
 	UUID           UUID
 	Title          string
 	Body           string
