@@ -11,22 +11,26 @@ const useStyles = createUseStyles((theme: Theme) => ({
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
-        padding: '110px 0 60px 180px'
+        padding: '10% 0 10% 0',
+        alignItems: 'center',
+        '@media (max-width: 700px)': {
+            padding: '5%',
+        }
+    },
+    padding: {
+        paddingBottom: '5%',
     },
     row: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-    },
-    padding: {
-        padding: '120px 0 80px 180px'
+        marginTop: '20px'
     },
     title: {
         fontSize: 40,
         fontWeight: '800',
         color: theme.colors.primaryWhite,
-        maxWidth: '615px',
-        margin: '20px 0'
+        maxWidth: '615px'
     },
     detail: {
         fontSize: theme.fontSizes.large,
@@ -47,6 +51,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     underline: {
         textDecorationLine: 'underline'
+    },
+    marginBottom: {
+        marginBottom: '6px'
     }
 }));
 
@@ -66,24 +73,26 @@ function ArticleHeader({ title, date, image, featured, genre, author, className 
 
   return (
       <div
-        className={classNames(classes.root, featured && classes.padding, className)}
+        className={classNames(classes.root, author && classes.padding, className)}
         style={{ backgroundImage: `url(${image})` }}
     >
-          {featured && (
-            <div className={classes.detail}>{featured}  •  {date}</div>
-          )}
+        <div>
+            {featured && (
+                <div className={classNames(classes.detail, classes.marginBottom)}>{featured}  •  {date}</div>
+            )}
 
-          <div className={classNames(classes.title, featured && classes.underline)}>{title}</div>
+            <div className={classNames(classes.title, featured && classes.underline)}>{title}</div>
 
-          {author && (
-            <div className={classes.row}>
-                <CircleBorder user={author} size={50} className={classes.profile}/>
-                <div>
-                    <div className={classes.name}>{author.name}</div>
-                    <div className={classNames(classes.detail, classes.italic)}>{date} • {genre}</div>
+            {author && (
+                <div className={classes.row}>
+                    <CircleBorder user={author} size={50} className={classes.profile}/>
+                    <div>
+                        <div className={classes.name}>{author.name}</div>
+                        <div className={classNames(classes.detail, classes.italic)}>{date} • {genre}</div>
+                    </div>
                 </div>
-            </div>
-          )}
+            )}
+        </div>
       </div>
   );
 }
