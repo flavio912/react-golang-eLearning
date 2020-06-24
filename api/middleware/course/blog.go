@@ -5,6 +5,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -101,4 +102,39 @@ func (c *coursesRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) 
 	}
 
 	return blogs, nil
+}
+
+func (c *coursesRepoImpl) GetBlogs(
+	page *gentypes.Page,
+	orderBy *gentypes.OrderBy,
+) ([]models.Blog, gentypes.PageInfo, error) {
+	var blogs []models.Blog
+
+	var count int32
+	query := database.GormDB
+	countErr := query.Model(&models.Blog{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		c.Logger.Log(sentry.LevelError, countErr, "Unable to count blogs")
+		return blogs, gentypes.PageInfo{}, countErr
+	}
+
+	// TODO: Order by createdAt + updatedAt
+	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"category"}, "category ASC")
+	if orderErr != nil {
+		return blogs, gentypes.PageInfo{}, orderErr
+	}
+
+	query, limit, offset := middleware.GetPage(query, page)
+	query = query.Find(&blogs)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to find blogs")
+		return []models.Blog{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return blogs, gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(blogs)),
+	}, nil
 }

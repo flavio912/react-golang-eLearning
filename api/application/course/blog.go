@@ -172,3 +172,12 @@ func (c *courseAppImpl) GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error) 
 
 	return c.blogsToGentype(blogs), nil
 }
+
+func (c *courseAppImpl) GetBlogs(
+	page *gentypes.Page,
+	orderBy *gentypes.OrderBy,
+) ([]gentypes.Blog, gentypes.PageInfo, error) {
+	blogs, pageInfo, err := c.coursesRepository.GetBlogs(page, orderBy)
+
+	return c.blogsToGentype(blogs), pageInfo, err
+}

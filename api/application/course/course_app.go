@@ -38,6 +38,7 @@ type CourseApp interface {
 	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error)
 	GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error)
+	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]gentypes.Blog, gentypes.PageInfo, error)
 }
 
 type courseAppImpl struct {

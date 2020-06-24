@@ -54,6 +54,7 @@ type CoursesRepository interface {
 	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
 	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
 	GetBlogsByUUID(uuids []string) ([]models.Blog, error)
+	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]models.Blog, gentypes.PageInfo, error)
 }
 
 type coursesRepoImpl struct {

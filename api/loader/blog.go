@@ -54,7 +54,7 @@ func (b *blogLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dat
 	return res
 }
 
-func (b *blogLoader) LoadBlog(ctx context.Context, uuid string) (gentypes.Blog, error) {
+func LoadBlog(ctx context.Context, uuid string) (gentypes.Blog, error) {
 	var blog gentypes.Blog
 	data, err := extractAndLoad(ctx, blogLoaderKey, uuid)
 	if err != nil {

@@ -19,6 +19,11 @@ type BlogImage {
   url: String!
 }
 
+type BlogPage implements PaginatedQuery {
+  edges: [Blog]
+  pageInfo: PageInfo
+}
+
 input BlogImageInput {
   jsonID: String!
   token: String!

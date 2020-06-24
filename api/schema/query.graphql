@@ -68,6 +68,8 @@ type Query {
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
   lesson(uuid: UUID!): Lesson
   lessons(page: Page, filter: LessonFilter, orderBy: OrderBy): LessonPage
+  blog(uuid: UUID!): Blog
+  blogs(page: Page, orderBy: OrderBy): BlogPage
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   user: User 
 }
