@@ -37,6 +37,7 @@ type CourseApp interface {
 	UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) error
 	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error)
+	GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error)
 }
 
 type courseAppImpl struct {

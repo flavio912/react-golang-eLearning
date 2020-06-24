@@ -25,6 +25,14 @@ func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 	}
 }
 
+func (c *courseAppImpl) blogsToGentype(blogs []models.Blog) []gentypes.Blog {
+	var gens []gentypes.Blog
+	for _, blog := range blogs {
+		gens = append(gens, c.blogToGentype(blog))
+	}
+	return gens
+}
+
 func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Blog{}, &errors.ErrUnauthorized
@@ -153,4 +161,14 @@ func (c *courseAppImpl) GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.Bl
 	}
 
 	return gens, nil
+}
+
+func (c *courseAppImpl) GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error) {
+	blogs, err := c.coursesRepository.GetBlogsByUUID(uuids)
+
+	if err != nil {
+		return []gentypes.Blog{}, err
+	}
+
+	return c.blogsToGentype(blogs), nil
 }
