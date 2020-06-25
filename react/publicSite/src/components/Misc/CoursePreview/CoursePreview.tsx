@@ -17,6 +17,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         boxShadow: '0 2px 10px 0 rgba(0,0,0,0.15), 4px 2px 10px -2px rgba(0,0,0,0.06)',
     },
     video: {
+        maxHeight: '238px',
+        maxWidth: '382px',
         margin: '4px',
         borderRadius: '5px 5px 0 0',
         overflow: 'hidden'
@@ -63,6 +65,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
+        width: '100%'
     },
     preview: {
         fontSize: theme.fontSizes.xSmall,
@@ -100,19 +103,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
 type Props = {
     price: string;
     details: string[];
-    video: string;
+    video?: string;
+    image?: string;
     onBasket?: () => void;
     onBuy?: () => void;
 };
 
-function CoursePreview({ price, details, video, onBasket, onBuy }: Props) {
+function CoursePreview({ price, details, video, image, onBasket, onBuy }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
   return (
       <div className={classes.root}>
 
-          <VideoPlayer
+        {video && (
+            <VideoPlayer
             source={video}
             width={384} height={216}
             className={classes.video}
@@ -126,6 +131,11 @@ function CoursePreview({ price, details, video, onBasket, onBuy }: Props) {
                 </div>
             }
         />
+        )}
+
+        {image && (
+            <img src={image} className={classes.video} />
+        )}
 
           <div className={classes.price}>{price} <span className={classes.vat}>+VAT</span></div>
 

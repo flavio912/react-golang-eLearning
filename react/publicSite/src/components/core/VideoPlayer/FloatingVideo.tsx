@@ -8,12 +8,19 @@ import Icon from "sharedComponents/core/Icon";
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
         display: 'flex',
+        '@media (max-width: 1000px)': {
+            flexDirection: 'column',
+            alignItems: 'center'
+          }
     },
     floating: {
         position: 'absolute',
         borderRadius: '5px',
         boxShadow: '5px 15px 43px 8px rgba(143,143,173,0.28), 10px 27px 21px 3px rgba(0,0,0,0.06)',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        '@media (max-width: 1000px)': {
+            position: 'relative'
+          }
     },
     bottomBox: {
         display: 'flex',
@@ -22,13 +29,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
         margin: '52px 0 0 316px',
         borderRadius: '6px',
         backgroundColor: theme.colors.primaryWhite,
-        boxShadow: '0 3px 15px 1px rgba(0,0,0,0.12)'
+        boxShadow: '0 3px 15px 1px rgba(0,0,0,0.12)',
+        '@media (max-width: 1000px)': {
+            width: '100%',
+            margin: '0',
+          }
     },
     quoteContainer: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
-        margin: '0 68px 0 382px'
+        margin: '0 68px 0 382px',
+        '@media (max-width: 1000px)': {
+            margin: '10%',
+          }
     },
     quote: {
         fontSize: theme.fontSizes.smallHeading,

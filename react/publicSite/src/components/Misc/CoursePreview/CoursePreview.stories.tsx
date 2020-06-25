@@ -1,6 +1,6 @@
 import * as React from "react";
 import CoursePreview from "./CoursePreview";
-import { withKnobs, text, array } from "@storybook/addon-knobs";
+import { withKnobs, text, array, boolean } from "@storybook/addon-knobs";
 
 export default {
   title: "Misc/CoursePreview",
@@ -18,11 +18,13 @@ const defaultDetails: string[] = [
 ]
 
 export const normal = () => {
+    const useImage: boolean = boolean("Use Image", false);
     const price: string = text("Price", "£310.00");
     const details: string[] = array("Price", defaultDetails);
   return <CoursePreview
         price={price}
         details={details}
-        video={require("assets/Stock_Video.mp4")}
+        video={!useImage && require("assets/Stock_Video.mp4")}
+        image={useImage && require("assets/Homepage-stock-photo.png")}
     />;
 };
