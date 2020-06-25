@@ -52,6 +52,7 @@ export type IconNames =
   | 'Mp3_Speaker'
   | 'Payments_Method'
   | 'Stripe'
+  | 'Tick'
   | 'Twitter_Logo'
   | 'Volume';
 
@@ -107,6 +108,7 @@ const iconNameMap = {
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
   Stripe: require("../../../assets/Stripe.svg"),
+  Tick: require("../../../assets/Tick.svg"),
   Twitter_Logo: require("../../../assets/Twitter_Logo.png"),
   Volume: require("../../../assets/Volume.svg")
 };
