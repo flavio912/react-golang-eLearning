@@ -36,7 +36,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite
   },
   searchResults: {
-    overflowY: 'auto'
+    overflowY: 'auto',
+    zIndex: 10,
   },
   title: {
     fontSize: theme.fontSizes.small,
@@ -52,6 +53,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center',
     padding: [0, 15],
     fontSize: theme.fontSizes.default,
+    backgroundColor: theme.colors.primaryWhite,
     borderBottom: `1px solid ${theme.colors.borderGrey}`,
     '&:last-child': {
       borderBottom: 'none'
