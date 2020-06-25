@@ -45,7 +45,7 @@ function VideoPlayer({ source, height, width, thumbnail, className }: Props) {
     const theme = useTheme();
     const classes = useStyles({ theme });
 
-    const videoRef = React.useRef(null);
+    const videoRef = React.useRef<HTMLVideoElement>(null);
     const [started, setStarted] = React.useState(false);
 
     const playVideo = () => {
