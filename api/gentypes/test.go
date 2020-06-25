@@ -7,17 +7,17 @@ import (
 type Test struct {
 	UUID              UUID
 	Name              string
-	AttemptsAllowed   *int
+	AttemptsAllowed   *uint
 	PassPercentage    *float32
-	QuestionsToAnswer *int
+	QuestionsToAnswer *uint
 	RandomiseAnswers  *bool
 }
 
 type CreateTestInput struct {
 	Name              string
-	AttemptsAllowed   *int
+	AttemptsAllowed   *uint
 	PassPercentage    float32
-	QuestionsToAnswer int
+	QuestionsToAnswer uint
 	RandomiseAnswers  bool
 	Questions         []UUID
 }

@@ -13,9 +13,9 @@ import (
 
 type CreateTestInput struct {
 	Name              string
-	AttemptsAllowed   *int
+	AttemptsAllowed   *uint
 	PassPercentage    float32
-	QuestionsToAnswer int
+	QuestionsToAnswer uint
 	RandomiseAnswers  bool
 	Questions         []gentypes.UUID
 }
@@ -77,6 +77,11 @@ func (c *coursesRepoImpl) Test(testUUID gentypes.UUID) (models.Test, error) {
 	if _, ok := testMap[testUUID]; ok {
 		return testMap[testUUID], nil
 	}
+
+	if err == &errors.ErrNotAllFound {
+		return models.Test{}, &errors.ErrNotFound
+	}
+
 	return models.Test{}, err
 }
 
@@ -86,11 +91,16 @@ func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUI
 	query := database.GormDB.Where("uuid IN (?)", testUUIDs).Find(&tests)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return map[gentypes.UUID]models.Test{}, nil
+			return map[gentypes.UUID]models.Test{}, &errors.ErrNotAllFound
 		}
 
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get many tests")
 		return map[gentypes.UUID]models.Test{}, &errors.ErrWhileHandling
+	}
+
+	var err error
+	if len(tests) < len(testUUIDs) {
+		err = &errors.ErrNotAllFound
 	}
 
 	var uuidToTest = make(map[gentypes.UUID]models.Test)
@@ -98,14 +108,16 @@ func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUI
 		uuidToTest[test.UUID] = test
 	}
 
-	return uuidToTest, nil
+	return uuidToTest, err
 }
 
 // TestQuestions gets slice of questions for a test (in rank order)
 func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Question, error) {
 	var questions []models.Question
 	query := database.GormDB.Table("questions").
-		Joins("JOIN test_questions_links ON questions.UUID = test_questions_links.question_uuid AND test_uuid = ?", testUUID)
+		Joins("JOIN test_questions_links ON test_questions_links.question_uuid = questions.uuid AND test_questions_links.test_uuid = ?", testUUID).
+		Order("rank ASC").
+		Find(&questions)
 
 	if query.Error != nil && !query.RecordNotFound() {
 		return []models.Question{}, &errors.ErrWhileHandling
@@ -117,7 +129,7 @@ func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Questi
 // ManyAnswers gets a mapping between questionUUIDs and their respective answers
 func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error) {
 	var answers []models.BasicAnswer
-	query := database.GormDB.Where("question_uuid IN (?)", questionUUIDs).Find(&answers)
+	query := database.GormDB.Where("question_uuid IN (?)", questionUUIDs).Order("question_uuid, rank ASC").Find(&answers)
 	if query.Error != nil && !query.RecordNotFound() {
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get many answers")
 		return map[gentypes.UUID][]models.BasicAnswer{}, &errors.ErrWhileHandling
@@ -125,7 +137,7 @@ func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentyp
 
 	var output = make(map[gentypes.UUID][]models.BasicAnswer)
 	for _, answer := range answers {
-		output[answer.UUID] = append(output[answer.UUID], answer)
+		output[answer.QuestionUUID] = append(output[answer.QuestionUUID], answer)
 	}
 
 	return output, nil
@@ -135,6 +147,9 @@ func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentyp
 func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error) {
 	// Get outer course structure
 	structures, err := c.OnlineCourseStructure(onlineCourseUUID)
+	if err != nil {
+		return []models.Test{}, err
+	}
 
 	var testIDs []gentypes.UUID
 	var moduleIDs []gentypes.UUID
@@ -175,4 +190,14 @@ func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.
 	}
 
 	return outputTests, nil
+}
+
+func (c *coursesRepoImpl) CreateTestMarks(mark models.TestMark) error {
+	err := database.GormDB.Create(&mark).Error
+	if err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to create test marks")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
 }

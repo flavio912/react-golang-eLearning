@@ -17,8 +17,8 @@ type ActiveCourse struct {
 	CourseTaker     CourseTaker
 	CourseTakerUUID gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	Course          Course
-	CourseID        uint `gorm:"primary_key;type:uuid;"` // FKEY
-	CurrentAttempt  uint `gorm:"default:1"`              // Starts at 1
+	CourseID        uint `gorm:"primary_key;"` // FKEY
+	CurrentAttempt  uint `gorm:"default:1"`    // Starts at 1
 	MinutesTracked  float64
 }
 

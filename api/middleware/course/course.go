@@ -51,6 +51,7 @@ type CoursesRepository interface {
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
+	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
 	TestQuestions(testUUID gentypes.UUID) ([]models.Question, error)
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
@@ -58,6 +59,8 @@ type CoursesRepository interface {
 	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
+
+	CreateTestMarks(mark models.TestMark) error
 }
 
 type coursesRepoImpl struct {

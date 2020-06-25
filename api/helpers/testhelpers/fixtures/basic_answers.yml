@@ -2,9 +2,19 @@
   question_uuid: d8ff8501-4381-4217-a332-8e87a64b968c
   is_correct: false
   text: 32 kcal
-  rank: "0"
+  rank: '0'
 - uuid: 8901853c-e73e-46f9-b7a6-7cd6e714dbe0
   question_uuid: d8ff8501-4381-4217-a332-8e87a64b968c
   is_correct: true
   text: 128 kcal
-  rank: "1"
+  rank: '1'
+- uuid: 02e9d22d-af63-4f7d-af58-01c87101af19
+  question_uuid: c3c751ad-dc2d-4bf2-8a63-f1d59818aada
+  is_correct: true
+  text: No one knows for sure
+  rank: 2
+- uuid: 5ca49c84-8ff5-4fc6-8fb4-5b6406043427
+  question_uuid: c3c751ad-dc2d-4bf2-8a63-f1d59818aada
+  is_correct: false
+  text: Under a rock somewhere
+  rank: 1

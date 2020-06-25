@@ -32,12 +32,12 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Module{})
 	database.GormDB.AutoMigrate(&models.ModuleStructure{})
 	database.GormDB.AutoMigrate(&models.Lesson{})
-	database.GormDB.AutoMigrate(&models.Test{})
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
 
 	// Tests
+	database.GormDB.AutoMigrate(&models.Test{})
 	database.GormDB.AutoMigrate(&models.Question{})
 	database.GormDB.AutoMigrate(&models.BasicAnswer{})
 	database.GormDB.AutoMigrate(&models.TestQuestionsLink{})

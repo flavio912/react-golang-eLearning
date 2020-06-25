@@ -1,6 +1,7 @@
 package course
 
 import (
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
@@ -87,11 +88,11 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 	// Check taker can access this course
 	var courseTakerUUID gentypes.UUID
 	if c.grant.IsDelegate {
-		delegate, err := c.usersRepository.Delegate(c.grant.Claims.UUID)
+		delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
 		courseTakerUUID = delegate.CourseTakerUUID
 	}
 	if c.grant.IsIndividual {
-		individual, err := c.usersRepository.Individual(c.grant.Claims.UUID)
+		individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
 		courseTakerUUID = individual.CourseTakerUUID
 	}
 
@@ -126,7 +127,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		}
 	}
 
-	if len(acceptedQuestions) < test.QuestionsToAnswer {
+	if len(acceptedQuestions) < int(test.QuestionsToAnswer) {
 		return false, &errors.ErrNotEnoughAnswersGiven
 	}
 
@@ -138,14 +139,33 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		acceptedQuestionUUIDs = append(acceptedQuestionUUIDs, key)
 	}
 
-	answers, err := c.coursesRepository.ManyAnswers(acceptedQuestionUUIDs)
+	questionsToAnswers, err := c.coursesRepository.ManyAnswers(acceptedQuestionUUIDs)
 
-	for key, answer := range answers {
-
+	var correct uint
+	for questionUUID, inputAnswer := range acceptedQuestions {
+		for _, answer := range questionsToAnswers[questionUUID] {
+			if inputAnswer.AnswerUUID == answer.UUID && answer.IsCorrect {
+				correct = correct + 1
+			}
+		}
 	}
-	// Count how many correct
 
 	// Save marks into DB
+	marks := models.TestMark{
+		TestUUID:        test.UUID,
+		CourseTakerUUID: courseTakerUUID,
+		CourseID:        input.CourseID,
+		NumCorrect:      correct,
+		Total:           test.QuestionsToAnswer,
+	}
+	err = c.coursesRepository.CreateTestMarks(marks)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to save marks for test")
+		return false, &errors.ErrWhileHandling
+	}
+
+	// TODO: Check if taker has completed course
+	return true, nil
 }
 
 // course, err := c.coursesRepository.OnlineCourse(input.CourseID)

@@ -2,3 +2,11 @@
   text: How many calories are in mini cheddars
   randomise_answers: false
   question_type: singleAnswer
+- uuid: c3c751ad-dc2d-4bf2-8a63-f1d59818aada
+  text: Where is wally?
+  randomise_answers: true
+  question_type: singleAnswer
+- uuid: 18cce315-ef3c-4597-aca8-f3d06e9347b1
+  text: How many hats does the queen have?
+  randomise_answers: false
+  question_type: singleAnswer
