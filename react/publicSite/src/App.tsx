@@ -18,7 +18,7 @@ import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
-import Dashboard from 'views/Dashboard';
+import Home from 'views/Home';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -36,7 +36,6 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route
-        path="/app"
         Component={AppHolder}
         //query={ExamplePageQuery}
         render={({ props, error }: any) => {
@@ -49,7 +48,7 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        <Route path="/" Component={Dashboard} />
+        <Route path="/" Component={Home} />
       </Route>
     </Route>
   ),
