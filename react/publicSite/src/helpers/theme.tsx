@@ -65,7 +65,7 @@ const theme: Theme = {
   buttonBorderRadius: 4,
   primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
   loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
-  centerColumnWidth: 1000,
+  centerColumnWidth: 1200,
   colors: {
     primaryBlack: '#0C152E',
     primaryBlue: '#0b57ff',
