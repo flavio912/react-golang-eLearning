@@ -12,23 +12,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     borderBottom: [1, 'solid', theme.colors.borderGrey],
     gridArea: '1 / 2',
-    zIndex: 10,
+    zIndex: 10
   },
   menu: {
     display: 'flex',
     flexDirection: 'row',
-    padding: '20px 95px',
+    padding: '20px 95px'
   },
   tab: {
     fontFamily: 'Muli',
     fontSize: theme.fontSizes.large,
-    fontWeight: "500",
-    marginRight: "30px",
-    cursor: "pointer",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "flex-start",
+    fontWeight: '500',
+    marginRight: '30px',
+    cursor: 'pointer',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start'
   },
   basket: {
     paddingRight: '25px',
@@ -49,11 +49,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center'
   },
   checkoutPopup: {
-    right: 291,
+    right: 291
   },
   title: {
     fontSize: theme.fontSizes.large,
-    fontWeight: "500",
+    fontWeight: '500'
   },
   register: {
     height: '40px',
@@ -63,20 +63,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: "space-between",
+    justifyContent: 'space-between'
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
-    flexGrow: 1,
-  },
+    flexGrow: 1
+  }
 }));
 
 /**
  * Hook that alerts clicks outside of the passed ref
  */
-function useOutsideAlerter(ref: any) {
-  
-}
+function useOutsideAlerter(ref: any) {}
 
 export interface Tab {
   id: number;
@@ -94,58 +92,76 @@ type Props = {
   className?: string;
 };
 
-function HeaderMenu({ tabs, selected, onClick, basketItems, onCheckout, className }: Props) {
+function HeaderMenu({
+  tabs,
+  selected,
+  onClick,
+  basketItems,
+  onCheckout,
+  className
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
-  const [showPopup, setShowPopup ] = React.useState(false);
-  const externalRef = React.useRef<HTMLDivElement>(null);
-  
-  React.useEffect(() => {
-    document.addEventListener("mousedown", () => setShowPopup(false));
-    return () => {
-        document.removeEventListener("mousedown", () => setShowPopup(false));
-    };
-  }, []);
+  const [showPopup, setShowPopup] = React.useState(false);
 
   return (
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
         <div className={classes.row}>
-          <Icon name="TTC_Logo_Icon" size={44} style={{ marginRight: '70px' }} />
+          <Icon
+            name="TTC_Logo_Icon"
+            size={44}
+            style={{ marginRight: '70px' }}
+          />
           {tabs &&
-              tabs.map((tab) => (
-                <div
-                  key={tab.id}
-                  className={classNames(classes.tab)}
-                  onClick={() => {
-                    if (onClick) onClick(tab);
-                  }}
-                >
-                  <div className={classes.title}>{tab.title}</div>
-                  {tab.options && <Icon name="Down_Arrow" size={10} style={{ cursor: "pointer", marginLeft: '5px' }} />}
-                </div>
-              ))}
-          </div>
-          <div className={classes.row}>
-            {basketItems && basketItems.length > 0 &&
-              <div onClick={() => setShowPopup(!showPopup)}>
-                <div className={classes.notification}>{basketItems.length}</div>
-                <Icon name="Basket" className={classes.basket} style={{ cursor: "pointer" }} size={50} />
-                {showPopup && (
-                  <CheckoutPopup
-                    className={classes.checkoutPopup}
-                    basketItems={basketItems}
-                    onCheckout={onCheckout}
-                    ref={externalRef}
-                  />)}
+            tabs.map((tab) => (
+              <div
+                key={tab.id}
+                className={classNames(classes.tab)}
+                onClick={() => {
+                  if (onClick) onClick(tab);
+                }}
+              >
+                <div className={classes.title}>{tab.title}</div>
+                {tab.options && (
+                  <Icon
+                    name="Down_Arrow"
+                    size={10}
+                    style={{ cursor: 'pointer', marginLeft: '5px' }}
+                  />
+                )}
               </div>
-            }
-            <div className={classes.tab}>Login</div>
-            <Button archetype="gradient" className={classes.register}>Register</Button>
-          </div>
+            ))}
+        </div>
+        <div className={classes.row}>
+          {basketItems && basketItems.length > 0 && (
+            <div onClick={() => setShowPopup(!showPopup)}>
+              <div className={classes.notification}>{basketItems.length}</div>
+              <Icon
+                name="Basket"
+                className={classes.basket}
+                style={{ cursor: 'pointer' }}
+                size={50}
+              />
+              {showPopup && (
+                <CheckoutPopup
+                  showPopup={showPopup}
+                  onHide={() => setShowPopup(false)}
+                  className={classes.checkoutPopup}
+                  basketItems={basketItems}
+                  onCheckout={onCheckout}
+                />
+              )}
+            </div>
+          )}
+          <div className={classes.tab}>Login</div>
+          <Button archetype="gradient" className={classes.register}>
+            Register
+          </Button>
         </div>
       </div>
+    </div>
   );
 }
 
