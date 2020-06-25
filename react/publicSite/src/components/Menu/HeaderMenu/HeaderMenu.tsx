@@ -144,15 +144,13 @@ function HeaderMenu({
                 style={{ cursor: 'pointer' }}
                 size={50}
               />
-              {showPopup && (
-                <CheckoutPopup
-                  showPopup={showPopup}
-                  onHide={() => setShowPopup(false)}
-                  className={classes.checkoutPopup}
-                  basketItems={basketItems}
-                  onCheckout={onCheckout}
-                />
-              )}
+              <CheckoutPopup
+                showPopup={showPopup}
+                onHide={() => setShowPopup(false)}
+                className={classes.checkoutPopup}
+                basketItems={basketItems}
+                onCheckout={onCheckout}
+              />
             </div>
           )}
           <div className={classes.tab}>Login</div>

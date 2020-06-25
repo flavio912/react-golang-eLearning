@@ -125,41 +125,43 @@ const CheckoutPopup = ({
   return (
     <>
       <div className={classes.backgroundHider} onClick={() => onHide()} />
-      <div
-        className={classNames(classes.root, className)}
-        onClick={(evt) => evt.stopPropagation()}
-      >
-        <div className={classes.triangle} />
-        {basketItems &&
-          basketItems.map((item: BasketItem) => (
-            <div
-              key={item.id}
-              className={classNames(classes.row, classes.item, classes.start)}
-            >
-              <img src={item.imageURL} className={classes.image} />
-              <div className={classes.column}>
-                <div className={classNames(classes.text, classes.name)}>
-                  {item.name}
-                </div>
-                <div className={classNames(classes.text, classes.price)}>
-                  £{item.price.toFixed(2)}
+      {showPopup && (
+        <div
+          className={classNames(classes.root, className)}
+          onClick={(evt) => evt.stopPropagation()}
+        >
+          <div className={classes.triangle} />
+          {basketItems &&
+            basketItems.map((item: BasketItem) => (
+              <div
+                key={item.id}
+                className={classNames(classes.row, classes.item, classes.start)}
+              >
+                <img src={item.imageURL} className={classes.image} />
+                <div className={classes.column}>
+                  <div className={classNames(classes.text, classes.name)}>
+                    {item.name}
+                  </div>
+                  <div className={classNames(classes.text, classes.price)}>
+                    £{item.price.toFixed(2)}
+                  </div>
                 </div>
               </div>
+            ))}
+          <div className={classNames(classes.row, classes.background)}>
+            <div className={classNames(classes.text, classes.total)}>
+              Total: <span className={classes.black}>£{total.toFixed(2)}</span>
             </div>
-          ))}
-        <div className={classNames(classes.row, classes.background)}>
-          <div className={classNames(classes.text, classes.total)}>
-            Total: <span className={classes.black}>£{total.toFixed(2)}</span>
+            <Button
+              archetype="submit"
+              className={classNames(classes.text, classes.button)}
+              onClick={onCheckout}
+            >
+              Checkout
+            </Button>
           </div>
-          <Button
-            archetype="submit"
-            className={classNames(classes.text, classes.button)}
-            onClick={onCheckout}
-          >
-            Checkout
-          </Button>
         </div>
-      </div>
+      )}
     </>
   );
 };
