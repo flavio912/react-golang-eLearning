@@ -102,11 +102,12 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 	}
 
 	// Check this test's answers haven't already been submitted by this user
-	if taken, _ := c.takerHasSubmittedTest(courseTakerUUID, input.CourseID, input.TestUUID); !taken {
+	if taken, _ := c.takerHasSubmittedTest(courseTakerUUID, input.CourseID, input.TestUUID); taken {
 		return false, &errors.ErrAlreadyTakenTest
 	}
 
 	//TODO: Check this test is part of this course
+
 	test, err := c.coursesRepository.Test(input.TestUUID)
 	if err != nil {
 		return false, &errors.ErrWhileHandling
@@ -118,7 +119,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		return false, &errors.ErrWhileHandling
 	}
 
-	var acceptedQuestions map[gentypes.UUID]gentypes.QuestionAnswer
+	var acceptedQuestions = make(map[gentypes.UUID]gentypes.QuestionAnswer)
 	for _, answer := range input.Answers {
 		for _, question := range questions {
 			if answer.QuestionUUID == question.UUID {
@@ -135,11 +136,14 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 
 	// Get answers for each question
 	var acceptedQuestionUUIDs []gentypes.UUID
-	for key, _ := range acceptedQuestions {
+	for key := range acceptedQuestions {
 		acceptedQuestionUUIDs = append(acceptedQuestionUUIDs, key)
 	}
 
 	questionsToAnswers, err := c.coursesRepository.ManyAnswers(acceptedQuestionUUIDs)
+	if err != nil {
+		return false, &errors.ErrWhileHandling
+	}
 
 	var correct uint
 	for questionUUID, inputAnswer := range acceptedQuestions {

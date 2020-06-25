@@ -8,6 +8,10 @@ import (
 )
 
 type CourseApp interface {
+	SetOrdersRepository(r middleware.OrdersRepository)
+	SetUsersRepository(r user.UsersRepository)
+	SetCoursesRepository(r course.CoursesRepository)
+
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
 
 	Course(courseID uint) (gentypes.Course, error)
@@ -32,6 +36,7 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
+	SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 }
 
 type courseAppImpl struct {
@@ -39,6 +44,18 @@ type courseAppImpl struct {
 	ordersRepository  middleware.OrdersRepository
 	coursesRepository course.CoursesRepository
 	usersRepository   user.UsersRepository
+}
+
+func (c *courseAppImpl) SetOrdersRepository(r middleware.OrdersRepository) {
+	c.ordersRepository = r
+}
+
+func (c *courseAppImpl) SetUsersRepository(r user.UsersRepository) {
+	c.usersRepository = r
+}
+
+func (c *courseAppImpl) SetCoursesRepository(r course.CoursesRepository) {
+	c.coursesRepository = r
 }
 
 func NewCourseApp(grant *middleware.Grant) CourseApp {
