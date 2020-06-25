@@ -10,6 +10,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
         alignItems: 'center',
     },
     thumbnail: {
+        display: 'flex',
+        height: '100%',
+        width: '100%',
         position: 'absolute',
         zIndex: 10,
     },
@@ -64,9 +67,9 @@ function VideoPlayer({ source, height, width, thumbnail, className }: Props) {
       <div className={classNames(classes.root, className)}>
           {!started && (
             <div
-                className={classNames(classes.root, classes.thumbnail)} 
+                className={classNames(!thumbnail && classes.root, classes.thumbnail)} 
                 onClick={() => playVideo()}
-                style={{ height, width }}
+                style={{ maxHeight: height, maxWidth: width }}
             >
                 {thumbnail ? (
                     thumbnail
@@ -79,8 +82,7 @@ function VideoPlayer({ source, height, width, thumbnail, className }: Props) {
           )}
             <video
                 src={source}
-                width={width}
-                height={height}
+                style={{ height, width, backgroundSize: 'cover', overflow: 'hidden' }}
                 controls={started}
                 ref={videoRef}
                 onPause={() => checkShowThumbnail()}

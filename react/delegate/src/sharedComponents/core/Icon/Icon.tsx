@@ -26,6 +26,9 @@ export type IconNames =
   | 'CourseTimeTrackedGreen'
   | 'CourseTimeTrackedGrey'
   | 'Course_Calendar'
+  | 'DB_Schenker'
+  | 'Dhl'
+  | 'Dhl_Grey'
   | 'Down_Arrow'
   | 'DownloadCSV'
   | 'EditDelegateProfilePic_Default'
@@ -35,6 +38,7 @@ export type IconNames =
   | 'FormCheckbox_Checked'
   | 'FormCheckbox_states'
   | 'FormCheckbox_Unchecked'
+  | 'Heathrow'
   | 'Icon_Delegates'
   | 'LeftNav_Icon_Courses'
   | 'LeftNav_Icon_Dashboard'
@@ -48,11 +52,16 @@ export type IconNames =
   | 'SampleImage_ClassroomCoursesDetail_Feat'
   | 'SearchGlass'
   | 'TTC_Logo_Icon'
+  | 'Maersk'
+  | 'Maersk_Grey'
   | 'Mp3_Pause'
   | 'Mp3_Speaker'
+  | 'Nippon_Express'
   | 'Payments_Method'
   | 'Stripe'
   | 'Twitter_Logo'
+  | 'Ups'
+  | 'Ups_Grey'
   | 'Volume';
 
 const iconNameMap = {
@@ -81,6 +90,9 @@ const iconNameMap = {
   CourseTimeTrackedGreen: require("../../../assets/CourseTimeTrackedGreen.svg"),
   CourseTimeTrackedGrey: require("../../../assets/CourseTimeTrackedGrey.svg"),
   Course_Calendar: require("../../../assets/Course_Calendar.svg"),
+  DB_Schenker: require("../../../assets/db-schenker-logo.png"),
+  Dhl: require("../../../assets/dhl-logo.svg"),
+  Dhl_Grey: require("../../../assets/dhl-logo-grey.png"),
   Down_Arrow: require("../../../assets/Down_Arrow.svg"),
   DownloadCSV: require("../../../assets/DownloadCSV.svg"),
   EditDelegateProfilePic_Default: require("../../../assets/EditDelegateProfilePic_Default.png"),
@@ -90,6 +102,7 @@ const iconNameMap = {
   FormCheckbox_Checked: require("../../../assets/FormCheckbox_Checked.svg"),
   FormCheckbox_states: require("../../../assets/FormCheckbox_states.png"),
   FormCheckbox_Unchecked: require("../../../assets/FormCheckbox_Unchecked.svg"),
+  Heathrow: require("../../../assets/heathrow-logo.png"),
   Icon_Delegates: require("../../../assets/Icon_Delegates.svg"),
   LeftNav_Icon_Courses: require("../../../assets/LeftNav_Icon_Courses.svg"),
   LeftNav_Icon_Dashboard: require("../../../assets/LeftNav_Icon_Dashboard.svg"),
@@ -103,11 +116,15 @@ const iconNameMap = {
   SampleImage_ClassroomCoursesDetail_Feat: require("../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png"),
   SearchGlass: require("../../../assets/SearchGlass.svg"),
   TTC_Logo_Icon: require("../../../assets/logo/ttc-logo-icon.svg"),
-  Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
+  Maersk: require('../../../assets/maersk-logo.svg'),
+  Maersk_Grey: require('../../../assets/maersk-logo-grey.png'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Nippon_Express: require('../../../assets/nippon-express-logo.png'),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
   Stripe: require("../../../assets/Stripe.svg"),
   Twitter_Logo: require("../../../assets/Twitter_Logo.png"),
+  Ups: require("../../../assets/ups-logo.svg"),
+  Ups_Grey: require("../../../assets/ups-logo-grey.png"),
   Volume: require("../../../assets/Volume.svg")
 };
 
