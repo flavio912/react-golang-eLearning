@@ -13,7 +13,7 @@ func (c *courseAppImpl) testToGentype(test models.Test) gentypes.Test {
 		return gentypes.Test{
 			UUID:              test.UUID,
 			Name:              test.Name,
-			AttemptsAllowed:   test.AttemptsAllowed,
+			AttemptsAllowed:   &test.AttemptsAllowed,
 			PassPercentage:    &test.PassPercentage,
 			QuestionsToAnswer: &test.QuestionsToAnswer,
 			RandomiseAnswers:  &test.RandomiseAnswers,
@@ -35,11 +35,11 @@ func (c *courseAppImpl) CreateTest(input gentypes.CreateTestInput) (gentypes.Tes
 
 	createTest := course.CreateTestInput{
 		Name:              input.Name,
-		AttemptsAllowed:   input.AttemptsAllowed,
 		PassPercentage:    input.PassPercentage,
-		QuestionsToAnswer: input.QuestionsToAnswer,
 		RandomiseAnswers:  input.RandomiseAnswers,
 		Questions:         input.Questions,
+		QuestionsToAnswer: uint(input.QuestionsToAnswer),
+		AttemptsAllowed:   uint(input.AttemptsAllowed),
 	}
 
 	test, err := c.coursesRepository.CreateTest(createTest)

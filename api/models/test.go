@@ -6,8 +6,8 @@ type Test struct {
 	UUID              gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name              string
 	Tags              []Tag `gorm:"many2many:test_tags_link;"`
-	AttemptsAllowed   *uint
-	PassPercentage    float32
+	AttemptsAllowed   uint
+	PassPercentage    float64
 	QuestionsToAnswer uint
 	RandomiseAnswers  bool
 }

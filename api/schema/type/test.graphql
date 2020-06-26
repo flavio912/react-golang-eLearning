@@ -4,7 +4,7 @@ type CreateTestPayload {
 
 input CreateTestInput {
   name: String!
-  category: UUID
+  tags: [UUID!]
   attemptsAllowed: Int!
   passPercentage: Float!
   questionsToAnswer: Int!
@@ -17,8 +17,8 @@ input QuestionAnswer {
   answerUUID: UUID! # UUID of the selected answer
 }
 
-input AnswerTest {
-  courseUUID: UUID! # UUID of the course the user is taking the test in
+input SubmitTestInput {
+  courseID: Int! # ID of the course the user is taking the test in
   testUUID: UUID! # UUID of the test you are answering
   answers: [QuestionAnswer!]! # Your answers to the test
 }

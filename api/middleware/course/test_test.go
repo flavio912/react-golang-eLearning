@@ -28,7 +28,7 @@ func TestCreateTest(t *testing.T) {
 		test, err := courseRepo.CreateTest(input)
 		assert.Nil(t, err)
 		assert.Equal(t, "Awesome test", test.Name)
-		assert.Equal(t, float32(23), test.PassPercentage)
+		assert.Equal(t, float64(23), test.PassPercentage)
 		assert.Equal(t, uint(12), test.QuestionsToAnswer)
 		assert.False(t, test.RandomiseAnswers)
 	})
@@ -44,7 +44,7 @@ func TestTest(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, uuid, test.UUID)
 		assert.Equal(t, "How to fibbonacci", test.Name)
-		assert.Equal(t, float32(70), test.PassPercentage)
+		assert.Equal(t, float64(70), test.PassPercentage)
 	})
 
 	t.Run("Fails to get non-existant test", func(t *testing.T) {

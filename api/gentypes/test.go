@@ -8,25 +8,24 @@ type Test struct {
 	UUID              UUID
 	Name              string
 	AttemptsAllowed   *uint
-	PassPercentage    *float32
+	PassPercentage    *float64
 	QuestionsToAnswer *uint
 	RandomiseAnswers  *bool
 }
 
 type CreateTestInput struct {
 	Name              string
-	AttemptsAllowed   *uint
-	PassPercentage    float32
-	QuestionsToAnswer uint
+	Tags              *[]UUID
+	AttemptsAllowed   int32
+	PassPercentage    float64
+	QuestionsToAnswer int32
 	RandomiseAnswers  bool
 	Questions         []UUID
 }
 
 func (c CreateTestInput) Validate() error {
-	if c.AttemptsAllowed != nil {
-		if *c.AttemptsAllowed <= 0 {
-			return errors.ErrInputValidation("AttemptsAllowed", "Not greater than 0")
-		}
+	if c.AttemptsAllowed <= 0 {
+		return errors.ErrInputValidation("AttemptsAllowed", "Not greater than 0")
 	}
 
 	if c.QuestionsToAnswer <= 0 {
@@ -45,4 +44,8 @@ type SubmitTestInput struct {
 	CourseID uint
 	TestUUID UUID
 	Answers  []QuestionAnswer
+}
+
+type SubmitTestPayload struct {
+	Success bool
 }

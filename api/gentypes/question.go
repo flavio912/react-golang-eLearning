@@ -20,6 +20,13 @@ const (
 	SingleAnswerType QuestionType = "singleAnswer"
 )
 
+type Answer struct {
+	UUID      UUID
+	IsCorrect *bool
+	Text      *string
+	ImageURL  *string
+}
+
 type CreateBasicAnswerInput struct {
 	Text       *string
 	ImageToken *string
@@ -67,5 +74,4 @@ func (c CreateQuestionInput) Validate() error {
 }
 
 type UpdateQuestionInput struct {
-	
 }

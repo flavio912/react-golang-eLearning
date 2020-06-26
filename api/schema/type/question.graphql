@@ -6,9 +6,10 @@ type Question {
 }
 
 type Answer {
+  uuid: UUID!
   isCorrect: Boolean
   text: String
-  imageToken: String
+  imageURL: String
 }
 
 enum QuestionType {

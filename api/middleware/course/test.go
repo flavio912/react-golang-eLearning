@@ -13,11 +13,12 @@ import (
 
 type CreateTestInput struct {
 	Name              string
-	AttemptsAllowed   *uint
-	PassPercentage    float32
+	AttemptsAllowed   uint
+	PassPercentage    float64
 	QuestionsToAnswer uint
 	RandomiseAnswers  bool
 	Questions         []gentypes.UUID
+	Tags              *[]gentypes.UUID
 }
 
 func (c *coursesRepoImpl) CreateTest(input CreateTestInput) (models.Test, error) {

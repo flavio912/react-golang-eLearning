@@ -402,3 +402,32 @@ func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
 		User: res,
 	}, err
 }
+
+func (m *MutationResolver) SubmitTest(ctx context.Context, args struct{ Input gentypes.SubmitTestInput }) (*gentypes.SubmitTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	success, err := app.CourseApp.SubmitTest(args.Input)
+	return &gentypes.SubmitTestPayload{
+		Success: success,
+	}, err
+}
+
+type CreateTestPayload struct {
+	Test *TestResolver
+}
+
+func (m *MutationResolver) CreateTest(ctx context.Context, args struct{ Input gentypes.CreateTestInput }) (*CreateTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	test, err := app.CourseApp.CreateTest(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := NewTestResolver(ctx, NewTestArgs{
+		Test: &test,
+	})
+	return &CreateTestPayload{
+		Test: res,
+	}, err
+}

@@ -42,7 +42,7 @@ type Mutation {
   createLesson(input: CreateLessonInput!): Lesson
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
-  # submitTest(input: AnswerTest!): SubmitTestPayload
-  # createTest(input: CreateTestInput!): CreateTestPayload
+  submitTest(input: SubmitTestInput!): SubmitTestPayload
+  createTest(input: CreateTestInput!): CreateTestPayload
   # updateTest(input: UpdateTestInput!): UpdateTestPayload
 }
