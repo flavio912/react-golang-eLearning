@@ -73,5 +73,46 @@ func (c CreateQuestionInput) Validate() error {
 	return errors.ErrInputValidation("Answers", "No answer is set as correct")
 }
 
+type UpdateBasicAnswerInput struct {
+	UUID       *UUID
+	Text       *string
+	ImageToken *string
+	IsCorrect  *bool
+}
+
+func (u UpdateBasicAnswerInput) Validate() error {
+	if u.UUID == nil && u.IsCorrect == nil {
+		return errors.ErrInputValidation("IsCorrect", "IsCorrect must be given if no UUID")
+	}
+
+	if u.ImageToken != nil {
+		if !govalidator.IsBase64(*u.ImageToken) {
+			return errors.ErrInputValidation("ImageToken", "Not JWT string")
+		}
+	}
+	if u.UUID == nil && u.ImageToken == nil && u.Text == nil {
+		return errors.ErrInputValidation("ImageToken, Text", "Answer type must have Text or ImageToken of no UUID given")
+	}
+
+	return nil
+}
+
 type UpdateQuestionInput struct {
+	UUID             UUID
+	Text             *string
+	RandomiseAnswers *bool
+	QuestionType     *QuestionType
+	Tags             *[]UUID
+	Answers          *[]UpdateBasicAnswerInput
+}
+
+func (u UpdateQuestionInput) Validate() error {
+	if u.Answers != nil {
+		for _, ans := range *u.Answers {
+			if err := ans.Validate(); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }

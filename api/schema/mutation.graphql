@@ -45,4 +45,5 @@ type Mutation {
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   # updateTest(input: UpdateTestInput!): UpdateTestPayload
+  createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
 }

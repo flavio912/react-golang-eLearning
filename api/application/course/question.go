@@ -66,7 +66,52 @@ func (c *courseAppImpl) CreateQuestion(input gentypes.CreateQuestionInput) (gent
 }
 
 func (c *courseAppImpl) UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error) {
-	return gentypes.Question{}, nil
+	if !c.grant.IsAdmin {
+		return gentypes.Question{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.Question{}, err
+	}
+
+	// Validate image tokens if given
+	var ans *[]course.UpdateAnswerArgs
+	if input.Answers != nil {
+		answers := []course.UpdateAnswerArgs{}
+		for _, ans := range *input.Answers {
+			var key *string
+			if ans.ImageToken != nil {
+				imgKey, err := uploads.VerifyUploadSuccess(*ans.ImageToken, "questionImages")
+				if err != nil {
+					return gentypes.Question{}, err
+				}
+
+				key = &imgKey
+			}
+
+			answers = append(answers, course.UpdateAnswerArgs{
+				UUID:      ans.UUID,
+				IsCorrect: ans.IsCorrect,
+				Text:      ans.Text,
+				ImageKey:  key,
+			})
+
+		}
+
+		ans = &answers
+	}
+
+	updateArgs := course.UpdateQuestionArgs{
+		UUID:             input.UUID,
+		Text:             input.Text,
+		RandomiseAnswers: input.RandomiseAnswers,
+		QuestionType:     input.QuestionType,
+		Answers:          ans,
+		Tags:             input.Tags,
+	}
+
+	question, err := c.coursesRepository.UpdateQuestion(updateArgs)
+	return c.questionToGentype(question), err
 }
 
 // func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, err) {

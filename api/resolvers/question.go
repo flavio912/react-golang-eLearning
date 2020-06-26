@@ -1,6 +1,9 @@
 package resolvers
 
 import (
+	"context"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
@@ -19,4 +22,20 @@ func (q *QuestionResolver) QuestionType() gentypes.QuestionType {
 }
 func (q *QuestionResolver) Answers() *[]*AnswerResolver {
 	return nil
+}
+
+type NewQuestionArgs struct {
+	UUID     *gentypes.UUID
+	Question *gentypes.Question
+}
+
+func NewQuestionResolver(ctx context.Context, args NewQuestionArgs) (*QuestionResolver, error) {
+	switch {
+	case args.Question != nil:
+		return &QuestionResolver{
+			question: *args.Question,
+		}, nil
+	default:
+		return &QuestionResolver{}, &errors.ErrUnableToResolve
+	}
 }

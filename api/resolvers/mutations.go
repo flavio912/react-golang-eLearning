@@ -431,3 +431,34 @@ func (m *MutationResolver) CreateTest(ctx context.Context, args struct{ Input ge
 		Test: res,
 	}, err
 }
+
+type CreateQuestionPayload struct {
+	Question *QuestionResolver
+}
+
+func (m *MutationResolver) CreateQuestion(ctx context.Context, args struct{ Input gentypes.CreateQuestionInput }) (*CreateQuestionPayload, error) {
+	app := auth.AppFromContext(ctx)
+	question, err := app.CourseApp.CreateQuestion(args.Input)
+	if err != nil {
+		return &CreateQuestionPayload{}, err
+	}
+
+	res, err := NewQuestionResolver(ctx, NewQuestionArgs{
+		Question: &question,
+	})
+
+	return &CreateQuestionPayload{
+		Question: res,
+	}, err
+}
+
+func (m *MutationResolver) UpdateQuestion(ctx context.Context, args struct{ Input gentypes.UpdateQuestionInput }) (*QuestionResolver, error) {
+	app := auth.AppFromContext(ctx)
+	question, err := app.CourseApp.UpdateQuestion(args.Input)
+	if err != nil {
+		return &QuestionResolver{}, err
+	}
+	return NewQuestionResolver(ctx, NewQuestionArgs{
+		Question: &question,
+	})
+}

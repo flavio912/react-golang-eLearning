@@ -29,3 +29,27 @@ input CreateBasicAnswerInput {
   text: String
   imageToken: String
 }
+
+type CreateQuestionPayload {
+  question: Question
+}
+
+input UpdateQuestionInput {
+  uuid: UUID!
+  text: String
+  randomiseAnswers: Boolean
+  questionType: QuestionType
+  answers: [UpdateBasicAnswerInput!]
+  tags: [UUID!]
+}
+
+input UpdateBasicAnswerInput {
+  uuid: UUID
+  isCorrect: Boolean # defaults to false
+  text: String
+  imageToken: String
+}
+
+type UpdateQuestionPayload {
+  question: Question
+}
