@@ -78,7 +78,7 @@ func Handler(h http.Handler) http.Handler {
 			if allowRequest || grant.IsPublic {
 				ctx = context.WithValue(ctx, GrantKey, grant)
 				ctx = context.WithValue(ctx, AuthKey, token)
-				ctx = addAppContext(ctx, grant)
+				ctx = AddAppContext(ctx, grant)
 				addSentryContext(r, grant)
 			}
 		}
@@ -89,7 +89,7 @@ func Handler(h http.Handler) http.Handler {
 	})
 }
 
-func addAppContext(ctx context.Context, grant *middleware.Grant) context.Context {
+func AddAppContext(ctx context.Context, grant *middleware.Grant) context.Context {
 	app := domain.Application{
 		CourseApp: course.NewCourseApp(grant),
 		UsersApp:  users.NewUsersApp(grant),

@@ -9,8 +9,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 )
 
@@ -20,7 +18,7 @@ func TestCreateTest(t *testing.T) {
 
 		input := course.CreateTestInput{
 			Name:              "Awesome test",
-			AttemptsAllowed:   helpers.UintPointer(12),
+			AttemptsAllowed:   12,
 			PassPercentage:    23,
 			QuestionsToAnswer: 12,
 			RandomiseAnswers:  false,

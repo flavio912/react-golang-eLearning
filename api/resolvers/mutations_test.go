@@ -1318,3 +1318,54 @@ func TestSaveOnlineCourse(t *testing.T) {
 		},
 	})
 }
+
+func TestCreateTest(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create test course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createTest(input: {
+							name: "Cake",
+							attemptsAllowed: 3,
+							passPercentage: 30,
+							questionsToAnswer: 7,
+							randomiseAnswers: false,
+							questions: []
+					}) {
+							test {
+								title
+								complete
+								attemptsAllowed
+								passPercentage
+								questionsToAnswer
+								randomiseAnswers
+								questions {
+									text
+								}
+							}
+						}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createTest": {
+            "test": {
+                "title": "Cake",
+                "complete": false,
+                "attemptsAllowed": 3,
+                "passPercentage": 30,
+                "questionsToAnswer": 7,
+                "randomiseAnswers": false,
+                "questions": null
+            }
+        	}
+				}
+			`,
+		},
+	})
+}

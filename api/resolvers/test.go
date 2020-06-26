@@ -26,7 +26,7 @@ func (t *TestResolver) AttemptsAllowed() *int32 {
 func (t *TestResolver) PassPercentage() *float64 { return t.test.PassPercentage }
 func (t *TestResolver) QuestionsToAnswer() *int32 {
 	if t.test.QuestionsToAnswer != nil {
-		return helpers.Int32Pointer(int32(*t.test.AttemptsAllowed))
+		return helpers.Int32Pointer(int32(*t.test.QuestionsToAnswer))
 	}
 	return nil
 }
