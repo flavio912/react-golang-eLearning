@@ -20,6 +20,23 @@ func (c *coursesRepoImpl) Question(uuid gentypes.UUID) (models.Question, error) 
 	return question, nil
 }
 
+// ManyAnswers gets a mapping between questionUUIDs and their respective answers
+func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error) {
+	var answers []models.BasicAnswer
+	query := database.GormDB.Where("question_uuid IN (?)", questionUUIDs).Order("question_uuid, rank ASC").Find(&answers)
+	if query.Error != nil && !query.RecordNotFound() {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get many answers")
+		return map[gentypes.UUID][]models.BasicAnswer{}, &errors.ErrWhileHandling
+	}
+
+	var output = make(map[gentypes.UUID][]models.BasicAnswer)
+	for _, answer := range answers {
+		output[answer.QuestionUUID] = append(output[answer.QuestionUUID], answer)
+	}
+
+	return output, nil
+}
+
 type CreateAnswerArgs struct {
 	IsCorrect bool
 	Text      *string

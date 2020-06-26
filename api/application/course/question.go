@@ -114,6 +114,52 @@ func (c *courseAppImpl) UpdateQuestion(input gentypes.UpdateQuestionInput) (gent
 	return c.questionToGentype(question), err
 }
 
+func (c *courseAppImpl) answerToGentype(answer models.BasicAnswer) gentypes.Answer {
+	var imageUrl *string
+
+	if answer.ImageKey != nil {
+		url := uploads.GetImgixURL(*answer.ImageKey)
+		imageUrl = &url
+	}
+
+	if c.grant.IsAdmin {
+		return gentypes.Answer{
+			IsCorrect: &answer.IsCorrect,
+			Text:      answer.Text,
+			UUID:      answer.UUID,
+			ImageURL:  imageUrl,
+		}
+	}
+	return gentypes.Answer{
+		Text:     answer.Text,
+		UUID:     answer.UUID,
+		ImageURL: imageUrl,
+	}
+}
+func (c *courseAppImpl) answersToGentypes(answers []models.BasicAnswer) []gentypes.Answer {
+	ans := make([]gentypes.Answer, len(answers))
+	for i, answer := range answers {
+		ans[i] = c.answerToGentype(answer)
+	}
+	return ans
+}
+
+func (c *courseAppImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error) {
+	// Admins can get anything
+	if !c.grant.IsAdmin {
+		return map[gentypes.UUID][]gentypes.Answer{}, &errors.ErrUnauthorized
+	}
+
+	ansMap, err := c.coursesRepository.ManyAnswers(questionUUIDs)
+
+	outputAns := make(map[gentypes.UUID][]gentypes.Answer)
+	for key, val := range ansMap {
+		outputAns[key] = c.answersToGentypes(val)
+	}
+
+	return outputAns, err
+}
+
 // func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, err) {
 // 	// Check user is assigned course with this question in
 // }

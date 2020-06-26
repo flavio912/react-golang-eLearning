@@ -1,4 +1,5 @@
 type Question {
+  uuid: UUID!
   text: String!
   randomiseAnswers: Boolean
   questionType: QuestionType!

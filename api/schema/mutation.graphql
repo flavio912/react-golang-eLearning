@@ -46,4 +46,5 @@ type Mutation {
   createTest(input: CreateTestInput!): CreateTestPayload
   # updateTest(input: UpdateTestInput!): UpdateTestPayload
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
+  updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
 }

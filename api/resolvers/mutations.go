@@ -452,13 +452,22 @@ func (m *MutationResolver) CreateQuestion(ctx context.Context, args struct{ Inpu
 	}, err
 }
 
-func (m *MutationResolver) UpdateQuestion(ctx context.Context, args struct{ Input gentypes.UpdateQuestionInput }) (*QuestionResolver, error) {
+type UpdateQuestionPayload struct {
+	Question *QuestionResolver
+}
+
+func (m *MutationResolver) UpdateQuestion(ctx context.Context, args struct{ Input gentypes.UpdateQuestionInput }) (*UpdateQuestionPayload, error) {
 	app := auth.AppFromContext(ctx)
 	question, err := app.CourseApp.UpdateQuestion(args.Input)
 	if err != nil {
-		return &QuestionResolver{}, err
+		return &UpdateQuestionPayload{}, err
 	}
-	return NewQuestionResolver(ctx, NewQuestionArgs{
+
+	res, err := NewQuestionResolver(ctx, NewQuestionArgs{
 		Question: &question,
 	})
+
+	return &UpdateQuestionPayload{
+		Question: res,
+	}, err
 }

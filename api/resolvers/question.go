@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
@@ -11,6 +13,7 @@ type QuestionResolver struct {
 	question gentypes.Question
 }
 
+func (q *QuestionResolver) UUID() gentypes.UUID { return q.question.UUID }
 func (q *QuestionResolver) Text() string {
 	return q.question.Text
 }
@@ -20,8 +23,21 @@ func (q *QuestionResolver) RandomiseAnswers() *bool {
 func (q *QuestionResolver) QuestionType() gentypes.QuestionType {
 	return q.question.QuestionType
 }
-func (q *QuestionResolver) Answers() *[]*AnswerResolver {
-	return nil
+func (q *QuestionResolver) Answers(ctx context.Context) (*[]*AnswerResolver, error) {
+	app := auth.AppFromContext(ctx)
+	answers, err := app.CourseApp.ManyAnswers([]gentypes.UUID{q.question.UUID})
+	if err != nil {
+		return nil, &errors.ErrUnableToResolve
+	}
+
+	var res []*AnswerResolver
+	for _, ans := range answers[q.question.UUID] {
+		answerRes, _ := NewAnswerResolver(ctx, NewAnswerArgs{
+			Answer: &ans,
+		})
+		res = append(res, answerRes)
+	}
+	return &res, nil
 }
 
 type NewQuestionArgs struct {
