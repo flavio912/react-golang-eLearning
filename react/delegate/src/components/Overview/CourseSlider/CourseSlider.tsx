@@ -9,7 +9,6 @@ import Icon from 'sharedComponents/core/Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   sliderRoot: {
-    maxHeight: 428,
     overflow: 'hidden'
   },
   sliderList: {
@@ -23,7 +22,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   courseCard: {
     width: 325,
-    marginRight: 46
+    marginRight: 46,
+    marginBottom: 15
   },
 
   sliderButtons: {
@@ -66,9 +66,7 @@ function CourseSlider({ className, courses, slidesToShow = 4 }: Props) {
   }, {});
 
   const handleClick = (id: number) =>
-    refs[id] &&
-    refs[id].current &&
-    refs[id].current.scrollIntoView({
+    refs[id]?.current?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     });
@@ -119,11 +117,7 @@ function CourseSlider({ className, courses, slidesToShow = 4 }: Props) {
                   //handle click here
                 }}
                 progress={course.progress}
-                className={classNames(classes.courseCard, {
-                  [classes.nextCourse]:
-                    courses.length === slidesToShow &&
-                    courses.length - 1 === index
-                })}
+                className={classNames(classes.courseCard)}
               />
             </div>
           ))}
