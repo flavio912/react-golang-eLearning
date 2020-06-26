@@ -133,6 +133,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export type SizeOptions = 'small' | 'large';
 
 export interface Course {
+  id: number;
   type: string;
   colour: string;
   url: string;

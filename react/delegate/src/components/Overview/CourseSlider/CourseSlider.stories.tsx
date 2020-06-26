@@ -9,6 +9,7 @@ export default {
 };
 
 const defaultCourse: CourseCardProps = {
+  id: 1,
   type: 'DANGEROUS GOODS AIR',
   colour: '#8C1CB4',
   url: require('../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png'),
@@ -21,8 +22,7 @@ const defaultCourse: CourseCardProps = {
   date: 'MAR 3rd 2020',
   location: 'TTC at Hilton T4',
   modules: 16,
-  lessons: 144,
-  video_time: 4
+  lessons: 144
 };
 
 export const plain = () => {
@@ -32,8 +32,8 @@ export const plain = () => {
   });
   const courses = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((item) => {
     return {
-      id: item,
       ...courseData,
+      id: item,
       title: `${courseData.title} ${item}`
     };
   });
