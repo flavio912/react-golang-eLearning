@@ -64,7 +64,7 @@ func TestSubmitTest(t *testing.T) {
 	answers := []gentypes.QuestionAnswer{
 		gentypes.QuestionAnswer{
 			QuestionUUID: q1,
-			AnswerUUID:   gentypes.MustParseToUUID("95f846c6-df0e-4654-bd11-595126fac82a"),
+			AnswerUUID:   gentypes.MustParseToUUID("24a084b2-aed5-40d2-abb3-633bdeb3cbde"),
 		},
 		gentypes.QuestionAnswer{
 			QuestionUUID: q2,
@@ -81,7 +81,7 @@ func TestSubmitTest(t *testing.T) {
 	answersNotEnough := []gentypes.QuestionAnswer{
 		gentypes.QuestionAnswer{
 			QuestionUUID: q1,
-			AnswerUUID:   gentypes.MustParseToUUID("95f846c6-df0e-4654-bd11-595126fac82a"),
+			AnswerUUID:   gentypes.MustParseToUUID("24a084b2-aed5-40d2-abb3-633bdeb3cbde"),
 		},
 	}
 
@@ -199,15 +199,15 @@ func TestSubmitTest(t *testing.T) {
 					},
 					gentypes.QuestionAnswer{
 						QuestionUUID: q2,
-						AnswerUUID:   gentypes.MustParseToUUID("f2038eb8-3da3-469d-888b-6d9f429f318f"),
+						AnswerUUID:   gentypes.MustParseToUUID("e31ac3ab-b7fa-46dc-af3f-c61297b6d77d"),
 					},
 					gentypes.QuestionAnswer{
 						QuestionUUID: q2,
-						AnswerUUID:   gentypes.MustParseToUUID("f2038eb8-3da3-469d-888b-6d9f429f318f"),
+						AnswerUUID:   gentypes.MustParseToUUID("e31ac3ab-b7fa-46dc-af3f-c61297b6d77d"),
 					},
 					gentypes.QuestionAnswer{
 						QuestionUUID: q2,
-						AnswerUUID:   gentypes.MustParseToUUID("f2038eb8-3da3-469d-888b-6d9f429f318f"),
+						AnswerUUID:   gentypes.MustParseToUUID("e31ac3ab-b7fa-46dc-af3f-c61297b6d77d"),
 					},
 				},
 			},
@@ -240,8 +240,8 @@ func TestSubmitTest(t *testing.T) {
 	for _, testItem := range testItems {
 		t.Run(testItem.name, func(t *testing.T) {
 			// Mock the repositories
-			coursesRepo := new(courseMocks.CoursesRepository)
-			usersRepo := new(userMocks.UsersRepository)
+			var coursesRepo = new(courseMocks.CoursesRepository)
+			var usersRepo = new(userMocks.UsersRepository)
 
 			takerUUID := gentypes.MustParseToUUID("98ba9cf8-fddb-4ec1-866f-3f4740d30e98")
 

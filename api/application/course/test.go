@@ -145,7 +145,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		return false, &errors.ErrWhileHandling
 	}
 
-	var correct uint
+	var correct uint = 0
 	for questionUUID, inputAnswer := range acceptedQuestions {
 		for _, answer := range questionsToAnswers[questionUUID] {
 			if inputAnswer.AnswerUUID == answer.UUID && answer.IsCorrect {
