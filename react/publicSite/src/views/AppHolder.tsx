@@ -13,7 +13,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
     display: 'flex',
     justifyContent: 'center',
-    color: theme.colors.primaryBlack
+    color: theme.colors.primaryBlack,
+    paddingTop: 83
   },
   appHolderRoot: {}
 }));

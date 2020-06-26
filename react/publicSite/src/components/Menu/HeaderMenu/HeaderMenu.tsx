@@ -11,8 +11,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     boxShadow: '0px 7px 20px #00000012',
-    gridArea: '1 / 2',
-    zIndex: 10
+    background: 'white',
+    position: 'fixed',
+    width: '100%',
+    zIndex: 100
   },
   centerer: {
     width: theme.centerColumnWidth
@@ -60,7 +62,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   register: {
     height: '40px',
-    width: '127.75px'
+    width: '127.75px',
+    boxShadow: '0px 3px 10px #0000001f'
   },
   row: {
     display: 'flex',

@@ -2,7 +2,9 @@ const spacing = {
   0: 5,
   1: 10,
   2: 20,
-  3: 50
+  3: 50,
+  4: 70,
+  5: 100
 };
 
 export type Theme = {

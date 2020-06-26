@@ -19,6 +19,7 @@ import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
+import AboutUs from 'views/AboutUs';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -49,6 +50,7 @@ const Router = createFarceRouter({
         }}
       >
         <Route path="/" Component={Home} />
+        <Route path="/aboutus" Component={AboutUs} />
       </Route>
     </Route>
   ),

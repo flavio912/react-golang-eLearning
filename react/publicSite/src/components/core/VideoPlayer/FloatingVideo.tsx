@@ -40,9 +40,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    margin: '0 68px 0 272px',
+    margin: '0 68px 0 295px',
     '@media (max-width: 1000px)': {
-      margin: '10%'
+      margin: 47
     }
   },
   quote: {
