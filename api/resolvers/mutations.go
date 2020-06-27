@@ -432,6 +432,26 @@ func (m *MutationResolver) CreateTest(ctx context.Context, args struct{ Input ge
 	}, err
 }
 
+type UpdateTestPayload struct {
+	Test *TestResolver
+}
+
+func (m *MutationResolver) UpdateTest(ctx context.Context, args struct{ Input gentypes.UpdateTestInput }) (*UpdateTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	test, err := app.CourseApp.UpdateTest(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := NewTestResolver(ctx, NewTestArgs{
+		Test: &test,
+	})
+	return &UpdateTestPayload{
+		Test: res,
+	}, err
+}
+
 type CreateQuestionPayload struct {
 	Question *QuestionResolver
 }

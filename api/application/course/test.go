@@ -4,6 +4,7 @@ import (
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -49,6 +50,35 @@ func (c *courseAppImpl) CreateTest(input gentypes.CreateTestInput) (gentypes.Tes
 	}
 
 	return c.testToGentype(test), nil
+}
+
+func (c *courseAppImpl) UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Test{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.Test{}, err
+	}
+
+	updateInput := course.UpdateTestInput{
+		UUID:             input.UUID,
+		Name:             input.Name,
+		PassPercentage:   input.PassPercentage,
+		RandomiseAnswers: input.RandomiseAnswers,
+		Tags:             input.Tags,
+		Questions:        input.Questions,
+	}
+
+	if input.QuestionsToAnswer != nil {
+		updateInput.QuestionsToAnswer = helpers.UintPointer(uint(*input.QuestionsToAnswer))
+	}
+	if input.AttemptsAllowed != nil {
+		updateInput.AttemptsAllowed = helpers.UintPointer(uint(*input.AttemptsAllowed))
+	}
+
+	test, err := c.coursesRepository.UpdateTest(updateInput)
+	return c.testToGentype(test), err
 }
 
 // Test gets a test from the db and applies applicable access control

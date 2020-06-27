@@ -28,7 +28,7 @@ type SubmitTestPayload {
 }
 
 input UpdateTestInput {
-  uuid: UUID
+  uuid: UUID!
   name: String
   tags: [UUID!]
   attemptsAllowed: Int
@@ -36,4 +36,8 @@ input UpdateTestInput {
   questionsToAnswer: Int
   randomiseAnswers: Boolean # Overrides per question randomisation
   questions: [UUID!] # Ordered list of the questions in this test
+}
+
+type UpdateTestPayload {
+  test: Test
 }

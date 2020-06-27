@@ -53,7 +53,7 @@ type Mutation {
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
-  # updateTest(input: UpdateTestInput!): UpdateTestPayload
+  updateTest(input: UpdateTestInput!): UpdateTestPayload
 
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
