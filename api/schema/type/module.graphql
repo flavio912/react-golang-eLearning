@@ -1,0 +1,23 @@
+enum VideoType {
+  WISTIA
+}
+
+input Video {
+  type: VideoType!
+  url: String!
+}
+
+input CreateModuleInput {
+  name: String!
+  tags: [UUID!]
+  description: String!
+  transcript: String!
+  bannerSuccessToken: String
+  voiceoverSuccessToken: String
+  video: Video
+  syllabus: [ModuleItem!]
+}
+
+type CreateModulePayload {
+  module: Module
+}

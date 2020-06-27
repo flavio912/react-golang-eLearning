@@ -171,6 +171,27 @@ func (_m *CoursesRepository) CreateLesson(lesson gentypes.CreateLessonInput) (mo
 	return r0, r1
 }
 
+// CreateModule provides a mock function with given fields: input
+func (_m *CoursesRepository) CreateModule(input course.CreateModuleInput) (models.Module, error) {
+	ret := _m.Called(input)
+
+	var r0 models.Module
+	if rf, ok := ret.Get(0).(func(course.CreateModuleInput) models.Module); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.Module)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(course.CreateModuleInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateOnlineCourse provides a mock function with given fields: courseInfo
 func (_m *CoursesRepository) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error) {
 	ret := _m.Called(courseInfo)

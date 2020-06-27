@@ -11,6 +11,76 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
+type VideoInput struct {
+	VideoType gentypes.VideoType
+	VideoURL  string
+}
+
+type CreateModuleInput struct {
+	Name         string
+	Description  string
+	Transcript   string
+	VoiceoverKey *string
+	BannerKey    *string
+	Video        *VideoInput
+	Tags         *[]gentypes.UUID
+	Syllabus     *[]gentypes.ModuleItem
+}
+
+func (c *coursesRepoImpl) CreateModule(input CreateModuleInput) (models.Module, error) {
+
+	mod := models.Module{
+		Name:         input.Name,
+		Description:  input.Description,
+		Transcript:   input.Transcript,
+		BannerKey:    input.BannerKey,
+		VoiceoverKey: input.VoiceoverKey,
+	}
+
+	if input.Video != nil {
+		mod.VideoType = &(*input.Video).VideoType
+		mod.VideoURL = &(*input.Video).VideoURL
+	}
+
+	if input.Tags != nil {
+		// Check tags exist
+		tags, err := c.CheckTagsExist(*input.Tags)
+		if err != nil {
+			return models.Module{}, err
+		}
+		mod.Tags = tags
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Create(&mod).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to create module")
+		return models.Module{}, &errors.ErrWhileHandling
+	}
+
+	if input.Syllabus != nil {
+		module, err := c.UpdateModuleStructure(tx, mod.UUID, *input.Syllabus)
+		if err := tx.Commit().Error; err != nil {
+			c.Logger.Log(sentry.LevelError, err, "Unable to commit module")
+			return module, &errors.ErrWhileHandling
+		}
+
+		return module, err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit module")
+		return mod, &errors.ErrWhileHandling
+	}
+
+	return mod, nil
+}
+
 // GetModuleByUUID gets a module by its UUID
 func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
 	var module models.Module

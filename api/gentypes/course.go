@@ -15,13 +15,6 @@ const (
 	LessonType CourseElement = "lesson"
 )
 
-type ModuleElement string
-
-const (
-	ModuleTest   ModuleElement = "test"
-	ModuleLesson ModuleElement = "lesson"
-)
-
 type CourseType string
 
 const (
@@ -50,11 +43,6 @@ type CourseInput struct {
 
 type CourseItem struct {
 	Type CourseElement
-	UUID UUID
-}
-
-type ModuleItem struct {
-	Type ModuleElement
 	UUID UUID
 }
 

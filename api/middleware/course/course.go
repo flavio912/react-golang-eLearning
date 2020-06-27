@@ -46,6 +46,7 @@ type CoursesRepository interface {
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]models.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]models.Tag, error)
 
+	CreateModule(input CreateModuleInput) (models.Module, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
@@ -175,6 +176,11 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 
 	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	// If requirements changed, remove all old ones and repopulate
 	if infoChanges.Requirements != nil {
