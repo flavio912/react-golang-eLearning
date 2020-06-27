@@ -2,6 +2,7 @@ package course_test
 
 import (
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -105,4 +106,33 @@ func TestGetBlogsByUUIDs(t *testing.T) {
 			assert.Len(t, b, test.wantLen)
 		})
 	}
+}
+
+func TestGetBlogs(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should return ALL blogs", func(t *testing.T) {
+		blogs, _, err := courseRepo.GetBlogs(nil, nil)
+		assert.Nil(t, err)
+		assert.Len(t, blogs, 3)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(2)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		blogs, pageInfo, err := courseRepo.GetBlogs(&page, nil)
+		assert.Nil(t, err)
+		assert.Len(t, blogs, 2)
+		assert.Equal(t, gentypes.PageInfo{Total: 3, Given: 2, Limit: limit}, pageInfo)
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		asc := false
+		order := gentypes.OrderBy{Field: "created_at", Ascending: &asc}
+
+		blogs, _, err := courseRepo.GetBlogs(nil, &order)
+		assert.Nil(t, err)
+		assert.Len(t, blogs, 3)
+		assert.Equal(t, "2020-03-08T13:53:37Z", blogs[0].CreatedAt.Format(time.RFC3339))
+	})
 }

@@ -118,8 +118,7 @@ func (c *coursesRepoImpl) GetBlogs(
 		return blogs, gentypes.PageInfo{}, countErr
 	}
 
-	// TODO: Order by createdAt + updatedAt
-	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"category"}, "category ASC")
+	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"created_at", "updated_at"}, "created_at DESC")
 	if orderErr != nil {
 		return blogs, gentypes.PageInfo{}, orderErr
 	}

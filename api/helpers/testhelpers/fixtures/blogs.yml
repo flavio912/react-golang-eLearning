@@ -1,9 +1,17 @@
 - uuid: 00000000-0000-0000-0000-000000000001
+  created_at: 2020-01-08 13:53:37.338775+00
   title: How To Be Millionaire
   body: {}
   category_uuid: 00000000-0000-0000-0000-000000000001
 
 - uuid: 00000000-0000-0000-0000-000000000002
+  created_at: 2020-01-08 12:53:37.338775+00
   title: Everything About iOS 14
   body: {}
   category_uuid: 00000000-0000-0000-0000-000000000001
+
+- uuid: 00000000-0000-0000-0000-000000000003
+  created_at: 2020-03-08 13:53:37.338775+00
+  title: How To Build A Custom Autoencoder
+  body: {}
+  category_uuid: 00000000-0000-0000-0000-000000000002
