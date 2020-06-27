@@ -3,6 +3,8 @@ package course_test
 import (
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -30,6 +32,120 @@ func TestCreateTest(t *testing.T) {
 		assert.Equal(t, uint(12), test.QuestionsToAnswer)
 		assert.False(t, test.RandomiseAnswers)
 	})
+}
+
+func TestUpdateTest(t *testing.T) {
+	inputs := []struct {
+		Name    string
+		Input   course.UpdateTestInput
+		WantErr error
+	}{
+		{
+			Name: "Updates everything",
+			Input: course.UpdateTestInput{
+				UUID:              gentypes.MustParseToUUID("c212859c-ddd3-433c-9bf5-15cdd1db32f9"),
+				Name:              helpers.StringPointer("I like lion cakes"),
+				AttemptsAllowed:   helpers.UintPointer(12),
+				PassPercentage:    helpers.FloatPointer(33.4),
+				QuestionsToAnswer: helpers.UintPointer(2),
+				RandomiseAnswers:  helpers.BoolPointer(false),
+				Questions: &[]gentypes.UUID{
+					gentypes.MustParseToUUID("797efc50-f980-42a2-a008-2991a1162631"),
+					gentypes.MustParseToUUID("18cce315-ef3c-4597-aca8-f3d06e9347b1"),
+				},
+				Tags: &[]gentypes.UUID{
+					gentypes.MustParseToUUID("1894c148-04dc-4166-ae8f-571b106c2835"),
+					gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003"),
+				},
+			},
+			WantErr: nil,
+		},
+		{
+			Name: "Updates name and attempts",
+			Input: course.UpdateTestInput{
+				UUID:            gentypes.MustParseToUUID("c212859c-ddd3-433c-9bf5-15cdd1db32f9"),
+				Name:            helpers.StringPointer("I like cheese"),
+				AttemptsAllowed: helpers.UintPointer(17),
+			},
+			WantErr: nil,
+		},
+		{
+			Name: "Gives invalid UUID",
+			Input: course.UpdateTestInput{
+				UUID:            gentypes.MustParseToUUID("9bbaf248-b832-42f9-bd0a-49e4b72d5e7d"),
+				Name:            helpers.StringPointer("I like yellow"),
+				AttemptsAllowed: helpers.UintPointer(34),
+			},
+			WantErr: &errors.ErrNotFound,
+		},
+	}
+
+	assert := assert.New(t)
+	for _, input := range inputs {
+		t.Run(input.Name, func(t *testing.T) {
+			prepareTestDatabase()
+
+			prevTest, _ := courseRepo.Test(input.Input.UUID)
+
+			test, err := courseRepo.UpdateTest(input.Input)
+			assert.Equal(err, input.WantErr)
+
+			if input.Input.Name != nil && input.WantErr == nil {
+				assert.Equal(*input.Input.Name, test.Name)
+			} else {
+				assert.Equal(prevTest.Name, test.Name)
+			}
+
+			if input.Input.AttemptsAllowed != nil && input.WantErr == nil {
+				assert.Equal(*input.Input.AttemptsAllowed, test.AttemptsAllowed)
+			} else {
+				assert.Equal(prevTest.AttemptsAllowed, test.AttemptsAllowed)
+			}
+
+			if input.Input.PassPercentage != nil && input.WantErr == nil {
+				assert.Equal(*input.Input.PassPercentage, test.PassPercentage)
+			} else {
+				assert.Equal(prevTest.PassPercentage, test.PassPercentage)
+			}
+
+			if input.Input.QuestionsToAnswer != nil && input.WantErr == nil {
+				assert.Equal(*input.Input.QuestionsToAnswer, test.QuestionsToAnswer)
+			} else {
+				assert.Equal(prevTest.QuestionsToAnswer, test.QuestionsToAnswer)
+			}
+
+			if input.Input.RandomiseAnswers != nil && input.WantErr == nil {
+				assert.Equal(*input.Input.RandomiseAnswers, test.RandomiseAnswers)
+			} else {
+				assert.Equal(prevTest.RandomiseAnswers, test.RandomiseAnswers)
+			}
+
+			// Get tests
+			questions, err := courseRepo.TestQuestions(test.UUID)
+			assert.Nil(err)
+
+			var uuids = make([]gentypes.UUID, len(questions))
+			for i, q := range questions {
+				uuids[i] = q.UUID
+			}
+
+			if input.Input.Questions != nil {
+				assert.Equal(len(*input.Input.Questions), len(questions))
+				for _, qid := range *input.Input.Questions {
+					assert.Contains(uuids, qid)
+				}
+			}
+
+			// Check tags
+			// var tags []models.Tag
+			// database.GormDB.Model(test).Association("Tags").Find(&tags)
+
+			// var tagids []gentypes.UUID
+			// for _, tag := range tags {
+
+			// }
+		})
+	}
 }
 
 // Note to self - stop calling functions Test...

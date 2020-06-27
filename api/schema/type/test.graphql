@@ -26,3 +26,14 @@ input SubmitTestInput {
 type SubmitTestPayload {
   success: Boolean!
 }
+
+input UpdateTestInput {
+  uuid: UUID
+  name: String
+  tags: [UUID!]
+  attemptsAllowed: Int
+  passPercentage: Float
+  questionsToAnswer: Int
+  randomiseAnswers: Boolean # Overrides per question randomisation
+  questions: [UUID!] # Ordered list of the questions in this test
+}

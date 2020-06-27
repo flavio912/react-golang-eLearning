@@ -793,3 +793,24 @@ func (_m *CoursesRepository) UpdateQuestion(input course.UpdateQuestionArgs) (mo
 
 	return r0, r1
 }
+
+// UpdateTest provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateTest(input course.UpdateTestInput) (models.Test, error) {
+	ret := _m.Called(input)
+
+	var r0 models.Test
+	if rf, ok := ret.Get(0).(func(course.UpdateTestInput) models.Test); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.Test)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(course.UpdateTestInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}

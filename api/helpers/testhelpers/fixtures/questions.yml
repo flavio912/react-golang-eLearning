@@ -1,12 +1,16 @@
 - uuid: d8ff8501-4381-4217-a332-8e87a64b968c
   text: How many calories are in mini cheddars
   randomise_answers: false
-  question_type: singleAnswer
+  question_type: SINGLE_CHOICE
 - uuid: c3c751ad-dc2d-4bf2-8a63-f1d59818aada
   text: Where is wally?
   randomise_answers: true
-  question_type: singleAnswer
+  question_type: SINGLE_CHOICE
 - uuid: 18cce315-ef3c-4597-aca8-f3d06e9347b1
   text: How many hats does the queen have?
   randomise_answers: false
-  question_type: singleAnswer
+  question_type: SINGLE_CHOICE
+- uuid: 797efc50-f980-42a2-a008-2991a1162631
+  text: Why do cowboys wear hats?
+  randomise_answers: false
+  question_type: SINGLE_CHOICE

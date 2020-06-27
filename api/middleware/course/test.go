@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 
@@ -19,6 +20,29 @@ type CreateTestInput struct {
 	RandomiseAnswers  bool
 	Questions         []gentypes.UUID
 	Tags              *[]gentypes.UUID
+}
+
+func (c *coursesRepoImpl) createQuestionLinks(tx *gorm.DB, testUUID gentypes.UUID, questionUUIDs []gentypes.UUID) error {
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Create question links
+	for i, uuid := range questionUUIDs {
+		link := models.TestQuestionsLink{
+			TestUUID:     testUUID,
+			QuestionUUID: uuid,
+			Rank:         strconv.Itoa(i),
+		}
+		if err := tx.Create(&link).Error; err != nil {
+			c.Logger.Log(sentry.LevelWarning, err, "Unable to create test question link")
+			return &errors.ErrWhileHandling
+		}
+	}
+
+	return nil
 }
 
 func (c *coursesRepoImpl) CreateTest(input CreateTestInput) (models.Test, error) {
@@ -51,18 +75,10 @@ func (c *coursesRepoImpl) CreateTest(input CreateTestInput) (models.Test, error)
 		return models.Test{}, &errors.ErrWhileHandling
 	}
 
-	// Create question links
-	for i, uuid := range input.Questions {
-		link := models.TestQuestionsLink{
-			TestUUID:     test.UUID,
-			QuestionUUID: uuid,
-			Rank:         strconv.Itoa(i),
-		}
-		if err := tx.Create(&link).Error; err != nil {
-			tx.Rollback()
-			c.Logger.Log(sentry.LevelWarning, err, "Unable to create test question link")
-			return models.Test{}, &errors.ErrWhileHandling
-		}
+	err := c.createQuestionLinks(tx, test.UUID, input.Questions)
+	if err != nil {
+		tx.Rollback()
+		return models.Test{}, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
@@ -71,6 +87,98 @@ func (c *coursesRepoImpl) CreateTest(input CreateTestInput) (models.Test, error)
 	}
 
 	return test, nil
+}
+
+type UpdateTestInput struct {
+	UUID              gentypes.UUID
+	Name              *string
+	AttemptsAllowed   *uint
+	PassPercentage    *float64
+	QuestionsToAnswer *uint
+	RandomiseAnswers  *bool
+	Questions         *[]gentypes.UUID
+	Tags              *[]gentypes.UUID
+}
+
+func (c *coursesRepoImpl) UpdateTest(input UpdateTestInput) (models.Test, error) {
+	test, err := c.Test(input.UUID)
+	if err != nil {
+		c.Logger.Log(sentry.LevelWarning, err, "Unable to get test")
+		return models.Test{}, &errors.ErrNotFound
+	}
+
+	updates := make(map[string]interface{})
+	if input.Name != nil {
+		updates["name"] = *input.Name
+	}
+	if input.AttemptsAllowed != nil {
+		updates["attempts_allowed"] = *input.AttemptsAllowed
+	}
+	if input.PassPercentage != nil {
+		updates["pass_percentage"] = *input.PassPercentage
+	}
+	if input.QuestionsToAnswer != nil {
+		updates["questions_to_answer"] = *input.QuestionsToAnswer
+	}
+	if input.RandomiseAnswers != nil {
+		updates["randomise_answers"] = *input.RandomiseAnswers
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if input.Tags != nil {
+		tags, err := c.CheckTagsExist(*input.Tags)
+		if err != nil {
+			return test, err
+		}
+		if err := tx.Model(&test).Association("Tags").Replace(tags).Error; err != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, err, "Unable to replace tags")
+			return test, &errors.ErrWhileHandling
+		}
+	}
+
+	if input.Questions != nil {
+		// Remove old links + add new ones
+		if err := tx.Where("test_uuid = ?", test.UUID).Delete(&models.TestQuestionsLink{}).Error; err != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, err, "Unable to delete test links")
+			return test, &errors.ErrWhileHandling
+		}
+
+		err := c.createQuestionLinks(tx, test.UUID, *input.Questions)
+		if err != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, err, "Unable to create question links")
+			return test, &errors.ErrWhileHandling
+		}
+	}
+
+	if err := tx.Model(&test).Updates(updates).Error; err != nil {
+		tx.Rollback()
+		c.Logger.Log(sentry.LevelError, err, "Unable to update test")
+		return test, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit test update")
+		return test, &errors.ErrWhileHandling
+	}
+
+	// Get the updated test
+	updatedTest, err := c.Test(input.UUID)
+	if err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to get test after update")
+		return models.Test{}, &errors.ErrWhileHandling
+	}
+
+	return updatedTest, nil
 }
 
 func (c *coursesRepoImpl) Test(testUUID gentypes.UUID) (models.Test, error) {
