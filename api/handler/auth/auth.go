@@ -74,13 +74,17 @@ func Handler(h http.Handler) http.Handler {
 				allowRequest = true
 			}
 
-			// Public grants don't need to worry about CSRF tokens
-			if allowRequest || grant.IsPublic {
-				ctx = context.WithValue(ctx, GrantKey, grant)
-				ctx = context.WithValue(ctx, AuthKey, token)
-				ctx = AddAppContext(ctx, grant)
-				addSentryContext(r, grant)
+			// If not allowed just give them a public grant
+			if !allowRequest {
+				publicGrant, _ := middleware.Authenticate("")
+				grant = publicGrant
 			}
+
+			// Public grants don't need to worry about CSRF tokens
+			ctx = context.WithValue(ctx, GrantKey, grant)
+			ctx = context.WithValue(ctx, AuthKey, token)
+			ctx = AddAppContext(ctx, grant)
+			addSentryContext(r, grant)
 		}
 
 		ctx = context.WithValue(ctx, RespKey, &w)
