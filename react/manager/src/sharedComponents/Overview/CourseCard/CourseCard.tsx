@@ -111,14 +111,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  viewButton: {
-    width: '100%',
-    paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1)
-  },
-  viewCourseButton: {
-    width: '100%'
-  },
   footer: {
     padding: `0 ${theme.spacing(2)}px`,
     backgroundColor: theme.colors.backgroundGrey,
@@ -130,7 +122,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flex: 0.5
   },
   small: {
-    width: '298px',
+    width: '298px;px',
     cursor: 'pointer'
   },
   large: {
@@ -163,7 +155,6 @@ type Props = {
   onClick: Function;
   padding?: PaddingOptions;
   className?: string;
-  isShowViewButton?: boolean;
 };
 
 function CourseCard({
@@ -171,8 +162,7 @@ function CourseCard({
   onClick,
   size = 'small',
   progress,
-  className,
-  isShowViewButton = false
+  className
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -281,21 +271,6 @@ function CourseCard({
             width={125}
             fraction={false}
           />
-        </div>
-      ) : isShowViewButton ? (
-        <div className={classNames(classes.row, classes.footer)}>
-          <div className={classNames(classes.viewButton)}>
-            <Button
-              archetype="submit"
-              onClick={() => {
-                onClick();
-              }}
-              bold
-              className={classes.viewCourseButton}
-            >
-              View Course
-            </Button>
-          </div>
         </div>
       ) : size === 'small' ? (
         <div className={classNames(classes.row, classes.footer)}>
