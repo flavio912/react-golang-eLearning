@@ -752,6 +752,27 @@ func (_m *CoursesRepository) UpdateCourse(courseID uint, infoChanges course.Cour
 	return r0, r1
 }
 
+// UpdateModule provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateModule(input course.UpdateModuleInput) (models.Module, error) {
+	ret := _m.Called(input)
+
+	var r0 models.Module
+	if rf, ok := ret.Get(0).(func(course.UpdateModuleInput) models.Module); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.Module)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(course.UpdateModuleInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateModuleStructure provides a mock function with given fields: tx, moduleUUID, moduleStructure
 func (_m *CoursesRepository) UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error) {
 	ret := _m.Called(tx, moduleUUID, moduleStructure)

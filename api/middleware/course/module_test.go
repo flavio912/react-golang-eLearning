@@ -102,8 +102,8 @@ func TestCreateModule(t *testing.T) {
 				VoiceoverKey: helpers.StringPointer("/places/orange.mp3"),
 				BannerKey:    helpers.StringPointer("/images/banner.png"),
 				Video: &course.VideoInput{
-					VideoType: gentypes.WistiaVideo,
-					VideoURL:  "http://video.com/video",
+					Type: gentypes.WistiaVideo,
+					URL:  "http://video.com/video",
 				},
 			},
 			WantErr: nil,
@@ -178,8 +178,8 @@ func TestCreateModule(t *testing.T) {
 			assert.Equal(test.Input.BannerKey, module.BannerKey)
 
 			if test.Input.Video != nil {
-				assert.Equal((*test.Input.Video).VideoType, *module.VideoType)
-				assert.Equal((*test.Input.Video).VideoURL, *module.VideoURL)
+				assert.Equal((*test.Input.Video).Type, *module.VideoType)
+				assert.Equal((*test.Input.Video).URL, *module.VideoURL)
 			}
 
 			// Check structure
