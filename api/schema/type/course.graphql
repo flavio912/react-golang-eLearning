@@ -9,11 +9,6 @@ enum StructureElement {
   lesson
 }
 
-enum ModuleElement {
-  test
-  lesson
-}
-
 enum CourseType {
   online
   classroom
@@ -23,16 +18,6 @@ interface SyllabusItem {
   title: String!
   uuid: UUID!
   complete: Boolean
-}
-
-type Module implements SyllabusItem {
-  title: String!
-  uuid: UUID!
-  complete: Boolean
-  bannerImageURL: String
-  description: String!
-  transcript: String!
-  syllabus: [SyllabusItem!]
 }
 
 type Lesson implements SyllabusItem {

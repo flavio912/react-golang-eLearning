@@ -1,10 +1,37 @@
+type Module implements SyllabusItem {
+  uuid: UUID!
+  title: String!
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  voiceoverURL: String
+  video: Video
+  syllabus: [SyllabusItem!]
+  complete: Boolean
+}
+
 enum VideoType {
   WISTIA
 }
 
-input Video {
+type Video {
   type: VideoType!
   url: String!
+}
+
+input VideoInput {
+  type: VideoType!
+  url: String!
+}
+
+enum ModuleElement {
+  test
+  lesson
+}
+
+input ModuleItem {
+  type: ModuleElement!
+  uuid: UUID!
 }
 
 input CreateModuleInput {
@@ -12,9 +39,9 @@ input CreateModuleInput {
   tags: [UUID!]
   description: String!
   transcript: String!
-  bannerSuccessToken: String
+  bannerImageSuccessToken: String
   voiceoverSuccessToken: String
-  video: Video
+  video: VideoInput
   syllabus: [ModuleItem!]
 }
 

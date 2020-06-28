@@ -12,8 +12,8 @@ import (
 )
 
 type VideoInput struct {
-	VideoType gentypes.VideoType
-	VideoURL  string
+	Type gentypes.VideoType
+	URL  string
 }
 
 type CreateModuleInput struct {
@@ -38,8 +38,8 @@ func (c *coursesRepoImpl) CreateModule(input CreateModuleInput) (models.Module, 
 	}
 
 	if input.Video != nil {
-		mod.VideoType = &(*input.Video).VideoType
-		mod.VideoURL = &(*input.Video).VideoURL
+		mod.VideoType = &(*input.Video).Type
+		mod.VideoURL = &(*input.Video).URL
 	}
 
 	if input.Tags != nil {

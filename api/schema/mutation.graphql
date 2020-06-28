@@ -59,7 +59,7 @@ type Mutation {
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
   # deleteQuestion
 
-  # createModule(input: CreateModuleInput!): CreateModulePayload
+  createModule(input: CreateModuleInput!): CreateModulePayload
   # updateModule
 
   # createTutor

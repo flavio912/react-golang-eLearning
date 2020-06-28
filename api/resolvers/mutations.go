@@ -491,3 +491,23 @@ func (m *MutationResolver) UpdateQuestion(ctx context.Context, args struct{ Inpu
 		Question: res,
 	}, err
 }
+
+type CreateModulePayload struct {
+	Module *ModuleResolver
+}
+
+func (m *MutationResolver) CreateModule(ctx context.Context, args struct{ Input gentypes.CreateModuleInput }) (*CreateModulePayload, error) {
+	app := auth.AppFromContext(ctx)
+	module, err := app.CourseApp.CreateModule(args.Input)
+	if err != nil {
+		return &CreateModulePayload{}, err
+	}
+
+	res, err := NewModuleResolver(ctx, NewModuleArgs{
+		Module: &module,
+	})
+
+	return &CreateModulePayload{
+		Module: res,
+	}, err
+}

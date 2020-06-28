@@ -6,9 +6,19 @@ const (
 	WistiaVideo VideoType = "wistia"
 )
 
-type VideoInput struct {
-	VideoType VideoType
-	VideoURL  string
+type Video struct {
+	Type VideoType
+	URL  string
+}
+
+type Module struct {
+	UUID           UUID
+	Title          string
+	BannerImageURL *string
+	Description    string
+	Transcript     string
+	VoiceoverURL   *string
+	Video          *Video
 }
 
 type ModuleElement string
@@ -24,11 +34,12 @@ type ModuleItem struct {
 }
 
 type CreateModuleInput struct {
-	Name                  string
-	Tags                  *[]UUID
-	Description           string
-	Transcript            string
-	VoiceoverSuccessToken string
-	Video                 *VideoInput
-	Syllabus              *[]ModuleItem
+	Name                    string
+	Description             string
+	Transcript              string
+	BannerImageSuccessToken *string
+	VoiceoverSuccessToken   *string
+	Video                   *Video
+	Tags                    *[]UUID
+	Syllabus                *[]ModuleItem
 }
