@@ -60,6 +60,8 @@ type CoursesRepository interface {
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
 
 	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
+
+	Question(uuid gentypes.UUID) (models.Question, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 

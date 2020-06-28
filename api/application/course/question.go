@@ -136,6 +136,7 @@ func (c *courseAppImpl) answerToGentype(answer models.BasicAnswer) gentypes.Answ
 		ImageURL: imageUrl,
 	}
 }
+
 func (c *courseAppImpl) answersToGentypes(answers []models.BasicAnswer) []gentypes.Answer {
 	ans := make([]gentypes.Answer, len(answers))
 	for i, answer := range answers {
@@ -160,6 +161,57 @@ func (c *courseAppImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes
 	return outputAns, err
 }
 
-// func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, err) {
-// 	// Check user is assigned course with this question in
-// }
+func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) {
+	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
+		return gentypes.Question{}, &errors.ErrUnauthorized
+	}
+
+	// Check if courseTaker is taking a course with this question in
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		var takerId gentypes.UUID
+		if c.grant.IsDelegate {
+			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
+			takerId = delegate.CourseTakerUUID
+		}
+
+		if c.grant.IsIndividual {
+			individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
+			takerId = individual.CourseTakerUUID
+		}
+
+		activeCourses, _ := c.usersRepository.TakerActiveCourses(takerId)
+
+		// TODO: Replace this with a big join
+		allowed := false
+		for _, activeCourse := range activeCourses {
+			course, _ := c.coursesRepository.OnlineCourse(activeCourse.CourseID)
+			tests, _ := c.coursesRepository.CourseTests(course.UUID)
+			for _, test := range tests {
+				questions, _ := c.coursesRepository.TestQuestions(test.UUID)
+				for _, question := range questions {
+					if question.UUID == uuid {
+						allowed = true
+						break
+					}
+				}
+
+				if allowed {
+					break
+				}
+			}
+
+			if allowed {
+				break
+			}
+		}
+
+		if !allowed {
+			return gentypes.Question{}, &errors.ErrUnauthorized
+		}
+	}
+
+	// Check user is assigned course with this question in
+	question, err := c.coursesRepository.Question(uuid)
+
+	return c.questionToGentype(question), err
+}

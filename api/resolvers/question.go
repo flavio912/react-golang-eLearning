@@ -46,11 +46,17 @@ type NewQuestionArgs struct {
 }
 
 func NewQuestionResolver(ctx context.Context, args NewQuestionArgs) (*QuestionResolver, error) {
+	app := auth.AppFromContext(ctx)
 	switch {
 	case args.Question != nil:
 		return &QuestionResolver{
 			question: *args.Question,
 		}, nil
+	case args.UUID != nil:
+		question, err := app.CourseApp.Question(*args.UUID)
+		return &QuestionResolver{
+			question: question,
+		}, err
 	default:
 		return &QuestionResolver{}, &errors.ErrUnableToResolve
 	}
