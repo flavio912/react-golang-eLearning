@@ -41,30 +41,34 @@ func (c *courseAppImpl) moduleToGentype(module models.Module) gentypes.Module {
 	}
 }
 
+func getUploadKey(token *string, uploadIdent string) (*string, error) {
+	var uploadKey *string
+	if token != nil {
+		key, err := uploads.VerifyUploadSuccess(*token, "moduleImage")
+		if err != nil {
+			return nil, &errors.ErrUploadTokenInvalid
+		}
+		uploadKey = &key
+	}
+	return uploadKey, nil
+}
+
 func (c *courseAppImpl) CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Module{}, &errors.ErrUnauthorized
 	}
 
 	var (
-		bannerKey    *string
-		voiceoverKey *string
-		video        *course.VideoInput
+		video *course.VideoInput
 	)
-	if input.BannerImageSuccessToken != nil {
-		key, err := uploads.VerifyUploadSuccess(*input.BannerImageSuccessToken, "moduleImage")
-		if err != nil {
-			return gentypes.Module{}, &errors.ErrUploadTokenInvalid
-		}
-		bannerKey = &key
-	}
 
-	if input.VoiceoverSuccessToken != nil {
-		key, err := uploads.VerifyUploadSuccess(*input.VoiceoverSuccessToken, "mp3Uploads")
-		if err != nil {
-			return gentypes.Module{}, &errors.ErrUploadTokenInvalid
-		}
-		voiceoverKey = &key
+	bannerKey, err := getUploadKey(input.BannerImageSuccessToken, "moduleImages")
+	if err != nil {
+		return gentypes.Module{}, err
+	}
+	voiceoverKey, err := getUploadKey(input.VoiceoverSuccessToken, "voiceoverUploads")
+	if err != nil {
+		return gentypes.Module{}, err
 	}
 
 	if input.Video != nil {
@@ -86,5 +90,45 @@ func (c *courseAppImpl) CreateModule(input gentypes.CreateModuleInput) (gentypes
 	}
 
 	module, err := c.coursesRepository.CreateModule(createInput)
+	return c.moduleToGentype(module), err
+}
+
+func (c *courseAppImpl) UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Module{}, &errors.ErrUnauthorized
+	}
+
+	bannerKey, err := getUploadKey(input.BannerImageSuccessToken, "moduleImages")
+	if err != nil {
+		return gentypes.Module{}, err
+	}
+	voiceoverKey, err := getUploadKey(input.VoiceoverSuccessToken, "voiceoverUploads")
+	if err != nil {
+		return gentypes.Module{}, err
+	}
+
+	var video *course.VideoInput
+	if input.Video != nil {
+		video = &course.VideoInput{
+			Type: (*input.Video).Type,
+			URL:  (*input.Video).URL,
+		}
+	}
+
+	inp := course.UpdateModuleInput{
+		UUID:         input.UUID,
+		Name:         input.Name,
+		Description:  input.Description,
+		Transcript:   input.Transcript,
+		BannerKey:    bannerKey,
+		VoiceoverKey: voiceoverKey,
+		Video:        video,
+		Tags:         input.Tags,
+		Syllabus:     input.Syllabus,
+	}
+
+	module, err := c.coursesRepository.UpdateModule(inp)
+	// TODO: Delete S3 images on success
+
 	return c.moduleToGentype(module), err
 }

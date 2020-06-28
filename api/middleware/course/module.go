@@ -81,6 +81,87 @@ func (c *coursesRepoImpl) CreateModule(input CreateModuleInput) (models.Module, 
 	return mod, nil
 }
 
+type UpdateModuleInput struct {
+	UUID         gentypes.UUID
+	Name         *string
+	Description  *string
+	Transcript   *string
+	VoiceoverKey *string
+	BannerKey    *string
+	Video        *VideoInput
+	Tags         *[]gentypes.UUID
+	Syllabus     *[]gentypes.ModuleItem
+}
+
+func (c *coursesRepoImpl) UpdateModule(input UpdateModuleInput) (models.Module, error) {
+	module, err := c.GetModuleByUUID(input.UUID)
+	if err != nil {
+		return models.Module{}, &errors.ErrNotFound
+	}
+
+	updates := make(map[string]interface{})
+	if input.Name != nil && *input.Name != module.Name {
+		updates["name"] = *input.Name
+	}
+	if input.Description != nil && *input.Description != module.Description {
+		updates["description"] = *input.Description
+	}
+	if input.Transcript != nil && *input.Transcript != module.Transcript {
+		updates["transcript"] = *input.Transcript
+	}
+	if input.VoiceoverKey != nil {
+		updates["voiceover_key"] = *input.VoiceoverKey
+	}
+	if input.BannerKey != nil {
+		updates["banner_key"] = *input.BannerKey
+	}
+	if input.Video != nil {
+		updates["video_url"] = (*input.Video).URL
+		updates["video_type"] = (*input.Video).Type
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Model(&module).Updates(updates).Error; err != nil {
+		tx.Rollback()
+		c.Logger.Log(sentry.LevelError, err, "Unable to update module")
+		return module, &errors.ErrWhileHandling
+	}
+
+	if input.Tags != nil {
+		tags, err := c.CheckTagsExist(*input.Tags)
+		if err != nil {
+			return module, err
+		}
+		if err := tx.Model(&module).Association("Tags").Replace(tags).Error; err != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, err, "Unable to replace tags")
+			return module, &errors.ErrWhileHandling
+		}
+	}
+
+	if input.Syllabus != nil {
+		_, err := c.UpdateModuleStructure(tx, module.UUID, *input.Syllabus)
+		if err != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelWarning, err, "Unable to update module structure")
+			return module, err
+		}
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit module update")
+		return module, &errors.ErrWhileHandling
+	}
+
+	return c.GetModuleByUUID(module.UUID)
+}
+
 // GetModuleByUUID gets a module by its UUID
 func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
 	var module models.Module

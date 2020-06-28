@@ -48,3 +48,19 @@ input CreateModuleInput {
 type CreateModulePayload {
   module: Module
 }
+
+input UpdateModuleInput {
+  uuid: UUID!
+  tags: [UUID!]
+  name: String
+  description: String
+  transcript: String
+  bannerImageSuccessToken: String
+  voiceoverSuccessToken: String
+  video: VideoInput
+  syllabus: [ModuleItem!]
+}
+
+type UpdateModulePayload {
+  module: Module
+}

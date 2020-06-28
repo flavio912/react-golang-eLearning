@@ -41,6 +41,7 @@ type CourseApp interface {
 	SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
+	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 
 	CreateQuestion(input gentypes.CreateQuestionInput) (gentypes.Question, error)
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)

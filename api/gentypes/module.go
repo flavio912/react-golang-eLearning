@@ -43,3 +43,15 @@ type CreateModuleInput struct {
 	Tags                    *[]UUID
 	Syllabus                *[]ModuleItem
 }
+
+type UpdateModuleInput struct {
+	UUID                    UUID
+	Name                    *string
+	Description             *string
+	Transcript              *string
+	BannerImageSuccessToken *string
+	VoiceoverSuccessToken   *string
+	Video                   *Video
+	Tags                    *[]UUID
+	Syllabus                *[]ModuleItem
+}

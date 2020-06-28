@@ -60,7 +60,7 @@ type Mutation {
   # deleteQuestion
 
   createModule(input: CreateModuleInput!): CreateModulePayload
-  # updateModule
+  updateModule(input: UpdateModuleInput!): UpdateModulePayload
 
   # createTutor
   # updateTutor
