@@ -7,18 +7,25 @@ import Icon, { IconNames } from 'sharedComponents/core/Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    //height: '606px',
     display: 'flex',
     justifyContent: 'space-between',
+    flexWrap: 'wrap',
+    '@media (max-width: 1000px)': {
+      justifyContent: 'center',
+    }
+  },
+  row: {
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    flexWrap: 'wrap'
+    marginTop: '15px'
   },
   container: {
     display: 'flex',
     flex: 1,
     flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'flex-start'
+    justifyContent: 'space-around',
   },
   title: {
     fontSize: 23,
@@ -42,11 +49,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: 600,
     color: theme.colors.navyBlue,
-    marginBottom: '25px'
+    marginBottom: '15px'
   },
   image: {
     height: '457px',
-    maxWidth: '650px'
+    maxWidth: '725px'
   },
   text: {
     fontSize: theme.fontSizes.extraLarge,
@@ -54,16 +61,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.textGrey,
     marginTop: '10px'
   },
-  margin: {
-    marginBottom: '70px'
-  },
   center: {
     alignItems: 'center'
   },
   maxWidth: {
     minWidth: '400px',
     maxWidth: '400px',
-    marginRight: '100px'
+    marginRight: '100px',
+    '@media (max-width: 1000px)': {
+      marginRight: '0',
+    }
   },
   rowReverse: {
     flexDirection: 'row-reverse'
@@ -106,6 +113,7 @@ function ImageWithText({
   className
 }: Props) {
   const theme = useTheme();
+  console.log(stack, stack !== undefined)
   const classes = useStyles({ theme });
 
   const { router } = useRouter();
@@ -129,17 +137,12 @@ function ImageWithText({
             textRight && classes.marginLeft
           )}
         >
-          {stack.map((row: Row, index: number) => (
-            <div
-              className={classNames(
-                classes.root,
-                index !== stack.length - 1 && classes.margin
-              )}
-            >
+          {stack.map((row: Row) => (
+            <div className={classes.row}>
               <Icon
                 name={row.iconName}
                 size={68}
-                style={{ marginRight: '40px' }}
+                style={{ marginRight: '35px' }}
               />
               <div onClick={() => onClick(row.link?.link)}>
                 <div className={classes.link}>{row.link?.title}</div>
@@ -156,6 +159,7 @@ function ImageWithText({
             textRight && classes.marginLeft
           )}
         >
+          <div style={{ flex: 0.1 }} />
           <div className={classes.title}>{title}</div>
           <div className={classes.subtitle}>{subtitle}</div>
           <div className={classes.description}>{description}</div>
@@ -169,6 +173,7 @@ function ImageWithText({
               />
             )}
           </div>
+          <div style={{ flex: 0.1 }} />
         </div>
       )}
       <div className={classNames(classes.container, classes.center)}>

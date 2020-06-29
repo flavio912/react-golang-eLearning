@@ -32,10 +32,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     textAlign: 'center'
   },
   buttonsTitle: {
-    fontSize: '40px'
+    fontSize: '40px',
+    border: 'none'
   },
   buttonsDesc: {
-    fontSize: theme.fontSizes.heading,
+    fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: '500'
   },
   courseTitle: {
@@ -70,6 +71,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginTop: '18px'
   },
   times: {
+    alignSelf: 'flex-start',
     marginTop: '31px'
   },
   history: {
@@ -103,7 +105,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    alignItems: 'center'
   },
   spacer: {
     minWidth: '450px'
