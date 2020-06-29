@@ -18,7 +18,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   sliderTransition: {
     display: 'flex',
     justifyContent: 'flex-start',
-    overflowX: 'scroll'
+    overflowX: 'scroll',
+    '-ms-overflow-style': 'none',
+    'scrollbar-width': 'none',
+    '&::-webkit-scrollbar': {
+      display: 'none'
+    }
   },
   courseCard: {
     width: 325,
