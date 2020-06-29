@@ -29,6 +29,14 @@ func (c *courseAppImpl) questionToGentype(question models.Question) gentypes.Que
 	return gentypes.Question{}
 }
 
+func (c *courseAppImpl) questionsToGentypes(questions []models.Question) []gentypes.Question {
+	genQuestions := make([]gentypes.Question, len(questions))
+	for i, q := range questions {
+		genQuestions[i] = c.questionToGentype(q)
+	}
+	return genQuestions
+}
+
 func (c *courseAppImpl) CreateQuestion(input gentypes.CreateQuestionInput) (gentypes.Question, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Question{}, &errors.ErrUnauthorized
@@ -214,4 +222,21 @@ func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) 
 	question, err := c.coursesRepository.Question(uuid)
 
 	return c.questionToGentype(question), err
+}
+
+func (c *courseAppImpl) Questions(
+	page *gentypes.Page,
+	filter *gentypes.QuestionFilter,
+	orderBy *gentypes.OrderBy,
+) ([]gentypes.Question, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Question{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	questions, pageInfo, err := c.coursesRepository.Questions(page, filter, orderBy)
+	if err != nil {
+		return c.questionsToGentypes(questions), pageInfo, &errors.ErrWhileHandling
+	}
+
+	return c.questionsToGentypes(questions), pageInfo, nil
 }

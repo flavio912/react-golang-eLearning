@@ -62,6 +62,7 @@ type CoursesRepository interface {
 	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
 
 	Question(uuid gentypes.UUID) (models.Question, error)
+	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 

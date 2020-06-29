@@ -4,9 +4,11 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -20,10 +22,43 @@ func (c *coursesRepoImpl) Question(uuid gentypes.UUID) (models.Question, error) 
 	return question, nil
 }
 
-// func (c *coursesRepoImpl) Questions(page gentypes.Page, filter gentypes.QuestionFilter, orderBy gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error) {
-// 	var questions []models.Question
+func filterQuestion(query *gorm.DB, filter *gentypes.QuestionFilter) *gorm.DB {
+	if filter != nil {
+		if filter.UUID != nil {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
 
-// }
+		if filter.Text != nil && *filter.Text != "" {
+			query = query.Where("text ILIKE ?", "%%"+*filter.Text+"%%")
+		}
+
+		// TODO: Filter tags
+		// if filter.Tags != nil && *filter.Tags != "" {
+		// 	query = query.Where("text ILIKE ?", "%%"+*filter.Text+"%%")
+		// }
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error) {
+	var questions []models.Question
+	utils := dbutils.NewDBUtils(c.Logger)
+	pageInfo, err := utils.GetPageOf(
+		&models.Question{},
+		&questions,
+		page,
+		orderBy,
+		[]string{"created_at", "text", "randomise_answers"},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return filterQuestion(db, filter)
+		},
+	)
+	pageInfo.Given = int32(len(questions))
+
+	return questions, pageInfo, err
+}
 
 // ManyAnswers gets a mapping between questionUUIDs and their respective answers
 func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error) {

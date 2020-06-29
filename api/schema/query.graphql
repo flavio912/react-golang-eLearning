@@ -71,7 +71,7 @@ type Query {
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   user: User
 
-  # questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
+  questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
   # tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
   # test(uuid: UUID!): Test

@@ -246,13 +246,8 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 	Filter  *gentypes.CourseFilter
 	OrderBy *gentypes.OrderBy
 }) (*CoursePageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &CoursePageResolver{}, &errors.ErrUnauthorized
-	}
-
-	courseFuncs := course.NewCourseApp(grant)
-	courses, page, err := courseFuncs.GetCourses(args.Page, args.Filter, args.OrderBy)
+	app := auth.AppFromContext(ctx)
+	courses, page, err := app.CourseApp.GetCourses(args.Page, args.Filter, args.OrderBy)
 
 	var courseResolvers []*CourseResolver
 	for _, course := range courses {
@@ -272,5 +267,24 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 func (q *QueryResolver) Question(ctx context.Context, args struct{ UUID gentypes.UUID }) (*QuestionResolver, error) {
 	return NewQuestionResolver(ctx, NewQuestionArgs{
 		UUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Questions(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.QuestionFilter
+		OrderBy *gentypes.OrderBy
+	}) (*QuestionPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	questions, pageInfo, err := app.CourseApp.Questions(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &QuestionPageResolver{}, err
+	}
+
+	return NewQuestionPageResolver(ctx, NewQuestionPageArgs{
+		PageInfo:  pageInfo,
+		Questions: &questions,
 	})
 }

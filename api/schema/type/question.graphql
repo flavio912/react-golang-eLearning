@@ -6,6 +6,11 @@ type Question {
   answers: [Answer!]
 }
 
+type QuestionPage implements PaginatedQuery {
+  edges: [Question]
+  pageInfo: PageInfo
+}
+
 type Answer {
   uuid: UUID!
   isCorrect: Boolean
@@ -53,4 +58,10 @@ input UpdateBasicAnswerInput {
 
 type UpdateQuestionPayload {
   question: Question
+}
+
+input QuestionFilter {
+  uuid: UUID
+  text: String
+  Tags: [UUID!]
 }

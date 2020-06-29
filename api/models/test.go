@@ -1,6 +1,10 @@
 package models
 
-import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+import (
+	"time"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+)
 
 type Test struct {
 	UUID              gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
@@ -20,6 +24,7 @@ type TestQuestionsLink struct {
 
 type Question struct {
 	UUID             gentypes.UUID `gorm:"primary_key;default:uuid_generate_v4()"`
+	CreatedAt        time.Time
 	Text             string
 	RandomiseAnswers bool
 	QuestionType     gentypes.QuestionType // e.g singleChoice
