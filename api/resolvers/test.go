@@ -13,7 +13,7 @@ type TestResolver struct {
 	test gentypes.Test
 }
 
-func (t *TestResolver) Title() string         { return t.test.Name }
+func (t *TestResolver) Name() string          { return t.test.Name }
 func (t *TestResolver) UUID() gentypes.UUID   { return t.test.UUID }
 func (t *TestResolver) Complete() *bool       { return helpers.BoolPointer(false) }
 func (t *TestResolver) Tags() *[]*TagResolver { return nil }
@@ -57,4 +57,44 @@ func NewTestResolver(ctx context.Context, args NewTestArgs) (*TestResolver, erro
 	default:
 		return &TestResolver{}, &errors.ErrUnableToResolve
 	}
+}
+
+type TestPageResolver struct {
+	edges    *[]*TestResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *TestPageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *TestPageResolver) Edges() *[]*TestResolver     { return r.edges }
+
+type NewTestPageArgs struct {
+	PageInfo gentypes.PageInfo
+	Tests    *[]gentypes.Test
+}
+
+func NewTestPageResolver(ctx context.Context, args NewTestPageArgs) (*TestPageResolver, error) {
+	var resolvers []*TestResolver
+
+	switch {
+	case args.Tests != nil:
+		for _, test := range *args.Tests {
+			res, err := NewTestResolver(ctx, NewTestArgs{
+				Test: &test,
+			})
+
+			if err != nil {
+				return &TestPageResolver{}, err
+			}
+			resolvers = append(resolvers, res)
+		}
+	default:
+		return &TestPageResolver{}, &errors.ErrUnableToResolve
+	}
+
+	return &TestPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &args.PageInfo,
+		},
+	}, nil
 }

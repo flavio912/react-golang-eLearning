@@ -53,6 +53,11 @@ type CoursesRepository interface {
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
+	Tests(
+		page *gentypes.Page,
+		filter *gentypes.TestFilter,
+		orderBy *gentypes.OrderBy,
+	) ([]models.Test, gentypes.PageInfo, error)
 	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
 	UpdateTest(input UpdateTestInput) (models.Test, error)

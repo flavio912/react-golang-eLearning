@@ -5,16 +5,16 @@ import (
 )
 
 type Lesson struct {
-	UUID  UUID
-	Title string
-	Tags  []Tag
-	Text  string
+	UUID UUID
+	Name string
+	Tags []Tag
+	Text string
 }
 
 type LessonFilter struct {
-	UUID  *string `valid:"uuidv4"`
-	Title *string
-	Tags  *[]*UUID
+	UUID *string `valid:"uuidv4"`
+	Name *string
+	Tags *[]*UUID
 }
 
 func (l *LessonFilter) Validate() error {
@@ -23,9 +23,9 @@ func (l *LessonFilter) Validate() error {
 }
 
 type CreateLessonInput struct {
-	Title string `valid:"required"`
-	Tags  *[]UUID
-	Text  string `valid:"json"`
+	Name string `valid:"required"`
+	Tags *[]UUID
+	Text string `valid:"json"`
 }
 
 func (c *CreateLessonInput) Validate() error {

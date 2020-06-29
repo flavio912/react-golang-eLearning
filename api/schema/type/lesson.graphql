@@ -4,7 +4,7 @@ type LessonPage implements PaginatedQuery {
 }
 
 input CreateLessonInput {
-  title: String!
+  name: String!
   tags: [UUID!]
   text: String!
 }

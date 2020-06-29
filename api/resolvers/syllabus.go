@@ -11,7 +11,7 @@ import (
 )
 
 type SyllabusResolver interface {
-	Title() string
+	Name() string
 	UUID() gentypes.UUID
 	Complete() *bool
 }

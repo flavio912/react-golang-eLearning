@@ -294,3 +294,22 @@ func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUI
 		TestUUID: &args.UUID,
 	})
 }
+
+func (q *QueryResolver) Tests(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.TestFilter
+		OrderBy *gentypes.OrderBy
+	}) (*TestPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	tests, pageInfo, err := app.CourseApp.Tests(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &TestPageResolver{}, err
+	}
+
+	return NewTestPageResolver(ctx, NewTestPageArgs{
+		PageInfo: pageInfo,
+		Tests:    &tests,
+	})
+}

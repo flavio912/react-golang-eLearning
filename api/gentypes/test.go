@@ -1,16 +1,24 @@
 package gentypes
 
 import (
+	"time"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
 type Test struct {
 	UUID              UUID
+	CreatedAt         time.Time
 	Name              string
 	AttemptsAllowed   *uint
 	PassPercentage    *float64
 	QuestionsToAnswer *uint
 	RandomiseAnswers  *bool
+}
+
+type TestFilter struct {
+	UUID *UUID
+	Name *string
 }
 
 type CreateTestInput struct {

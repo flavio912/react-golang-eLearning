@@ -23,6 +23,14 @@ func (c *courseAppImpl) testToGentype(test models.Test) gentypes.Test {
 	return gentypes.Test{}
 }
 
+func (c *courseAppImpl) testsToGentypes(tests []models.Test) []gentypes.Test {
+	var modTests = make([]gentypes.Test, len(tests))
+	for i, test := range tests {
+		modTests[i] = c.testToGentype(test)
+	}
+	return modTests
+}
+
 func (c *courseAppImpl) CreateTest(input gentypes.CreateTestInput) (gentypes.Test, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Test{}, &errors.ErrUnauthorized
@@ -90,6 +98,23 @@ func (c *courseAppImpl) Test(testUUID gentypes.UUID) (gentypes.Test, error) {
 
 	test, err := c.coursesRepository.Test(testUUID)
 	return c.testToGentype(test), err
+}
+
+func (c *courseAppImpl) Tests(
+	page *gentypes.Page,
+	filter *gentypes.TestFilter,
+	orderBy *gentypes.OrderBy,
+) ([]gentypes.Test, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Test{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	tests, pageInfo, err := c.coursesRepository.Tests(page, filter, orderBy)
+	if err != nil {
+		return []gentypes.Test{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	return c.testsToGentypes(tests), pageInfo, nil
 }
 
 func (c *courseAppImpl) takerHasSubmittedTest(courseTaker gentypes.UUID, courseID uint, testUUID gentypes.UUID) (bool, error) {

@@ -36,6 +36,11 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
+	Tests(
+		page *gentypes.Page,
+		filter *gentypes.TestFilter,
+		orderBy *gentypes.OrderBy,
+	) ([]gentypes.Test, gentypes.PageInfo, error)
 	CreateTest(input gentypes.CreateTestInput) (gentypes.Test, error)
 	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
 	SubmitTest(input gentypes.SubmitTestInput) (bool, error)

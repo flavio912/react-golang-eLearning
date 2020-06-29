@@ -32,7 +32,7 @@ func (c *courseAppImpl) moduleToGentype(module models.Module) gentypes.Module {
 
 	return gentypes.Module{
 		UUID:           module.UUID,
-		Title:          module.Name,
+		Name:           module.Name,
 		BannerImageURL: bannerUrl,
 		Description:    module.Description,
 		Transcript:     module.Transcript,

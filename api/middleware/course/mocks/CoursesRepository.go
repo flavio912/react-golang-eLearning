@@ -664,6 +664,36 @@ func (_m *CoursesRepository) Question(uuid gentypes.UUID) (models.Question, erro
 	return r0, r1
 }
 
+// Questions provides a mock function with given fields: page, filter, orderBy
+func (_m *CoursesRepository) Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter, orderBy)
+
+	var r0 []models.Question
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.QuestionFilter, *gentypes.OrderBy) []models.Question); ok {
+		r0 = rf(page, filter, orderBy)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Question)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.QuestionFilter, *gentypes.OrderBy) gentypes.PageInfo); ok {
+		r1 = rf(page, filter, orderBy)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.QuestionFilter, *gentypes.OrderBy) error); ok {
+		r2 = rf(page, filter, orderBy)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // RequirementBullets provides a mock function with given fields: courseID
 func (_m *CoursesRepository) RequirementBullets(courseID uint) ([]models.RequirementBullet, error) {
 	ret := _m.Called(courseID)
@@ -729,6 +759,36 @@ func (_m *CoursesRepository) TestQuestions(testUUID gentypes.UUID) ([]models.Que
 	}
 
 	return r0, r1
+}
+
+// Tests provides a mock function with given fields: page, filter, orderBy
+func (_m *CoursesRepository) Tests(page *gentypes.Page, filter *gentypes.TestFilter, orderBy *gentypes.OrderBy) ([]models.Test, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter, orderBy)
+
+	var r0 []models.Test
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.TestFilter, *gentypes.OrderBy) []models.Test); ok {
+		r0 = rf(page, filter, orderBy)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Test)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.TestFilter, *gentypes.OrderBy) gentypes.PageInfo); ok {
+		r1 = rf(page, filter, orderBy)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.TestFilter, *gentypes.OrderBy) error); ok {
+		r2 = rf(page, filter, orderBy)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // UpdateClassroomCourse provides a mock function with given fields: courseInfo

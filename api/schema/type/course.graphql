@@ -15,30 +15,18 @@ enum CourseType {
 }
 
 interface SyllabusItem {
-  title: String!
+  name: String!
   uuid: UUID!
   complete: Boolean
 }
 
 type Lesson implements SyllabusItem {
-  title: String!
+  name: String!
   uuid: UUID!
   complete: Boolean
   mp3URL: String
   text: String!
   tags: [Tag!]
-}
-
-type Test implements SyllabusItem {
-  title: String!
-  uuid: UUID!
-  complete: Boolean
-  tags: [Tag!]
-  attemptsAllowed: Int
-  passPercentage: Float
-  questionsToAnswer: Int
-  randomiseAnswers: Boolean
-  questions: [Question!]
 }
 
 type Course {

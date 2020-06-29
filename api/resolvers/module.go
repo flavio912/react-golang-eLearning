@@ -15,8 +15,8 @@ type ModuleResolver struct {
 func (m *ModuleResolver) UUID() gentypes.UUID {
 	return m.Module.UUID
 }
-func (m *ModuleResolver) Title() string {
-	return m.Module.Title
+func (m *ModuleResolver) Name() string {
+	return m.Module.Name
 }
 func (m *ModuleResolver) BannerImageURL() *string {
 	return m.Module.BannerImageURL

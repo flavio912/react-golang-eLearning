@@ -1,6 +1,6 @@
 type Module implements SyllabusItem {
   uuid: UUID!
-  title: String!
+  name: String!
   bannerImageURL: String
   description: String!
   transcript: String!

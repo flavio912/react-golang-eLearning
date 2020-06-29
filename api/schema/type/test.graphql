@@ -1,3 +1,25 @@
+type Test implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  complete: Boolean
+  tags: [Tag!]
+  attemptsAllowed: Int
+  passPercentage: Float
+  questionsToAnswer: Int
+  randomiseAnswers: Boolean
+  questions: [Question!]
+}
+
+type TestPage implements PaginatedQuery {
+  edges: [Test]
+  pageInfo: PageInfo
+}
+
+input TestFilter {
+  uuid: UUID
+  name: String
+}
+
 type CreateTestPayload {
   test: Test
 }

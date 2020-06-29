@@ -1338,7 +1338,7 @@ func TestCreateTest(t *testing.T) {
 							questions: []
 					}) {
 							test {
-								title
+								name
 								complete
 								attemptsAllowed
 								passPercentage
@@ -1355,7 +1355,7 @@ func TestCreateTest(t *testing.T) {
 				{
 					"createTest": {
             "test": {
-                "title": "Cake",
+                "name": "Cake",
                 "complete": false,
                 "attemptsAllowed": 3,
                 "passPercentage": 30,

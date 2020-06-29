@@ -7,6 +7,7 @@ import (
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -192,6 +193,43 @@ func (c *coursesRepoImpl) Test(testUUID gentypes.UUID) (models.Test, error) {
 	}
 
 	return models.Test{}, err
+}
+
+func filterTest(query *gorm.DB, filter *gentypes.TestFilter) *gorm.DB {
+	if filter != nil {
+		if filter.UUID != nil {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) Tests(
+	page *gentypes.Page,
+	filter *gentypes.TestFilter,
+	orderBy *gentypes.OrderBy,
+) ([]models.Test, gentypes.PageInfo, error) {
+	var tests []models.Test
+	utils := dbutils.NewDBUtils(c.Logger)
+	pageInfo, err := utils.GetPageOf(
+		&models.Test{},
+		&tests,
+		page,
+		orderBy,
+		[]string{"created_at", "name"},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return filterTest(db, filter)
+		},
+	)
+	pageInfo.Given = int32(len(tests))
+
+	return tests, pageInfo, err
 }
 
 // ManyTests maps testUUIDs to their respective test

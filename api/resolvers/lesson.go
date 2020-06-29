@@ -80,7 +80,7 @@ func NewLessonResolvers(ctx context.Context, args NewLessonsArgs) (*[]*LessonRes
 }
 
 func (l *LessonResolver) UUID() gentypes.UUID { return l.Lesson.UUID }
-func (l *LessonResolver) Title() string       { return l.Lesson.Title }
+func (l *LessonResolver) Name() string        { return l.Lesson.Name }
 func (l *LessonResolver) Text() string        { return l.Lesson.Text }
 func (l *LessonResolver) Complete() *bool     { return helpers.BoolPointer(false) } // TODO
 func (l *LessonResolver) Mp3URL() *string     { return helpers.StringPointer("/google.com") }

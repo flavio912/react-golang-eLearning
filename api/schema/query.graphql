@@ -43,7 +43,7 @@ input CompanyFilter {
 
 input LessonFilter {
   uuid: UUID
-  title: String
+  name: String
   tags: [UUID]
 }
 
@@ -73,7 +73,7 @@ type Query {
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
-  # tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
+  tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
   test(uuid: UUID!): Test
   # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   # module(uuid: UUID!): Module

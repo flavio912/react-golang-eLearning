@@ -13,7 +13,7 @@ type Video struct {
 
 type Module struct {
 	UUID           UUID
-	Title          string
+	Name           string
 	BannerImageURL *string
 	Description    string
 	Transcript     string
