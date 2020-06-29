@@ -288,3 +288,9 @@ func (q *QueryResolver) Questions(
 		Questions: &questions,
 	})
 }
+
+func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
+	return NewTestResolver(ctx, NewTestArgs{
+		TestUUID: &args.UUID,
+	})
+}

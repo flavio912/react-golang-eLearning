@@ -74,7 +74,7 @@ type Query {
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
   # tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
-  # test(uuid: UUID!): Test
+  test(uuid: UUID!): Test
   # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   # module(uuid: UUID!): Module
 

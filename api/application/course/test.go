@@ -88,10 +88,8 @@ func (c *courseAppImpl) Test(testUUID gentypes.UUID) (gentypes.Test, error) {
 		return gentypes.Test{}, &errors.ErrUnauthorized
 	}
 
-	return gentypes.Test{
-		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		Name: "Cheseecake",
-	}, nil
+	test, err := c.coursesRepository.Test(testUUID)
+	return c.testToGentype(test), err
 }
 
 func (c *courseAppImpl) takerHasSubmittedTest(courseTaker gentypes.UUID, courseID uint, testUUID gentypes.UUID) (bool, error) {
