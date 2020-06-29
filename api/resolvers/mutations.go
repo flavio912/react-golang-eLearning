@@ -486,8 +486,9 @@ func (m *MutationResolver) UpdateBlogHeaderImage(
 		return &BlogResolver{}, err
 	}
 
-	// TODO: Need to get updated blog
-	return &BlogResolver{}, nil
+	return NewBlogResolver(ctx, NewBlogArgs{
+		UUID: args.Input.BlogUUID.String(),
+	})
 }
 
 func (m *MutationResolver) BlogBodyImageUploadRequest(
