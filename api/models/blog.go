@@ -5,9 +5,8 @@ import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentype
 type Blog struct {
 	Base
 	Title          string
-	Body           string `sql:"json"`
-	Category       Category
-	CategoryUUID   gentypes.UUID
+	Body           string   `sql:"json"`
+	Category       Category `gorm:"foreignkey:BlogUUID"`
 	HeaderImageKey string
 	Author         Admin `gorm:"foreignkey:BlogUUID"`
 }
