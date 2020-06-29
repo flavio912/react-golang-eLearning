@@ -39,7 +39,7 @@ func TestCreateBlog(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, input.Title, blog.Title)
 		assert.Equal(t, adminUUID, blog.Author.UUID)
-		assert.Equal(t, input.CategoryUUID, blog.CategoryUUID)
+		assert.Equal(t, input.CategoryUUID, blog.Category.UUID)
 	})
 }
 

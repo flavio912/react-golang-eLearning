@@ -22,7 +22,6 @@ func (b *BlogResolver) Title() string          { return b.Blog.Title }
 func (b *BlogResolver) Body() string           { return b.Blog.Body }
 func (b *BlogResolver) HeaderImageURL() string { return b.Blog.HeaderImageURL }
 
-// TODO: Use dataloaders
 func (b *BlogResolver) Category() *CategoryResolver {
 	return &CategoryResolver{
 		Category: b.Blog.Category,

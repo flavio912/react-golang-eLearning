@@ -22,7 +22,9 @@ func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 		Body:           blog.Body,
 		HeaderImageURL: url,
 		Category: gentypes.Category{
-			UUID: blog.CategoryUUID,
+			UUID:  blog.Category.UUID,
+			Name:  blog.Category.Name,
+			Color: blog.Category.Color,
 		},
 		Author: gentypes.BlogAuthor{
 			FirstName: blog.Author.FirstName,

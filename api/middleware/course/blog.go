@@ -31,11 +31,23 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
 
+	var category models.Category
+	query = database.GormDB.Where("uuid = ?", input.CategoryUUID).First(&category)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find category %s", input.CategoryUUID)
+			return models.Blog{}, &errors.ErrNotFound
+		}
+
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of category %s", input.CategoryUUID)
+		return models.Blog{}, &errors.ErrWhileHandling
+	}
+
 	blog := models.Blog{
-		Title:        input.Title,
-		Body:         input.Body,
-		CategoryUUID: input.CategoryUUID,
-		Author:       admin,
+		Title:    input.Title,
+		Body:     input.Body,
+		Category: category,
+		Author:   admin,
 	}
 
 	query = database.GormDB.Create(&blog)
