@@ -12,6 +12,21 @@ type Question struct {
 	QuestionType     QuestionType
 }
 
+type QuestionFilter struct {
+	UUID *UUID
+	Text *string
+	Tags *[]UUID
+}
+
+func (q QuestionFilter) Validate() error {
+	ok, err := govalidator.ValidateStruct(q)
+	if !ok {
+		return err
+	}
+
+	return nil
+}
+
 type QuestionType string
 
 // You can't change this text in prod without also

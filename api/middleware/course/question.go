@@ -20,6 +20,11 @@ func (c *coursesRepoImpl) Question(uuid gentypes.UUID) (models.Question, error) 
 	return question, nil
 }
 
+// func (c *coursesRepoImpl) Questions(page gentypes.Page, filter gentypes.QuestionFilter, orderBy gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error) {
+// 	var questions []models.Question
+
+// }
+
 // ManyAnswers gets a mapping between questionUUIDs and their respective answers
 func (c *coursesRepoImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error) {
 	var answers []models.BasicAnswer
