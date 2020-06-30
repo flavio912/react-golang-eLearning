@@ -9,7 +9,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     '@media (max-width: 1000px)': {
-      flexDirection: 'column',
+      // Allows correct resizing
+      flexDirection: (hasQuote: boolean) =>  hasQuote ? 'column' : 'row',
       alignItems: 'center'
     }
   },
@@ -40,7 +41,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    margin: '0 68px 0 295px',
+    margin: '0 68px 0 40%',
     '@media (max-width: 1000px)': {
       margin: 47
     }
@@ -93,11 +94,11 @@ function FloatingVideo({
   className
 }: Props) {
   const theme = useTheme();
-  const classes = useStyles({ theme });
+  const classes = useStyles({ hasQuote: author !== undefined, theme });
 
   return (
     <div className={classes.root}>
-      <div className={classes.floating}>
+      <div className={classNames(classes.floating, className)}>
         <VideoPlayer
           source={source}
           height={height}

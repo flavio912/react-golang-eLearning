@@ -15,6 +15,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.lightBlue,
     padding: '57px 0'
   },
+  centered: {
+    display: 'flex',
+    flexDirection: 'column',
+    maxWidth: theme.centerColumnWidth
+  },
   defaultTitle: {
     alignSelf: 'center',
     fontSize: theme.fontSizes.extraLarge,
@@ -32,10 +37,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     textAlign: 'center'
   },
   buttonsTitle: {
-    fontSize: '40px'
+    fontSize: '40px',
+    border: 'none'
   },
   buttonsDesc: {
-    fontSize: theme.fontSizes.heading,
+    fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: '500'
   },
   courseTitle: {
@@ -55,27 +61,30 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.navyBlue
   },
   jumpText: {
-    marginRight: '20px'
+    margin: '20px 20px 0 20px',
   },
   updatedText: {
     marginLeft: '25px'
   },
   button: {
     fontWeight: '800',
-    marginRight: '20px',
+    margin: '20px 20px 0 20px',
     height: '53px',
     width: '211px'
   },
   buttons: {
-    marginTop: '18px'
+    flexWrap: 'wrap',
+    '@media (max-width: 500px)': {
+      flexDirection: 'column'
+    }
   },
   times: {
+    alignSelf: 'flex-start',
     marginTop: '31px'
   },
   history: {
     alignSelf: 'flex-start',
-    marginLeft: '90px',
-    marginBottom: '59px'
+    marginBottom: '50px'
   },
   course: {
     alignSelf: 'flex-start',
@@ -95,7 +104,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   row: {
     display: 'flex',
-    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center'
   },
@@ -103,7 +111,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'flex-start'
+    alignItems: 'center'
   },
   spacer: {
     minWidth: '450px'
@@ -153,76 +161,78 @@ function PageHeader({
 
   return (
     <div className={classNames(classes.root, className)}>
-      {history && (
-        <div className={classNames(classes.row, classes.history)}>
-          {history.map((page: string, index: number) =>
-            index !== history.length - 1 ? (
-              <div className={classes.extraLarge}>
-                {page} <Icon name="Right_Arrow" size={12} />
-              </div>
-            ) : (
-              <div className={classNames(classes.extraLarge, classes.bold)}>
-                {page}
-              </div>
-            )
-          )}
-        </div>
-      )}
-
-      <div
-        className={classNames(
-          classes.row,
-          archetype && archetype === 'course' && classes.course
+      <div className={classNames(classes.centered)}>
+        {history && (
+          <div className={classNames(classes.row, classes.history)}>
+            {history.map((page: string, index: number) =>
+              index !== history.length - 1 ? (
+                <div className={classes.extraLarge}>
+                  {page} <Icon name="Right_Arrow" size={12} />
+                </div>
+              ) : (
+                <div className={classNames(classes.extraLarge, classes.bold)}>
+                  {page}
+                </div>
+              )
+            )}
+          </div>
         )}
-      >
-        <div className={classes.column}>
-          <div className={classNames(classes.defaultTitle, titleStyle)}>
-            {title}
-          </div>
-          {archetype && archetype === 'default' && (
-            <div className={classes.bar} />
-          )}
-          <div className={classNames(classes.defaultDesc, descStyle)}>
-            {description}
-          </div>
 
+        <div
+          className={classNames(
+            classes.row,
+            archetype && archetype === 'course' && classes.course
+          )}
+        >
+          <div className={classes.column}>
+            <div className={classNames(classes.defaultTitle, titleStyle)}>
+              {title}
+            </div>
+            {archetype && archetype === 'default' && (
+              <div className={classes.bar} />
+            )}
+            <div className={classNames(classes.defaultDesc, descStyle)}>
+              {description}
+            </div>
+
+            {archetype && archetype === 'course' && (
+              <div className={classNames(classes.row, classes.times)}>
+                <div className={classes.extraLarge}>
+                  {<strong>Estimated Time:</strong>} {estimatedTime}
+                </div>
+                <div
+                  className={classNames(classes.updatedText, classes.extraLarge)}
+                >
+                  {<strong>Last Updated:</strong>} {lastUpdated}
+                </div>
+              </div>
+            )}
+
+            {archetype && archetype === 'buttons' && (
+              <div className={classNames(classes.row, classes.buttons)}>
+                <div className={classNames(classes.jumpText, classes.extraLarge)}>
+                  Jump to:
+                </div>
+                {buttons &&
+                  buttons.map((buttonLink: ButtonLink) => (
+                    <Button
+                      className={classNames(classes.button, classes.extraLarge)}
+                      onClick={() => onClick(buttonLink.link)}
+                    >
+                      {buttonLink.title}
+                    </Button>
+                  ))}
+              </div>
+            )}
+          </div>
           {archetype && archetype === 'course' && (
-            <div className={classNames(classes.row, classes.times)}>
-              <div className={classes.extraLarge}>
-                {<strong>Estimated Time:</strong>} {estimatedTime}
-              </div>
-              <div
-                className={classNames(classes.updatedText, classes.extraLarge)}
-              >
-                {<strong>Last Updated:</strong>} {lastUpdated}
-              </div>
-            </div>
-          )}
-
-          {archetype && archetype === 'buttons' && (
-            <div className={classNames(classes.row, classes.buttons)}>
-              <div className={classNames(classes.jumpText, classes.extraLarge)}>
-                Jump to:
-              </div>
-              {buttons &&
-                buttons.map((buttonLink: ButtonLink) => (
-                  <Button
-                    className={classNames(classes.button, classes.extraLarge)}
-                    onClick={() => onClick(buttonLink.link)}
-                  >
-                    {buttonLink.title}
-                  </Button>
-                ))}
-            </div>
+            <div className={classes.spacer} />
           )}
         </div>
         {archetype && archetype === 'course' && (
-          <div className={classes.spacer} />
+          <div className={classes.component}>{sideComponent}</div>
         )}
       </div>
-      {archetype && archetype === 'course' && (
-        <div className={classes.component}>{sideComponent}</div>
-      )}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import Register from 'views/RegisterStart';
 import RegisterStart from 'views/RegisterStart';
 import RegisterIndividual from 'views/RegisterIndividual';
 import RegisterCompany from 'views/RegisterCompany';
+import Courses from 'views/Courses';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -55,6 +56,7 @@ const Router = createFarceRouter({
       >
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
+        <Route path="/courses" Component={Courses} />
       </Route>
       <Route path="/register" Component={RegisterStart} />
       <Route path="/register/individual" Component={RegisterIndividual} />
