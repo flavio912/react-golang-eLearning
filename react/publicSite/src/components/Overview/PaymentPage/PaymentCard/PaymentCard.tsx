@@ -2,7 +2,8 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { useRouter } from 'found';
-import { CardElement } from '@stripe/react-stripe-js';
+import { CardElement, useElements } from '@stripe/react-stripe-js';
+import { StripeCardElement } from '@stripe/stripe-js';
 import { Theme } from 'helpers/theme';
 import Button from 'sharedComponents/core/Input/Button';
 
@@ -54,9 +55,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '20px 0 10px 0'
   },
   terms: {
-    fontSize: theme.fontSizes.small,
-    fontWeight: '800',
-    color: theme.colors.textGrey
+    fontSize: theme.fontSizes.tiny,
   },
   service: {
     cursor: 'pointer',
@@ -112,10 +111,11 @@ const CARD_ELEMENT_OPTIONS = {
 
 type Props = {
   total: number;
+  card: StripeCardElement | null;
   className?: string;
 };
 
-function PaymentCard({ total, className }: Props) {
+function PaymentCard({ total, card, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -134,6 +134,13 @@ function PaymentCard({ total, className }: Props) {
     // TODO: add link to terms of service
     router.push('/');
   };
+
+  const elements = useElements();
+  React.useEffect(() => {
+    if (elements) {
+        card = elements.getElement(CardElement);
+    }
+  });
 
   return (
     <div className={classNames(classes.root, className)}>

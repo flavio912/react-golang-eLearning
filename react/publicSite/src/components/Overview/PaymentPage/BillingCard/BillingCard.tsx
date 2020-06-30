@@ -62,8 +62,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type BillingDetails = {
-  firstName: string;
-  lastName: string;
   addressOne: string;
   addressTwo: string;
   city: string;
@@ -82,8 +80,6 @@ function BillingCard({ billingDetails, className }: Props) {
   const classes = useStyles({ theme });
 
   // Form Data
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
   const [addressOne, setAddressOne] = React.useState('');
   const [addressTwo, setAddressTwo] = React.useState('');
   const [city, setCity] = React.useState('');
@@ -93,8 +89,6 @@ function BillingCard({ billingDetails, className }: Props) {
 
   React.useEffect(() => {
     billingDetails = {
-      firstName,
-      lastName,
       addressOne,
       addressTwo,
       city,
@@ -107,24 +101,6 @@ function BillingCard({ billingDetails, className }: Props) {
   return (
     <form className={classNames(classes.root, className)}>
       <div className={classes.header}>Billing Address</div>
-
-      <div className={classes.row}>
-        <CoreInput
-          placeholder="First Name"
-          type="text"
-          onChange={(text: string) => setFirstName(text)}
-          value={firstName}
-          className={classes.input}
-        />
-
-        <CoreInput
-          placeholder="Last Name"
-          type="text"
-          onChange={(text: string) => setLastName(text)}
-          value={lastName}
-          className={classNames(classes.input, classes.marginLeft)}
-        />
-      </div>
 
       <CoreInput
         placeholder="Address Line 1"
