@@ -11,6 +11,22 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
+func activeCourseToGentype(activeCourse models.ActiveCourse) gentypes.ActiveCourse {
+	return gentypes.ActiveCourse{
+		CourseID:       activeCourse.CourseID,
+		CurrentAttempt: activeCourse.CurrentAttempt,
+		MinutesTracked: activeCourse.MinutesTracked,
+	}
+}
+
+func activeCoursesToGentypes(activeCourses []models.ActiveCourse) []gentypes.ActiveCourse {
+	var genCourses = make([]gentypes.ActiveCourse, len(activeCourses))
+	for i, course := range activeCourses {
+		genCourses[i] = activeCourseToGentype(course)
+	}
+	return genCourses
+}
+
 func (u *usersAppImpl) DelegateToUser(delegate models.Delegate) gentypes.User {
 
 	var uploadUrl *string
@@ -78,3 +94,30 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
+func (u *usersAppImpl) ActiveCourses() ([]gentypes.ActiveCourse, error) {
+	if !u.grant.IsDelegate && !u.grant.IsIndividual {
+		return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
+	}
+
+	var takerUUID gentypes.UUID
+	if u.grant.IsDelegate {
+		delegate, _ := u.usersRepository.Delegate(u.grant.Claims.UUID)
+		takerUUID = delegate.CourseTakerUUID
+	}
+
+	if u.grant.IsIndividual {
+		individual, _ := u.usersRepository.Individual(u.grant.Claims.UUID)
+		takerUUID = individual.CourseTakerUUID
+	}
+
+	if (takerUUID == gentypes.UUID{}) {
+		return []gentypes.ActiveCourse{}, &errors.ErrNotFound
+	}
+
+	activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
+	if err != nil {
+		return []gentypes.ActiveCourse{}, &errors.ErrWhileHandling
+	}
+
+	return activeCoursesToGentypes(activeCourses), nil
+}

@@ -66,6 +66,12 @@ type Course struct {
 	CategoryUUID    *UUID
 }
 
+type ActiveCourse struct {
+	CourseID       uint
+	CurrentAttempt uint
+	MinutesTracked float64
+}
+
 type CourseFilter struct {
 	Name            *string
 	AccessType      *AccessType

@@ -531,3 +531,8 @@ func (m *MutationResolver) UpdateModule(ctx context.Context, args struct{ Input 
 		Module: res,
 	}, err
 }
+
+func (m *MutationResolver) FulfilPendingOrder(ctx context.Context, args struct{ ClientSecret string }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.FulfilPendingOrder(args.ClientSecret)
+}

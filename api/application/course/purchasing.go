@@ -28,7 +28,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		price = price + course.Price
 	}
 
-	if application.IsAuthorizedToBook(&c.usersRepository, c.grant, courseModels) {
+	if !application.IsAuthorizedToBook(&c.usersRepository, c.grant, courseModels) {
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
 	}
 
@@ -107,4 +107,17 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		StripeClientSecret:  &intent.ClientSecret,
 		TransactionComplete: false, // As user still needs to pay
 	}, nil
+}
+
+func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	err := c.ordersRepository.FulfilPendingOrder(clientSecret)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

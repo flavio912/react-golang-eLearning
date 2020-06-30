@@ -18,7 +18,7 @@ type User {
   company: Company
   profileImageUrl: String
   activity(page: Page): ActivityPage
-  # activeCourses(page: Page): ActiveCoursePage
+  activeCourses: [ActiveCourse!]
   # certificates
   # address: Address
 }
@@ -48,8 +48,8 @@ type Activity {
 # }
 
 # # A course currently being taken by a user
-# type ActiveCourse {
-#   course: Course!
-#   currentAttempt: Int!
-#   minutesTracked: Float!
-# }
+type ActiveCourse {
+  course: Course!
+  currentAttempt: Int!
+  minutesTracked: Float!
+}

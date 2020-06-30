@@ -26,7 +26,6 @@ import Progress from 'views/Progress';
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
 ) => {
-  console.log('ARGS', args);
   // Sadly found-relay has no types...
   //@ts-ignore
   if (args?.error && args?.error.type == 'ErrUnauthorized') {

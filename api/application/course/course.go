@@ -88,19 +88,11 @@ func (c *courseAppImpl) coursesToGentypes(courses []models.Course) []gentypes.Co
 }
 
 func (c *courseAppImpl) Course(courseID uint) (gentypes.Course, error) {
-	if !c.grant.IsAdmin {
-		return gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
 	course, err := c.coursesRepository.Course(courseID)
 	return c.courseToGentype(course), err
 }
 
 func (c *courseAppImpl) Courses(courseIDs []uint) ([]gentypes.Course, error) {
-	if !c.grant.IsAdmin {
-		return []gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
 	courses, err := c.coursesRepository.Courses(courseIDs)
 	return c.coursesToGentypes(courses), err
 }

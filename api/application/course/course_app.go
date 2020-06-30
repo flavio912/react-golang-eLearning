@@ -13,6 +13,7 @@ type CourseApp interface {
 	SetCoursesRepository(r course.CoursesRepository)
 
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
+	FulfilPendingOrder(clientSecret string) (bool, error)
 
 	Course(courseID uint) (gentypes.Course, error)
 	Courses(courseIDs []uint) ([]gentypes.Course, error)
