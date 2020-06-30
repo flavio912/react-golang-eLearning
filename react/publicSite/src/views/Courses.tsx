@@ -25,7 +25,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     width: theme.centerColumnWidth,
-    //padding: '0 10px'
   },
   heading: {
     fontSize: 30,
@@ -157,13 +156,13 @@ function Courses({}: Props) {
             moreToShow={true}
             onMore={() => console.log("More")}
         />
+        <TrustedCard
+            text="Trusted by more than 1,000 businesses in 120 countries."
+            className={classes.margin}
+            noShadow
+        />
         <div className={classes.centerer}>
             <div className={classes.centered}>
-                <TrustedCard
-                    text="Trusted by more than 1,000 businesses in 120 countries."
-                    className={classes.margin}
-                    noShadow
-                />
                 <div className={classes.margin}>
                     <FloatingVideo
                         
