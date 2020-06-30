@@ -11,8 +11,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     padding: '25px',
-    borderRadius: '14px',
-    boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
+    borderRadius: '10px',
+    boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.11)'
   },
   row: {
     display: 'flex',
@@ -62,8 +62,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type BillingDetails = {
-  firstName: string;
-  lastName: string;
   addressOne: string;
   addressTwo: string;
   city: string;
@@ -82,8 +80,6 @@ function BillingCard({ billingDetails, className }: Props) {
   const classes = useStyles({ theme });
 
   // Form Data
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
   const [addressOne, setAddressOne] = React.useState('');
   const [addressTwo, setAddressTwo] = React.useState('');
   const [city, setCity] = React.useState('');
@@ -93,8 +89,6 @@ function BillingCard({ billingDetails, className }: Props) {
 
   React.useEffect(() => {
     billingDetails = {
-      firstName,
-      lastName,
       addressOne,
       addressTwo,
       city,
@@ -107,24 +101,6 @@ function BillingCard({ billingDetails, className }: Props) {
   return (
     <form className={classNames(classes.root, className)}>
       <div className={classes.header}>Billing Address</div>
-
-      <div className={classes.row}>
-        <CoreInput
-          placeholder="First Name"
-          type="text"
-          onChange={(text: string) => setFirstName(text)}
-          value={firstName}
-          className={classes.input}
-        />
-
-        <CoreInput
-          placeholder="Last Name"
-          type="text"
-          onChange={(text: string) => setLastName(text)}
-          value={lastName}
-          className={classNames(classes.input, classes.marginLeft)}
-        />
-      </div>
 
       <CoreInput
         placeholder="Address Line 1"

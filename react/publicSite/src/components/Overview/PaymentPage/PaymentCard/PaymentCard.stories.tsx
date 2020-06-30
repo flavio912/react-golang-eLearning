@@ -22,23 +22,13 @@ export default {
   decorators: [withKnobs],
 };
 
-const cardMock = React.createElement(() => {
-    const elements = useElements();
-    if (elements) {
-        const card = elements.getElement(CardElement);
-    }
-  return (
-    <PaymentCard total={336} />
-  );
-});
-
 // Setup Stripe.js and the Elements provider
 const stripePromise = loadStripe('pk_test_TYooMQauvdEDq54NiTphI7jx');
 
 const stripeMock = () => {
     return (
       <Elements stripe={stripePromise}>
-        {cardMock}
+        <PaymentCard total={336} card={null} />
       </Elements>
     );
   }

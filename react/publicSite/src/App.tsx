@@ -20,6 +20,7 @@ import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
 import AboutUs from 'views/AboutUs';
+import PaymentPage from 'views/PaymentPage';
 import Register from 'views/RegisterStart';
 import RegisterStart from 'views/RegisterStart';
 import RegisterIndividual from 'views/RegisterIndividual';
@@ -56,6 +57,7 @@ const Router = createFarceRouter({
       >
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
+        <Route path="/payment" Component={PaymentPage} />
         <Route path="/courses" Component={Courses} />
       </Route>
       <Route path="/register" Component={RegisterStart} />
