@@ -8,7 +8,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   registerRoot: {
     display: 'grid',
     minHeight: '100%',
-    position: 'absolute',
     background: 'white',
     gridTemplateColumns: '600px 1fr',
     '@media (max-width: 800px)': {
@@ -19,7 +18,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     background: theme.loginBackgroundGradient
   },
   picker: {
-    padding: 48
+    padding: 48,
+    background: 'white'
   }
 }));
 
