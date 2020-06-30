@@ -10,6 +10,7 @@ import CoreInput from 'sharedComponents/core/Input/CoreInput';
 import Title from './Title';
 import Subtitle from './Subtitle';
 import Footer from './Footer';
+import CheckboxSingle from 'sharedComponents/core/Input/CheckboxSingle';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   registerIndividualRoot: {
@@ -29,10 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'grid',
     width: '100%',
     gridGap: theme.spacing(2),
-    gridTemplateAreas: `
-    ". ."
-    ". ."
-    `
+    gridTemplateColumns: '1fr 1fr'
   },
   fullWidth: {
     gridColumn: '1 / 3'
@@ -53,6 +51,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   dropdown: {
     flex: 1
+  },
+  checkboxText: {
+    color: theme.colors.textGrey
   }
 }));
 
@@ -64,9 +65,10 @@ type Props = {
     telephone: string,
     role: string
   ) => void;
+  onLogoClick?: () => void;
 };
 
-function RegisterIndividual({ onSubmit }: Props) {
+function RegisterIndividual({ onSubmit, onLogoClick }: Props) {
   const classes = useStyles();
 
   const [firstName, setFirstName] = React.useState('');
@@ -84,7 +86,7 @@ function RegisterIndividual({ onSubmit }: Props) {
 
   return (
     <div className={classes.registerIndividualRoot}>
-      <Icon name="TTC_Logo_Icon" size={44} />
+      <Icon name="TTC_Logo_Icon" size={44} onClick={onLogoClick} />
       <Spacer vertical spacing={4} />
       <Title>Register your team today</Title>
       <Subtitle>
@@ -128,6 +130,13 @@ function RegisterIndividual({ onSubmit }: Props) {
           fontStyle={classes.dropdownText}
           setSelected={(selected: DropdownOption) => setRole(selected)}
           className={classnames(classes.dropdown, classes.fullWidth)}
+        />
+        <CheckboxSingle
+          size={18}
+          onChange={() => {}}
+          fontStyle={classes.checkboxText}
+          className={classes.fullWidth}
+          label="By checking this box you confirm you are happy for our team to contact you during the registration period"
         />
       </div>
       <Spacer vertical spacing={3} />

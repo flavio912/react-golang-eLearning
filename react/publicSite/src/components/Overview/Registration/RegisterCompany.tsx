@@ -63,11 +63,13 @@ type Props = {
     lname: string,
     email: string,
     telephone: string,
-    role: string
+    role: string,
+    compType: string
   ) => void;
+  onLogoClick?: () => void;
 };
 
-function RegisterCompany({ onSubmit }: Props) {
+function RegisterCompany({ onSubmit, onLogoClick }: Props) {
   const classes = useStyles();
 
   const [firstName, setFirstName] = React.useState('');
@@ -78,15 +80,19 @@ function RegisterCompany({ onSubmit }: Props) {
     id: 0,
     title: 'What role best describes you'
   });
+  const [compType, setCompType] = React.useState({
+    id: 0,
+    title: 'Type of company'
+  });
   const [agreedTerms, setAgreedTerms] = React.useState(false);
 
   const submitInfo = () => {
-    onSubmit(firstName, lastName, email, telephone, role.title);
+    onSubmit(firstName, lastName, email, telephone, role.title, compType.title);
   };
 
   return (
     <div className={classes.registerCompanyRoot}>
-      <Icon name="TTC_Logo_Icon" size={44} />
+      <Icon name="TTC_Logo_Icon" size={44} onClick={onLogoClick} />
       <Spacer vertical spacing={4} />
       <Title>Register your team today</Title>
       <Subtitle>
@@ -126,9 +132,9 @@ function RegisterCompany({ onSubmit }: Props) {
         <Dropdown
           placeholder="Type of Company"
           options={[{ id: 0, title: 'Default Option' }]}
-          selected={role}
+          selected={compType}
           fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setRole(selected)}
+          setSelected={(selected: DropdownOption) => setCompType(selected)}
           className={classnames(classes.dropdown, classes.fullWidth)}
         />
         <Dropdown
@@ -143,6 +149,7 @@ function RegisterCompany({ onSubmit }: Props) {
           size={18}
           onChange={() => {}}
           fontStyle={classes.checkboxText}
+          className={classes.fullWidth}
           label="By checking this box you confirm you are happy for our team to contact you during the registration period"
         />
       </div>

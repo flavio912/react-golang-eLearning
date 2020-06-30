@@ -4,10 +4,11 @@ import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   subtitle: {
-    fontSize: theme.fontSizes.tinyHeading,
+    fontSize: theme.fontSizes.large,
     color: theme.colors.textGrey,
     marginBottom: '35px',
-    textAlign: 'center'
+    textAlign: 'center',
+    fontWeight: 300
   }
 }));
 

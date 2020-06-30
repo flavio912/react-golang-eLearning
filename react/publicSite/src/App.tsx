@@ -20,7 +20,10 @@ import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
 import AboutUs from 'views/AboutUs';
-import Register from 'views/Register';
+import Register from 'views/RegisterStart';
+import RegisterStart from 'views/RegisterStart';
+import RegisterIndividual from 'views/RegisterIndividual';
+import RegisterCompany from 'views/RegisterCompany';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -52,8 +55,10 @@ const Router = createFarceRouter({
       >
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
-        <Route path="/register" Component={Register} />
       </Route>
+      <Route path="/register" Component={RegisterStart} />
+      <Route path="/register/individual" Component={RegisterIndividual} />
+      <Route path="/register/company" Component={RegisterCompany} />
     </Route>
   ),
   render: createRender({})

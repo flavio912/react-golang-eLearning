@@ -129,6 +129,9 @@ export const AppHolder = ({ children }: Props) => {
               break;
           }
         }}
+        onRegisterClick={() => {
+          router.push('/register');
+        }}
         onCheckout={() => console.log('Checkout')}
       />
       <div className={classes.appHolder}>{children}</div>

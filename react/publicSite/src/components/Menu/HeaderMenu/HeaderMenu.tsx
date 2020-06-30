@@ -81,11 +81,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-/**
- * Hook that alerts clicks outside of the passed ref
- */
-function useOutsideAlerter(ref: any) {}
-
 export interface Tab {
   id: number;
   title: string;
@@ -96,6 +91,7 @@ type Props = {
   tabs: Array<Tab>;
   selected: Tab;
   onClick?: (tab: Tab) => void;
+  onRegisterClick?: () => void;
   basketItems?: BasketItem[];
   onCheckout: () => void;
   children?: React.ReactNode;
@@ -106,6 +102,7 @@ function HeaderMenu({
   tabs,
   selected,
   onClick,
+  onRegisterClick,
   basketItems,
   onCheckout,
   className
@@ -164,7 +161,11 @@ function HeaderMenu({
               </div>
             )}
             <div className={classes.tab}>Login</div>
-            <Button archetype="gradient" className={classes.register}>
+            <Button
+              archetype="gradient"
+              className={classes.register}
+              onClick={onRegisterClick}
+            >
               Register
             </Button>
           </div>
