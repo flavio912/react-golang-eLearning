@@ -6,6 +6,7 @@ import Homepage from 'components/Overview/Homepage';
 import FloatingVideo from 'components/core/VideoPlayer/FloatingVideo';
 import ImageWithText from 'components/core/ImageWithText';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { Router } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   homeRoot: {
@@ -34,15 +35,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-type Props = {};
+type Props = {
+  router: Router;
+};
 
-function Home({}: Props) {
+function Home({ router }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <div className={classes.homeRoot}>
-      <Homepage imageURL="" onView={() => {}} onDemo={() => {}} />
+      <Homepage
+        imageURL=""
+        onView={() => {
+          router.push('/courses');
+        }}
+        onDemo={() => {}}
+      />
       <div className={classnames(classes.centerer, classes.whiteSpacer)}>
         <div className={classes.centered}>
           <FloatingVideo
