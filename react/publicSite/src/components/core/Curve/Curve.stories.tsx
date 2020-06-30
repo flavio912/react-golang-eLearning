@@ -10,6 +10,8 @@ import { createFarceRouter, createRender } from 'found';
 import environment from '../../../api/environment';
 import TrustedCard from '../Cards/TrustedCard';
 import VideoPlayer from '../VideoPlayer';
+import PeopleCurve from './PeopleCurve';
+import { Row } from '../ImageWithText/ImageWithText';
 
 export default {
   title: 'core/Curve',
@@ -106,6 +108,36 @@ const home = () => {
     </div>
   );
 };
+
+const defaultStack: Row[] = [
+  {
+      iconName: "CourseCertificates", text: "All of our friendly and knowledgable team are available via email and live chat.",
+      link: { title: "World Class 24x7 Support", link: "/"}
+  },
+  {
+      iconName: "CourseCertificates", text: "Stay tuned for regular webinars and live QA sessions with the TTC team.",
+      link: { title: "Webinars and Live Sessions", link: "/"}
+  },
+  {
+      iconName: "CourseCertificates", text: "Got a question that needs an immediate answer? Try our knowledge base.",
+      link: { title: "Knowledge Base", link: "/"}
+  },
+]
+
+const people = () => (
+  <PeopleCurve stack={defaultStack} />
+);
+
+// Mock Router
+const PeopleRouter = createFarceRouter({
+  historyProtocol: new MemoryProtocol('/'),
+  routeConfig: [{ path: '/', Component: people }],
+  render: createRender({})
+});
+
+export const peopleCurve = () => (
+  <PeopleRouter resolver={new Resolver(environment)} />
+);
 
 // Mock Router
 const StoryRouter = createFarceRouter({

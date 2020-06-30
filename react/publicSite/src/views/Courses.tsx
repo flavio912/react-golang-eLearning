@@ -3,7 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
 import FloatingVideo from 'components/core/VideoPlayer/FloatingVideo';
-import ImageWithText, { Row } from 'components/core/ImageWithText';
+import { Row } from 'components/core/ImageWithText';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import PageHeader, { ButtonLink } from 'components/core/PageHeader';
 import CourseSearch, { Tab } from 'components/CourseSearch';
@@ -11,6 +11,7 @@ import { CourseProps } from 'components/CourseSearch/CourseItem';
 import TrustedCard from 'components/core/Cards/TrustedCard';
 import FourPanel from 'components/core/FourPanel';
 import { Panel } from 'components/core/FourPanel/FourPanel';
+import PeopleCurve from 'components/core/Curve/PeopleCurve';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
@@ -28,7 +29,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: theme.centerColumnWidth,
   },
   heading: {
-    fontSize: 30,
+    fontSize: 32,
     color: theme.colors.primaryBlack,
     fontWeight: 800,
     padding: '20px 0px',
@@ -51,10 +52,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '40px 0',
   },
   marginBottom: {
-      marginBottom: '50px'
-  },
-  greyBackground: {
-      backgroundColor: theme.colors.backgroundGrey
+      marginBottom: '40px'
   }
 }));
 
@@ -122,7 +120,7 @@ const defaultStack: Row[] = [
         iconName: "CourseCertificates", text: "Got a question that needs an immediate answer? Try our knowledge base.",
         link: { title: "Knowledge Base", link: "/"}
     },
-]
+];
 
 type Props = {};
 
@@ -174,7 +172,6 @@ function Courses({}: Props) {
             <div className={classes.centered}>
                 <div className={classes.margin}>
                     <FloatingVideo
-                        
                         height={352}
                         width={628}
                         source={require('assets/Stock_Video.mp4')}
@@ -187,17 +184,7 @@ function Courses({}: Props) {
                 </div>
             </div>
         </div>
-        <div className={classNames(classes.centerer, classes.greyBackground)}>
-            <div className={classes.centered}>        
-                <div className={classes.heading}>Our people make the difference.</div>
-                <div className={classes.text}>Not only do we offer incredible training, but our customer service is world-class too</div>
-                <ImageWithText
-                    className={classes.margin}
-                    image={require("assets/StockUKTeam.svg")}
-                    stack={defaultStack}
-                />
-            </div>
-        </div>
+        <PeopleCurve stack={defaultStack} />
     </div>
   );
 }

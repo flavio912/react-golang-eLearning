@@ -15,6 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexWrap: 'wrap',
     borderBottom: ['1px', 'solid', theme.colors.borderGrey],
     justifyContent: 'space-evenly',
+    backgroundColor: theme.colors.primaryWhite
   },
   tab: {
     cursor: 'pointer',
