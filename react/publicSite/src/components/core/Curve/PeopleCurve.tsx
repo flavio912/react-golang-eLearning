@@ -16,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
-    width: theme.centerColumnWidth,
+    width: theme.centerColumnWidth
   },
   heading: {
     fontSize: theme.fontSizes.extraLargeHeading,
@@ -33,42 +33,45 @@ const useStyles = createUseStyles((theme: Theme) => ({
     maxWidth: '750px'
   },
   margin: {
-    margin: '80px 0',
+    margin: '80px 0'
   },
   curve: {
     height: '100px',
     maxWidth: '100vw',
-    marginBottom: '-4px' // Weird gap otherwise
+    marginBottom: '-16px' // Weird gap otherwise
   },
   greyBackground: {
-      backgroundColor: theme.colors.backgroundGrey
+    backgroundColor: theme.colors.backgroundGrey
   }
 }));
 
 type Props = {
-    stack: Row[];
-    className?: string;
+  stack: Row[];
+  className?: string;
 };
 
 function PeopleCurve({ stack, className }: Props) {
-    const theme = useTheme();
-    const classes = useStyles({ theme });
+  const theme = useTheme();
+  const classes = useStyles({ theme });
 
   return (
-      <div className={classNames(classes.root, className)}>
-        <img className={classes.curve} src={require('assets/grey-curve.svg')} />
-        <div className={classNames(classes.centerer, classes.greyBackground)}>
-            <div className={classes.centered}>   
-                <div className={classes.heading}>Our people make the difference.</div>
-                <div className={classes.text}>Not only do we offer incredible training, but our customer service is world-class too</div>
-                <ImageWithText
-                    className={classes.margin}
-                    image={require("assets/StockUKTeam.svg")}
-                    stack={stack}
-                />
-            </div>
+    <div className={classNames(classes.root, className)}>
+      <img className={classes.curve} src={require('assets/grey-curve.svg')} />
+      <div className={classNames(classes.centerer, classes.greyBackground)}>
+        <div className={classes.centered}>
+          <div className={classes.heading}>Our people make the difference.</div>
+          <div className={classes.text}>
+            Not only do we offer incredible training, but our customer service
+            is world-class too
+          </div>
+          <ImageWithText
+            className={classes.margin}
+            image={require('assets/StockUKTeam.svg')}
+            stack={stack}
+          />
         </div>
       </div>
+    </div>
   );
 }
 
