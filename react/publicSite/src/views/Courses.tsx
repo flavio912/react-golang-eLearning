@@ -25,6 +25,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     alignItems: 'center',
     width: theme.centerColumnWidth,
+    //padding: '0 10px'
   },
   heading: {
     fontSize: 30,
