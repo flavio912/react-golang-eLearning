@@ -56,6 +56,7 @@ const defaultOption: DropdownOption = {
 };
 
 const defaultCourse: Course = {
+  id: 1,
   type: 'DANGEROUS GOODS AIR',
   colour: '#8C1CB4',
   url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
@@ -67,7 +68,7 @@ const defaultCourse: Course = {
   location: 'TTC at Hilton T4',
   modules: 5,
   lessons: 5,
-  video_time: 5
+  videoTime: 5
 };
 
 function OnlineCourses({ className }: Props) {
@@ -118,7 +119,9 @@ function OnlineCourses({ className }: Props) {
         <Dropdown
           options={filterOptions}
           placeholder={'Show Categories'}
-          setSelected={() => {}}
+          setSelected={() => {
+            //
+          }}
         />
       </div>
       <div className={classes.courseHolder}>
@@ -137,7 +140,9 @@ function OnlineCourses({ className }: Props) {
         <Paginator
           currentPage={1}
           numPages={3}
-          updatePage={() => {}}
+          updatePage={() => {
+            //TODO:
+          }}
           itemsPerPage={10}
         />
       </div>

@@ -92,6 +92,7 @@ const CoursesPage = ({ onlineCourses, classroomCourses }: Props) => {
 
   if (onlineCourses) {
     courses = onlineCourses.edges.map((course: any) => ({
+      id: course.info.id,
       type: course.info.category.name,
       colour: course?.info.category.color,
       url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
@@ -181,6 +182,7 @@ export const OnlineCoursesPage = createFragmentContainer(CoursesPage, {
       edges {
         uuid
         info {
+          id
           name
           color
           excerpt

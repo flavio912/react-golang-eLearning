@@ -36,6 +36,7 @@ type Props = {
   text?: string | number;
   size?: number;
   fontSize?: number;
+  borderSize?: number;
   borderType?: BorderType;
   className?: string;
 };
@@ -45,6 +46,7 @@ function CircleBorder({
   text,
   size = 44,
   fontSize = 18,
+  borderSize,
   borderType = 'fancy',
   className
 }: Props) {
@@ -52,11 +54,11 @@ function CircleBorder({
   const classes = useStyles({ type: borderType, theme });
   const borderTypes = {
     fancy: {
-      borderSize: size + 4,
+      borderSize: borderSize ? size + borderSize : size + 4,
       circleSize: size + 2
     },
     plain: {
-      borderSize: size + 6,
+      borderSize: borderSize ? size + borderSize : size + 6,
       circleSize: size
     }
   };

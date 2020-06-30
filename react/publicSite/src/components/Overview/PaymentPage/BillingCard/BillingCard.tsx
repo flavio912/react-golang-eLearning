@@ -64,8 +64,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export type BillingDetails = {
   firstName: string;
   lastName: string;
-  adressOne: string;
-  adressTwo: string;
+  addressOne: string;
+  addressTwo: string;
   city: string;
   postcode: string;
   country: string;
@@ -84,8 +84,8 @@ function BillingCard({ billingDetails, className }: Props) {
   // Form Data
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
-  const [adressOne, setAddressOne] = React.useState('');
-  const [adressTwo, setAddressTwo] = React.useState('');
+  const [addressOne, setAddressOne] = React.useState('');
+  const [addressTwo, setAddressTwo] = React.useState('');
   const [city, setCity] = React.useState('');
   const [postcode, setPostcode] = React.useState('');
   const [country, setCountry] = React.useState({ id: 0, title: 'Country' });
@@ -95,8 +95,8 @@ function BillingCard({ billingDetails, className }: Props) {
     billingDetails = {
       firstName,
       lastName,
-      adressOne,
-      adressTwo,
+      addressOne,
+      addressTwo,
       city,
       postcode,
       country: country.title !== 'Country' ? country.title : '',
@@ -130,7 +130,7 @@ function BillingCard({ billingDetails, className }: Props) {
         placeholder="Address Line 1"
         type="text"
         onChange={(text: string) => setAddressOne(text)}
-        value={adressOne}
+        value={addressOne}
         className={classes.input}
       />
 
@@ -138,7 +138,7 @@ function BillingCard({ billingDetails, className }: Props) {
         placeholder="Address Line 1"
         type="text"
         onChange={(text: string) => setAddressTwo(text)}
-        value={adressTwo}
+        value={addressTwo}
         className={classes.input}
       />
 
