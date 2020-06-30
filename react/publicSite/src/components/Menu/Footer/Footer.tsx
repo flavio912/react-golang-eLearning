@@ -1,9 +1,9 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
 import { useRouter } from 'found';
-import { Theme } from "helpers/theme";
-import Icon from "sharedComponents/core/Icon";
+import { Theme } from 'helpers/theme';
+import Icon from 'sharedComponents/core/Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
@@ -106,36 +106,36 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type Column = {
-    id: number;
-    header: string;
-    links: Link[];
-}
+  id: number;
+  header: string;
+  links: Link[];
+};
 
 export type Link = {
-    id: number;
-    name: string;
-    link: string;
-    alert?: Alert;
-}
+  id: number;
+  name: string;
+  link: string;
+  alert?: Alert;
+};
 
 export type Alert = {
-    type: "new" | "increase";
-    value: string | number;
-}
+  type: 'new' | 'increase';
+  value: string | number;
+};
 
 type Props = {
-    columns: Column[];
-    className?: string;
+  columns: Column[];
+  className?: string;
 };
 
 function Footer({ columns, className }: Props) {
-    const theme = useTheme();
-    const classes = useStyles({ theme });
+  const theme = useTheme();
+  const classes = useStyles({ theme });
 
-    const { router } = useRouter();
-    const onClick = (link?: string) => {
-        link && router.push(link);
-    }
+  const { router } = useRouter();
+  const onClick = (link?: string) => {
+    link && router.push(link);
+  };
 
   return (
       <div className={classNames(classes.root, className)}>
@@ -167,16 +167,29 @@ function Footer({ columns, className }: Props) {
                       ))}
                   </div>
               ))}
+          </div>       
+        <div className={classes.row}>
+          <div className={classNames(classes.row, classes.center)}>
+            <Icon
+              name="Twitter_Logo"
+              size={25}
+              style={{ marginRight: '10px' }}
+            />
+            <Icon
+              name="Facebook_Logo"
+              size={25}
+              style={{ marginRight: '10px' }}
+            />
+            <Icon name="LinkedIn_Logo" size={25} />
           </div>
-          <div className={classes.row}>
-              <div className={classNames(classes.row, classes.center)}>
-                    <Icon name="Twitter_Logo" size={25} style={{ marginRight: '10px' }} />
-                    <Icon name="Facebook_Logo" size={25} style={{ marginRight: '10px' }} />
-                    <Icon name="LinkedIn_Logo" size={25} />
-              </div>
-              <div className={classes.copyright}>© 2020 TTC Hub. All Rights Reserved. Registered in England | Company registration number 10849230.</div>
+          <div className={classes.copyright}>
+            © 2020 TTC Hub. All Rights Reserved. Registered in England | Company
+            registration number 10849230.
           </div>
-      </div>
+        </div>
+
+      
+    </div>
   );
 }
 
