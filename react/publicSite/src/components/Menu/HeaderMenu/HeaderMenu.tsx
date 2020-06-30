@@ -92,6 +92,7 @@ type Props = {
   selected: Tab;
   onClick?: (tab: Tab) => void;
   onRegisterClick?: () => void;
+  onLogoClick?: () => void;
   basketItems?: BasketItem[];
   onCheckout: () => void;
   children?: React.ReactNode;
@@ -103,6 +104,7 @@ function HeaderMenu({
   selected,
   onClick,
   onRegisterClick,
+  onLogoClick,
   basketItems,
   onCheckout,
   className
@@ -120,6 +122,7 @@ function HeaderMenu({
             <img
               src={require('../../../assets/logo/ttc-logo.svg')}
               className={classes.logo}
+              onClick={onLogoClick}
             />
             {tabs &&
               tabs.map((tab) => (

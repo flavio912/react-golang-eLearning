@@ -132,6 +132,9 @@ export const AppHolder = ({ children }: Props) => {
         onRegisterClick={() => {
           router.push('/register');
         }}
+        onLogoClick={() => {
+          router.push('/');
+        }}
         onCheckout={() => console.log('Checkout')}
       />
       <div className={classes.appHolder}>{children}</div>
