@@ -18,7 +18,14 @@ import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import { AppHolder } from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
-import Dashboard from 'views/Dashboard';
+import Home from 'views/Home';
+import AboutUs from 'views/AboutUs';
+import PaymentPage from 'views/PaymentPage';
+import Register from 'views/RegisterStart';
+import RegisterStart from 'views/RegisterStart';
+import RegisterIndividual from 'views/RegisterIndividual';
+import RegisterCompany from 'views/RegisterCompany';
+import Courses from 'views/Courses';
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -36,7 +43,6 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route
-        path="/app"
         Component={AppHolder}
         //query={ExamplePageQuery}
         render={({ props, error }: any) => {
@@ -49,8 +55,14 @@ const Router = createFarceRouter({
           return <AppHolder {...props} />;
         }}
       >
-        <Route path="/" Component={Dashboard} />
+        <Route path="/" Component={Home} />
+        <Route path="/aboutus" Component={AboutUs} />
+        <Route path="/payment" Component={PaymentPage} />
+        <Route path="/courses" Component={Courses} />
       </Route>
+      <Route path="/register" Component={RegisterStart} />
+      <Route path="/register/individual" Component={RegisterIndividual} />
+      <Route path="/register/company" Component={RegisterCompany} />
     </Route>
   ),
   render: createRender({})

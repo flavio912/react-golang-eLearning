@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="2111px" height="425px" viewBox="0 0 2111 425" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>wave-white</title>
+    <defs>
+        <linearGradient x1="105.568359%" y1="47.902338%" x2="3.8359375%" y2="52.2035271%" id="linearGradient-1">
+            <stop stop-color="#16BB33" offset="0%"></stop>
+            <stop stop-color="#0E69DA" offset="100%"></stop>
+        </linearGradient>
+    </defs>
+    <g id="High-Fidelity-Frontend" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="wave-white" transform="translate(1055.500000, 212.500000) scale(1, -1) translate(-1055.500000, -212.500000) ">
+            <path d="M1566,257.625 C1925,287.666667 2111,425 2111,425 L2082,13 L0,13 L0,220.435408 C0,220.435408 292.800632,425 621.476889,425 C984.871799,425 1189.46371,226.11587 1566,257.625 Z" id="Path-Copy-2" fill="url(#linearGradient-1)"></path>
+            <path d="M1566,244.625 C1925,274.666667 2111,412 2111,412 L2082,0 L0,0 L0,207.435408 C0,207.435408 292.800632,412 621.476889,412 C984.871799,412 1189.46371,213.11587 1566,244.625 Z" id="Path-Copy" fill="#0E63E8" fill-rule="nonzero"></path>
+        </g>
+    </g>
+</svg>
