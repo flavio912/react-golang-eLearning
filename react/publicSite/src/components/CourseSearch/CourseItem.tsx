@@ -16,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: '24px',
     '@media (max-width: 700px)': {
       flexDirection: 'column',
-      maxWidth: '300px'
+      maxWidth: '351px'
     }
   },
   title: {
@@ -24,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '800',
     color: theme.colors.primaryBlack,
     '@media (max-width: 700px)': {
-      marginBottom: '10px',
+      marginBottom: '10px'
     }
   },
   description: {
@@ -42,7 +42,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '800',
     color: theme.colors.primaryBlue,
     '@media (max-width: 700px)': {
-      marginBottom: '20px',
+      marginBottom: '20px'
     }
   },
   button: {
@@ -70,7 +70,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundSize: 'cover'
   },
   type: {
-    width: '160px',
     alignSelf: 'flex-start',
     display: 'flex',
     justifyContent: 'center',
