@@ -14,7 +14,8 @@ import { Panel } from 'components/core/FourPanel/FourPanel';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
-    width: '100%'
+    width: '100%',
+    backgroundColor: theme.colors.primaryWhite
   },
   centerer: {
     display: 'flex',
@@ -39,6 +40,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     textAlign: 'center',
     maxWidth: '750px'
   },
+  courseSearch: {
+    paddingBottom: '30px',
+    backgroundColor: '#F7F9FB'
+  },
   margin: {
     margin: '80px 0',
   },
@@ -47,6 +52,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   marginBottom: {
       marginBottom: '50px'
+  },
+  greyBackground: {
+      backgroundColor: theme.colors.backgroundGrey
   }
 }));
 
@@ -148,7 +156,8 @@ function Courses({}: Props) {
                 </div>
             </div>
         </div>
-        <CourseSearch 
+        <CourseSearch
+            className={classes.courseSearch}
             tabs={defaultTabs}
             courses={defaultCourseItems}
             selectedTab={selectedTab}
@@ -176,6 +185,10 @@ function Courses({}: Props) {
                         }}
                     />
                 </div>
+            </div>
+        </div>
+        <div className={classNames(classes.centerer, classes.greyBackground)}>
+            <div className={classes.centered}>        
                 <div className={classes.heading}>Our people make the difference.</div>
                 <div className={classes.text}>Not only do we offer incredible training, but our customer service is world-class too</div>
                 <ImageWithText
