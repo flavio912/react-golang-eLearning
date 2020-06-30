@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     borderRadius: '14px',
-    boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
+    boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.11)'
   },
   padded: {
     padding: '25px 25px 15px 25px'
@@ -55,7 +55,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '20px 0 10px 0'
   },
   terms: {
-    fontSize: theme.fontSizes.tiny,
+    fontSize: theme.fontSizes.tiny
   },
   service: {
     cursor: 'pointer',
@@ -138,7 +138,7 @@ function PaymentCard({ total, card, className }: Props) {
   const elements = useElements();
   React.useEffect(() => {
     if (elements) {
-        card = elements.getElement(CardElement);
+      card = elements.getElement(CardElement);
     }
   });
 

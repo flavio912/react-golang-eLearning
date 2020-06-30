@@ -28,19 +28,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'center'
   },
   centered: {
-    display: 'flex',
-    width: theme.centerColumnWidth
-  },
-  leftColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 2
-  },
-  rightColumn: {
-    display: 'flex',
-    flexDirection: 'column',
-    flex: 1,
-    marginLeft: '30px'
+    display: 'grid',
+    width: theme.centerColumnWidth,
+    gridTemplateColumns: '0.8fr 0.4fr',
+    gridGap: 38,
+    '@media (max-width: 1000px)': {
+      gridTemplateColumns: '1fr'
+    }
   },
   privacy: {
     fontSize: theme.fontSizes.tiny,
@@ -119,7 +113,7 @@ function PaymentPage({}: Props) {
       <Spacer spacing={4} vertical />
       <div className={classes.centerer}>
         <div className={classes.centered}>
-          <div className={classes.leftColumn}>
+          <div>
             <AccountCard accountDetails={emptyAccountDetails} />
             <Spacer vertical spacing={3} />
             <BillingCard billingDetails={emptyBillingDetails} />
@@ -127,7 +121,7 @@ function PaymentPage({}: Props) {
             <OrderCard orderItems={defaultOrderItems} />
             <Spacer vertical spacing={3} />
           </div>
-          <div className={classes.rightColumn}>
+          <div>
             <Elements stripe={stripePromise}>
               <PaymentCard total={336} card={null} />
             </Elements>
