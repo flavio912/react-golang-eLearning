@@ -51,6 +51,7 @@ type CoursesRepository interface {
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
+	IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
 	Tests(

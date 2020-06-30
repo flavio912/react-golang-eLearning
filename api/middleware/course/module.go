@@ -162,6 +162,30 @@ func (c *coursesRepoImpl) UpdateModule(input UpdateModuleInput) (models.Module, 
 	return c.GetModuleByUUID(module.UUID)
 }
 
+func (c *coursesRepoImpl) IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error) {
+	var numCoursesModuleIsIn int
+	query := database.GormDB.Table("online_courses").
+		Joins(`
+		JOIN course_structures 
+		ON course_structures.online_course_uuid = online_courses.uuid 
+		AND course_structures.module_uuid = ? 
+		AND online_courses.course_id IN (?)`,
+			moduleUUID,
+			courseIDs).
+		Count(&numCoursesModuleIsIn)
+
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Module: Unable to get courses module is in")
+		return false, &errors.ErrWhileHandling
+	}
+
+	if numCoursesModuleIsIn <= 0 {
+		return false, nil
+	}
+
+	return true, nil
+}
+
 // GetModuleByUUID gets a module by its UUID
 func (c *coursesRepoImpl) GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error) {
 	var module models.Module

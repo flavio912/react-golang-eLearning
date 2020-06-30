@@ -200,3 +200,64 @@ func TestCreateModule(t *testing.T) {
 		})
 	}
 }
+
+func TestIsModuleInCourses(t *testing.T) {
+	inp := []struct {
+		name       string
+		courseIDs  []uint
+		moduleUUID gentypes.UUID
+		wantErr    error
+		wantResult bool
+	}{
+		{
+			name:       "Module is not in course",
+			courseIDs:  []uint{1},
+			moduleUUID: gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+			wantErr:    nil,
+			wantResult: false,
+		},
+		{
+			name:       "Module is in course",
+			courseIDs:  []uint{5},
+			moduleUUID: gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+			wantErr:    nil,
+			wantResult: true,
+		},
+		{
+			name:       "Module is in one of multiple courses",
+			courseIDs:  []uint{5, 2},
+			moduleUUID: gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+			wantErr:    nil,
+			wantResult: true,
+		},
+		{
+			name:       "Module is not in duplicate courses",
+			courseIDs:  []uint{1, 1},
+			moduleUUID: gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+			wantErr:    nil,
+			wantResult: false,
+		},
+		{
+			name:       "Module is in course 4",
+			courseIDs:  []uint{4},
+			moduleUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			wantErr:    nil,
+			wantResult: true,
+		},
+		{
+			name:       "Module is in course 5 but not 4",
+			courseIDs:  []uint{4, 5},
+			moduleUUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			wantErr:    nil,
+			wantResult: true,
+		},
+	}
+
+	for _, test := range inp {
+		t.Run(test.name, func(t *testing.T) {
+			res, err := courseRepo.IsModuleInCourses(test.courseIDs, test.moduleUUID)
+			assert.Equal(t, test.wantErr, err)
+			assert.Equal(t, test.wantResult, res)
+		})
+	}
+}

@@ -41,16 +41,47 @@ func (c *courseAppImpl) moduleToGentype(module models.Module) gentypes.Module {
 	}
 }
 
-func getUploadKey(token *string, uploadIdent string) (*string, error) {
-	var uploadKey *string
-	if token != nil {
-		key, err := uploads.VerifyUploadSuccess(*token, "moduleImage")
-		if err != nil {
-			return nil, &errors.ErrUploadTokenInvalid
-		}
-		uploadKey = &key
+func (c *courseAppImpl) Module(uuid gentypes.UUID) (gentypes.Module, error) {
+	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
+		return gentypes.Module{}, &errors.ErrUnauthorized
 	}
-	return uploadKey, nil
+
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		// Check user is taking a course with this module in it
+		var courseTakerID gentypes.UUID
+		if c.grant.IsDelegate {
+			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
+			courseTakerID = delegate.CourseTakerUUID
+		}
+
+		if c.grant.IsIndividual {
+			individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
+			courseTakerID = individual.CourseTakerUUID
+		}
+
+		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
+		if err != nil {
+			return gentypes.Module{}, &errors.ErrWhileHandling
+		}
+
+		var courseIds = make([]uint, len(activeCourses))
+		for i, activeCourse := range activeCourses {
+			courseIds[i] = activeCourse.CourseID
+		}
+
+		moduleInCourses, err := c.coursesRepository.IsModuleInCourses(courseIds, uuid)
+		if err != nil {
+			return gentypes.Module{}, &errors.ErrWhileHandling
+		}
+
+		if !moduleInCourses {
+			return gentypes.Module{}, &errors.ErrUnauthorized
+		}
+	}
+
+	// Get module
+	module, err := c.coursesRepository.GetModuleByUUID(uuid)
+	return c.moduleToGentype(module), err
 }
 
 func (c *courseAppImpl) CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error) {
@@ -131,4 +162,16 @@ func (c *courseAppImpl) UpdateModule(input gentypes.UpdateModuleInput) (gentypes
 	// TODO: Delete S3 images on success
 
 	return c.moduleToGentype(module), err
+}
+
+func getUploadKey(token *string, uploadIdent string) (*string, error) {
+	var uploadKey *string
+	if token != nil {
+		key, err := uploads.VerifyUploadSuccess(*token, "moduleImage")
+		if err != nil {
+			return nil, &errors.ErrUploadTokenInvalid
+		}
+		uploadKey = &key
+	}
+	return uploadKey, nil
 }

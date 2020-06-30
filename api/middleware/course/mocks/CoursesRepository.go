@@ -484,6 +484,27 @@ func (_m *CoursesRepository) GetTagsByLessonUUID(uuid string) ([]models.Tag, err
 	return r0, r1
 }
 
+// IsModuleInCourses provides a mock function with given fields: courseIDs, moduleUUID
+func (_m *CoursesRepository) IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error) {
+	ret := _m.Called(courseIDs, moduleUUID)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func([]uint, gentypes.UUID) bool); ok {
+		r0 = rf(courseIDs, moduleUUID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]uint, gentypes.UUID) error); ok {
+		r1 = rf(courseIDs, moduleUUID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // LearnBullets provides a mock function with given fields: courseID
 func (_m *CoursesRepository) LearnBullets(courseID uint) ([]models.WhatYouLearnBullet, error) {
 	ret := _m.Called(courseID)

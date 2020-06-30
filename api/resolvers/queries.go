@@ -313,3 +313,9 @@ func (q *QueryResolver) Tests(
 		Tests:    &tests,
 	})
 }
+
+func (q *QueryResolver) Module(ctx context.Context, args struct{ UUID gentypes.UUID }) (*ModuleResolver, error) {
+	return NewModuleResolver(ctx, NewModuleArgs{
+		ModuleUUID: &args.UUID,
+	})
+}
