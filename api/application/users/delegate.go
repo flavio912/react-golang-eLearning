@@ -165,6 +165,10 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 		s3UploadKey    *string
 	)
 
+	if u.grant.IsManager {
+		input.CompanyUUID = &u.grant.Claims.Company
+	}
+
 	if input.ProfileImageUploadToken != nil {
 		tmpUploadKey, err := uploads.VerifyUploadSuccess(*input.ProfileImageUploadToken, "profileImage")
 		if err != nil {
