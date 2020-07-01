@@ -7,10 +7,13 @@ import CircleBorder from 'sharedComponents/core/CircleBorder';
 import Card, { PaddingOptions } from "sharedComponents/core/Cards/Card";
 
 const useStyles = createUseStyles((theme: Theme) => ({
+    mainRoot: {
+        display: 'flex'
+    },
     root: {
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'flex-start'
     },
     text: {
@@ -55,8 +58,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
         paddingBottom: '1px',
         borderBottom: ['1.5px', 'solid', theme.colors.borderGrey]
     },
+    logoContainer: {
+        display: 'flex',
+        flex: 1
+    },
     logo: {
-        height: '55px'
+        maxWidth: '200px',
+        maxHeight: '60px',
+        alignSelf: 'flex-start'
     },
     quoteLogo: {
         height: '35px',
@@ -95,7 +104,7 @@ function BrandCard({ logoURL, link, text, author, padding = "large", className }
     }
 
   return (
-      <Card padding={padding} className={classNames(className)}>
+      <Card padding={padding} className={classNames(classes.mainRoot, className)}>
           {author ? (
               <div className={classes.root}>
                 <div className={classes.quotationMarks}>“</div>
@@ -121,7 +130,9 @@ function BrandCard({ logoURL, link, text, author, padding = "large", className }
               </div>
           ) : (
             <div className={classes.root}>
-                <img src={logoURL} className={classes.logo} />
+                <div className={classes.logoContainer}>
+                    <img src={logoURL} className={classes.logo} />
+                </div>
                 <div className={classes.text}>{text}</div>
                 <div
                     className={classes.link}
