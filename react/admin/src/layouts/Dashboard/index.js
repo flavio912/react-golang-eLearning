@@ -35,6 +35,8 @@ const GET_ADMIN = gql`
   query GetAdmin {
     admin {
       email
+      firstName
+      lastName
     }
   }
 `;
@@ -46,9 +48,7 @@ function Dashboard({ route }) {
   // Try get login
   const { loading, error, data } = useQuery(GET_ADMIN);
   if (loading) return <div></div>;
-  if (error) {
-    return <Redirect to={'/auth/login'} />;
-  }
+  if (error) return <Redirect to={'/auth/login'} />;
 
   return (
     <>
@@ -56,6 +56,9 @@ function Dashboard({ route }) {
       <NavBar
         onMobileClose={() => setOpenNavBarMobile(false)}
         openMobile={openNavBarMobile}
+        firstName={data.admin.firstName}
+        lastName={data.admin.lastName}
+        email={data.admin.email}
       />
       <div className={classes.container}>
         <div className={classes.content}>
