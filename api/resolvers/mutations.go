@@ -507,3 +507,16 @@ func (m *MutationResolver) BlogBodyImageUploadRequest(
 		SuccessToken: successToken,
 	}, err
 }
+
+func (m *MutationResolver) UpdateBlog(ctx context.Context, args struct{ Input gentypes.UpdateBlogInput }) (*BlogResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &BlogResolver{}, &errors.ErrUnauthorized
+	}
+
+	courseApp := course.NewCourseApp(grant)
+	blog, err := courseApp.UpdateBlog(args.Input)
+	return &BlogResolver{
+		Blog: blog,
+	}, err
+}

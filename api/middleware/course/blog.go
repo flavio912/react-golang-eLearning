@@ -149,3 +149,50 @@ func (c *coursesRepoImpl) GetBlogs(
 		Given:  int32(len(blogs)),
 	}, nil
 }
+
+func (c *coursesRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error) {
+	// Validate input
+	if err := input.Validate(); err != nil {
+		return models.Blog{}, err
+	}
+
+	var blog models.Blog
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&blog)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Blog{}, errors.ErrBlogNotFound(input.UUID.String())
+		}
+
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find blog to update with UUID: %s", input.UUID)
+		return models.Blog{}, &errors.ErrWhileHandling
+	}
+
+	if input.Title != nil {
+		blog.Title = *input.Title
+	}
+	if input.Body != nil {
+		blog.Body = *input.Body
+	}
+	if input.CategoryUUID != nil {
+		var category models.Category
+		query = database.GormDB.Where("uuid = ?", *input.CategoryUUID).First(&category)
+		if query.Error != nil {
+			if query.RecordNotFound() {
+				return models.Blog{}, &errors.ErrNotFound
+			}
+
+			c.Logger.Logf(sentry.LevelError, query.Error, "Unable to update blog %s because of category: %s", input.UUID, *input.CategoryUUID)
+			return models.Blog{}, &errors.ErrWhileHandling
+		}
+
+		blog.Category = category
+	}
+
+	save := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blog.UUID).Updates(&blog)
+	if save.Error != nil {
+		c.Logger.Logf(sentry.LevelError, save.Error, "Error updating blog with UUID: %s", input.UUID)
+		return models.Blog{}, &errors.ErrWhileHandling
+	}
+
+	return blog, nil
+}

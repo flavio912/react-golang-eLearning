@@ -189,3 +189,13 @@ func (c *courseAppImpl) GetBlogs(
 
 	return c.blogsToGentype(blogs), pageInfo, err
 }
+
+func (c *courseAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error) {
+	// TODO: Does it need to check if update is coming from author?
+	if !c.grant.IsAdmin {
+		return gentypes.Blog{}, &errors.ErrUnauthorized
+	}
+
+	blog, err := c.coursesRepository.UpdateBlog(input)
+	return c.blogToGentype(blog), err
+}

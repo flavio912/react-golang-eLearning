@@ -40,6 +40,15 @@ input CreateBlogInput {
   bodyImages: [BlogImageInput!]
 }
 
+input UpdateBlogInput {
+  uuid: UUID!
+  title: String
+  body: String
+  categoryUUID: UUID
+  headerImageToken: String
+  bodyImages: [BlogImageInput!]
+}
+
 input UpdateBlogHeaderImageInput {
   fileSucess: UploadFileSuccess!
   blogUUID: UUID!
