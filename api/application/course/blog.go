@@ -199,5 +199,26 @@ func (c *courseAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blo
 	}
 
 	blog, err := c.coursesRepository.UpdateBlog(input)
+
+	if input.HeaderImageToken != nil {
+		key, err := c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
+		if err != nil {
+			return gentypes.Blog{}, err
+		}
+
+		blog.HeaderImageKey = key
+	}
+	if input.BodyImages != nil {
+		err = c.coursesRepository.DeleteBlogImages(blog.UUID)
+		if err != nil {
+			return gentypes.Blog{}, err
+		}
+
+		err = c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
+		if err != nil {
+			return gentypes.Blog{}, err
+		}
+	}
+
 	return c.blogToGentype(blog), err
 }
