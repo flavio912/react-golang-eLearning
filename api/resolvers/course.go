@@ -56,9 +56,10 @@ func (r *CourseResolver) Name() string              { return r.Course.Name }
 func (r *CourseResolver) BackgroundCheck() *bool {
 	return helpers.BoolPointer(r.Course.BackgroundCheck)
 }
-func (r *CourseResolver) Price() float64   { return r.Course.Price }
-func (r *CourseResolver) Color() *string   { return helpers.StringPointer(r.Course.Color) }
-func (r *CourseResolver) Excerpt() *string { return helpers.StringPointer(r.Course.Excerpt) }
+func (r *CourseResolver) AccessType() gentypes.AccessType { return r.Course.AccessType }
+func (r *CourseResolver) Price() float64                  { return r.Course.Price }
+func (r *CourseResolver) Color() *string                  { return helpers.StringPointer(r.Course.Color) }
+func (r *CourseResolver) Excerpt() *string                { return helpers.StringPointer(r.Course.Excerpt) }
 func (r *CourseResolver) Introduction() *string {
 	return helpers.StringPointer(r.Course.Introduction)
 }

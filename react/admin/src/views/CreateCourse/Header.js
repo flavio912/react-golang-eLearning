@@ -27,7 +27,7 @@ function Header({ className, onSaveDraft, onPublish, ...rest }) {
         </Grid>
         <Grid item>
           <Button color="primary" variant="contained" onClick={onSaveDraft}>
-            Save Draft
+            Save
           </Button>
           <Button
             color="secondary"

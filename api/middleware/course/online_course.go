@@ -1,6 +1,7 @@
 package course
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
@@ -64,7 +65,7 @@ func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 		infoModel.BackgroundCheck = *courseInfo.BackgroundCheck
 	}
 
-	infoModel.OnlineCourse = models.OnlineCourse{}
+	infoModel.OnlineCourse = &models.OnlineCourse{}
 
 	query := database.GormDB.Create(&infoModel)
 	if query.Error != nil {
@@ -85,11 +86,12 @@ func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 func (c *coursesRepoImpl) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error) {
 	// Find Course
 	if courseInfo.ID == nil {
+		c.Logger.LogMessage(sentry.LevelWarning, "No ID given to update onlinecourse")
 		return models.Course{}, &errors.ErrWhileHandling
 	}
 
 	// TODO: think about putting these two in a transaction
-	course, err := c.UpdateCourse(*courseInfo.ID, CourseInput{
+	course, err := c.UpdateCourse(uint(*courseInfo.ID), CourseInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
@@ -113,11 +115,13 @@ func (c *coursesRepoImpl) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 
 	onlineCourse, err := c.getOnlineCourseFromCourseID(course.ID)
 	if err != nil {
+		c.Logger.Log(sentry.LevelError, err, fmt.Sprintf("UpdateOnlineCourse: cannot find course %d", course.ID))
 		return models.Course{}, &errors.ErrWhileHandling
 	}
 
 	err = c.saveOnlineCourseStructure(onlineCourse.UUID, courseInfo.Structure)
 	if err != nil {
+		c.Logger.Log(sentry.LevelError, err, "UpdateOnlineCourse: cannot save structure")
 		return models.Course{}, err
 	}
 

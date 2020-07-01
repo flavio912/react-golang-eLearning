@@ -28,8 +28,8 @@ type Course struct {
 	SpecificTerms   string              // Terms specific to this course
 	Published       bool                // If not published users can't see this course
 	CourseType      gentypes.CourseType // classroom or online course
-	OnlineCourse    OnlineCourse
-	ClassroomCourse ClassroomCourse
+	OnlineCourse    *OnlineCourse
+	ClassroomCourse *ClassroomCourse
 }
 
 type RequirementBullet struct {

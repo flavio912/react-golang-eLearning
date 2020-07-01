@@ -114,6 +114,11 @@ export default [
         component: CoursesView
       },
       {
+        path: '/course/:ident/:tab',
+        exact: true,
+        component: CreateCourse
+      },
+      {
         path: '/courses/create',
         exact: true,
         component: CreateCourse

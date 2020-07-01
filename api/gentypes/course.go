@@ -23,7 +23,7 @@ const (
 )
 
 type CourseInput struct {
-	ID                 *uint
+	ID                 *int32
 	Name               *string
 	CategoryUUID       *UUID
 	Excerpt            *string

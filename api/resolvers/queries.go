@@ -264,6 +264,13 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 	}, err
 }
 
+func (q *QueryResolver) Course(ctx context.Context, args struct{ ID int32 }) (*CourseResolver, error) {
+	id := uint(args.ID)
+	return NewCourseResolver(ctx, NewCourseArgs{
+		ID: &id,
+	})
+}
+
 func (q *QueryResolver) Question(ctx context.Context, args struct{ UUID gentypes.UUID }) (*QuestionResolver, error) {
 	return NewQuestionResolver(ctx, NewQuestionArgs{
 		UUID: &args.UUID,

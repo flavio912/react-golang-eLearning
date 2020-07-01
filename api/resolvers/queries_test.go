@@ -912,7 +912,7 @@ func TestCompanies(t *testing.T) {
 			Path:            []interface{}{"companies"},
 			MustAuth:        true,
 			AdminAllowed:    true,
-			ManagerAllowed:  true, // Manager should only be able to own company
+			ManagerAllowed:  false, // Manager should only be able to own company
 			DelegateAllowed: false,
 		},
 	)

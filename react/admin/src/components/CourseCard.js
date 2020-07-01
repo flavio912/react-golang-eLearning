@@ -69,7 +69,7 @@ function CourseCard({ course, className, ...rest }) {
           <Link
             color="textPrimary"
             component={RouterLink}
-            to="/courses/1/overview"
+            to={`/course/${course.id}/overview`}
             variant="h5"
           >
             {course.name}
@@ -94,9 +94,9 @@ function CourseCard({ course, className, ...rest }) {
             spacing={3}
           >
             <Grid item>
-              <Typography variant="h5">£{course.totalGross}</Typography>
+              <Typography variant="h5">£{course.price}</Typography>
               <Typography gutterBottom variant="overline">
-                TOTAL GROSS
+                PRICE
               </Typography>
             </Grid>
             <Grid item>
@@ -112,7 +112,7 @@ function CourseCard({ course, className, ...rest }) {
                 color="primary"
                 component={RouterLink}
                 size="small"
-                to="/courses/1"
+                to={`/course/${course.id}/overview`}
                 variant="outlined"
               >
                 View

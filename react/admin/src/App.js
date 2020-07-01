@@ -19,6 +19,7 @@ import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink, concat } from 'apollo-link';
+import { gql } from 'apollo-boost';
 
 import './mixins/chartjs';
 import './mixins/moment';
@@ -59,7 +60,18 @@ const link = new HttpLink({
 
 const client = new ApolloClient({
   link: concat(authMiddleware, link),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  typeDefs: gql`
+    enum AccessType {
+      restricted
+      open
+    }
+
+    enum CourseType {
+      online
+      classroom
+    }
+  `
 });
 
 function App() {

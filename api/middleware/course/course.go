@@ -140,49 +140,49 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 
 	var courseInfo models.Course
-	courseInfo.ID = courseID
+
+	var updates = make(map[string]interface{})
+
 	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
 		if err != nil {
 			return models.Course{}, err
 		}
-		courseInfo.ImageKey = &key
+		updates["image_key"] = key
 	}
 
-	if infoChanges.Tags != nil {
-		// Check each tag exists
-		if tags, err := c.CheckTagsExist(*infoChanges.Tags); err == nil {
-			courseInfo.Tags = tags
-		} else {
-			return models.Course{}, err
-		}
-	}
 	if infoChanges.Name != nil {
-		courseInfo.Name = *infoChanges.Name
+		updates["name"] = *infoChanges.Name
 	}
 	if infoChanges.Price != nil {
-		courseInfo.Price = *infoChanges.Price
+		updates["price"] = *infoChanges.Price
 	}
 	if infoChanges.Color != nil {
-		courseInfo.Color = *infoChanges.Color
+		updates["color"] = *infoChanges.Color
 	}
 	if infoChanges.CategoryUUID != nil {
-		courseInfo.CategoryUUID = infoChanges.CategoryUUID // TODO: Check if exists
+		updates["category_uuid"] = infoChanges.CategoryUUID // TODO: Check if exists
 	}
 	if infoChanges.Excerpt != nil {
-		courseInfo.Excerpt = *infoChanges.Excerpt
+		updates["excerpt"] = *infoChanges.Excerpt
 	}
 	if infoChanges.Introduction != nil {
-		courseInfo.Introduction = *infoChanges.Introduction
+		updates["introduction"] = *infoChanges.Introduction
+	}
+	if infoChanges.HowToComplete != nil {
+		updates["how_to_complete"] = *infoChanges.HowToComplete
+	}
+	if infoChanges.HoursToComplete != nil {
+		updates["hours_to_complete"] = *infoChanges.HoursToComplete
 	}
 	if infoChanges.AccessType != nil {
-		courseInfo.AccessType = *infoChanges.AccessType
+		updates["access_type"] = *infoChanges.AccessType
 	}
 	if infoChanges.BackgroundCheck != nil {
-		courseInfo.BackgroundCheck = *infoChanges.BackgroundCheck
+		updates["background_check"] = *infoChanges.BackgroundCheck
 	}
 	if infoChanges.SpecificTerms != nil {
-		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
+		updates["specific_terms"] = *infoChanges.SpecificTerms
 	}
 
 	tx := database.GormDB.Begin()
@@ -191,6 +191,19 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			tx.Rollback()
 		}
 	}()
+
+	if infoChanges.Tags != nil {
+		// Check each tag exists
+		if tags, err := c.CheckTagsExist(*infoChanges.Tags); err == nil {
+			repErr := tx.Model(models.Course{ID: courseID}).Association("Tags").Replace(tags).Error
+			if repErr != nil {
+				c.Logger.Log(sentry.LevelError, repErr, "Could not replace tags")
+				return models.Course{}, &errors.ErrWhileHandling
+			}
+		} else {
+			return models.Course{}, err
+		}
+	}
 
 	// If requirements changed, remove all old ones and repopulate
 	if infoChanges.Requirements != nil {
@@ -218,7 +231,7 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		courseInfo.WhatYouLearn = newWhatYouLearn
 	}
 
-	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(&courseInfo)
+	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(updates)
 	if query.Error != nil {
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
 		return models.Course{}, &errors.ErrWhileHandling
@@ -229,7 +242,11 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		return models.Course{}, &errors.ErrWhileHandling
 	}
 
-	return courseInfo, nil
+	course, err := c.Course(courseID)
+	if err != nil {
+		return models.Course{}, &errors.ErrNotFound
+	}
+	return course, nil
 }
 
 func (c *coursesRepoImpl) RequirementBullets(courseID uint) ([]models.RequirementBullet, error) {

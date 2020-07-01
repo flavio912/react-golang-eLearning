@@ -34,6 +34,7 @@ type Course {
   type: CourseType!
   name: String!
   backgroundCheck: Boolean
+  accessType: AccessType!
   price: Float!
   color: String
   excerpt: String

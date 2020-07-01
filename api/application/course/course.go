@@ -57,7 +57,6 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		allowedToBuy = application.IsFullyApproved(&c.usersRepository, c.grant)
 	}
 
-	// TODO: Check if user has access to this course
 	return gentypes.Course{
 		ID:              courseInfo.ID,
 		Name:            courseInfo.Name,
