@@ -2,11 +2,14 @@ import React, { Suspense, useState } from 'react';
 import { renderRoutes } from 'react-router-config';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { LinearProgress } from '@material-ui/core';
 import NavBar from './NavBar';
 import TopBar from './TopBar';
+import { Redirect } from 'react-router';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   container: {
     minHeight: '100vh',
     display: 'flex',
@@ -28,9 +31,24 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+const GET_ADMIN = gql`
+  query GetAdmin {
+    admin {
+      email
+    }
+  }
+`;
+
 function Dashboard({ route }) {
   const classes = useStyles();
   const [openNavBarMobile, setOpenNavBarMobile] = useState(false);
+
+  // Try get login
+  const { loading, error, data } = useQuery(GET_ADMIN);
+  if (loading) return <div></div>;
+  if (error) {
+    return <Redirect to={'/auth/login'} />;
+  }
 
   return (
     <>

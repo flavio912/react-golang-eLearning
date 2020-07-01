@@ -8,6 +8,7 @@ import (
 )
 
 type AdminApp interface {
+	Admin(uuid *gentypes.UUID) (gentypes.Admin, error)
 	Admins(uuids []gentypes.UUID) ([]gentypes.Admin, error)
 	CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Admin, error)
 	UpdateAdmin(input gentypes.UpdateAdminInput) (gentypes.Admin, error)
@@ -53,6 +54,23 @@ func (a *adminAppImpl) CreateAdmin(input gentypes.CreateAdminInput) (gentypes.Ad
 
 	admin, err := a.adminRepository.CreateAdmin(input)
 	return adminToGentype(admin), err
+}
+
+func (a *adminAppImpl) Admin(uuid *gentypes.UUID) (gentypes.Admin, error) {
+	if !a.grant.IsAdmin {
+		return gentypes.Admin{}, &errors.ErrUnauthorized
+	}
+
+	if uuid == nil {
+		uuid = &a.grant.Claims.UUID
+	}
+
+	admins, err := a.adminRepository.Admins([]gentypes.UUID{*uuid})
+	if len(admins) == 0 {
+		return gentypes.Admin{}, &errors.ErrAdminNotFound
+	}
+
+	return adminToGentype(admins[0]), err
 }
 
 func (a *adminAppImpl) Admins(uuids []gentypes.UUID) ([]gentypes.Admin, error) {

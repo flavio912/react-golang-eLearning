@@ -51,8 +51,10 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 }
 
 // Admin gets a single admin
-func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UUID }) (*AdminResolver, error) {
-	admin, err := loader.LoadAdmin(ctx, args.UUID.String())
+func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*AdminResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	admin, err := app.AdminApp.Admin(args.UUID)
 	return &AdminResolver{admin: admin}, err
 }
 
