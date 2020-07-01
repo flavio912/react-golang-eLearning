@@ -16,6 +16,11 @@ type UsersRepository interface {
 		company models.Company,
 		beforeCommit *func(delegate models.Delegate) bool,
 	) (models.Delegate, error)
+	UpdateDelegate(
+		details gentypes.UpdateDelegateInput,
+		s3UploadKey *string,
+		password *string,
+	) (models.Delegate, error)
 
 	Company(uuid gentypes.UUID) (models.Company, error)
 	GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error)

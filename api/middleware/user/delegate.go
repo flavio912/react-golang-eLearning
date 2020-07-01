@@ -182,3 +182,62 @@ func (u *usersRepoImpl) CreateDelegate(
 
 	return delegate, nil
 }
+
+func (u *usersRepoImpl) UpdateDelegate(
+	details gentypes.UpdateDelegateInput,
+	s3UploadKey *string,
+	password *string,
+) (models.Delegate, error) {
+	// Validate input
+	if err := details.Validate(); err != nil {
+		return models.Delegate{}, err
+	}
+
+	var delegate models.Delegate
+	query := database.GormDB.Where("uuid = ?", details.UUID).First(&delegate)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
+		}
+
+		u.Logger.Logf(sentry.LevelError, query.Error, "Unable to find delegate: %s", details.UUID)
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	if details.CompanyUUID != nil {
+		if !u.CompanyExists(*details.CompanyUUID) {
+			u.Logger.Logf(sentry.LevelError, &errors.ErrCompanyNotFound, "Given company does not exist: %s", *details.CompanyUUID)
+			return models.Delegate{}, &errors.ErrCompanyNotFound
+		}
+		delegate.CompanyUUID = *details.CompanyUUID
+	}
+	if details.FirstName != nil {
+		delegate.FirstName = *details.FirstName
+	}
+	if details.LastName != nil {
+		delegate.LastName = *details.LastName
+	}
+	if details.JobTitle != nil {
+		delegate.JobTitle = *details.JobTitle
+	}
+	if details.Email != nil {
+		delegate.Email = details.Email
+	}
+	if details.Telephone != nil {
+		delegate.Telephone = details.Telephone
+	}
+	if s3UploadKey != nil {
+		delegate.ProfileKey = s3UploadKey
+	}
+	if password != nil {
+		delegate.Password = password
+	}
+
+	save := database.GormDB.Save(&delegate)
+	if save.Error != nil {
+		u.Logger.Logf(sentry.LevelError, save.Error, "Unable to update delegate: %s", details.UUID)
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	return delegate, nil
+}

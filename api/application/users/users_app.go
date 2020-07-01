@@ -10,6 +10,7 @@ type UsersApp interface {
 	Delegate(uuid gentypes.UUID) (gentypes.Delegate, error)
 	GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilter, orderBy *gentypes.OrderBy) ([]gentypes.Delegate, gentypes.PageInfo, error)
 	CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, *string, error)
+	UpdateDelegate(input gentypes.UpdateDelegateInput) (gentypes.Delegate, error)
 
 	Company(uuid gentypes.UUID) (gentypes.Company, error)
 	GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error)
