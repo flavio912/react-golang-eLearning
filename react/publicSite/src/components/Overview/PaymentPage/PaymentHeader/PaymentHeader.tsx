@@ -10,21 +10,22 @@ const useStyles = createUseStyles((theme: Theme) => ({
         justifyContent: 'space-evenly',
         alignItems: 'center',
     },
+    spacer: {
+        display: 'flex',
+        flex: 1,
+        alignItems: 'flex-end',
+    },
     header: {
         flex: 1,
         fontSize: theme.fontSizes.extraLargeHeading,
         fontWeight: '800',
-        color: theme.colors.primaryWhite
+        color: theme.colors.primaryWhite,
+        textAlign: 'center'
     },
     image: {
-        height: '151px',
-        width: '300px',
-        margin: '60px 0 0 50px',
+        width: '225px',
+        marginTop: '40px',
         borderRadius: '20px 20px 0 0'
-    },
-    spacer: {
-        flex: 1,
-        height: '210px' // image height + padding, removes extra space below image
     }
 }));
 

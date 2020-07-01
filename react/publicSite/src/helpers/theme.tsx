@@ -2,7 +2,9 @@ const spacing = {
   0: 5,
   1: 10,
   2: 20,
-  3: 50
+  3: 50,
+  4: 70,
+  5: 100
 };
 
 export type Theme = {
@@ -12,6 +14,7 @@ export type Theme = {
   buttonBorderRadius: number;
   primaryGradient: string;
   loginBackgroundGradient: string;
+  centerColumnWidth: number;
   colors: {
     primaryBlack: string;
     primaryBlue: string;
@@ -64,6 +67,7 @@ const theme: Theme = {
   buttonBorderRadius: 4,
   primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
   loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
+  centerColumnWidth: 1200,
   colors: {
     primaryBlack: '#0C152E',
     primaryBlue: '#0b57ff',
@@ -80,7 +84,7 @@ const theme: Theme = {
     textBlue: '#1081AA',
     textGrey: '#737988',
     progressGrey: '#d2d6db',
-    lightBlue: "#E2E9F8",
+    lightBlue: '#E2E9F8',
     navyBlue: '#0E66E0',
     footerBlue: '#1D2B35',
     footerGrey: '#93A1B0',

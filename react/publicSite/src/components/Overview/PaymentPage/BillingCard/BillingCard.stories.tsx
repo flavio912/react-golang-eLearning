@@ -8,10 +8,8 @@ export default {
 };
 
 const emptyBillingDetails: BillingDetails = {
-    firstName: "",
-    lastName: "",
-    adressOne: "",
-    adressTwo: "",
+    addressOne: "",
+    addressTwo: "",
     city: "",
     postcode: "",
     country: "",

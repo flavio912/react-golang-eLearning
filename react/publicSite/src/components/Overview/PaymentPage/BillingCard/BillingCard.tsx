@@ -11,8 +11,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     padding: '25px',
-    borderRadius: '14px',
-    boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
+    borderRadius: '10px',
+    boxShadow: '2px 2px 10px rgba(0, 0, 0, 0.11)'
   },
   row: {
     display: 'flex',
@@ -62,10 +62,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type BillingDetails = {
-  firstName: string;
-  lastName: string;
-  adressOne: string;
-  adressTwo: string;
+  addressOne: string;
+  addressTwo: string;
   city: string;
   postcode: string;
   country: string;
@@ -82,10 +80,8 @@ function BillingCard({ billingDetails, className }: Props) {
   const classes = useStyles({ theme });
 
   // Form Data
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [adressOne, setAddressOne] = React.useState('');
-  const [adressTwo, setAddressTwo] = React.useState('');
+  const [addressOne, setAddressOne] = React.useState('');
+  const [addressTwo, setAddressTwo] = React.useState('');
   const [city, setCity] = React.useState('');
   const [postcode, setPostcode] = React.useState('');
   const [country, setCountry] = React.useState({ id: 0, title: 'Country' });
@@ -93,10 +89,8 @@ function BillingCard({ billingDetails, className }: Props) {
 
   React.useEffect(() => {
     billingDetails = {
-      firstName,
-      lastName,
-      adressOne,
-      adressTwo,
+      addressOne,
+      addressTwo,
       city,
       postcode,
       country: country.title !== 'Country' ? country.title : '',
@@ -108,29 +102,11 @@ function BillingCard({ billingDetails, className }: Props) {
     <form className={classNames(classes.root, className)}>
       <div className={classes.header}>Billing Address</div>
 
-      <div className={classes.row}>
-        <CoreInput
-          placeholder="First Name"
-          type="text"
-          onChange={(text: string) => setFirstName(text)}
-          value={firstName}
-          className={classes.input}
-        />
-
-        <CoreInput
-          placeholder="Last Name"
-          type="text"
-          onChange={(text: string) => setLastName(text)}
-          value={lastName}
-          className={classNames(classes.input, classes.marginLeft)}
-        />
-      </div>
-
       <CoreInput
         placeholder="Address Line 1"
         type="text"
         onChange={(text: string) => setAddressOne(text)}
-        value={adressOne}
+        value={addressOne}
         className={classes.input}
       />
 
@@ -138,7 +114,7 @@ function BillingCard({ billingDetails, className }: Props) {
         placeholder="Address Line 1"
         type="text"
         onChange={(text: string) => setAddressTwo(text)}
-        value={adressTwo}
+        value={addressTwo}
         className={classes.input}
       />
 

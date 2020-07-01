@@ -1,9 +1,9 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
 import { useRouter } from 'found';
-import { Theme } from "helpers/theme";
-import Icon from "sharedComponents/core/Icon";
+import { Theme } from 'helpers/theme';
+import Icon from 'sharedComponents/core/Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
@@ -11,26 +11,35 @@ const useStyles = createUseStyles((theme: Theme) => ({
         display: 'flex',
         flexDirection: 'column',
         backgroundColor: theme.colors.footerBlue,
-        padding: '60px 100px 30px 100px'
+        padding: '35px 75px 30px 50px'
     },
     row: {
         display: 'flex',
+        flexWrap: 'wrap',
         flexDirection: 'row',
         justifyContent: 'space-between',
-        alignItems: 'center',
+        alignItems: 'flex-start',
+        '@media (max-width: 650px)': {
+            flexDirection: 'column',
+            alignItems: 'center',
+        }
     },
     border: {
         paddingBottom: '100px',
         marginBottom: '20px',
         borderBottom: ['1px', 'solid', theme.colors.footerGrey],
-        alignItems: 'flex-start',
+        //alignItems: 'flex-start',
     },
     column: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'flex-start',
-        marginRight: '50px'
+        margin: '25px 25px',
+        //marginRight: '50px',
+        '@media (max-width: 650px)': {
+            alignItems: 'center'
+        }
     },
     header: {
         fontSize: theme.fontSizes.extraLarge,
@@ -70,6 +79,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     center: {
         display: 'flex',
+        flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -81,49 +91,59 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     copyright: {
         fontSize: theme.fontSizes.xSmall,
-        color: theme.colors.footerGrey
+        color: theme.colors.footerGrey,
+        '@media (max-width: 650px)': {
+            marginTop: '25px',
+            textAlign: 'center'
+        }
+    },
+    mobileBorder: {
+        '@media (max-width: 650px)': {
+            borderBottom: ['1px', 'solid', theme.colors.footerGrey],
+            paddingBottom: '25px'
+        }
     }
 }));
 
 export type Column = {
-    id: number;
-    header: string;
-    links: Link[];
-}
+  id: number;
+  header: string;
+  links: Link[];
+};
 
 export type Link = {
-    id: number;
-    name: string;
-    link: string;
-    alert?: Alert;
-}
+  id: number;
+  name: string;
+  link: string;
+  alert?: Alert;
+};
 
 export type Alert = {
-    type: "new" | "increase";
-    value: string | number;
-}
+  type: 'new' | 'increase';
+  value: string | number;
+};
 
 type Props = {
-    columns: Column[];
-    className?: string;
+  columns: Column[];
+  className?: string;
 };
 
 function Footer({ columns, className }: Props) {
-    const theme = useTheme();
-    const classes = useStyles({ theme });
+  const theme = useTheme();
+  const classes = useStyles({ theme });
 
-    const { router } = useRouter();
-    const onClick = (link?: string) => {
-        link && router.push(link);
-    }
+  const { router } = useRouter();
+  const onClick = (link?: string) => {
+    link && router.push(link);
+  };
 
   return (
       <div className={classNames(classes.root, className)}>
           <div className={classNames(classes.row, classes.border)}>
-              <div className={classes.column}>
+              <div className={classNames(classes.column, classes.mobileBorder)}>
                   <Icon name="Blue_TTC_Logo_Icon" size={46} />
                   <div className={classes.message}>Redefining the <strong>future</strong> of <strong>compliance</strong> and training</div>
-                  <Icon name="AviationSecurityCert" style={{height: '74px', width: '152px'}} />
+                  <Icon name="AviationSecurityCert" style={{height: '74px', width: '152px' }} />
               </div>
               {columns && columns.map((column: Column) => (
                   <div key={column.id} className={classes.column}>
@@ -147,16 +167,29 @@ function Footer({ columns, className }: Props) {
                       ))}
                   </div>
               ))}
+          </div>       
+        <div className={classes.row}>
+          <div className={classNames(classes.row, classes.center)}>
+            <Icon
+              name="Twitter_Logo"
+              size={25}
+              style={{ marginRight: '10px' }}
+            />
+            <Icon
+              name="Facebook_Logo"
+              size={25}
+              style={{ marginRight: '10px' }}
+            />
+            <Icon name="LinkedIn_Logo" size={25} />
           </div>
-          <div className={classes.row}>
-              <div className={classNames(classes.row, classes.center)}>
-                    <Icon name="Twitter_Logo" size={25} style={{ marginRight: '10px' }} />
-                    <Icon name="Facebook_Logo" size={25} style={{ marginRight: '10px' }} />
-                    <Icon name="LinkedIn_Logo" size={25} />
-              </div>
-              <div className={classes.copyright}>© 2020 TTC Hub. All Rights Reserved. Registered in England | Company registration number 10849230.</div>
+          <div className={classes.copyright}>
+            © 2020 TTC Hub. All Rights Reserved. Registered in England | Company
+            registration number 10849230.
           </div>
-      </div>
+        </div>
+
+      
+    </div>
   );
 }
 
