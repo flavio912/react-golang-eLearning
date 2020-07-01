@@ -33,7 +33,7 @@ input UpdateDelegateInput {
   email: String
   telephone: String
   profileImageUploadToken: String
-  newPassword: Boolean
+  newPassword: String
 }
 
 type CreateDelegateResponse {

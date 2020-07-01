@@ -68,7 +68,7 @@ type UpdateDelegateInput struct {
 	Email                   *string `valid:"email"`
 	Telephone               *string `valid:"numeric"`
 	ProfileImageUploadToken *string
-	NewPassword             *bool
+	NewPassword             *string
 }
 
 func (u *UpdateDelegateInput) Validate() error {

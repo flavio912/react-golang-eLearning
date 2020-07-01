@@ -170,7 +170,7 @@ func TestUpdateDelegate(t *testing.T) {
 		invalidInput := gentypes.UpdateDelegateInput{
 			Email: helpers.StringPointer("not email"),
 		}
-		d, err := usersRepo.UpdateDelegate(invalidInput, nil, nil)
+		d, err := usersRepo.UpdateDelegate(invalidInput, nil, false)
 
 		assert.Equal(t, invalidInput.Validate(), err)
 		assert.Equal(t, models.Delegate{}, d)
@@ -178,7 +178,7 @@ func TestUpdateDelegate(t *testing.T) {
 
 	uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
 	t.Run("Delegate must exist", func(t *testing.T) {
-		d, err := usersRepo.UpdateDelegate(gentypes.UpdateDelegateInput{UUID: uuidZero}, nil, nil)
+		d, err := usersRepo.UpdateDelegate(gentypes.UpdateDelegateInput{UUID: uuidZero}, nil, false)
 
 		assert.Equal(t, errors.ErrDelegateDoesNotExist(uuidZero.String()), err)
 		assert.Equal(t, models.Delegate{}, d)
@@ -189,7 +189,7 @@ func TestUpdateDelegate(t *testing.T) {
 			gentypes.UpdateDelegateInput{
 				UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
 				CompanyUUID: helpers.UUIDPointer(uuidZero),
-			}, nil, nil,
+			}, nil, false,
 		)
 
 		assert.Equal(t, &errors.ErrCompanyNotFound, err)
@@ -207,7 +207,7 @@ func TestUpdateDelegate(t *testing.T) {
 			Telephone:   helpers.StringPointer("1000101"),
 		}
 
-		delegate, err := usersRepo.UpdateDelegate(input, nil, nil)
+		delegate, err := usersRepo.UpdateDelegate(input, nil, false)
 
 		assert.Nil(t, err)
 		assert.Equal(t, *input.FirstName, delegate.FirstName)

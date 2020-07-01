@@ -156,14 +156,13 @@ func (u *usersAppImpl) CreateDelegate(delegateDetails gentypes.CreateDelegateInp
 }
 
 func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (gentypes.Delegate, error) {
-	if !u.grant.IsAdmin {
+	if !u.grant.IsAdmin && !u.grant.IsManager {
 		return gentypes.Delegate{}, &errors.ErrUnauthorized
 	}
 
 	var (
-		needNewPassword = input.NewPassword != nil && *input.NewPassword
-		s3UploadKey     *string
-		password        *string
+		canSetPassword = u.grant.IsAdmin && input.NewPassword != nil
+		s3UploadKey    *string
 	)
 
 	if input.ProfileImageUploadToken != nil {
@@ -174,17 +173,8 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 
 		s3UploadKey = &tmpUploadKey
 	}
-	if needNewPassword {
-		pass, err := auth.GenerateSecurePassword(10)
-		if err != nil {
-			u.grant.Logger.Log(sentry.LevelError, err, "Unable to generate secure password")
-			return gentypes.Delegate{}, &errors.ErrWhileHandling
-		}
 
-		password = &pass
-	}
-
-	delegate, err := u.usersRepository.UpdateDelegate(input, s3UploadKey, password)
+	delegate, err := u.usersRepository.UpdateDelegate(input, s3UploadKey, canSetPassword)
 
 	return u.delegateToGentype(delegate), err
 }
