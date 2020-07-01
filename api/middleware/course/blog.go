@@ -199,7 +199,7 @@ func (c *coursesRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blo
 		blog.Category = category
 	}
 
-	save := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blog.UUID).Updates(&blog)
+	save := database.GormDB.Save(&blog)
 	if save.Error != nil {
 		c.Logger.Logf(sentry.LevelError, save.Error, "Error updating blog with UUID: %s", input.UUID)
 		return models.Blog{}, &errors.ErrWhileHandling

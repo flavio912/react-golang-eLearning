@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -57,6 +58,28 @@ func TestGetBlogImages(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Len(t, imgs, 2)
+	})
+}
+
+func TestDeleteBlogImages(t *testing.T) {
+	prepareTestDatabase()
+
+	keyMap := map[string]string{
+		"img1": "key1",
+		"img2": "key2",
+	}
+	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
+	_ = courseRepo.UploadBlogImages(blogUUID, keyMap)
+
+	t.Run("Deletes all images of blog", func(t *testing.T) {
+		err := courseRepo.DeleteBlogImages(blogUUID)
+
+		assert.Nil(t, err)
+
+		blogs, err := courseRepo.GetBlogImages(blogUUID)
+
+		assert.Nil(t, err)
+		assert.Len(t, blogs, 0)
 	})
 }
 
@@ -134,5 +157,47 @@ func TestGetBlogs(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Len(t, blogs, 3)
 		assert.Equal(t, "2020-03-08T13:53:37Z", blogs[0].CreatedAt.Format(time.RFC3339))
+	})
+}
+
+func TestUpdateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Blog must exist", func(t *testing.T) {
+		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+		b, err := courseRepo.UpdateBlog(gentypes.UpdateBlogInput{UUID: uuidZero})
+		assert.Equal(t, errors.ErrBlogNotFound(uuidZero.String()), err)
+		assert.Equal(t, models.Blog{}, b)
+	})
+
+	t.Run("Updates existing blog", func(t *testing.T) {
+		input := gentypes.UpdateBlogInput{
+			UUID:         gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			Title:        helpers.StringPointer("Everything You Need To Know About CNNs"),
+			Body:         helpers.StringPointer(`{"ayy" : "yoo"}`),
+			CategoryUUID: helpers.UUIDPointer(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")),
+		}
+
+		blog, err := courseRepo.UpdateBlog(input)
+
+		assert.Nil(t, err)
+		assert.Equal(t, input.UUID, blog.UUID)
+		assert.Equal(t, *input.Title, blog.Title)
+		assert.Equal(t, *input.Body, blog.Body)
+		assert.Equal(t, *input.CategoryUUID, blog.Category.UUID)
+		assert.NotEqual(t, "", blog.UpdatedAt.Format(time.RFC3339))
+
+		asc := true
+		blogs, _, errs := courseRepo.GetBlogs(
+			nil,
+			&gentypes.OrderBy{
+				Ascending: &asc,
+				Field:     "updated_at",
+			},
+		)
+
+		assert.Nil(t, errs)
+		assert.Equal(t, blogs[0].UUID, blog.UUID)
+		assert.Equal(t, blogs[0].UpdatedAt.Format(time.RFC3339), blog.UpdatedAt.Format(time.RFC3339))
 	})
 }
