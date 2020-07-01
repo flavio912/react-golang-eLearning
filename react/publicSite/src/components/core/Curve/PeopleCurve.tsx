@@ -38,7 +38,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   curve: {
     height: '100px',
     maxWidth: '100vw',
-    marginBottom: '-16px' // Weird gap otherwise
+    marginBottom: '-16px', // Weird gap otherwise
+    '@media (max-width: 800px) and (min-width: 550px)': {
+        marginBottom: '-5%',
+    },
+    '@media (max-width: 550px)': {
+      marginBottom: '-40px',
+  }
   },
   greyBackground: {
     backgroundColor: theme.colors.backgroundGrey

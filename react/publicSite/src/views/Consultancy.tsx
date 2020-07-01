@@ -53,14 +53,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     greyBackground: {
         backgroundColor: theme.colors.backgroundGrey,
-        marginTop: '125px'
+        marginTop: '125px',
+        paddingBottom: '100px'
     },
     card: {
         flex: 1,
         margin: '15px',
         maxWidth: '400px',
         '@media (max-width: 1150px)': {
-            minWidth: '40%'
+            minWidth: '40%',
+            margin: '5px'
         }
     },
     lessMargin: {
@@ -68,7 +70,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     row: {
         display: 'flex',
-        alignItems: 'space-between',
+        justifyContent: 'center',
         flexWrap: 'wrap'
     },
     //  Thumbnail styles
@@ -79,6 +81,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         boxShadow: '4px 2px 10px -2px rgba(0,0,0,0.06)',
         '@media (max-width: 1000px)': {
             width: '100vw',
+            margin: '0 0 15px 0'
         },
         '@media (max-width: 1150px)': {
             boxShadow: 'none'
@@ -90,7 +93,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        '@media (max-width: 500px)': {
+            height: 0,
+            width: 0,
+            opacity: 0
+        }
     },
     playCircle: {
         display: 'flex',
@@ -100,8 +108,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         height: '76px',
         borderRadius: '76px',
         backgroundColor: 'white',
-        opacity: 0.8,
-        marginBottom: '40px'
+        opacity: 0.8
     },
     playTriangle: {
         width: 0,

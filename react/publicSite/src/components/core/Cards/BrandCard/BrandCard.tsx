@@ -8,7 +8,8 @@ import Card, { PaddingOptions } from "sharedComponents/core/Cards/Card";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     mainRoot: {
-        display: 'flex'
+        display: 'flex',
+        flexWrap: 'wrap'
     },
     root: {
         display: 'flex',
@@ -65,10 +66,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     logo: {
         maxWidth: '200px',
         maxHeight: '60px',
-        alignSelf: 'flex-start'
+        alignSelf: 'flex-start',
+        '@media (max-width: 500px)': {
+            width: '100%',
+        }
     },
     quoteLogo: {
-        height: '35px',
+        maxWidth: '200px',
+        maxHeight: '35px',
+        alignSelf: 'flex-start',
+        '@media (max-width: 500px)': {
+            width: '100%',
+        },
         margin: '25px 0 30px 0'
     },
     row: {
