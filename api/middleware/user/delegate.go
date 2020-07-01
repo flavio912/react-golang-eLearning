@@ -206,7 +206,6 @@ func (u *usersRepoImpl) UpdateDelegate(
 
 	if details.CompanyUUID != nil {
 		if !u.CompanyExists(*details.CompanyUUID) {
-			u.Logger.Logf(sentry.LevelError, &errors.ErrCompanyNotFound, "Given company does not exist: %s", *details.CompanyUUID)
 			return models.Delegate{}, &errors.ErrCompanyNotFound
 		}
 		delegate.CompanyUUID = *details.CompanyUUID
