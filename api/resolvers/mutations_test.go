@@ -1692,3 +1692,201 @@ func TestCreateBlog(t *testing.T) {
 		ManagerAllowed:  false,
 	})
 }
+
+func TestUpdateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						title: "How To Backtrack"
+					}) {
+						uuid
+						title
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"title": "How To Backtrack"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all (non-images) fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid : "00000000-0000-0000-0000-000000000003"
+						title: "How To Do Gaussian Elimination"
+						body: "{\"space\":\"time\"}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						uuid
+						title
+						body
+						category {
+							name
+							color
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000003",
+						"title": "How To Do Gaussian Elimination",
+						"body": "{\"space\":\"time\"}",
+						"category": {
+							"name": "cat1",
+							"color": "#123"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Blog does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: errors.ErrBlogNotFound("00000000-0000-0000-0000-000000000000"),
+					Path:          []interface{}{"updateBlog"},
+				},
+			},
+		},
+	})
+
+	t.Run("Test loaders reset", func(t *testing.T) {
+		prepareTestDatabase()
+
+		gqltest.RunTests(t, []*gqltest.Test{
+			{
+				Name:    "Get blog into loader ctx",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							createdAt
+							title
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"createdAt": "2020-03-08T13:53:37Z",
+							"title": "How To Build A Custom Autoencoder"
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Update all (non-images) fields",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						updateBlog(input: {
+							uuid : "00000000-0000-0000-0000-000000000003"
+							title: "How To Do Gaussian Elimination"
+							body: "{\"space\":\"time\"}"
+							categoryUUID: "00000000-0000-0000-0000-000000000001"
+						}) {
+							uuid
+							title
+							body
+							category {
+								name
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"updateBlog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}",
+							"category": {
+								"name": "cat1",
+								"color": "#123"
+							}
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Check loader has been flushed",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							title
+							body
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}"
+						}
+					}
+				`,
+			},
+		})
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateBlog(input: {
+					uuid: "00000000-0000-0000-0000-000000000002"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateBlog"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
