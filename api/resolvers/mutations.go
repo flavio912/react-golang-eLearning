@@ -481,7 +481,7 @@ func (m *MutationResolver) UpdateBlogHeaderImage(
 	}
 
 	courseApp := course.NewCourseApp(grant)
-	err := courseApp.UpdateBlogHeaderImage(args.Input.BlogUUID, args.Input.FileSucess.SuccessToken)
+	_, err := courseApp.UpdateBlogHeaderImage(args.Input.BlogUUID, args.Input.FileSucess.SuccessToken)
 	if err != nil {
 		return &BlogResolver{}, err
 	}

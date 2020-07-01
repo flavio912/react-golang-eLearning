@@ -42,11 +42,13 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 	}
 
 	if input.HeaderImageToken != nil {
-		err = c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
+		key, err := c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
 
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
+
+		blog.HeaderImageKey = key
 	}
 
 	if input.BodyImages != nil {
@@ -77,22 +79,22 @@ func (c *courseAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFi
 	return url, successToken, err
 }
 
-func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) error {
+func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) (string, error) {
 	if !c.grant.IsAdmin {
-		return &errors.ErrUnauthorized
+		return "", &errors.ErrUnauthorized
 	}
 
 	s3key, err := uploads.VerifyUploadSuccess(token, "blogHeaderImage")
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	err = c.coursesRepository.UploadHeaderImage(blogUUID, s3key)
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return s3key, nil
 }
 
 func (c *courseAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
