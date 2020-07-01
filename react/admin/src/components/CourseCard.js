@@ -59,12 +59,12 @@ function CourseCard({ course, className, ...rest }) {
       <CardHeader
         className={classes.header}
         disableTypography
-        subheader={
-          <Typography variant="body2">
-            by {course.creator.firstName} {course.creator.lastName} | Created:{' '}
-            {moment(course.createdAt).fromNow()}
-          </Typography>
-        }
+        // subheader={
+        //   // <Typography variant="body2">
+        //   //   by {course.creator.firstName} {course.creator.lastName} | Created:{' '}
+        //   //   {moment(course.createdAt).fromNow()}
+        //   // </Typography>
+        // }
         title={
           <Link
             color="textPrimary"
@@ -72,18 +72,18 @@ function CourseCard({ course, className, ...rest }) {
             to="/courses/1/overview"
             variant="h5"
           >
-            {course.title}
+            {course.name}
           </Link>
         }
       />
       <CardContent className={classes.content}>
         <div className={classes.description}></div>
         <div className={classes.tags}>
-          {course.tags.map(tag => (
+          {/* {course.tags.map(tag => (
             <Label color={tag.color} key={tag.text}>
               {tag.text}
             </Label>
-          ))}
+          ))} */}
         </div>
         <Divider />
         <div className={classes.details}>
@@ -100,12 +100,12 @@ function CourseCard({ course, className, ...rest }) {
               </Typography>
             </Grid>
             <Grid item>
-              <Typography variant="h5">
+              {/* <Typography variant="h5">
                 {course.delegates.pageInfo.total}
-              </Typography>
-              <Typography gutterBottom variant="overline">
+              </Typography> */}
+              {/* <Typography gutterBottom variant="overline">
                 DELEGATES
-              </Typography>
+              </Typography> */}
             </Grid>
             <Grid item>
               <Button

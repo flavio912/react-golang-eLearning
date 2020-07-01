@@ -50,7 +50,6 @@ function CompaniesManagementList() {
   const handleFilter = () => {};
 
   const handleSearch = () => {};
-
   const companies = data?.companies?.edges.map(comp => ({
     id: uuid(),
     name: comp.name,

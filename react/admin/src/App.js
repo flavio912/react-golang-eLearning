@@ -53,7 +53,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const link = new HttpLink({
-  uri: 'https://ttc.devserver.london/graphql',
+  uri: 'http://localhost:8080/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 

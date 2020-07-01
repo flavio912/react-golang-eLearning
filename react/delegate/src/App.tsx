@@ -55,7 +55,20 @@ const Router = createFarceRouter({
         render={protectedRenderer(AppHolder)}
       >
         <Route path="/" Component={TrainingZone} />
-        <Route path="/courses" Component={OnlineCourses} />
+        <Route
+          path="/courses"
+          Component={OnlineCourses}
+          query={graphql`
+            query App_Courses_Query {
+              user {
+                ...OnlineCourses_user
+              }
+            }
+          `}
+          render={(args: any) => {
+            return <OnlineCourses {...args.props} />;
+          }}
+        />
         <Route path="/courses/:id" Component={OnlineCoursePage} />
         <Route path="/progress" Component={Progress} />
       </Route>

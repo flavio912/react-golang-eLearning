@@ -12,7 +12,7 @@ import {
   Switch
 } from '@material-ui/core';
 
-function CourseFeatures() {
+function CourseFeatures({ state, setState }) {
   return (
     <Card>
       <CardHeader title={'Course Features'} />
@@ -21,10 +21,12 @@ function CourseFeatures() {
           <Grid item>
             <Typography variant={'overline'}>COURSE TYPE</Typography>
             <RadioGroup
-              aria-label="gender"
-              name="gender1"
-              value={'online'}
-              onChange={() => {}}
+              aria-label="coursetype"
+              name="course type"
+              value={state.courseType}
+              onChange={(evt, value) => {
+                setState('courseType', value);
+              }}
             >
               <FormControlLabel
                 value="online"
@@ -41,10 +43,12 @@ function CourseFeatures() {
           <Grid item>
             <Typography variant={'overline'}>ACCESS TYPE</Typography>
             <RadioGroup
-              aria-label="gender"
-              name="gender1"
-              value={'open'}
-              onChange={() => {}}
+              aria-label="access type"
+              name="accessType"
+              value={state.accessType}
+              onChange={(evt, value) => {
+                setState('accessType', value);
+              }}
             >
               <FormControlLabel
                 value="restricted"
@@ -77,8 +81,10 @@ function CourseFeatures() {
               </Grid>
               <Grid item>
                 <Switch
-                  checked={true}
-                  onChange={() => {}}
+                  checked={state.backgroundCheck}
+                  onChange={(evt, checked) => {
+                    setState('backgroundCheck', checked);
+                  }}
                   color="primary"
                   name="checkedB"
                   inputProps={{ 'aria-label': 'primary checkbox' }}
