@@ -83,7 +83,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   line: {
     borderBottom: ['1.5px', 'solid', theme.colors.borderGrey],
-    width: '400px'
+    width: '400px',
+    '@media (min-width: 700px) and (max-width: 1050px)': {
+      width: '225px'
+    },
+    '@media (max-width: 700px)': {
+      width: '100px'
+    }
   }
 }));
 

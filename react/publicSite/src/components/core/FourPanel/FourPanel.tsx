@@ -64,8 +64,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
         marginBottom: '15px'
     },
     description: {
-        fontSize: theme.fontSizes.default,
-        color: theme.colors.textGrey
+        fontSize: 15,
+        color: theme.colors.textGrey,
+        lineHeight: '25px'
     },
     imageDescription: {
         '@media (max-width: 1000px)': {
