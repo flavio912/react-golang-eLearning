@@ -62,7 +62,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     positio: 'relative',
     width: '100%',
-    fontSize: theme.fontSizes.small,
+    fontSize: theme.fontSizes.xSmall,
     lineHeight: '1.5em',
     margin: `${theme.spacing(2)}px ${theme.spacing(2)}px 0`,
     color: theme.colors.textGrey,

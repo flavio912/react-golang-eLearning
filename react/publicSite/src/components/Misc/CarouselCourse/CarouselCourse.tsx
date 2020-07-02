@@ -38,7 +38,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     right: 10.5
   },
   arrowLeft: {
-    left: -15.5
+    left: 8.5
   },
   dot: {
     position: 'relative',
@@ -73,8 +73,14 @@ type Props = {
 };
 const responsive = {
   desktop: {
+    breakpoint: { max: 90000, min: 2000 },
+    items: 5,
+    slidesToSlide: 4, // optional, default to 1.
+    partialVisibilityGutter: 10
+  },
+  desktop1: {
     breakpoint: { max: 3000, min: 1250 },
-    items: 4,
+    items: 3,
     slidesToSlide: 4, // optional, default to 1.
     partialVisibilityGutter: 10
   },
