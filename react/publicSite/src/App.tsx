@@ -27,6 +27,7 @@ import RegisterIndividual from 'views/RegisterIndividual';
 import RegisterCompany from 'views/RegisterCompany';
 import Courses from 'views/Courses';
 import Consultancy from 'views/Consultancy';
+import CourseDetailsPage from 'views/CourseDetailsPage';
 
 
 const ExamplePageQuery = graphql`
@@ -60,6 +61,7 @@ const Router = createFarceRouter({
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
         <Route path="/payment" Component={PaymentPage} />
+        <Route path="/course" Component={CourseDetailsPage} />
         <Route path="/courses" Component={Courses} />
         <Route path="/consultancy" Component={Consultancy} />
       </Route>
