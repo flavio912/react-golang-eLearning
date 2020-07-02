@@ -44,16 +44,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: '500'
   },
-  courseTitle: {
-    alignSelf: 'flex-start',
-    fontSize: theme.fontSizes.heading,
-    textAlign: 'left'
-  },
-  courseDesc: {
-    fontSize: theme.fontSizes.tinyHeading,
-    fontWeight: '500',
-    textAlign: 'left'
-  },
   bar: {
     alignSelf: 'center',
     width: '55px',
@@ -62,9 +52,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   jumpText: {
     margin: '20px 20px 0 20px',
-  },
-  updatedText: {
-    marginLeft: '25px'
   },
   button: {
     fontWeight: '800',
@@ -78,22 +65,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
       flexDirection: 'column'
     }
   },
-  times: {
-    alignSelf: 'flex-start',
-    marginTop: '31px'
-  },
   history: {
     alignSelf: 'flex-start',
     marginBottom: '50px'
-  },
-  course: {
-    alignSelf: 'flex-start',
-    marginLeft: '90px'
-  },
-  component: {
-    position: 'absolute',
-    top: '15%',
-    right: '5%'
   },
   extraLarge: {
     fontSize: theme.fontSizes.extraLarge
@@ -112,13 +86,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     justifyContent: 'flex-start',
     alignItems: 'center'
-  },
-  spacer: {
-    minWidth: '450px'
   }
 }));
 
-export type Archetypes = 'default' | 'buttons' | 'course';
+export type Archetypes = 'default' | 'buttons';
 
 export type ButtonLink = {
   title: string;
@@ -131,9 +102,6 @@ type Props = {
   archetype?: Archetypes;
   history?: string[];
   buttons?: ButtonLink[];
-  estimatedTime?: string;
-  lastUpdated?: string;
-  sideComponent?: React.ReactNode;
   className?: string;
 };
 
@@ -143,9 +111,6 @@ function PageHeader({
   archetype,
   history,
   buttons,
-  estimatedTime,
-  lastUpdated,
-  sideComponent,
   className
 }: Props) {
   const theme = useTheme();
@@ -178,12 +143,7 @@ function PageHeader({
           </div>
         )}
 
-        <div
-          className={classNames(
-            classes.row,
-            archetype && archetype === 'course' && classes.course
-          )}
-        >
+        <div className={classes.row}>
           <div className={classes.column}>
             <div className={classNames(classes.defaultTitle, titleStyle)}>
               {title}
@@ -194,19 +154,6 @@ function PageHeader({
             <div className={classNames(classes.defaultDesc, descStyle)}>
               {description}
             </div>
-
-            {archetype && archetype === 'course' && (
-              <div className={classNames(classes.row, classes.times)}>
-                <div className={classes.extraLarge}>
-                  {<strong>Estimated Time:</strong>} {estimatedTime}
-                </div>
-                <div
-                  className={classNames(classes.updatedText, classes.extraLarge)}
-                >
-                  {<strong>Last Updated:</strong>} {lastUpdated}
-                </div>
-              </div>
-            )}
 
             {archetype && archetype === 'buttons' && (
               <div className={classNames(classes.row, classes.buttons)}>
@@ -225,13 +172,7 @@ function PageHeader({
               </div>
             )}
           </div>
-          {archetype && archetype === 'course' && (
-            <div className={classes.spacer} />
-          )}
         </div>
-        {archetype && archetype === 'course' && (
-          <div className={classes.component}>{sideComponent}</div>
-        )}
       </div>
     </div>
   );
