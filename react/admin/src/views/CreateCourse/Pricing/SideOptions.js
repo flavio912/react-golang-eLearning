@@ -13,7 +13,7 @@ import {
   Grid
 } from '@material-ui/core';
 
-function SideOptions() {
+function SideOptions({ state, setState }) {
   return (
     <Card>
       <CardHeader title={'Course Pricing'} />
@@ -27,11 +27,16 @@ function SideOptions() {
             <RadioGroup
               aria-label="gender"
               name="gender1"
-              value={'online'}
-              onChange={() => {}}
+              value={state.priceType}
+              onChange={(evt, value) => {
+                if (value == 'free') {
+                  setState('price', parseFloat(0));
+                }
+                setState('priceType', value);
+              }}
             >
               <FormControlLabel
-                value="online"
+                value="paid"
                 control={<Radio />}
                 label={
                   <TextField
@@ -40,6 +45,15 @@ function SideOptions() {
                       startAdornment: (
                         <InputAdornment position="start">£</InputAdornment>
                       )
+                    }}
+                    type="number"
+                    value={state.price}
+                    onChange={evt => {
+                      try {
+                        setState('price', parseFloat(evt.target.value));
+                      } catch (err) {
+                        return;
+                      }
                     }}
                     variant="outlined"
                   />

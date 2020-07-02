@@ -40,6 +40,7 @@ const SAVE_ONLINE_COURSE = gql`
     $id: Int
     $name: String
     $excerpt: String
+    $price: Float
     $backgroundCheck: Boolean
     $accessType: AccessType
     $howToComplete: String
@@ -50,6 +51,7 @@ const SAVE_ONLINE_COURSE = gql`
         id: $id
         name: $name
         excerpt: $excerpt
+        price: $price
         backgroundCheck: $backgroundCheck
         accessType: $accessType
         howToComplete: $howToComplete
@@ -67,6 +69,7 @@ const GET_COURSE = gql`
       id
       name
       excerpt
+      price
       accessType
       backgroundCheck
       type
@@ -116,7 +119,9 @@ function CreateCourse({ match, history }) {
     howToComplete: '',
     whatYouLearn: [],
     requirements: [],
-    hoursToComplete: 0
+    hoursToComplete: 0,
+    price: 0,
+    priceType: 'paid'
   };
 
   const [state, setState] = useState(initState);
@@ -137,7 +142,8 @@ function CreateCourse({ match, history }) {
       courseType: data.course.type,
       accessType: data.course.accessType,
       howToComplete: data.course.howToComplete,
-      hoursToComplete: data.course.hoursToComplete
+      hoursToComplete: data.course.hoursToComplete,
+      price: data.course.price
     });
   }, [data, loading]);
 
@@ -157,7 +163,8 @@ function CreateCourse({ match, history }) {
           backgroundCheck: state.backgroundCheck,
           accessType: state.accessType,
           howToComplete: state.howToComplete,
-          hoursToComplete: state.hoursToComplete
+          hoursToComplete: state.hoursToComplete,
+          price: state.price
         }
       });
 
