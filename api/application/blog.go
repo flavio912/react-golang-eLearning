@@ -1,15 +1,40 @@
-package course
+package application
 
 import (
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/blog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
+type BlogApp interface {
+	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
+	UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error)
+	BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+	UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) (string, error)
+	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+	GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error)
+	GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error)
+	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]gentypes.Blog, gentypes.PageInfo, error)
+}
+
+type blogAppImpl struct {
+	grant          *middleware.Grant
+	blogRepository blog.BlogRepository
+}
+
+func NewBlogApp(grant *middleware.Grant) BlogApp {
+	return &blogAppImpl{
+		grant:          grant,
+		blogRepository: blog.NewBlogRepository(&grant.Logger),
+	}
+}
+
+func (b *blogAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 	url := uploads.GetImgixURL(blog.HeaderImageKey)
 
 	createdAt := blog.CreatedAt.Format(time.RFC3339)
@@ -33,30 +58,30 @@ func (c *courseAppImpl) blogToGentype(blog models.Blog) gentypes.Blog {
 	}
 }
 
-func (c *courseAppImpl) blogsToGentype(blogs []models.Blog) []gentypes.Blog {
+func (b *blogAppImpl) blogsToGentype(blogs []models.Blog) []gentypes.Blog {
 	var gens []gentypes.Blog
 	for _, blog := range blogs {
-		gens = append(gens, c.blogToGentype(blog))
+		gens = append(gens, b.blogToGentype(blog))
 	}
 	return gens
 }
 
-func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error) {
-	if !c.grant.IsAdmin {
+func (b *blogAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error) {
+	if !b.grant.IsAdmin {
 		return gentypes.Blog{}, &errors.ErrUnauthorized
 	}
 
 	if input.AuthorUUID == nil {
-		input.AuthorUUID = &c.grant.Claims.UUID
+		input.AuthorUUID = &b.grant.Claims.UUID
 	}
-	blog, err := c.coursesRepository.CreateBlog(input)
+	blog, err := b.blogRepository.CreateBlog(input)
 
 	if err != nil {
 		return gentypes.Blog{}, err
 	}
 
 	if input.HeaderImageToken != nil {
-		key, err := c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
+		key, err := b.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
 
 		if err != nil {
 			return gentypes.Blog{}, err
@@ -66,18 +91,18 @@ func (c *courseAppImpl) CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blo
 	}
 
 	if input.BodyImages != nil {
-		err := c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
+		err := b.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
 
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
 	}
 
-	return c.blogToGentype(blog), err
+	return b.blogToGentype(blog), err
 }
 
-func (c *courseAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
-	if !c.grant.IsAdmin {
+func (b *blogAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !b.grant.IsAdmin {
 		return "", "", &errors.ErrUnauthorized
 	}
 
@@ -93,8 +118,8 @@ func (c *courseAppImpl) BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFi
 	return url, successToken, err
 }
 
-func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) (string, error) {
-	if !c.grant.IsAdmin {
+func (b *blogAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) (string, error) {
+	if !b.grant.IsAdmin {
 		return "", &errors.ErrUnauthorized
 	}
 
@@ -103,7 +128,7 @@ func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token stri
 		return "", err
 	}
 
-	err = c.coursesRepository.UploadHeaderImage(blogUUID, s3key)
+	err = b.blogRepository.UploadHeaderImage(blogUUID, s3key)
 	if err != nil {
 		return "", err
 	}
@@ -111,8 +136,8 @@ func (c *courseAppImpl) UpdateBlogHeaderImage(blogUUID gentypes.UUID, token stri
 	return s3key, nil
 }
 
-func (c *courseAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
-	if !c.grant.IsAdmin {
+func (b *blogAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !b.grant.IsAdmin {
 		return "", "", &errors.ErrUnauthorized
 	}
 
@@ -129,8 +154,8 @@ func (c *courseAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFile
 }
 
 // BlogImagesUploadSuccess verifies tokens of images and uploads them to related blog
-func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []gentypes.BlogImageInput) error {
-	if !c.grant.IsAdmin {
+func (b *blogAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []gentypes.BlogImageInput) error {
+	if !b.grant.IsAdmin {
 		return &errors.ErrUnauthorized
 	}
 
@@ -143,7 +168,7 @@ func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []genty
 		keyMap[img.JsonID] = s3key
 	}
 
-	err := c.coursesRepository.UploadBlogImages(blog, keyMap)
+	err := b.blogRepository.UploadBlogImages(blog, keyMap)
 	if err != nil {
 		for _, v := range keyMap {
 			_ = uploads.DeleteImageFromKey(v)
@@ -154,8 +179,8 @@ func (c *courseAppImpl) BlogImagesUploadSuccess(blog gentypes.UUID, imgs []genty
 	return nil
 }
 
-func (c *courseAppImpl) GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error) {
-	imgs, err := c.coursesRepository.GetBlogImages(blogUUID)
+func (b *blogAppImpl) GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error) {
+	imgs, err := b.blogRepository.GetBlogImages(blogUUID)
 
 	if err != nil {
 		return []gentypes.BlogImage{}, err
@@ -173,35 +198,35 @@ func (c *courseAppImpl) GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.Bl
 	return gens, nil
 }
 
-func (c *courseAppImpl) GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error) {
-	blogs, err := c.coursesRepository.GetBlogsByUUID(uuids)
+func (b *blogAppImpl) GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error) {
+	blogs, err := b.blogRepository.GetBlogsByUUID(uuids)
 
 	if err != nil {
 		return []gentypes.Blog{}, err
 	}
 
-	return c.blogsToGentype(blogs), nil
+	return b.blogsToGentype(blogs), nil
 }
 
-func (c *courseAppImpl) GetBlogs(
+func (b *blogAppImpl) GetBlogs(
 	page *gentypes.Page,
 	orderBy *gentypes.OrderBy,
 ) ([]gentypes.Blog, gentypes.PageInfo, error) {
-	blogs, pageInfo, err := c.coursesRepository.GetBlogs(page, orderBy)
+	blogs, pageInfo, err := b.blogRepository.GetBlogs(page, orderBy)
 
-	return c.blogsToGentype(blogs), pageInfo, err
+	return b.blogsToGentype(blogs), pageInfo, err
 }
 
-func (c *courseAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error) {
+func (b *blogAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error) {
 	// TODO: Does it need to check if update is coming from author?
-	if !c.grant.IsAdmin {
+	if !b.grant.IsAdmin {
 		return gentypes.Blog{}, &errors.ErrUnauthorized
 	}
 
-	blog, err := c.coursesRepository.UpdateBlog(input)
+	blog, err := b.blogRepository.UpdateBlog(input)
 
 	if input.HeaderImageToken != nil {
-		key, err := c.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
+		key, err := b.UpdateBlogHeaderImage(blog.UUID, *input.HeaderImageToken)
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
@@ -209,16 +234,16 @@ func (c *courseAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blo
 		blog.HeaderImageKey = key
 	}
 	if input.BodyImages != nil {
-		err = c.coursesRepository.DeleteBlogImages(blog.UUID)
+		err = b.blogRepository.DeleteBlogImages(blog.UUID)
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
 
-		err = c.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
+		err = b.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
 	}
 
-	return c.blogToGentype(blog), err
+	return b.blogToGentype(blog), err
 }

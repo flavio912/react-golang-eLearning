@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/golang/glog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -33,13 +32,8 @@ func (b *BlogResolver) Author() *BlogAuthorResolver {
 	}
 }
 func (b *BlogResolver) BlogBodyImages(ctx context.Context) (*[]*BlogImageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return nil, &errors.ErrUnauthorized
-	}
-
-	courseApp := course.NewCourseApp(grant)
-	imgs, err := courseApp.GetBlogBodyImages(b.Blog.UUID)
+	app := auth.AppFromContext(ctx)
+	imgs, err := app.BlogApp.GetBlogBodyImages(b.Blog.UUID)
 	if err != nil {
 		glog.Info("Unable to resolve blog body images")
 		return nil, err

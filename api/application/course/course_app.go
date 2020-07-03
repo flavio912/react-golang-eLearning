@@ -62,15 +62,6 @@ type CourseApp interface {
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
 
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
-
-	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
-	UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error)
-	BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-	UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) (string, error)
-	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-	GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error)
-	GetBlogsByUUID(uuids []string) ([]gentypes.Blog, error)
-	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]gentypes.Blog, gentypes.PageInfo, error)
 }
 
 type courseAppImpl struct {

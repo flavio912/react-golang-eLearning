@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/graph-gophers/dataloader"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/blog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -40,8 +40,8 @@ func (b *blogLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dat
 		return loadBatchError(&errors.ErrUnauthorized, n)
 	}
 
-	courseApp := course.NewCourseApp(grant)
-	blogs, err := courseApp.GetBlogsByUUID(keys.Keys())
+	blogApp := blog.NewBlogApp(grant)
+	blogs, err := blogApp.GetBlogsByUUID(keys.Keys())
 	if err != nil {
 		return loadBatchError(err, n)
 	}

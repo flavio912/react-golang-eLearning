@@ -1,16 +1,38 @@
-package course
+package middleware
 
 import (
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
+type BlogRepository interface {
+	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
+	UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error)
+	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
+	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
+	DeleteBlogImages(blogUUID gentypes.UUID) error
+	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
+	GetBlogsByUUID(uuids []string) ([]models.Blog, error)
+	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]models.Blog, gentypes.PageInfo, error)
+}
+
+type blogRepoImpl struct {
+	Logger *logging.Logger
+}
+
+func NewBlogRepository(logger *logging.Logger) BlogRepository {
+	return &blogRepoImpl{
+		Logger: logger,
+	}
+}
+
 // CreateBlog creates a blog with author as an admin
-func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error) {
+func (c *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error) {
 	if err := input.Validate(); err != nil {
 		return models.Blog{}, err
 	}
@@ -59,7 +81,7 @@ func (c *coursesRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blo
 	return blog, nil
 }
 
-func (c *coursesRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
+func (c *blogRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
 	query := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blogUUID).Update("header_image_key", key)
 	if query.Error != nil {
 		if query.RecordNotFound() {
@@ -73,7 +95,7 @@ func (c *coursesRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) 
 	return nil
 }
 
-func (c *coursesRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
+func (c *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
 	query := database.GormDB.Begin()
 	for k, v := range imgs {
 		img := models.BlogImage{
@@ -93,7 +115,7 @@ func (c *coursesRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]s
 }
 
 // DeleteBlogImages deletes images inside blog body
-func (c *coursesRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
+func (c *blogRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
 	query := database.GormDB.Delete(models.BlogImage{}, "blog_uuid = ?", blogUUID)
 	if query.Error != nil {
 		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete blog's images: %s", blogUUID)
@@ -103,7 +125,7 @@ func (c *coursesRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
 	return nil
 }
 
-func (c *coursesRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error) {
+func (c *blogRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error) {
 	var imgs []models.BlogImage
 	query := database.GormDB.Where("blog_uuid = ?", blogUUID).Find(&imgs)
 
@@ -115,7 +137,7 @@ func (c *coursesRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogIm
 	return imgs, nil
 }
 
-func (c *coursesRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) {
+func (c *blogRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) {
 	var blogs []models.Blog
 	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&blogs)
 
@@ -127,7 +149,7 @@ func (c *coursesRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) 
 	return blogs, nil
 }
 
-func (c *coursesRepoImpl) GetBlogs(
+func (c *blogRepoImpl) GetBlogs(
 	page *gentypes.Page,
 	orderBy *gentypes.OrderBy,
 ) ([]models.Blog, gentypes.PageInfo, error) {
@@ -161,7 +183,7 @@ func (c *coursesRepoImpl) GetBlogs(
 	}, nil
 }
 
-func (c *coursesRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error) {
+func (c *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error) {
 	// Validate input
 	if err := input.Validate(); err != nil {
 		return models.Blog{}, err

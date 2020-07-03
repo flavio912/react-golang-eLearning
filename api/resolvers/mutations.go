@@ -569,13 +569,8 @@ func (m *MutationResolver) DeleteLesson(ctx context.Context, args struct{ Input 
 }
 
 func (m *MutationResolver) CreateBlog(ctx context.Context, args struct{ Input gentypes.CreateBlogInput }) (*BlogResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &BlogResolver{}, &errors.ErrUnauthorized
-	}
-
-	courseFuncs := course.NewCourseApp(grant)
-	blog, err := courseFuncs.CreateBlog(args.Input)
+	app := auth.AppFromContext(ctx)
+	blog, err := app.BlogApp.CreateBlog(args.Input)
 	if err != nil {
 		return &BlogResolver{}, err
 	}
@@ -589,13 +584,8 @@ func (m *MutationResolver) BlogHeaderImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
 ) (*gentypes.UploadFileResp, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
-	}
-
-	courseApp := course.NewCourseApp(grant)
-	url, successToken, err := courseApp.BlogHeaderImageUploadRequest(args.Input)
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.BlogApp.BlogHeaderImageUploadRequest(args.Input)
 	return &gentypes.UploadFileResp{
 		URL:          url,
 		SuccessToken: successToken,
@@ -608,13 +598,8 @@ func (m *MutationResolver) UpdateBlogHeaderImage(
 		Input gentypes.UpdateBlogHeaderImageInput
 	},
 ) (*BlogResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &BlogResolver{}, &errors.ErrUnauthorized
-	}
-
-	courseApp := course.NewCourseApp(grant)
-	_, err := courseApp.UpdateBlogHeaderImage(args.Input.BlogUUID, args.Input.FileSucess.SuccessToken)
+	app := auth.AppFromContext(ctx)
+	_, err := app.BlogApp.UpdateBlogHeaderImage(args.Input.BlogUUID, args.Input.FileSucess.SuccessToken)
 	if err != nil {
 		return &BlogResolver{}, err
 	}
@@ -628,13 +613,8 @@ func (m *MutationResolver) BlogBodyImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
 ) (*gentypes.UploadFileResp, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &gentypes.UploadFileResp{}, &errors.ErrUnauthorized
-	}
-
-	courseApp := course.NewCourseApp(grant)
-	url, successToken, err := courseApp.BlogBodyImageUploadRequest(args.Input)
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.BlogApp.BlogBodyImageUploadRequest(args.Input)
 	return &gentypes.UploadFileResp{
 		URL:          url,
 		SuccessToken: successToken,
@@ -642,13 +622,8 @@ func (m *MutationResolver) BlogBodyImageUploadRequest(
 }
 
 func (m *MutationResolver) UpdateBlog(ctx context.Context, args struct{ Input gentypes.UpdateBlogInput }) (*BlogResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &BlogResolver{}, &errors.ErrUnauthorized
-	}
-
-	courseApp := course.NewCourseApp(grant)
-	blog, err := courseApp.UpdateBlog(args.Input)
+	app := auth.AppFromContext(ctx)
+	blog, err := app.BlogApp.UpdateBlog(args.Input)
 	return &BlogResolver{
 		Blog: blog,
 	}, err
