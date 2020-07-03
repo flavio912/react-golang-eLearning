@@ -58,7 +58,7 @@ type Mutation {
 
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
-  deleteQuestion(input: UUID!): Boolean!
+  deleteQuestion(input: DeleteQuestionInput!): Boolean!
 
   createModule(input: CreateModuleInput!): CreateModulePayload
   updateModule(input: UpdateModuleInput!): UpdateModulePayload

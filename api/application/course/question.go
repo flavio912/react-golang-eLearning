@@ -241,10 +241,14 @@ func (c *courseAppImpl) Questions(
 	return c.questionsToGentypes(questions), pageInfo, nil
 }
 
-func (c *courseAppImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
+func (c *courseAppImpl) DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error) {
 	if !c.grant.IsAdmin {
 		return false, &errors.ErrUnauthorized
 	}
 
-	return c.coursesRepository.DeleteQuestion(input)
+	if err := input.Validate(); err != nil {
+		return false, err
+	}
+
+	return c.coursesRepository.DeleteQuestion(input.UUID)
 }

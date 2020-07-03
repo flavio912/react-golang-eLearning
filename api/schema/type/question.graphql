@@ -65,3 +65,7 @@ input QuestionFilter {
   text: String
   Tags: [UUID!]
 }
+
+input DeleteQuestionInput {
+  uuid: UUID!
+}
