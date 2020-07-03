@@ -39,6 +39,8 @@ type CoursesRepository interface {
 	CreateLesson(lesson gentypes.CreateLessonInput) (models.Lesson, error)
 	GetLessonByUUID(UUID gentypes.UUID) (models.Lesson, error)
 	GetLessonsByUUID(uuids []string) ([]models.Lesson, error)
+	UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error)
+	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)
 	CreateTag(input gentypes.CreateTagInput) (models.Tag, error)
@@ -73,6 +75,15 @@ type CoursesRepository interface {
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 
 	CreateTestMarks(mark models.TestMark) error
+
+	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
+	UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error)
+	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
+	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
+	DeleteBlogImages(blogUUID gentypes.UUID) error
+	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
+	GetBlogsByUUID(uuids []string) ([]models.Blog, error)
+	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]models.Blog, gentypes.PageInfo, error)
 }
 
 type coursesRepoImpl struct {

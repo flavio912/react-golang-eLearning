@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -55,7 +56,7 @@ func TestGetLessonByUUID(t *testing.T) {
 		uuid := gentypes.MustParseToUUID("10000000-0000-0000-0000-000000000001")
 		lesson, err := courseRepo.GetLessonByUUID(uuid)
 
-		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, &errors.ErrLessonNotFound, err)
 		assert.Equal(t, models.Lesson{}, lesson)
 	})
 
@@ -185,6 +186,73 @@ func TestGetLessons(t *testing.T) {
 			assert.Len(t, lessons, 2)
 		})
 
+	})
+
+}
+
+func TestUpdateLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Lesson must exist", func(t *testing.T) {
+		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+		l, err := courseRepo.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
+		assert.Equal(t, &errors.ErrLessonNotFound, err)
+		assert.Equal(t, models.Lesson{}, l)
+	})
+
+	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
+	input := gentypes.UpdateLessonInput{
+		UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Title: helpers.StringPointer("Diagonalizing Matrices"),
+		Text:  helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags:  &tags,
+	}
+	t.Run("Updates existing lesson", func(t *testing.T) {
+		lesson, err := courseRepo.UpdateLesson(input)
+
+		assert.Nil(t, err)
+		assert.Equal(t, input.UUID, lesson.UUID)
+		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
+		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
+
+		lesson, err = courseRepo.GetLessonByUUID(input.UUID)
+		assert.Nil(t, err)
+
+		_tags, tag_err := courseRepo.GetTagsByLessonUUID(input.UUID.String())
+		lesson.Tags = _tags
+
+		assert.Nil(t, tag_err)
+		assert.Equal(t, input.UUID, lesson.UUID)
+		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
+		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
+	})
+}
+
+func TestDeleteLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must delete lesson", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
+
+		b, err := courseRepo.DeleteLesson(gentypes.DeleteLessonInput{
+			UUID: uuid,
+		})
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		lesson, get_err := courseRepo.GetLessonByUUID(uuid)
+
+		assert.Equal(t, &errors.ErrLessonNotFound, get_err)
+		assert.Equal(t, models.Lesson{}, lesson)
+
+		tags, _ := courseRepo.GetTagsByLessonUUID(uuid.String())
+
+		assert.Equal(t, []models.Tag{}, tags)
 	})
 
 }
