@@ -288,25 +288,19 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 func (c *coursesRepoImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
 	tx := database.GormDB.Begin()
 
-	var question models.Question
-	if err := tx.Where("uuid = ?", input).First(&question).Error; err != nil {
-		c.Logger.Logf(sentry.LevelError, err, "Unable to find question: %s", input)
-		return false, &errors.ErrWhileHandling
-	}
-
 	// if it found link, err = nil
 	if err := tx.Model(&models.TestQuestionsLink{}).Where("question_uuid = ?", input).Find(&[]models.TestQuestionsLink{}).Error; err == nil {
 		c.Logger.Logf(sentry.LevelError, err, "Cannot delete question that is part of a test: %s", input)
 		return false, &errors.ErrWhileHandling
 	}
 
-	if err := tx.Model(&models.Question{}).Delete(question).Error; err != nil {
+	if err := tx.Delete(models.Question{}, "uuid = ?", input).Error; err != nil {
 		c.Logger.Logf(sentry.LevelError, err, "Unable to delete question: %s", input)
 		return false, &errors.ErrWhileHandling
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		c.Logger.Logf(sentry.LevelError, err, "Unable to commit transaction", input)
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
 		return false, &errors.ErrWhileHandling
 	}
 
