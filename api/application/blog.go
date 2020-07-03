@@ -6,7 +6,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/blog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
@@ -24,13 +23,13 @@ type BlogApp interface {
 
 type blogAppImpl struct {
 	grant          *middleware.Grant
-	blogRepository blog.BlogRepository
+	blogRepository middleware.BlogRepository
 }
 
 func NewBlogApp(grant *middleware.Grant) BlogApp {
 	return &blogAppImpl{
 		grant:          grant,
-		blogRepository: blog.NewBlogRepository(&grant.Logger),
+		blogRepository: middleware.NewBlogRepository(&grant.Logger),
 	}
 }
 

@@ -6,7 +6,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -32,7 +31,7 @@ func NewBlogRepository(logger *logging.Logger) BlogRepository {
 }
 
 // CreateBlog creates a blog with author as an admin
-func (c *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error) {
+func (b *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error) {
 	if err := input.Validate(); err != nil {
 		return models.Blog{}, err
 	}
@@ -45,11 +44,11 @@ func (c *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, 
 	query := database.GormDB.Where("uuid = ?", *input.AuthorUUID).First(&admin)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin %s", *input.AuthorUUID)
+			b.Logger.Logf(sentry.LevelError, query.Error, "Unable to find admin %s", *input.AuthorUUID)
 			return models.Blog{}, &errors.ErrAdminNotFound
 		}
 
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of admin %s", *input.AuthorUUID)
+		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of admin %s", *input.AuthorUUID)
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
 
@@ -57,11 +56,11 @@ func (c *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, 
 	query = database.GormDB.Where("uuid = ?", input.CategoryUUID).First(&category)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find category %s", input.CategoryUUID)
+			b.Logger.Logf(sentry.LevelError, query.Error, "Unable to find category %s", input.CategoryUUID)
 			return models.Blog{}, &errors.ErrNotFound
 		}
 
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of category %s", input.CategoryUUID)
+		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to create blog because of category %s", input.CategoryUUID)
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
 
@@ -74,28 +73,28 @@ func (c *blogRepoImpl) CreateBlog(input gentypes.CreateBlogInput) (models.Blog, 
 
 	query = database.GormDB.Create(&blog)
 	if query.Error != nil {
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to create blog")
+		b.Logger.Log(sentry.LevelError, query.Error, "Unable to create blog")
 		return models.Blog{}, query.Error
 	}
 
 	return blog, nil
 }
 
-func (c *blogRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
+func (b *blogRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) error {
 	query := database.GormDB.Model(&models.Blog{}).Where("uuid = ?", blogUUID).Update("header_image_key", key)
 	if query.Error != nil {
 		if query.RecordNotFound() {
 			return errors.ErrBlogNotFound(blogUUID.String())
 		}
 
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to upload blog header image")
+		b.Logger.Log(sentry.LevelError, query.Error, "Unable to upload blog header image")
 		return &errors.ErrWhileHandling
 	}
 
 	return nil
 }
 
-func (c *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
+func (b *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
 	query := database.GormDB.Begin()
 	for k, v := range imgs {
 		img := models.BlogImage{
@@ -107,7 +106,7 @@ func (c *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]stri
 	}
 
 	if err := query.Commit().Error; err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to upload blog images")
+		b.Logger.Log(sentry.LevelError, err, "Unable to upload blog images")
 		return err
 	}
 
@@ -115,41 +114,41 @@ func (c *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]stri
 }
 
 // DeleteBlogImages deletes images inside blog body
-func (c *blogRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
+func (b *blogRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
 	query := database.GormDB.Delete(models.BlogImage{}, "blog_uuid = ?", blogUUID)
 	if query.Error != nil {
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete blog's images: %s", blogUUID)
+		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete blog's images: %s", blogUUID)
 		return &errors.ErrDeleteFailed
 	}
 
 	return nil
 }
 
-func (c *blogRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error) {
+func (b *blogRepoImpl) GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error) {
 	var imgs []models.BlogImage
 	query := database.GormDB.Where("blog_uuid = ?", blogUUID).Find(&imgs)
 
 	if query.Error != nil {
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to get blog images of uuid %s", blogUUID)
+		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to get blog images of uuid %s", blogUUID)
 		return []models.BlogImage{}, query.Error
 	}
 
 	return imgs, nil
 }
 
-func (c *blogRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) {
+func (b *blogRepoImpl) GetBlogsByUUID(uuids []string) ([]models.Blog, error) {
 	var blogs []models.Blog
 	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&blogs)
 
 	if query.Error != nil {
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get blogs")
+		b.Logger.Log(sentry.LevelError, query.Error, "Unable to get blogs")
 		return []models.Blog{}, &errors.ErrWhileHandling
 	}
 
 	return blogs, nil
 }
 
-func (c *blogRepoImpl) GetBlogs(
+func (b *blogRepoImpl) GetBlogs(
 	page *gentypes.Page,
 	orderBy *gentypes.OrderBy,
 ) ([]models.Blog, gentypes.PageInfo, error) {
@@ -157,21 +156,21 @@ func (c *blogRepoImpl) GetBlogs(
 
 	var count int32
 	query := database.GormDB
-	countErr := query.Model(&models.Blog{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error
+	countErr := query.Model(&models.Blog{}).Limit(MaxPageLimit).Offset(0).Count(&count).Error
 	if countErr != nil {
-		c.Logger.Log(sentry.LevelError, countErr, "Unable to count blogs")
+		b.Logger.Log(sentry.LevelError, countErr, "Unable to count blogs")
 		return blogs, gentypes.PageInfo{}, countErr
 	}
 
-	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"created_at", "updated_at"}, "created_at DESC")
+	query, orderErr := GetOrdering(query, orderBy, []string{"created_at", "updated_at"}, "created_at DESC")
 	if orderErr != nil {
 		return blogs, gentypes.PageInfo{}, orderErr
 	}
 
-	query, limit, offset := middleware.GetPage(query, page)
+	query, limit, offset := GetPage(query, page)
 	query = query.Find(&blogs)
 	if query.Error != nil {
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to find blogs")
+		b.Logger.Log(sentry.LevelError, query.Error, "Unable to find blogs")
 		return []models.Blog{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
@@ -183,7 +182,7 @@ func (c *blogRepoImpl) GetBlogs(
 	}, nil
 }
 
-func (c *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error) {
+func (b *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error) {
 	// Validate input
 	if err := input.Validate(); err != nil {
 		return models.Blog{}, err
@@ -196,7 +195,7 @@ func (c *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, 
 			return models.Blog{}, errors.ErrBlogNotFound(input.UUID.String())
 		}
 
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find blog to update with UUID: %s", input.UUID)
+		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to find blog to update with UUID: %s", input.UUID)
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
 
@@ -214,7 +213,7 @@ func (c *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, 
 				return models.Blog{}, &errors.ErrNotFound
 			}
 
-			c.Logger.Logf(sentry.LevelError, query.Error, "Unable to update blog %s because of category: %s", input.UUID, *input.CategoryUUID)
+			b.Logger.Logf(sentry.LevelError, query.Error, "Unable to update blog %s because of category: %s", input.UUID, *input.CategoryUUID)
 			return models.Blog{}, &errors.ErrWhileHandling
 		}
 
@@ -223,7 +222,7 @@ func (c *blogRepoImpl) UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, 
 
 	save := database.GormDB.Save(&blog)
 	if save.Error != nil {
-		c.Logger.Logf(sentry.LevelError, save.Error, "Error updating blog with UUID: %s", input.UUID)
+		b.Logger.Logf(sentry.LevelError, save.Error, "Error updating blog with UUID: %s", input.UUID)
 		return models.Blog{}, &errors.ErrWhileHandling
 	}
 

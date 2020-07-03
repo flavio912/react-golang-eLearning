@@ -5,8 +5,6 @@ import (
 	"fmt"
 
 	"github.com/graph-gophers/dataloader"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/blog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 )
@@ -35,13 +33,8 @@ func sortBlogs(blogs []gentypes.Blog, keys dataloader.Keys) []gentypes.Blog {
 func (b *blogLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*dataloader.Result {
 	n := len(keys)
 
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return loadBatchError(&errors.ErrUnauthorized, n)
-	}
-
-	blogApp := blog.NewBlogApp(grant)
-	blogs, err := blogApp.GetBlogsByUUID(keys.Keys())
+	app := auth.AppFromContext(ctx)
+	blogs, err := app.BlogApp.GetBlogsByUUID(keys.Keys())
 	if err != nil {
 		return loadBatchError(err, n)
 	}
