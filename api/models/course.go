@@ -28,8 +28,8 @@ type Course struct {
 	SpecificTerms   string              // Terms specific to this course
 	Published       bool                // If not published users can't see this course
 	CourseType      gentypes.CourseType // classroom or online course
-	OnlineCourse    OnlineCourse
-	ClassroomCourse ClassroomCourse
+	OnlineCourse    *OnlineCourse
+	ClassroomCourse *ClassroomCourse
 }
 
 type RequirementBullet struct {
@@ -76,11 +76,11 @@ type OnlineCourse struct {
 }
 
 type CourseStructure struct {
-	OnlineCourseUUID gentypes.UUID
+	OnlineCourseUUID gentypes.UUID `gorm:"primary_key;"`
 	ModuleUUID       *gentypes.UUID
 	LessonUUID       *gentypes.UUID
 	TestUUID         *gentypes.UUID
-	Rank             string
+	Rank             string `gorm:"primary_key;"`
 }
 
 type ClassroomCourse struct {

@@ -16,16 +16,16 @@ func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
 	var newLessonInput = gentypes.CreateLessonInput{
-		Title: "Test lesson",
-		Text:  "{}",
-		Tags:  nil,
+		Name: "Test lesson",
+		Text: "{}",
+		Tags: nil,
 	}
 
 	t.Run("Check non-tagged lesson is created with no tags", func(t *testing.T) {
 		lesson, err := courseRepo.CreateLesson(newLessonInput)
 
 		assert.Nil(t, err)
-		assert.Equal(t, newLessonInput.Title, lesson.Title)
+		assert.Equal(t, newLessonInput.Name, lesson.Name)
 		assert.Equal(t, newLessonInput.Text, lesson.Text)
 	})
 	tag, _ := courseRepo.CreateTag(gentypes.CreateTagInput{
@@ -38,7 +38,7 @@ func TestCreateLesson(t *testing.T) {
 		lesson, err := courseRepo.CreateLesson(newLessonInput)
 
 		assert.Nil(t, err)
-		assert.Equal(t, newLessonInput.Title, lesson.Title)
+		assert.Equal(t, newLessonInput.Name, lesson.Name)
 		assert.Equal(t, newLessonInput.Text, lesson.Text)
 
 		foundTags, err := courseRepo.GetTagsByLessonUUID(lesson.UUID.String())
@@ -138,20 +138,20 @@ func TestGetLessons(t *testing.T) {
 
 	t.Run("Should order", func(t *testing.T) {
 		asc := true
-		order := gentypes.OrderBy{Field: "title", Ascending: &asc}
+		order := gentypes.OrderBy{Field: "name", Ascending: &asc}
 
 		lessons, _, err := courseRepo.GetLessons(nil, nil, &order)
 		assert.Nil(t, err)
 		assert.Len(t, lessons, 3)
-		assert.Equal(t, "Dynamic Programming", lessons[0].Title)
+		assert.Equal(t, "Dynamic Programming", lessons[0].Name)
 	})
 
 	t.Run("Should filter", func(t *testing.T) {
 		lesson := gentypes.Lesson{
-			UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-			Title: "Dynamic Programming",
-			Tags:  nil,
-			Text:  "{}",
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Name: "Dynamic Programming",
+			Tags: nil,
+			Text: "{}",
 		}
 		uuidString := lesson.UUID.String()
 
@@ -160,7 +160,7 @@ func TestGetLessons(t *testing.T) {
 			filter gentypes.LessonFilter
 		}{
 			{"uuid", gentypes.LessonFilter{UUID: &uuidString}},
-			{"Title", gentypes.LessonFilter{Title: &lesson.Title}},
+			{"Name", gentypes.LessonFilter{Name: &lesson.Name}},
 		}
 
 		for _, test := range filterTests {

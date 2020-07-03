@@ -11,9 +11,7 @@ import {
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 
-function CourseInfo() {
-  const [title, setTitle] = useState();
-
+function CourseInfo({ state, setState }) {
   const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
 
   return (
@@ -28,10 +26,10 @@ function CourseInfo() {
               label="Course Name"
               name="courseName"
               onChange={inp => {
-                setTitle(inp.target.value);
+                setState('name', inp.target.value);
               }}
               placeholder="e.g Dangerous Goods"
-              value={title}
+              value={state.name}
               variant="outlined"
             />
           </Grid>
@@ -41,6 +39,9 @@ function CourseInfo() {
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
+                  onChange={(event, newValue) => {
+                    setState('primaryCategory', newValue.value);
+                  }}
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -61,6 +62,9 @@ function CourseInfo() {
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
+                  onChange={(event, newValue) => {
+                    setState('secondaryCategory', newValue.value);
+                  }}
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -82,6 +86,9 @@ function CourseInfo() {
                   multiple
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
+                  onChange={(event, newValue) => {
+                    setState('tags', newValue);
+                  }}
                   renderTags={(value, getTagProps) =>
                     value.map((option, index) => (
                       <Chip

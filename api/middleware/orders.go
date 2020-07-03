@@ -46,7 +46,7 @@ func (o *ordersRepositoryImpl) CreatePendingOrder(clientSecret string, courseIDs
 	}
 
 	var numFoundTakers int
-	if err := database.GormDB.Model(models.CourseTaker{}).Where("id IN (?)", courseTakerUUIDs).Count(&numFoundTakers).Error; err != nil {
+	if err := database.GormDB.Model(models.CourseTaker{}).Where("uuid IN (?)", courseTakerUUIDs).Count(&numFoundTakers).Error; err != nil {
 		o.Logger.Log(sentry.LevelInfo, err, "Unable to get course takers for pending order")
 		return err
 	}
@@ -115,6 +115,12 @@ func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
 			glog.Errorf("Unable to fufil pending order: %s : %s", err.Error(), clientSecret)
 			return &errors.ErrWhileHandling
 		}
+	}
+
+	err := database.GormDB.Delete(&pendingOrder).Error
+	if err != nil {
+		o.Logger.Log(sentry.LevelError, err, "Unable to delete pending order")
+		return &errors.ErrWhileHandling
 	}
 
 	return nil

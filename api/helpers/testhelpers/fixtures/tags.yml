@@ -7,3 +7,6 @@
 - uuid: 00000000-0000-0000-0000-000000000003
   name: "Fancy tag for cool people"
   color: "#123"
+- uuid: 1894c148-04dc-4166-ae8f-571b106c2835
+  name: This tags is super cool
+  color: "#123"

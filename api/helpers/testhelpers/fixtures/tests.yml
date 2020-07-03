@@ -1,0 +1,10 @@
+- uuid: 2a7e551a-0291-422d-8508-c0ee8ff4c67e
+  name: Cool test name
+  pass_percentage: 12
+  questions_to_answer: 2
+  randomise_answers: false
+- uuid: c212859c-ddd3-433c-9bf5-15cdd1db32f9
+  name: How to fibbonacci
+  pass_percentage: 70
+  questions_to_answer: 4
+  randomise_answers: true

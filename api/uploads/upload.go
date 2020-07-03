@@ -28,13 +28,12 @@ func Initialize() {
 		panic("Could not setup aws connection")
 	}
 	Session = sess
-	return
 }
 
 /* GenerateUploadURL creates an aws url that allows users to upload files and images
 Returns (presignedURL, successToken, error). TAKE CARE, a specific uploadIdent should
 be given for each purpose so that users cannot use successTokens from one upload
-to validate an upload at another endpoint. There must be a different uploadIdent for
+to validate an upload at another endpoint. There should be a different uploadIdent for
 every different acceptedTypes, urlBase and maxFileSize
 */
 func GenerateUploadURL(
@@ -70,7 +69,8 @@ func GenerateUploadURL(
 
 	imageKey := fmt.Sprintf("%s/%s.%s", urlBase, str, imageType)
 	svc := s3.New(Session)
-	// TODO: Setup CORS on S3 to only allow requests from our URL (not sure what our url is atm)
+	// TODO: Security - Setup CORS on S3 to only allow requests from our URL (not sure what our url is atm)
+
 	// Create S3 service client
 	req, _ := svc.PutObjectRequest(&s3.PutObjectInput{
 		Bucket:        aws.String(helpers.Config.AWS.UploadsBucket),

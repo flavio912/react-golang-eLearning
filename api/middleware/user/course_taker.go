@@ -93,3 +93,58 @@ func (u *usersRepoImpl) DeleteTakerActivity(activityUUID gentypes.UUID) error {
 
 	return nil
 }
+
+// TakerHasActiveCourse returns true if the given courseTaker has the given courseID as an active course
+func (u *usersRepoImpl) TakerHasActiveCourse(courseTaker gentypes.UUID, courseID uint) (bool, error) {
+	var items int
+	query := database.GormDB.
+		Model(&models.ActiveCourse{}).
+		Where("course_taker_uuid = ? AND course_id = ?", courseTaker, courseID).
+		Count(&items)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return false, nil
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable check if taker has active course")
+		return false, &errors.ErrWhileHandling
+	}
+
+	if items > 0 {
+		return true, nil
+	}
+
+	return false, nil
+}
+
+func (u *usersRepoImpl) TakerActiveCourses(courseTaker gentypes.UUID) ([]models.ActiveCourse, error) {
+	var activeCourses []models.ActiveCourse
+	query := database.GormDB.Where("course_taker_uuid = ?", courseTaker).Find(&activeCourses)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []models.ActiveCourse{}, nil
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable to get taker active courses")
+		return []models.ActiveCourse{}, &errors.ErrWhileHandling
+	}
+
+	return activeCourses, nil
+}
+
+// TakerHasSubmittedTest gets the testMarks for a particular course and taker
+func (u *usersRepoImpl) TakerTestMarks(courseTaker gentypes.UUID, courseID uint) ([]models.TestMark, error) {
+	var marks []models.TestMark
+	query := database.GormDB.Where("course_taker_uuid = ? AND course_id = ?", courseTaker, courseID).Find(&marks)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []models.TestMark{}, nil
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable to get taker course marks")
+		return []models.TestMark{}, &errors.ErrWhileHandling
+	}
+
+	return marks, nil
+}

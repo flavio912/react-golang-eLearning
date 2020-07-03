@@ -8,6 +8,8 @@ import CourseCard from 'sharedComponents/Overview/CourseCard';
 import { Course } from 'sharedComponents/Overview/CourseCard/CourseCard';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import { useRouter } from 'found';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { OnlineCourses_user } from './__generated__/OnlineCourses_user.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   onlineCoursesRoot: {
@@ -45,6 +47,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   className?: string;
+  user?: OnlineCourses_user;
 };
 
 const defaultComponent = () => <div>Dangerous Goods Air</div>;
@@ -71,11 +74,10 @@ const defaultCourse: Course = {
   videoTime: 5
 };
 
-function OnlineCourses({ className }: Props) {
+function OnlineCourses({ className, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-  const userName = 'James';
 
   const selectOptions = ['Active Courses', 'Completed Courses'];
   const [selectedOption, setSelectedOption] = React.useState(selectOptions[0]);
@@ -103,7 +105,7 @@ function OnlineCourses({ className }: Props) {
         className={classes.mainHeading}
       />
       <Heading
-        text={`${userName}, here are all of the courses you’ve currently been enrolled on. If you’ve already passed a course, it’s stored here for safe keeping! `}
+        text={`${user?.firstName}, here are all of the courses you’ve currently been enrolled on. If you’ve already passed a course, it’s stored here for safe keeping! `}
         size={'medium'}
         className={classes.subHeading}
       />
@@ -125,10 +127,17 @@ function OnlineCourses({ className }: Props) {
         />
       </div>
       <div className={classes.courseHolder}>
-        {courses.map((course, index) => (
+        {user?.activeCourses?.map((course, index) => (
           <CourseCard
             key={index}
-            course={course}
+            course={{
+              title: course.course.name,
+              id: course.course.ident,
+              type: 'Online Course',
+              colour: course.course.color ?? '',
+              description: course.course.excerpt ?? '',
+              url: ''
+            }}
             onClick={() => {
               router.push('/app/courses/1');
             }}
@@ -149,4 +158,21 @@ function OnlineCourses({ className }: Props) {
     </div>
   );
 }
-export default OnlineCourses;
+
+export default createFragmentContainer(OnlineCourses, {
+  user: graphql`
+    fragment OnlineCourses_user on User {
+      firstName
+      activeCourses {
+        course {
+          name
+          excerpt
+          color
+          type
+          ident: id
+        }
+        currentAttempt
+      }
+    }
+  `
+});

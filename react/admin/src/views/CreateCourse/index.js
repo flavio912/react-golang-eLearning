@@ -1,13 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
-import { Container, Tabs, Tab, Divider } from '@material-ui/core';
+import {
+  Container,
+  Tabs,
+  Tab,
+  Divider,
+  CircularProgress
+} from '@material-ui/core';
 import Page from 'src/components/Page';
 import Header from './Header';
 import About from './About';
 import Overview from './Overview';
 import Pricing from './Pricing';
 import CourseBuilder from './CourseBuilder';
+import { gql } from 'apollo-boost';
+import { useMutation, useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -19,12 +27,64 @@ const useStyles = makeStyles(theme => ({
   },
   tabs: {
     marginTop: theme.spacing(3)
+  },
+  centerProgress: {
+    position: 'absolute',
+    top: '50%',
+    left: '50%'
   }
 }));
+
+const SAVE_ONLINE_COURSE = gql`
+  mutation SaveOnlineCourse(
+    $id: Int
+    $name: String
+    $excerpt: String
+    $price: Float
+    $backgroundCheck: Boolean
+    $accessType: AccessType
+    $howToComplete: String
+    $hoursToComplete: Float
+  ) {
+    saveOnlineCourse(
+      input: {
+        id: $id
+        name: $name
+        excerpt: $excerpt
+        price: $price
+        backgroundCheck: $backgroundCheck
+        accessType: $accessType
+        howToComplete: $howToComplete
+        hoursToComplete: $hoursToComplete
+      }
+    ) {
+      id
+    }
+  }
+`;
+
+const GET_COURSE = gql`
+  query GetCourse($id: Int!) {
+    course(id: $id) {
+      id
+      name
+      excerpt
+      price
+      accessType
+      backgroundCheck
+      type
+      howToComplete
+      hoursToComplete
+      whatYouLearn
+      requirements
+    }
+  }
+`;
+
 function CreateCourse({ match, history }) {
   const classes = useStyles();
 
-  const { tab: currentTab } = match.params;
+  const { tab: currentTab, ident } = match.params;
   const tabs = [
     { value: 'overview', label: 'Overview' },
     { value: 'about', label: 'About' },
@@ -36,9 +96,90 @@ function CreateCourse({ match, history }) {
     history.push(value);
   };
 
-  if (!currentTab) {
-    return <Redirect to={`/courses/create/overview`} />;
+  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
+    SAVE_ONLINE_COURSE
+  );
+  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
+    variables: {
+      id: parseInt(ident)
+    },
+    fetchPolicy: 'cache-and-network',
+    skip: !ident
+  });
+
+  var initState = {
+    name: '',
+    primaryCategory: {},
+    secondaryCategory: {},
+    tags: [],
+    excerpt: '',
+    courseType: 'online',
+    accessType: 'open',
+    backgroundCheck: false,
+    howToComplete: '',
+    whatYouLearn: [],
+    requirements: [],
+    hoursToComplete: 0,
+    price: 0,
+    priceType: 'paid'
+  };
+
+  const [state, setState] = useState(initState);
+
+  const updateState = (item, value) => {
+    var updatedState = { ...state, [item]: value };
+    setState(updatedState);
+  };
+
+  useEffect(() => {
+    if (loading || error) return;
+    if (!data) return;
+    setState({
+      ...initState,
+      name: data.course.name,
+      excerpt: data.course.excerpt,
+      backgroundCheck: data.course.backgroundCheck,
+      courseType: data.course.type,
+      accessType: data.course.accessType,
+      howToComplete: data.course.howToComplete,
+      hoursToComplete: data.course.hoursToComplete,
+      price: data.course.price
+    });
+  }, [data, loading]);
+
+  if (ident) {
+    if (loading) return <CircularProgress className={classes.centerProgress} />;
+    if (error) return <div>{error.message}</div>;
   }
+
+  const saveDraft = async () => {
+    if (state.courseType == 'online') {
+      console.log('updating', state);
+      const { data } = await saveOnlineCourse({
+        variables: {
+          id: ident ? parseInt(ident) : undefined,
+          name: state.name,
+          excerpt: state.excerpt,
+          backgroundCheck: state.backgroundCheck,
+          accessType: state.accessType,
+          howToComplete: state.howToComplete,
+          hoursToComplete: state.hoursToComplete,
+          price: state.price
+        }
+      });
+
+      // If a new course go to edit page
+      if (!ident) {
+        history.push(`/course/${data.saveOnlineCourse.id}/overview`);
+        return;
+      }
+    }
+    refetch();
+  };
+
+  // if (!currentTab) {
+  //   return <Redirect to={`/courses/create/overview`} />;
+  // }
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
@@ -47,7 +188,7 @@ function CreateCourse({ match, history }) {
   return (
     <Page className={classes.root} title="Create Course">
       <Container maxWidth={false}>
-        <Header />
+        <Header onSaveDraft={saveDraft} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -61,9 +202,15 @@ function CreateCourse({ match, history }) {
         </Tabs>
         <Divider className={classes.divider} />
         <div className={classes.content}>
-          {currentTab === 'overview' && <Overview />}
-          {currentTab === 'about' && <About />}
-          {currentTab === 'pricing' && <Pricing />}
+          {currentTab === 'overview' && (
+            <Overview state={state} setState={updateState} />
+          )}
+          {currentTab === 'about' && (
+            <About state={state} setState={updateState} />
+          )}
+          {currentTab === 'pricing' && (
+            <Pricing state={state} setState={updateState} />
+          )}
           {currentTab === 'builder' && <CourseBuilder />}
         </div>
       </Container>

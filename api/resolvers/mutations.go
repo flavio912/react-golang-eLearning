@@ -506,3 +506,136 @@ func (m *MutationResolver) BlogBodyImageUploadRequest(
 		SuccessToken: successToken,
 	}, err
 }
+func (m *MutationResolver) SubmitTest(ctx context.Context, args struct{ Input gentypes.SubmitTestInput }) (*gentypes.SubmitTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	success, err := app.CourseApp.SubmitTest(args.Input)
+	return &gentypes.SubmitTestPayload{
+		Success: success,
+	}, err
+}
+
+type CreateTestPayload struct {
+	Test *TestResolver
+}
+
+func (m *MutationResolver) CreateTest(ctx context.Context, args struct{ Input gentypes.CreateTestInput }) (*CreateTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	test, err := app.CourseApp.CreateTest(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := NewTestResolver(ctx, NewTestArgs{
+		Test: &test,
+	})
+	return &CreateTestPayload{
+		Test: res,
+	}, err
+}
+
+type UpdateTestPayload struct {
+	Test *TestResolver
+}
+
+func (m *MutationResolver) UpdateTest(ctx context.Context, args struct{ Input gentypes.UpdateTestInput }) (*UpdateTestPayload, error) {
+	app := auth.AppFromContext(ctx)
+
+	test, err := app.CourseApp.UpdateTest(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := NewTestResolver(ctx, NewTestArgs{
+		Test: &test,
+	})
+	return &UpdateTestPayload{
+		Test: res,
+	}, err
+}
+
+type CreateQuestionPayload struct {
+	Question *QuestionResolver
+}
+
+func (m *MutationResolver) CreateQuestion(ctx context.Context, args struct{ Input gentypes.CreateQuestionInput }) (*CreateQuestionPayload, error) {
+	app := auth.AppFromContext(ctx)
+	question, err := app.CourseApp.CreateQuestion(args.Input)
+	if err != nil {
+		return &CreateQuestionPayload{}, err
+	}
+
+	res, err := NewQuestionResolver(ctx, NewQuestionArgs{
+		Question: &question,
+	})
+
+	return &CreateQuestionPayload{
+		Question: res,
+	}, err
+}
+
+type UpdateQuestionPayload struct {
+	Question *QuestionResolver
+}
+
+func (m *MutationResolver) UpdateQuestion(ctx context.Context, args struct{ Input gentypes.UpdateQuestionInput }) (*UpdateQuestionPayload, error) {
+	app := auth.AppFromContext(ctx)
+	question, err := app.CourseApp.UpdateQuestion(args.Input)
+	if err != nil {
+		return &UpdateQuestionPayload{}, err
+	}
+
+	res, err := NewQuestionResolver(ctx, NewQuestionArgs{
+		Question: &question,
+	})
+
+	return &UpdateQuestionPayload{
+		Question: res,
+	}, err
+}
+
+type CreateModulePayload struct {
+	Module *ModuleResolver
+}
+
+func (m *MutationResolver) CreateModule(ctx context.Context, args struct{ Input gentypes.CreateModuleInput }) (*CreateModulePayload, error) {
+	app := auth.AppFromContext(ctx)
+	module, err := app.CourseApp.CreateModule(args.Input)
+	if err != nil {
+		return &CreateModulePayload{}, err
+	}
+
+	res, err := NewModuleResolver(ctx, NewModuleArgs{
+		Module: &module,
+	})
+
+	return &CreateModulePayload{
+		Module: res,
+	}, err
+}
+
+type UpdateModulePayload struct {
+	Module *ModuleResolver
+}
+
+func (m *MutationResolver) UpdateModule(ctx context.Context, args struct{ Input gentypes.UpdateModuleInput }) (*UpdateModulePayload, error) {
+	app := auth.AppFromContext(ctx)
+	module, err := app.CourseApp.UpdateModule(args.Input)
+	if err != nil {
+		return &UpdateModulePayload{}, err
+	}
+
+	res, err := NewModuleResolver(ctx, NewModuleArgs{
+		Module: &module,
+	})
+
+	return &UpdateModulePayload{
+		Module: res,
+	}, err
+}
+
+func (m *MutationResolver) FulfilPendingOrder(ctx context.Context, args struct{ ClientSecret string }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.FulfilPendingOrder(args.ClientSecret)
+}

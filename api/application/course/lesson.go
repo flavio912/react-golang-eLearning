@@ -13,7 +13,7 @@ func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
 	}
 	return gentypes.Lesson{
 		UUID:  lesson.UUID,
-		Title: lesson.Title,
+		Name: lesson.Name,
 		Tags:  tags,
 		Text:  lesson.Text,
 	}

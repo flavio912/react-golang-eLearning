@@ -912,7 +912,7 @@ func TestCompanies(t *testing.T) {
 			Path:            []interface{}{"companies"},
 			MustAuth:        true,
 			AdminAllowed:    true,
-			ManagerAllowed:  true, // Manager should only be able to own company
+			ManagerAllowed:  false, // Manager should only be able to own company
 			DelegateAllowed: false,
 		},
 	)
@@ -976,7 +976,7 @@ func TestLesson(t *testing.T) {
 							uuid
 							color
 						}
-						title
+						name
 						text
 					}
 				}
@@ -992,7 +992,7 @@ func TestLesson(t *testing.T) {
 								"color": "#123"
 							}
 						],
-						"title": "Eigenvalues and Eigenvectors",
+						"name": "Eigenvalues and Eigenvectors",
 						"text": "{}"
 					}
 				}
@@ -1061,10 +1061,10 @@ func TestLessons(t *testing.T) {
 				{
 					lessons (orderBy: {
 						ascending: true
-						field: "title"
+						field: "name"
 					}) {
 						edges {
-							title
+							name
 						}
 						pageInfo {
 							total
@@ -1079,9 +1079,9 @@ func TestLessons(t *testing.T) {
 				{
 					"lessons":{
 						"edges":[
-							{"title":"Dynamic Programming"},
-							{"title":"Eigenvalues and Eigenvectors"},
-							{"title":"Lorentz Invariance"}
+							{"name":"Dynamic Programming"},
+							{"name":"Eigenvalues and Eigenvectors"},
+							{"name":"Lorentz Invariance"}
 						],
 						"pageInfo": {
 							"total": 3,
@@ -1094,16 +1094,16 @@ func TestLessons(t *testing.T) {
 			`,
 		},
 		{
-			Name:    "Should filter title",
+			Name:    "Should filter name",
 			Context: adminContext(),
 			Schema:  schema,
 			Query: `
 				{
 					lessons (filter: {
-						title: "en"
+						name: "en"
 					}) {
 						edges {
-							title
+							name
 						}
 						pageInfo {
 							total
@@ -1118,8 +1118,8 @@ func TestLessons(t *testing.T) {
 				{
 					"lessons":{
 						"edges":[
-							{"title":"Eigenvalues and Eigenvectors"},
-							{"title":"Lorentz Invariance"}
+							{"name":"Eigenvalues and Eigenvectors"},
+							{"name":"Lorentz Invariance"}
 						],
 						"pageInfo": {
 							"total": 2,

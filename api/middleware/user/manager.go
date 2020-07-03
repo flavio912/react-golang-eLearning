@@ -3,6 +3,7 @@ package user
 import (
 	"github.com/getsentry/sentry-go"
 	"github.com/jinzhu/gorm"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -93,43 +94,23 @@ func (u *usersRepoImpl) Manager(UUID gentypes.UUID) (models.Manager, error) {
 }
 
 func (u *usersRepoImpl) GetManagers(page *gentypes.Page, filter *gentypes.ManagersFilter, orderBy *gentypes.OrderBy) ([]models.Manager, gentypes.PageInfo, error) {
-	// if !g.IsAdmin {
-	// 	return []gentypes.Manager{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
-	// }
-
 	var managers []models.Manager
 
-	// Count the total filtered dataset
-	var count int32
-	query := filterManager(database.GormDB, filter)
-	countErr := query.Model(&models.Manager{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error
-	if countErr != nil {
-		u.Logger.Log(sentry.LevelError, countErr, "Unable to count managers")
-		return []models.Manager{}, gentypes.PageInfo{}, countErr
-	}
+	utils := dbutils.NewDBUtils(u.Logger)
+	pageInfo, err := utils.GetPageOf(
+		&models.Manager{},
+		&managers,
+		page,
+		orderBy,
+		[]string{"created_at", "email", "first_name", "job_title"},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return filterManager(db, filter)
+		},
+	)
+	pageInfo.Given = int32(len(managers))
 
-	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"created_at", "email", "first_name", "job_title"}, "created_at DESC")
-	if orderErr != nil {
-		return []models.Manager{}, gentypes.PageInfo{}, orderErr
-	}
-
-	query, limit, offset := middleware.GetPage(query, page)
-	query = query.Find(&managers)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return []models.Manager{}, gentypes.PageInfo{}, &errors.ErrNotFound
-		}
-
-		u.Logger.Log(sentry.LevelError, query.Error, "Unable to find managers")
-		return []models.Manager{}, gentypes.PageInfo{}, &errors.ErrWhileHandling
-	}
-
-	return managers, gentypes.PageInfo{
-		Total:  count,
-		Offset: offset,
-		Limit:  limit,
-		Given:  int32(len(managers)),
-	}, nil
+	return managers, pageInfo, err
 }
 
 func (u *usersRepoImpl) CreateManager(managerDetails gentypes.CreateManagerInput, companyUUID gentypes.UUID) (models.Manager, error) {

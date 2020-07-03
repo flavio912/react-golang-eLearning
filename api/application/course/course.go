@@ -57,7 +57,6 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		allowedToBuy = application.IsFullyApproved(&c.usersRepository, c.grant)
 	}
 
-	// TODO: Check if user has access to this course
 	return gentypes.Course{
 		ID:              courseInfo.ID,
 		Name:            courseInfo.Name,
@@ -88,19 +87,11 @@ func (c *courseAppImpl) coursesToGentypes(courses []models.Course) []gentypes.Co
 }
 
 func (c *courseAppImpl) Course(courseID uint) (gentypes.Course, error) {
-	if !c.grant.IsAdmin {
-		return gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
 	course, err := c.coursesRepository.Course(courseID)
 	return c.courseToGentype(course), err
 }
 
 func (c *courseAppImpl) Courses(courseIDs []uint) ([]gentypes.Course, error) {
-	if !c.grant.IsAdmin {
-		return []gentypes.Course{}, &errors.ErrUnauthorized
-	}
-
 	courses, err := c.coursesRepository.Courses(courseIDs)
 	return c.coursesToGentypes(courses), err
 }
@@ -163,4 +154,13 @@ func (c *courseAppImpl) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCou
 	}
 
 	return c.courseToGentype(course), err
+}
+
+func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error) {
+	return []gentypes.CourseItem{
+		gentypes.CourseItem{
+			Type: gentypes.TestType,
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		},
+	}, nil
 }
