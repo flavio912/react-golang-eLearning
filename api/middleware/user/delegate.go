@@ -186,7 +186,7 @@ func (u *usersRepoImpl) CreateDelegate(
 func (u *usersRepoImpl) UpdateDelegate(
 	details gentypes.UpdateDelegateInput,
 	s3UploadKey *string,
-	password bool,
+	password *string,
 ) (models.Delegate, error) {
 	// Validate input
 	if err := details.Validate(); err != nil {
@@ -224,8 +224,8 @@ func (u *usersRepoImpl) UpdateDelegate(
 	if s3UploadKey != nil {
 		updates["profile_key"] = s3UploadKey
 	}
-	if password {
-		updates["password"] = details.NewPassword
+	if password != nil {
+		updates["password"] = password
 	}
 
 	save := database.GormDB.Model(&delegate).Updates(updates)

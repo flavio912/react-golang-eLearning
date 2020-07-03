@@ -19,7 +19,7 @@ type UsersRepository interface {
 	UpdateDelegate(
 		details gentypes.UpdateDelegateInput,
 		s3UploadKey *string,
-		password bool,
+		password *string,
 	) (models.Delegate, error)
 
 	Company(uuid gentypes.UUID) (models.Company, error)

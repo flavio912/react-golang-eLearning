@@ -161,12 +161,16 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 	}
 
 	var (
-		canSetPassword = u.grant.IsAdmin && input.NewPassword != nil
-		s3UploadKey    *string
+		password    *string
+		s3UploadKey *string
 	)
 
 	if u.grant.IsManager {
 		input.CompanyUUID = &u.grant.Claims.Company
+	}
+
+	if u.grant.IsAdmin {
+		password = input.NewPassword
 	}
 
 	if input.ProfileImageUploadToken != nil {
@@ -178,7 +182,7 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 		s3UploadKey = &tmpUploadKey
 	}
 
-	delegate, err := u.usersRepository.UpdateDelegate(input, s3UploadKey, canSetPassword)
+	delegate, err := u.usersRepository.UpdateDelegate(input, s3UploadKey, password)
 
 	return u.delegateToGentype(delegate), err
 }
