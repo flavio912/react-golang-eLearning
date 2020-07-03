@@ -40,9 +40,9 @@ func (c *courseAppImpl) GetTags(page gentypes.Page, filter gentypes.GetTagsFilte
 	return tagsToGentypes(tags), err
 }
 
-func (c *courseAppImpl) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, error) {
+func (c *courseAppImpl) ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error) {
 
-	tags, err := c.coursesRepository.GetTagsByCourseInfoIDs(ids)
+	tags, err := c.coursesRepository.ManyCourseTags(ids)
 
 	var genTags = map[uint][]gentypes.Tag{}
 	for key, element := range tags {

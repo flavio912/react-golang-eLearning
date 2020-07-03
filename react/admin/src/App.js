@@ -19,6 +19,7 @@ import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { HttpLink } from 'apollo-link-http';
 import { ApolloLink, concat } from 'apollo-link';
+import { gql } from 'apollo-boost';
 
 import './mixins/chartjs';
 import './mixins/moment';
@@ -53,13 +54,24 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 });
 
 const link = new HttpLink({
-  uri: 'https://ttc.devserver.london/graphql',
+  uri: 'http://localhost:8080/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 
 const client = new ApolloClient({
   link: concat(authMiddleware, link),
-  cache: new InMemoryCache()
+  cache: new InMemoryCache(),
+  typeDefs: gql`
+    enum AccessType {
+      restricted
+      open
+    }
+
+    enum CourseType {
+      online
+      classroom
+    }
+  `
 });
 
 function App() {

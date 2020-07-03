@@ -18,30 +18,56 @@ type Mutation {
   adminLogin(input: AdminLogin!): AuthToken
   managerLogin(input: ManagerLogin!): AuthToken
   delegateLogin(input: DelegateLogin!): AuthToken
+
   createManager(input: CreateManagerInput!): Manager
   updateManager(input: UpdateManagerInput!): Manager
   profileImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateManagerProfileImage(input: UploadFileSuccess!): Manager
   deleteManager(input: DeleteManagerInput!): Boolean!
+
   createAdmin(input: CreateAdminInput!): Admin
   updateAdmin(input: UpdateAdminInput!): Admin
   deleteAdmin(input: DeleteAdminInput!): Boolean!
+
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
+  # updateDelegate
+
   createCompany(input: CreateCompanyInput!): Company
   updateCompany(input: UpdateCompanyInput!): Company
+  # deleteCompany
   createCompanyRequest(
     company: CreateCompanyInput!
     manager: CreateManagerInput!
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: UUID!): Company
-  saveOnlineCourse(input: SaveOnlineCourseInput!): Course
-  saveClassroomCourse(input: SaveClassroomCourseInput!): Course
+
+  fulfilPendingOrder(clientSecret: String!): Boolean!
+  saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
+  saveClassroomCourse(input: SaveClassroomCourseInput!): Course # Todo add tutor to course
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
+
   createLesson(input: CreateLessonInput!): Lesson
   updateLesson(input: UpdateLessonInput!): Lesson
   deleteLesson(input: DeleteLessonInput!): Boolean!
-  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+  createTest(input: CreateTestInput!): CreateTestPayload
+  updateTest(input: UpdateTestInput!): UpdateTestPayload
+
+  createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
+  updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
+  # deleteQuestion
+
+  createModule(input: CreateModuleInput!): CreateModulePayload
+  updateModule(input: UpdateModuleInput!): UpdateModulePayload
+
+  # createTutor
+  # updateTutor
+
+  # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
 }

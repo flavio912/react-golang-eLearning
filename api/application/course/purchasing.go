@@ -28,11 +28,11 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		price = price + course.Price
 	}
 
-	if application.IsAuthorizedToBook(&c.usersRepository, c.grant, courseModels) {
+	if !application.IsAuthorizedToBook(&c.usersRepository, c.grant, courseModels) {
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrUnauthorizedToBook
 	}
 
-	var courseTakerIDs []uint
+	var courseTakerIDs []gentypes.UUID
 
 	//	Individual can only book courses for themselves
 	if c.grant.IsIndividual {
@@ -41,7 +41,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to get current user")
 			return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 		}
-		courseTakerIDs = []uint{ind.CourseTakerID}
+		courseTakerIDs = []gentypes.UUID{ind.CourseTakerUUID}
 	}
 
 	// Managers can only purchase for users that exist and that they are manager of
@@ -52,7 +52,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 				return &gentypes.PurchaseCoursesResponse{}, errors.ErrDelegateDoesNotExist(uuid.String())
 			}
 
-			courseTakerIDs = append(courseTakerIDs, delegate.CourseTakerID)
+			courseTakerIDs = append(courseTakerIDs, delegate.CourseTakerUUID)
 		}
 	}
 
@@ -107,4 +107,17 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		StripeClientSecret:  &intent.ClientSecret,
 		TransactionComplete: false, // As user still needs to pay
 	}, nil
+}
+
+func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	err := c.ordersRepository.FulfilPendingOrder(clientSecret)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }

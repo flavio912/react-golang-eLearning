@@ -38,6 +38,9 @@ type UsersApp interface {
 
 	GetCurrentUser() (gentypes.User, error)
 	GetAddressesByIDs(ids []uint) ([]gentypes.Address, error)
+
+	ActiveCourses() ([]gentypes.ActiveCourse, error)
+	TakerActivity(courseTakerUUID gentypes.UUID, page *gentypes.Page) ([]gentypes.Activity, gentypes.PageInfo, error)
 }
 
 type usersAppImpl struct {

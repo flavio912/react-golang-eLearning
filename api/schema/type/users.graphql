@@ -8,9 +8,6 @@ enum UserType {
 # and individual user types. Some fields are not going to be available depending
 # on the type of user you are requesting data for.
 type User {
-  # certificates
-  # onlineCourses: OnlineCoursePage
-  # activity
   type: UserType!
   email: String
   firstName: String!
@@ -20,5 +17,39 @@ type User {
   lastLogin: String!
   company: Company
   profileImageUrl: String
+  activity(page: Page): ActivityPage
+  activeCourses: [ActiveCourse!]
+  # certificates
   # address: Address
+}
+
+enum ActivityType {
+  newCourse
+  activated
+  completedCourse
+  failedCourse
+}
+
+type ActivityPage implements PaginatedQuery {
+  edges: [Activity]
+  pageInfo: PageInfo
+}
+
+type Activity {
+  uuid: UUID!
+  type: ActivityType!
+  createdAt: String!
+  course: Course
+}
+
+# type ActiveCoursePage implements PaginatedQuery {
+#   edges: [ActiveCourse]
+#   pageInfo: PageInfo
+# }
+
+# # A course currently being taken by a user
+type ActiveCourse {
+  course: Course!
+  currentAttempt: Int!
+  minutesTracked: Float!
 }

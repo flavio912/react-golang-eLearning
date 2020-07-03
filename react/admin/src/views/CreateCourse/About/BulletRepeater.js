@@ -11,22 +11,23 @@ import {
 } from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 
-function BulletRepeater({ title = '' }) {
-  const [bulletPoints, setBulletPoints] = useState([
-    { text: '', key: new Date().getTime() }
-  ]);
+function BulletRepeater({ title = '', items, onChange }) {
+  const bulletPoints = items.map((text, index) => ({
+    text: text,
+    key: index
+  }));
 
   const addNewRepeater = () => {
     const newBulletPoints = [...bulletPoints];
-    newBulletPoints.push({ text: '', key: new Date().getTime() });
-    setBulletPoints(newBulletPoints);
+    newBulletPoints.push({ text: '', key: newBulletPoints.length + 1 });
+    onChange(newBulletPoints.map(bullet => bullet.text));
   };
 
   const removeRepeater = index => {
-    if (index === 0 && bulletPoints.length === 1) return;
+    // if (index === 0 && bulletPoints.length === 1) return;
     const newBulletPoints = [...bulletPoints];
     newBulletPoints.splice(index, 1);
-    setBulletPoints(newBulletPoints);
+    onChange(newBulletPoints.map(bullet => bullet.text));
   };
 
   return (
@@ -42,7 +43,13 @@ function BulletRepeater({ title = '' }) {
                   <TextField
                     fullWidth
                     multiline
+                    value={bullet.text}
                     label={`Bullet point ${index + 1}`} // Normal people don't do 0 indexing. ;)
+                    onChange={evt => {
+                      const bullets = [...bulletPoints];
+                      bullets[index].text = evt.target.value;
+                      onChange(bullets.map(bullet => bullet.text));
+                    }}
                     variant={'outlined'}
                   />
                 </Grid>

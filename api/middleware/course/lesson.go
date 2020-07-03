@@ -28,9 +28,9 @@ func (c *coursesRepoImpl) CreateLesson(lesson gentypes.CreateLessonInput) (model
 	}
 
 	lessonModel := models.Lesson{
-		Title: lesson.Title,
-		Tags:  tags,
-		Text:  lesson.Text,
+		Name: lesson.Name,
+		Tags: tags,
+		Text: lesson.Text,
 	}
 
 	query := database.GormDB.Create(&lessonModel)
@@ -79,8 +79,8 @@ func filterLesson(query *gorm.DB, filter *gentypes.LessonFilter) *gorm.DB {
 		if filter.UUID != nil && *filter.UUID != "" {
 			query = query.Where("uuid = ?", *filter.UUID)
 		}
-		if filter.Title != nil && *filter.Title != "" {
-			query = query.Where("title ILIKE ?", "%%"+*filter.Title+"%%")
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
 		}
 		if filter.Tags != nil && len(*filter.Tags) > 0 {
 			query = query.Table("lessons").
@@ -108,7 +108,7 @@ func (c *coursesRepoImpl) GetLessons(
 		return []models.Lesson{}, gentypes.PageInfo{}, countErr
 	}
 
-	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"title"}, "title ASC")
+	query, orderErr := middleware.GetOrdering(query, orderBy, []string{"name"}, "name ASC")
 	if orderErr != nil {
 		return []models.Lesson{}, gentypes.PageInfo{}, orderErr
 	}

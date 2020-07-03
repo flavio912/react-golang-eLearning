@@ -1,0 +1,66 @@
+type Module implements SyllabusItem {
+  uuid: UUID!
+  name: String!
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  voiceoverURL: String
+  video: Video
+  syllabus: [SyllabusItem!]
+  complete: Boolean
+}
+
+enum VideoType {
+  WISTIA
+}
+
+type Video {
+  type: VideoType!
+  url: String!
+}
+
+input VideoInput {
+  type: VideoType!
+  url: String!
+}
+
+enum ModuleElement {
+  test
+  lesson
+}
+
+input ModuleItem {
+  type: ModuleElement!
+  uuid: UUID!
+}
+
+input CreateModuleInput {
+  name: String!
+  tags: [UUID!]
+  description: String!
+  transcript: String!
+  bannerImageSuccessToken: String
+  voiceoverSuccessToken: String
+  video: VideoInput
+  syllabus: [ModuleItem!]
+}
+
+type CreateModulePayload {
+  module: Module
+}
+
+input UpdateModuleInput {
+  uuid: UUID!
+  tags: [UUID!]
+  name: String
+  description: String
+  transcript: String
+  bannerImageSuccessToken: String
+  voiceoverSuccessToken: String
+  video: VideoInput
+  syllabus: [ModuleItem!]
+}
+
+type UpdateModulePayload {
+  module: Module
+}

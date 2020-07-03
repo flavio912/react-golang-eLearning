@@ -19,7 +19,7 @@ var fixtures *testfixtures.Loader
 
 func TestMain(m *testing.M) {
 	var err error
-	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(true, "middleware_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}
@@ -196,4 +196,20 @@ func checkCourseInfoEqual(t *testing.T, inpInfo gentypes.CourseInput, outInfo ge
 	if inpInfo.SpecificTerms != nil {
 		assert.Equal(t, *inpInfo.SpecificTerms, outInfo.SpecificTerms)
 	}
+}
+
+func TestManyOnlineCourseStructures(t *testing.T) {
+	t.Run("Gets single", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")
+		mapping, err := courseRepo.ManyOnlineCourseStructures([]gentypes.UUID{uuid})
+		assert.Nil(t, err)
+
+		assert.Equal(t, "0", mapping[uuid][0].Rank)
+		assert.Equal(t, gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"), *mapping[uuid][0].LessonUUID)
+
+		assert.Equal(t, "1", mapping[uuid][1].Rank)
+		assert.Equal(t, gentypes.MustParseToUUID("2a7e551a-0291-422d-8508-c0ee8ff4c67e"), *mapping[uuid][1].TestUUID)
+	})
+
+	// TODO: Add test for multiple
 }

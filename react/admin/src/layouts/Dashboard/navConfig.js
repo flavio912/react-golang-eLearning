@@ -38,11 +38,11 @@ export default [
           },
           {
             title: 'Modules',
-            href: '/courses'
+            href: '/modules'
           },
           {
             title: 'Lessons',
-            href: '/courses'
+            href: '/lessons'
           }
         ]
       },

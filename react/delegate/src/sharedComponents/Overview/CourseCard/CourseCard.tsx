@@ -133,6 +133,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 export type SizeOptions = 'small' | 'large';
 
 export interface Course {
+  id: number;
   type: string;
   colour: string;
   url: string;
@@ -145,7 +146,7 @@ export interface Course {
   location?: string;
   modules?: number;
   lessons?: number;
-  video_time?: number;
+  videoTime?: number;
 }
 
 type Props = {
@@ -214,7 +215,7 @@ function CourseCard({
       </div>
 
       <div className={classNames(classes.column)}>
-        {(course.modules || course.lessons || course.video_time) && (
+        {(course.modules || course.lessons || course.videoTime) && (
           <div className={classNames(classes.row)}>
             <div className={classNames(classes.lecture)}>
               {course.modules && (
@@ -227,10 +228,10 @@ function CourseCard({
                   className={classNames(classes.lectureItem)}
                 >{`${course.lessons} lessons`}</span>
               )}
-              {course.video_time && (
+              {course.videoTime && (
                 <span
                   className={classNames(classes.lectureItem)}
-                >{`${course.video_time} hours of video`}</span>
+                >{`${course.videoTime} hours of video`}</span>
               )}
             </div>
           </div>
@@ -240,7 +241,7 @@ function CourseCard({
             className={classNames(classes.description)}
             style={{
               marginTop:
-                course.modules || course.lessons || course.video_time
+                course.modules || course.lessons || course.videoTime
                   ? '10px'
                   : '22px'
             }}

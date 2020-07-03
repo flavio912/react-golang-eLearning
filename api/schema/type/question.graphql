@@ -1,0 +1,67 @@
+type Question {
+  uuid: UUID!
+  text: String!
+  randomiseAnswers: Boolean
+  questionType: QuestionType!
+  answers: [Answer!]
+}
+
+type QuestionPage implements PaginatedQuery {
+  edges: [Question]
+  pageInfo: PageInfo
+}
+
+type Answer {
+  uuid: UUID!
+  isCorrect: Boolean
+  text: String
+  imageURL: String
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+}
+
+input CreateQuestionInput {
+  text: String!
+  randomiseAnswers: Boolean!
+  questionType: QuestionType!
+  answers: [CreateBasicAnswerInput!]!
+  tags: [UUID!]!
+}
+
+input CreateBasicAnswerInput {
+  isCorrect: Boolean! # defaults to false
+  text: String
+  imageToken: String
+}
+
+type CreateQuestionPayload {
+  question: Question
+}
+
+input UpdateQuestionInput {
+  uuid: UUID!
+  text: String
+  randomiseAnswers: Boolean
+  questionType: QuestionType
+  answers: [UpdateBasicAnswerInput!]
+  tags: [UUID!]
+}
+
+input UpdateBasicAnswerInput {
+  uuid: UUID
+  isCorrect: Boolean # defaults to false
+  text: String
+  imageToken: String
+}
+
+type UpdateQuestionPayload {
+  question: Question
+}
+
+input QuestionFilter {
+  uuid: UUID
+  text: String
+  Tags: [UUID!]
+}

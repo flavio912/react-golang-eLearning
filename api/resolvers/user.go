@@ -3,8 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -22,13 +20,8 @@ type NewUserArgs struct {
 
 func NewUserResolver(ctx context.Context, args NewUserArgs) (*UserResolver, error) {
 	if args.UUID != nil {
-		grant := auth.GrantFromContext(ctx)
-		if grant == nil {
-			return &UserResolver{}, &errors.ErrUnauthorized
-		}
-
-		usersApp := users.NewUsersApp(grant)
-		user, err := usersApp.GetCurrentUser() // TODO: Use Dataloaders
+		app := auth.AppFromContext(ctx)
+		user, err := app.UsersApp.GetCurrentUser() // TODO: Use Dataloaders
 		if err != nil {
 			return &UserResolver{}, err
 		}
@@ -55,5 +48,15 @@ func (u *UserResolver) Company(ctx context.Context) (*CompanyResolver, error) {
 
 	return NewCompanyResolver(ctx, NewCompanyArgs{
 		UUID: grant.Claims.Company.String(),
+	})
+}
+func (u *UserResolver) Activity(ctx context.Context, args struct{ Page *gentypes.Page }) (*ActivityPageResolver, error) {
+	return NewActivityPageResolver(ctx, NewActivityPageArgs{
+		CourseTakerUUID: u.user.CourseTakerUUID,
+	}, args.Page)
+}
+func (u *UserResolver) ActiveCourses(ctx context.Context) (*[]*ActiveCourseResolver, error) {
+	return NewActiveCoursesResolvers(ctx, NewActiveCourseArgs{
+		TakerUUID: u.user.CourseTakerUUID,
 	})
 }

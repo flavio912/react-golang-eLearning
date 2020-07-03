@@ -7,6 +7,11 @@ import (
 	"strings"
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/domain"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 
@@ -22,6 +27,7 @@ type contextKey string
 var (
 	// AuthKey is the contextKey for the JWT Auth token
 	AuthKey = contextKey("token")
+	AppKey  = contextKey("application")
 	// GrantKey is the contextKey for getting a grant
 	GrantKey = contextKey("grant")
 	RespKey  = contextKey("resp")
@@ -68,18 +74,34 @@ func Handler(h http.Handler) http.Handler {
 				allowRequest = true
 			}
 
-			// Public grants don't need to worry about CSRF tokens
-			if allowRequest || grant.IsPublic {
-				ctx = context.WithValue(ctx, GrantKey, grant)
-				ctx = context.WithValue(ctx, AuthKey, token)
-				addSentryContext(r, grant)
+			// If not allowed just give them a public grant
+			if !allowRequest {
+				publicGrant, _ := middleware.Authenticate("")
+				grant = publicGrant
 			}
+
+			// Public grants don't need to worry about CSRF tokens
+			ctx = context.WithValue(ctx, GrantKey, grant)
+			ctx = context.WithValue(ctx, AuthKey, token)
+			ctx = AddAppContext(ctx, grant)
+			addSentryContext(r, grant)
 		}
 
 		ctx = context.WithValue(ctx, RespKey, &w)
 
 		h.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func AddAppContext(ctx context.Context, grant *middleware.Grant) context.Context {
+	app := domain.Application{
+		CourseApp: course.NewCourseApp(grant),
+		UsersApp:  users.NewUsersApp(grant),
+		AdminApp:  application.NewAdminApp(grant),
+	}
+
+	ctx = context.WithValue(ctx, AppKey, app)
+	return ctx
 }
 
 func addSentryContext(r *http.Request, grant *middleware.Grant) {
@@ -91,6 +113,17 @@ func addSentryContext(r *http.Request, grant *middleware.Grant) {
 		hub.Scope().SetTag("role", auth.RoleToString(grant.Claims.Role))
 		hub.Scope().SetTag("company", grant.Claims.Company.String())
 	}
+}
+
+// AppFromContext gets an application from the context
+func AppFromContext(ctx context.Context) domain.Application {
+	val := ctx.Value(AppKey)
+	if val == nil {
+		return domain.Application{}
+	}
+
+	app := val.(domain.Application)
+	return app
 }
 
 // GrantFromContext returns a grant if the context has one (i.e the user is authenticated)

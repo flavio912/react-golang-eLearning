@@ -8,7 +8,7 @@ import {
   Divider
 } from '@material-ui/core';
 
-function SideOptions() {
+function SideOptions({ state, setState }) {
   return (
     <Card>
       <CardHeader title={'Estimated time to complete'} />
@@ -20,6 +20,13 @@ function SideOptions() {
             endAdornment: <InputAdornment position="end">Hours</InputAdornment>
           }}
           variant="outlined"
+          type="number"
+          value={state.hoursToComplete}
+          onChange={evt => {
+            try {
+              setState('hoursToComplete', parseFloat(evt.target.value));
+            } catch (err) {}
+          }}
         />
       </CardContent>
     </Card>

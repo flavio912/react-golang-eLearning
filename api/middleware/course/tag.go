@@ -50,9 +50,9 @@ func (c *coursesRepoImpl) CreateTag(input gentypes.CreateTagInput) (models.Tag, 
 	return tag, nil
 }
 
-// GetTagsByCourseInfoIDs takes a list of courseInfo ids and returns a mapping
+// ManyCourseTags takes a list of courseInfo ids and returns a mapping
 // of a courseInfo Id to a slice of tags
-func (c *coursesRepoImpl) GetTagsByCourseInfoIDs(ids []uint) (map[uint][]models.Tag, error) {
+func (c *coursesRepoImpl) ManyCourseTags(ids []uint) (map[uint][]models.Tag, error) {
 	// TODO: Check if user has access to this particular course
 
 	// Find the table links

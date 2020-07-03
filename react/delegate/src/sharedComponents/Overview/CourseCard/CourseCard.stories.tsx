@@ -10,6 +10,7 @@ export default {
 const sizeOptions: SizeOptions[] = ['small', 'large'];
 
 const defaultCourse: Course = {
+  id: 1,
   type: 'DANGEROUS GOODS AIR',
   colour: '#8C1CB4',
   url: require('../../../assets/SampleImage_ClassroomCoursesDetail_Feat.png'),
@@ -23,7 +24,7 @@ const defaultCourse: Course = {
   location: 'TTC at Hilton T4',
   modules: 16,
   lessons: 144,
-  video_time: 4
+  videoTime: 4
 };
 
 export const plain = () => {

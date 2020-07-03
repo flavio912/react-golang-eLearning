@@ -55,7 +55,8 @@ const useStyles = makeStyles(theme => ({
 
 const test_courses = [
   {
-    title: 'Fire Safety Awareness',
+    id: 'test',
+    name: 'Fire Safety Awareness',
     creator: {
       firstName: 'TTC',
       lastName: 'Admin'
@@ -75,13 +76,12 @@ const test_courses = [
   }
 ];
 
-function Projects({ className, ...rest }) {
+function Projects({ courses, className, ...rest }) {
   const classes = useStyles();
   const sortRef = useRef(null);
   const [openSort, setOpenSort] = useState(false);
   const [selectedSort, setSelectedSort] = useState('Created At');
   const [mode, setMode] = useState('grid');
-  const [courses] = useState(test_courses);
 
   const handleSortOpen = () => {
     setOpenSort(true);
@@ -165,7 +165,8 @@ function Projects({ className, ...rest }) {
 }
 
 Projects.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  courses: PropTypes.array.isRequired
 };
 
 export default Projects;

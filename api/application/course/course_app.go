@@ -8,17 +8,23 @@ import (
 )
 
 type CourseApp interface {
+	SetOrdersRepository(r middleware.OrdersRepository)
+	SetUsersRepository(r user.UsersRepository)
+	SetCoursesRepository(r course.CoursesRepository)
+
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
+	FulfilPendingOrder(clientSecret string) (bool, error)
 
 	Course(courseID uint) (gentypes.Course, error)
 	Courses(courseIDs []uint) ([]gentypes.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error)
+	CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error)
 
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
-	GetTagsByCourseInfoIDs(ids []uint) (map[uint][]gentypes.Tag, error)
+	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]gentypes.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]gentypes.Tag, error)
 
@@ -31,6 +37,31 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
+
+	Test(testUUID gentypes.UUID) (gentypes.Test, error)
+	Tests(
+		page *gentypes.Page,
+		filter *gentypes.TestFilter,
+		orderBy *gentypes.OrderBy,
+	) ([]gentypes.Test, gentypes.PageInfo, error)
+	CreateTest(input gentypes.CreateTestInput) (gentypes.Test, error)
+	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
+	SubmitTest(input gentypes.SubmitTestInput) (bool, error)
+
+	Module(uuid gentypes.UUID) (gentypes.Module, error)
+	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
+	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
+
+	Question(uuid gentypes.UUID) (gentypes.Question, error)
+	Questions(
+		page *gentypes.Page,
+		filter *gentypes.QuestionFilter,
+		orderBy *gentypes.OrderBy,
+	) ([]gentypes.Question, gentypes.PageInfo, error)
+	CreateQuestion(input gentypes.CreateQuestionInput) (gentypes.Question, error)
+	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
+
+	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
 }
 
 type courseAppImpl struct {
@@ -38,6 +69,18 @@ type courseAppImpl struct {
 	ordersRepository  middleware.OrdersRepository
 	coursesRepository course.CoursesRepository
 	usersRepository   user.UsersRepository
+}
+
+func (c *courseAppImpl) SetOrdersRepository(r middleware.OrdersRepository) {
+	c.ordersRepository = r
+}
+
+func (c *courseAppImpl) SetUsersRepository(r user.UsersRepository) {
+	c.usersRepository = r
+}
+
+func (c *courseAppImpl) SetCoursesRepository(r course.CoursesRepository) {
+	c.coursesRepository = r
 }
 
 func NewCourseApp(grant *middleware.Grant) CourseApp {

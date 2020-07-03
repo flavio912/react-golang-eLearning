@@ -1285,7 +1285,7 @@ func TestSaveOnlineCourse(t *testing.T) {
 							color: "#fff",
 							howToComplete: "{}",
         			whatYouLearn: ["What 1", "What 2"],
-        			requirements: ["req 1", "req 2"]
+							requirements: ["req 1", "req 2"]
 						}
 					) {
 						name
@@ -1313,6 +1313,57 @@ func TestSaveOnlineCourse(t *testing.T) {
 							"whatYouLearn": ["What 1", "What 2"],
 							"requirements": ["req 1", "req 2"]
 					}
+				}
+			`,
+		},
+	})
+}
+
+func TestCreateTest(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create test course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createTest(input: {
+							name: "Cake",
+							attemptsAllowed: 3,
+							passPercentage: 30,
+							questionsToAnswer: 7,
+							randomiseAnswers: false,
+							questions: []
+					}) {
+							test {
+								name
+								complete
+								attemptsAllowed
+								passPercentage
+								questionsToAnswer
+								randomiseAnswers
+								questions {
+									text
+								}
+							}
+						}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createTest": {
+            "test": {
+                "name": "Cake",
+                "complete": false,
+                "attemptsAllowed": 3,
+                "passPercentage": 30,
+                "questionsToAnswer": 7,
+                "randomiseAnswers": false,
+                "questions": null
+            }
+        	}
 				}
 			`,
 		},

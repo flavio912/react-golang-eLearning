@@ -2,6 +2,17 @@ import * as React from "react";
 import Footer, { Column, Link } from "./Footer";
 import { withKnobs, object } from "@storybook/addon-knobs";
 
+// Modules for mocking router
+//@ts-ignore
+import { Resolver } from 'found-relay';
+//@ts-ignore
+import { MemoryProtocol } from 'farce';
+import {
+  createFarceRouter,
+  createRender
+} from 'found';
+import environment from '../../../api/environment';
+
 export default {
   title: "Menu/Footer",
   decorators: [withKnobs],
@@ -60,7 +71,16 @@ const defaultColumns: Column[] = [
     }
 ]
 
-export const normal = () => {
+const normal = () => {
     const columns: Column[] = object("Columns", defaultColumns);
   return <Footer columns={columns} />;
 };
+
+// Mock Router
+const StoryRouter = createFarceRouter({
+    historyProtocol: new MemoryProtocol('/'),
+    routeConfig: [{ path: '/', Component: normal }],
+    render: createRender({})
+  })
+  
+  export const withRouter = () => (<StoryRouter resolver={new Resolver(environment)} />);

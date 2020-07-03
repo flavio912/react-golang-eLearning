@@ -1,0 +1,11 @@
+- uuid: a5716dce-46d0-40cc-8a2a-d0ac7fa01a1f
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
+  activity_type: completedCourse
+  course_id: 1
+- uuid: 1f05ac50-2019-4f4d-a8be-8df01606e0ad
+  course_taker_uuid: f6d7978d-5e1a-45e9-ae8d-fad5d9c10539
+  activity_type: activated
+- uuid: 69297ec6-6d96-4447-8a6e-82b931218177
+  course_taker_uuid: 2c90d590-dbe1-425b-ad5c-eebf7abcf9da
+  activity_type: completedCourse
+  course_id: 1
