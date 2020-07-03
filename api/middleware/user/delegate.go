@@ -195,7 +195,7 @@ func (u *usersRepoImpl) UpdateDelegate(
 
 	delegate, err := u.Delegate(details.UUID)
 	if err != nil {
-		u.Logger.Logf(sentry.LevelWarning, err, "Unable to find delegate: %s", details.UUID)
+		u.Logger.Log(sentry.LevelWarning, err, "Unable to find delegate")
 		return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
 	}
 
@@ -236,7 +236,7 @@ func (u *usersRepoImpl) UpdateDelegate(
 
 	delegate, err = u.Delegate(details.UUID)
 	if err != nil {
-		u.Logger.Logf(sentry.LevelError, err, "Unable to get delegate after updating: %s", details.UUID)
+		u.Logger.Log(sentry.LevelError, err, "Unable to get delegate after updating")
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}
 
