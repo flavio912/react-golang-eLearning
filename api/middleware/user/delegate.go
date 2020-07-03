@@ -193,48 +193,50 @@ func (u *usersRepoImpl) UpdateDelegate(
 		return models.Delegate{}, err
 	}
 
-	var delegate models.Delegate
-	query := database.GormDB.Where("uuid = ?", details.UUID).First(&delegate)
-	if query.Error != nil {
-		if query.RecordNotFound() {
-			return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
-		}
-
-		u.Logger.Logf(sentry.LevelError, query.Error, "Unable to find delegate: %s", details.UUID)
-		return models.Delegate{}, &errors.ErrWhileHandling
+	delegate, err := u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Logf(sentry.LevelWarning, err, "Unable to find delegate: %s", details.UUID)
+		return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
 	}
 
+	updates := make(map[string]interface{})
 	if details.CompanyUUID != nil {
 		if !u.CompanyExists(*details.CompanyUUID) {
 			return models.Delegate{}, &errors.ErrCompanyNotFound
 		}
-		delegate.CompanyUUID = *details.CompanyUUID
+		updates["company_uuid"] = *details.CompanyUUID
 	}
 	if details.FirstName != nil {
-		delegate.FirstName = *details.FirstName
+		updates["first_name"] = *details.FirstName
 	}
 	if details.LastName != nil {
-		delegate.LastName = *details.LastName
+		updates["last_name"] = *details.LastName
 	}
 	if details.JobTitle != nil {
-		delegate.JobTitle = *details.JobTitle
+		updates["job_title"] = *details.JobTitle
 	}
 	if details.Email != nil {
-		delegate.Email = details.Email
+		updates["email"] = details.Email
 	}
 	if details.Telephone != nil {
-		delegate.Telephone = details.Telephone
+		updates["telephone"] = details.Telephone
 	}
 	if s3UploadKey != nil {
-		delegate.ProfileKey = s3UploadKey
+		updates["profile_key"] = s3UploadKey
 	}
 	if password {
-		delegate.Password = details.NewPassword
+		updates["password"] = details.NewPassword
 	}
 
-	save := database.GormDB.Save(&delegate)
+	save := database.GormDB.Model(&delegate).Updates(updates)
 	if save.Error != nil {
 		u.Logger.Logf(sentry.LevelError, save.Error, "Unable to update delegate: %s", details.UUID)
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	delegate, err = u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Logf(sentry.LevelError, err, "Unable to get delegate after updating: %s", details.UUID)
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}
 
