@@ -240,3 +240,11 @@ func (c *courseAppImpl) Questions(
 
 	return c.questionsToGentypes(questions), pageInfo, nil
 }
+
+func (c *courseAppImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	return c.coursesRepository.DeleteQuestion(input)
+}
