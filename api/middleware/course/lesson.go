@@ -150,8 +150,8 @@ func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models
 		return models.Lesson{}, &errors.ErrWhileHandling
 	}
 
-	if input.Title != nil {
-		lesson.Title = *input.Title
+	if input.Name != nil {
+		lesson.Name = *input.Name
 	}
 	if input.Text != nil {
 		lesson.Text = *input.Text

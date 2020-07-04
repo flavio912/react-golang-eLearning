@@ -1382,10 +1382,10 @@ func TestUpdateLesson(t *testing.T) {
 				mutation {
 					updateLesson(input: {
 						uuid: "00000000-0000-0000-0000-000000000001"
-						title: "Backtracking"
+						name: "Backtracking"
 					}) {
 						uuid
-						title
+						name
 					}
 				}
 			`,
@@ -1393,7 +1393,7 @@ func TestUpdateLesson(t *testing.T) {
 				{
 					"updateLesson":{
 						"uuid": "00000000-0000-0000-0000-000000000001",
-						"title": "Backtracking"
+						"name": "Backtracking"
 					}
 				}
 			`,
@@ -1406,12 +1406,12 @@ func TestUpdateLesson(t *testing.T) {
 				mutation {
 					updateLesson(input: {
 						uuid: "00000000-0000-0000-0000-000000000003"
-						title: "Jacobian Matrix"
+						name: "Jacobian Matrix"
 						text: "{\"space\":\"time\"}"
 						tags: ["00000000-0000-0000-0000-000000000001"]
 					}) {
 						uuid
-						title
+						name
 						text
 						tags {
 							uuid
@@ -1423,7 +1423,7 @@ func TestUpdateLesson(t *testing.T) {
 				{
 					"updateLesson" : {
 						"uuid" : "00000000-0000-0000-0000-000000000003",
-						"title": "Jacobian Matrix",
+						"name": "Jacobian Matrix",
 						"text": "{\"space\":\"time\"}",
 						"tags": [
 							{
@@ -1473,7 +1473,7 @@ func TestUpdateLesson(t *testing.T) {
 					{
 						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
 							uuid
-							title
+							name
 							text
 							tags {
 								name
@@ -1494,7 +1494,7 @@ func TestUpdateLesson(t *testing.T) {
 									"color": "#123"
 								}
 							],
-							"title": "Eigenvalues and Eigenvectors",
+							"name": "Eigenvalues and Eigenvectors",
 							"text": "{}"
 						}
 					}
@@ -1508,12 +1508,12 @@ func TestUpdateLesson(t *testing.T) {
 					mutation {
 						updateLesson(input: {
 							uuid: "00000000-0000-0000-0000-000000000003"
-							title: "Jacobian Matrix"
+							name: "Jacobian Matrix"
 							text: "space time"
 							tags: ["00000000-0000-0000-0000-000000000001"]
 						}) {
 							uuid
-							title
+							name
 							text
 							tags {
 								uuid
@@ -1525,7 +1525,7 @@ func TestUpdateLesson(t *testing.T) {
 					{
 						"updateLesson" : {
 							"uuid" : "00000000-0000-0000-0000-000000000003",
-							"title": "Jacobian Matrix",
+							"name": "Jacobian Matrix",
 							"text": "space time",
 							"tags": [
 								{
@@ -1544,7 +1544,7 @@ func TestUpdateLesson(t *testing.T) {
 					{
 						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
 							uuid
-							title
+							name
 							text
 							tags {
 								name
@@ -1565,7 +1565,7 @@ func TestUpdateLesson(t *testing.T) {
 									"color": "#123"
 								}
 							],
-							"title": "Jacobian Matrix",
+							"name": "Jacobian Matrix",
 							"text": "space time"
 						}
 					}
