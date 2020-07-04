@@ -27,7 +27,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     outline: 'none',
     transition: 'all 0.5s',
     borderRadius: 50,
-    zIndex: 1000,
+    zIndex: 10,
     opacity: 1,
     cursor: 'pointer',
     display: 'flex',
