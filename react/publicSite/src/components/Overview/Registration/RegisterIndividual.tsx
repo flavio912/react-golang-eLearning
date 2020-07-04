@@ -88,7 +88,7 @@ function RegisterIndividual({ onSubmit, onLogoClick }: Props) {
     <div className={classes.registerIndividualRoot}>
       <Icon name="TTC_Logo_Icon" size={44} onClick={onLogoClick} />
       <Spacer vertical spacing={4} />
-      <Title>Register your team today</Title>
+      <Title>Register with TTC today</Title>
       <Subtitle>
         If you’re looking to get access to the finest level of compliance
         training register with TTC Hub below
