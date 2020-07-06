@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -139,9 +140,7 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		return models.Course{}, err
 	}
 
-	var courseInfo models.Course
-
-	var updates = make(map[string]interface{})
+	updates := make(map[string]interface{})
 
 	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
@@ -152,6 +151,7 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 
 	if infoChanges.Name != nil {
+		glog.Errorf("GOT name update: %s", *infoChanges.Name)
 		updates["name"] = *infoChanges.Name
 	}
 	if infoChanges.Price != nil {
@@ -189,6 +189,7 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "UpdateCourse: Forced to recover")
 		}
 	}()
 
@@ -198,6 +199,7 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			repErr := tx.Model(models.Course{ID: courseID}).Association("Tags").Replace(tags).Error
 			if repErr != nil {
 				c.Logger.Log(sentry.LevelError, repErr, "Could not replace tags")
+				tx.Rollback()
 				return models.Course{}, &errors.ErrWhileHandling
 			}
 		} else {
@@ -215,7 +217,12 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			return models.Course{}, &errors.ErrWhileHandling
 		}
 
-		courseInfo.Requirements = newRequirements
+		repErr := tx.Model(&models.Course{ID: courseID}).Association("Requirements").Replace(newRequirements).Error
+		if repErr != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, repErr, "Unable to replace requirements")
+			return models.Course{}, &errors.ErrWhileHandling
+		}
 	}
 
 	// If requirements changed, remove all old ones and repopulate
@@ -228,11 +235,17 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			return models.Course{}, &errors.ErrWhileHandling
 		}
 
-		courseInfo.WhatYouLearn = newWhatYouLearn
+		repErr := tx.Model(&models.Course{ID: courseID}).Association("WhatYouLearn").Replace(newWhatYouLearn).Error
+		if repErr != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, repErr, "Unable to replace whatYouLearn")
+			return models.Course{}, &errors.ErrWhileHandling
+		}
 	}
 
 	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(updates)
 	if query.Error != nil {
+		tx.Rollback()
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
 		return models.Course{}, &errors.ErrWhileHandling
 	}

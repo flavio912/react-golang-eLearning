@@ -45,6 +45,8 @@ const SAVE_ONLINE_COURSE = gql`
     $accessType: AccessType
     $howToComplete: String
     $hoursToComplete: Float
+    $whatYouLearn: [String!]
+    $requirements: [String!]
   ) {
     saveOnlineCourse(
       input: {
@@ -56,6 +58,8 @@ const SAVE_ONLINE_COURSE = gql`
         accessType: $accessType
         howToComplete: $howToComplete
         hoursToComplete: $hoursToComplete
+        whatYouLearn: $whatYouLearn
+        requirements: $requirements
       }
     ) {
       id
@@ -143,6 +147,8 @@ function CreateCourse({ match, history }) {
       accessType: data.course.accessType,
       howToComplete: data.course.howToComplete,
       hoursToComplete: data.course.hoursToComplete,
+      whatYouLearn: data.course.whatYouLearn,
+      requirements: data.course.requirements,
       price: data.course.price
     });
   }, [data, loading]);
@@ -164,6 +170,8 @@ function CreateCourse({ match, history }) {
           accessType: state.accessType,
           howToComplete: state.howToComplete,
           hoursToComplete: state.hoursToComplete,
+          whatYouLearn: state.whatYouLearn,
+          requirements: state.requirements,
           price: state.price
         }
       });
