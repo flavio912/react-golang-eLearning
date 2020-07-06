@@ -316,5 +316,10 @@ func TestDeleteTest(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.True(t, b)
+
+		questions, q_err := courseRepo.TestQuestions(uuid)
+
+		assert.Nil(t, q_err)
+		assert.Len(t, questions, 0)
 	})
 }
