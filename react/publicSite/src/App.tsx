@@ -27,6 +27,7 @@ import RegisterIndividual from 'views/RegisterIndividual';
 import RegisterCompany from 'views/RegisterCompany';
 import Courses from 'views/Courses';
 import Consultancy from 'views/Consultancy';
+import PrivacyPolicy from 'views/PrivacyPolicy';
 
 
 const ExamplePageQuery = graphql`
@@ -62,6 +63,7 @@ const Router = createFarceRouter({
         <Route path="/payment" Component={PaymentPage} />
         <Route path="/courses" Component={Courses} />
         <Route path="/consultancy" Component={Consultancy} />
+        <Route path="/privacypolicy" Component={PrivacyPolicy} />
       </Route>
       <Route path="/register" Component={RegisterStart} />
       <Route path="/register/individual" Component={RegisterIndividual} />
