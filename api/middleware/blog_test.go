@@ -8,8 +8,12 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
+
+var blogRepo = middleware.NewBlogRepository(&logging.Logger{})
 
 func TestCreateBlog(t *testing.T) {
 	prepareTestDatabase()
@@ -20,7 +24,7 @@ func TestCreateBlog(t *testing.T) {
 			Body:  "not json",
 		}
 
-		blog, err := courseRepo.CreateBlog(invalidInput)
+		blog, err := blogRepo.CreateBlog(invalidInput)
 
 		assert.Equal(t, invalidInput.Validate(), err)
 		assert.Equal(t, models.Blog{}, blog)
@@ -35,7 +39,7 @@ func TestCreateBlog(t *testing.T) {
 			AuthorUUID:   &adminUUID,
 		}
 
-		blog, err := courseRepo.CreateBlog(input)
+		blog, err := blogRepo.CreateBlog(input)
 
 		assert.Nil(t, err)
 		assert.Equal(t, input.Title, blog.Title)
@@ -51,10 +55,10 @@ func TestGetBlogImages(t *testing.T) {
 		"img2": "key2",
 	}
 	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
-	_ = courseRepo.UploadBlogImages(blogUUID, keyMap)
+	_ = blogRepo.UploadBlogImages(blogUUID, keyMap)
 
 	t.Run("Gets all images of blog", func(t *testing.T) {
-		imgs, err := courseRepo.GetBlogImages(blogUUID)
+		imgs, err := blogRepo.GetBlogImages(blogUUID)
 
 		assert.Nil(t, err)
 		assert.Len(t, imgs, 2)
@@ -69,14 +73,14 @@ func TestDeleteBlogImages(t *testing.T) {
 		"img2": "key2",
 	}
 	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
-	_ = courseRepo.UploadBlogImages(blogUUID, keyMap)
+	_ = blogRepo.UploadBlogImages(blogUUID, keyMap)
 
 	t.Run("Deletes all images of blog", func(t *testing.T) {
-		err := courseRepo.DeleteBlogImages(blogUUID)
+		err := blogRepo.DeleteBlogImages(blogUUID)
 
 		assert.Nil(t, err)
 
-		blogs, err := courseRepo.GetBlogImages(blogUUID)
+		blogs, err := blogRepo.GetBlogImages(blogUUID)
 
 		assert.Nil(t, err)
 		assert.Len(t, blogs, 0)
@@ -123,7 +127,7 @@ func TestGetBlogsByUUIDs(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			b, err := courseRepo.GetBlogsByUUID(test.uuids)
+			b, err := blogRepo.GetBlogsByUUID(test.uuids)
 
 			assert.Equal(t, test.wantErr, err)
 			assert.Len(t, b, test.wantLen)
@@ -135,7 +139,7 @@ func TestGetBlogs(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Should return ALL blogs", func(t *testing.T) {
-		blogs, _, err := courseRepo.GetBlogs(nil, nil)
+		blogs, _, err := blogRepo.GetBlogs(nil, nil)
 		assert.Nil(t, err)
 		assert.Len(t, blogs, 3)
 	})
@@ -143,7 +147,7 @@ func TestGetBlogs(t *testing.T) {
 	t.Run("Should page", func(t *testing.T) {
 		limit := int32(2)
 		page := gentypes.Page{Limit: &limit, Offset: nil}
-		blogs, pageInfo, err := courseRepo.GetBlogs(&page, nil)
+		blogs, pageInfo, err := blogRepo.GetBlogs(&page, nil)
 		assert.Nil(t, err)
 		assert.Len(t, blogs, 2)
 		assert.Equal(t, gentypes.PageInfo{Total: 3, Given: 2, Limit: limit}, pageInfo)
@@ -153,7 +157,7 @@ func TestGetBlogs(t *testing.T) {
 		asc := false
 		order := gentypes.OrderBy{Field: "created_at", Ascending: &asc}
 
-		blogs, _, err := courseRepo.GetBlogs(nil, &order)
+		blogs, _, err := blogRepo.GetBlogs(nil, &order)
 		assert.Nil(t, err)
 		assert.Len(t, blogs, 3)
 		assert.Equal(t, "2020-03-08T13:53:37Z", blogs[0].CreatedAt.Format(time.RFC3339))
@@ -165,7 +169,7 @@ func TestUpdateBlog(t *testing.T) {
 
 	t.Run("Blog must exist", func(t *testing.T) {
 		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
-		b, err := courseRepo.UpdateBlog(gentypes.UpdateBlogInput{UUID: uuidZero})
+		b, err := blogRepo.UpdateBlog(gentypes.UpdateBlogInput{UUID: uuidZero})
 		assert.Equal(t, errors.ErrBlogNotFound(uuidZero.String()), err)
 		assert.Equal(t, models.Blog{}, b)
 	})
@@ -178,7 +182,7 @@ func TestUpdateBlog(t *testing.T) {
 			CategoryUUID: helpers.UUIDPointer(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")),
 		}
 
-		blog, err := courseRepo.UpdateBlog(input)
+		blog, err := blogRepo.UpdateBlog(input)
 
 		assert.Nil(t, err)
 		assert.Equal(t, input.UUID, blog.UUID)
@@ -188,7 +192,7 @@ func TestUpdateBlog(t *testing.T) {
 		assert.NotEqual(t, "", blog.UpdatedAt.Format(time.RFC3339))
 
 		asc := true
-		blogs, _, errs := courseRepo.GetBlogs(
+		blogs, _, errs := blogRepo.GetBlogs(
 			nil,
 			&gentypes.OrderBy{
 				Ascending: &asc,

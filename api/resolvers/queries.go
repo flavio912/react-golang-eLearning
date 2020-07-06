@@ -339,8 +339,14 @@ func (q *QueryResolver) Blogs(ctx context.Context, args struct {
 	Page    *gentypes.Page
 	OrderBy *gentypes.OrderBy
 }) (*BlogPageResolver, error) {
-	app := auth.AppFromContext(ctx)
-	blogs, page, err := app.BlogApp.GetBlogs(args.Page, args.OrderBy)
+	// app := auth.AppFromContext(ctx)
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &BlogPageResolver{}, &errors.ErrUnauthorized
+	}
+
+	blogApp := application.NewBlogApp(grant)
+	blogs, page, err := blogApp.GetBlogs(args.Page, args.OrderBy)
 	var blogsResolvers []*BlogResolver
 	for _, blog := range blogs {
 		blogsResolvers = append(blogsResolvers, &BlogResolver{
