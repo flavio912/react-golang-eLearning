@@ -7,6 +7,9 @@ import FloatingVideo from 'components/core/VideoPlayer/FloatingVideo';
 import ImageWithText from 'components/core/ImageWithText';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import { Router } from 'found';
+import CarouselCourse from 'components/Misc/CarouselCourse';
+import { Course } from 'sharedComponents/Overview/CourseCard';
+import Button from 'sharedComponents/core/Input/Button';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   homeRoot: {
@@ -32,11 +35,50 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   explore: {
     paddingTop: 70
+  },
+  exploreCont: {
+    maxWidth: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  exploreText: {
+    textAlign: 'center',
+    fontSize: theme.fontSizes.extraLarge,
+    maxWidth: 500
+  },
+  buttonHolder: {
+    display: 'flex'
+  },
+  button: {
+    height: 52,
+    fontSize: 18,
+    fontWeight: 800,
+    boxShadow: '0px 2px 9px #00000014',
+    padding: '0px 36px'
   }
 }));
 
 type Props = {
   router: Router;
+};
+
+const defaultCourse: Course = {
+  id: 2,
+  type: 'DANGEROUS GOODS AIR',
+  colour: '#8C1CB4',
+  url: require('../assets/SampleImage_ClassroomCoursesDetail_Feat.png'),
+  title: 'Dangerous goods by air category 7',
+  price: 60,
+  description:
+    'This course is for those involved in the handling, storage and loading of cargo or mail and baggage.',
+  assigned: 40,
+  expiring: 9,
+  date: 'MAR 3rd 2020',
+  location: 'TTC at Hilton T4',
+  modules: 16,
+  lessons: 144,
+  videoTime: 4
 };
 
 function Home({ router }: Props) {
@@ -66,8 +108,35 @@ function Home({ router }: Props) {
           />
         </div>
       </div>
-      <div className={classes.explore}>
-        <div className={classes.heading}>Explore our popular courses</div>
+      <div className={classnames(classes.centerer)}>
+        <div className={classes.centered}>
+          <div className={classes.explore}>
+            <div className={classes.heading}>Explore our popular courses</div>
+            <CarouselCourse
+              courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
+            />
+            <Spacer vertical spacing={3} />
+            <div className={classes.exploreCont}>
+              <p className={classes.exploreText}>
+                It’s time to remove the headache for you and your team, with TTC
+                you could be logged in and learning in 24 hours.
+              </p>
+              <Spacer vertical spacing={3} />
+              <div className={classes.buttonHolder}>
+                <Button archetype="gradient" className={classes.button}>
+                  Register your Team
+                </Button>
+                <Spacer horizontal spacing={2} />
+                <p>OR</p>
+                <Spacer horizontal spacing={2} />
+                <Button archetype="default" className={classes.button}>
+                  Request Demo
+                </Button>
+              </div>
+            </div>
+            <Spacer vertical spacing={3} />
+          </div>
+        </div>
       </div>
       <div className={classnames(classes.centerer, classes.whiteSpacer)}>
         <div className={classes.centered}>

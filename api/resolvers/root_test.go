@@ -155,7 +155,7 @@ func accessTest(t *testing.T, schema *graphql.Schema, opts accessTestOpts) {
 	}
 
 	t.Run(fmt.Sprintf("Must be authed:%v", opts.MustAuth), func(t *testing.T) {
-		checkAccess(t, defaultContext(), !opts.MustAuth)
+		checkAccess(t, publicContext(), !opts.MustAuth)
 	})
 
 	t.Run(fmt.Sprintf("Admin Allowed:%v", opts.AdminAllowed), func(t *testing.T) {

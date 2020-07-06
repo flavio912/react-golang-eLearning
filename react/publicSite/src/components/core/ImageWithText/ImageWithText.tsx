@@ -10,14 +10,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'space-between',
     flexWrap: 'wrap',
-    '@media (max-width: 1000px)': {
-      justifyContent: 'center',
+    '@media (max-width: 700px)': {
+      flexDirection: 'column',
+      justifyContent: 'flex-start'
     }
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     marginTop: '15px'
   },
@@ -26,6 +27,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-around',
+    '@media (max-width: 700px)': {
+      alignSelf: 'center',
+    }
   },
   title: {
     fontSize: 23,
@@ -42,7 +46,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: 300,
     color: theme.colors.textGrey,
-    marginBottom: '25px'
+    marginBottom: '25px',
+    '@media (max-width: 700px)': {
+      textAlign: 'center'
+    }
   },
   link: {
     cursor: 'pointer',
@@ -53,7 +60,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   image: {
     height: '457px',
-    maxWidth: '725px'
+    width: '100%'
   },
   text: {
     fontSize: theme.fontSizes.extraLarge,
@@ -65,18 +72,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center'
   },
   maxWidth: {
-    minWidth: '400px',
     maxWidth: '400px',
     marginRight: '100px',
-    '@media (max-width: 1000px)': {
+    '@media (max-width: 700px)': {
       marginRight: '0',
+      alignItems: 'center'
     }
   },
   rowReverse: {
-    flexDirection: 'row-reverse'
+    flexDirection: 'row-reverse',
+    '@media (max-width: 700px)': {
+      flexDirection: 'column'
+    }
   },
   marginLeft: {
-    margin: '0 0 0 100px'
+    margin: '0 0 0 100px',
+    '@media (max-width: 700px)': {
+      margin: 0
+    }
   }
 }));
 
