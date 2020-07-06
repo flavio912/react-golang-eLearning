@@ -149,6 +149,7 @@ func TestUpdateTest(t *testing.T) {
 }
 
 // Note to self - stop calling functions Test...
+// H.Haikal: it your fault. Should've called the model Quiz or Exam
 func TestTest(t *testing.T) {
 	prepareTestDatabase()
 
@@ -291,5 +292,29 @@ func TestCourseTests(t *testing.T) {
 
 		assert.Contains(t, testUUIDs, "2a7e551a-0291-422d-8508-c0ee8ff4c67e")
 		assert.Contains(t, testUUIDs, "c212859c-ddd3-433c-9bf5-15cdd1db32f9")
+	})
+}
+
+func TestDeleteTest(t *testing.T) {
+	t.Run("Should not delete test that is part of a course", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("2a7e551a-0291-422d-8508-c0ee8ff4c67e")
+
+		b, err := courseRepo.DeleteTest(uuid)
+
+		assert.Equal(t, &errors.ErrWhileHandling, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Deletes existing test", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("2a56f8a8-1cd3-4e7b-bd10-c489b519828d")
+
+		b, err := courseRepo.DeleteTest(uuid)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
 	})
 }
