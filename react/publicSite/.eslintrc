@@ -10,10 +10,9 @@
   },
   "plugins": ["@typescript-eslint", "prettier"],
   "extends": [
-    "plugin:react/recommended",
-    "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:react/recommended", // Uses the recommended rules from @eslint-plugin-react
     "plugin:@typescript-eslint/recommended",
-    "prettier"
+    "prettier/@typescript-eslint",
+    "plugin:prettier/recommended"
   ]
 }
