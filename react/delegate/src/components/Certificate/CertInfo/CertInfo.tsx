@@ -23,21 +23,30 @@ const useStyles = createUseStyles((theme: Theme) => ({
     padding: '20px 0'
   },
   certName: {
+    fontSize: '2rem',
+    margin: '1rem 0',
     color: theme.colors.primaryBlue
   },
   certInfoRow: {
-    margin: 0
+    margin: 0,
+    fontSize: '2rem',
+
+    '& span': {
+      fontSize: '1.7rem',
+      float: 'left'
+    }
   },
   certInfoGroup: {
     marginBottom: '10px'
   },
   certInfoLabel: {
-    width: '140px',
-    fontWeight: 'bold',
+    width: '240px',
+    fontWeight: 900,
     textAlign: 'right',
     display: 'block',
     float: 'left',
-    marginRight: '10px'
+    marginRight: '10px',
+    fontSize: '1.7rem'
   }
 }));
 

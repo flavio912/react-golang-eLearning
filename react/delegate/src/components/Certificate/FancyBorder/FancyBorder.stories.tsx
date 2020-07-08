@@ -9,6 +9,6 @@ export default {
 
 export const border = () => {
   return (
-    <FancyBorder children={<div>This is a test</div>} />
+    <FancyBorder children={<div>This is a test</div>} paperSize="A4" />
   )
 }

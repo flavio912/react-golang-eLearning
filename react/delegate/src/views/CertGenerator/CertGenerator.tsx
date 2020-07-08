@@ -17,48 +17,49 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginBottom: 50
   },
   logoArea: {
-    height: 100,
+    height: 150,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   certLogo: {
-    height: 100
+    height: 150
   },
   logo: {
-    height: 70
+    height: 100
   },
   certHeader: {
-    marginTop: 20,
+    marginTop: 80,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
 
     '& h1': {
-      fontSize: '3rem',
+      fontSize: '3.5rem',
       fontWeight: 900,
       textAlign: 'center',
-      width: 800
+      width: 1000
     },
 
     '& p': {
-      fontSize: '1.2rem',
+      fontSize: '2rem',
       margin: 0
     },
 
     '& h3': {
-      fontSize: '2rem',
-      marginBottom: 0
+      fontSize: '3rem',
+      marginTop: '1rem',
+      marginBottom: '0'
     },
 
     '& h4': {
-      fontSize: '1.5rem',
+      fontSize: '2.5rem',
       marginTop: 0
     }
   },
   certInfoFirst: {
-    marginTop: 30,
+    marginTop: 50,
     display: 'flex'
   },
   certRow: {
@@ -68,29 +69,46 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   certLabel: {
     fontWeight: 900,
-    marginRight: 15
+    marginRight: 15,
+    fontSize: '1.7rem'
   },
   certRowLeft: {
-    width: 300,
+    width: 350,
     textAlign: 'right',
     marginRight: 15
   },
   certRowRight: {
     display: 'flex',
     justifyContent: 'space-between',
-    width: 500
+    width: 600,
+    
+    '& span': {
+      fontSize: '1.7rem'
+    }
   },
   trainingCompany: {
     display: 'flex',
-    marginTop: 15
+    marginTop: 15,
+    flex: 1
   },
   trainingInfo: {
-    width: 500,
+    width: 600,
+    height: 200,
     border: `1px solid ${theme.colors.borderGrey}`,
-    padding: '15px 10px',
+    padding: 15,
     display: 'flex',
     flexDirection: 'column',
-    borderRadius: 5
+    borderRadius: 5,
+
+    '& h4': {
+      fontSize: '1.3rem',
+      marginTop: 0,
+      marginBottom: '1rem'
+    },
+
+    '& span': {
+      fontSize: '1.2rem'
+    }
   },
   bottomRow: {
     display: 'flex',
@@ -99,7 +117,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '10px 0',
 
     '& p': {
-      margin: 0
+      margin: 0,
+      fontSize: '1.3rem'
     }
   },
   certContent: {
@@ -110,11 +129,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   leftContent: {
     flex: 1,
-    padding: '0 20px'
+    padding: '0 50px 0 20px',
+    fontSize: '1.2rem'
   },
   rightContent: {
     flex: 1,
-    padding: '0 20px',
+    padding: '0 50px 0 20px',
+    fontSize: '1.2rem',
 
     '& span': {
       fontWeight: 100
@@ -155,7 +176,7 @@ function CertGenerator({
   certSubHead="Acme Aviation Corporation Limited",
   instructorName="Michelle Waddilove",
   cin="00045618",
-  instructorSign,
+  instructorSign="",
   certInfo={
     certName: "General Security Awareness Training (GSAT)",
     moduleDeliver: "Module Delivered: 1-20",
@@ -177,7 +198,7 @@ function CertGenerator({
   return (
     <div className={classes.certGeneratorRoot}>
       <div className={classes.pages}>
-        <FancyBorder>
+        <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
             <img src={CertLogoImg} className={classes.certLogo} />
             <Logo className={classes.logo} />          
@@ -210,7 +231,7 @@ function CertGenerator({
             <div className={classes.certRowLeft}>
               <span className={classes.certLabel}>Instructor's Signature: </span>
             </div>
-            <Signature width={ 500 } height={ 50 } />
+            <Signature width={ 600 } height={ 50 } imgSrc={instructorSign} />
           </div>
           <div className={classes.trainingCompany}>
             <div className={classes.certRowLeft}>
@@ -230,7 +251,7 @@ function CertGenerator({
         </FancyBorder>
       </div>
       <div className={classes.pages}>
-        <FancyBorder>
+        <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
             <img src={CertLogoImg} className={classes.certLogo} />
             <Logo className={classes.logo} />          

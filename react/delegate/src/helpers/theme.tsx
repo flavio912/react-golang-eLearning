@@ -54,6 +54,12 @@ export type Theme = {
     xSmall: number;
     tiny: number;
   };
+  paperSizes: {
+    A4: {
+      width: number,
+      height: number
+    }
+  }
 };
 
 const theme: Theme = {
@@ -104,6 +110,12 @@ const theme: Theme = {
     small: 13,
     xSmall: 12,
     tiny: 11
+  },
+  paperSizes: {
+    A4: {
+      width: 1240,
+      height: 1754
+    }
   }
 };
 

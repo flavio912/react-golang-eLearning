@@ -3,7 +3,8 @@ import { createUseStyles } from "react-jss";
 import { Theme } from "helpers/theme";
 
 type Props = {
-  children: React.ReactNode
+  children: React.ReactNode,
+  paperSize: string
 };
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -11,18 +12,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    width: '100%',
-    height: '100%',
-    padding: '20px',
+    width: theme.paperSizes.A4.width,
+    height: theme.paperSizes.A4.height,
+    padding: 50,
     boxSizing: 'border-box',
-    border: '10px solid',
+    border: '15px solid',
     borderImageSlice: 1,
-    borderWidth: 10,
+    borderWidth: 15,
     borderImageSource: theme.verticalGradient
   },
 }));
 
-function FancyBorder({ children }: Props) {
+function FancyBorder({ children, paperSize }: Props) {
   const classes = useStyles();
 
   return (

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import Signature from './Signature';
-import { withKnobs, number } from '@storybook/addon-knobs';
+import { withKnobs, number, text } from '@storybook/addon-knobs';
 
 export default {
   title: 'Certificate/Signature',
@@ -12,6 +12,7 @@ export const plain = () => {
     <Signature 
       width={number('Width', 500)} 
       height={number('Height', 70)}
+      imgSrc={text('Signature Image', '')}
     />
   )
 }
