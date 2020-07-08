@@ -24,7 +24,7 @@ ENV JWT_FINALISE_DELEGATE_SECRET="asasdasdadaasdjhifnsjdhiujfnkdhusdf"
 ENV JWT_CSRF_SECRET="86%CdpPtci*NZrP!4L#q2PLcG*HrJb4jw0P1vaRL&vnC7At0Qd"
 ENV JWT_TOKEN_EXPIRATION_HOURS="3"
 
-ENV AWS_UPLOADS_BUCKET="ttc-platform-uploads-test"
+ENV AWS_UPLOADS_BUCKET="ttc-platform-uploads"
 ENV AWS_SES_SEND_ADDRESS="ttc-noreply@devserver.london"
 
 ENV IMGIX_BASE_URL="https://ttc-dev.imgix.net/"

@@ -9,6 +9,10 @@ import TutorsView from './views/TutorsList';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';
 import CreateCourse from './views/CreateCourse';
+import ModulesList from './views/ModulesList';
+import QuestionsList from './views/QuestionsList';
+import CreateQuestion from './views/Question/CreateQuestion';
+import UpdateQuestion from './views/Question/UpdateQuestion';
 
 export default [
   {
@@ -127,6 +131,26 @@ export default [
         path: '/courses/create/:tab',
         exact: true,
         component: CreateCourse
+      },
+      {
+        path: '/modules',
+        exact: true,
+        component: ModulesList
+      },
+      {
+        path: '/questions',
+        exact: true,
+        component: QuestionsList
+      },
+      {
+        path: '/questions/create/:tab',
+        exact: true,
+        component: CreateQuestion
+      },
+      {
+        path: '/question/:ident/:tab',
+        exact: true,
+        component: UpdateQuestion
       },
       {
         path: '/settings',
