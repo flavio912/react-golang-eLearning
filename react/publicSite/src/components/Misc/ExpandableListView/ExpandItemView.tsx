@@ -22,8 +22,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   title: {
     paddingLeft: 33,
-    color: themeRoot.colors.primaryBlack,
-    fontSize: 25,
+    color: theme.colors.primaryBlack,
+    fontSize: theme.fontSizes.heading,
     fontWeight: 800,
     letterSpacing: -0.63,
     lineHeight: `60.02px`,
@@ -32,8 +32,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   description: {
     padding: [35, 0],
     margin: 0,
-    color: themeRoot.colors.textGrey,
-    fontSize: 25,
+    color: theme.colors.textGrey,
+    fontSize: theme.fontSizes.heading,
     lineHeight: `42px`,
     letterSpacing: -0.63,
   },
@@ -55,6 +55,7 @@ export const ExpandItemView = ({ item, onClickItem }: Props): ReactElement => {
         <Icon
           name={'Arrow_Right_Blue'}
           size={25}
+          pointer
           color={themeRoot.colors.navyBlue2}
           className={classNames({
             [classes.iconExpanded]: item.isExpanded,
