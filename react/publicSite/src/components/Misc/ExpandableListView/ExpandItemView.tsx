@@ -1,61 +1,74 @@
 import React, { ReactElement } from 'react';
 import { ExpandItemType } from './types';
+import { createUseStyles, useTheme } from 'react-jss';
+import themeRoot, { Theme } from 'helpers/theme';
+import classNames from 'classnames';
 import Icon from 'sharedComponents/core/Icon';
+const useStyles = createUseStyles((theme: Theme) => ({
+  rootExpandItemView: {
+    padding: [19.5, 28],
+    marginBottom: 20,
+    backgroundColor: theme.colors.primaryWhite,
+    border: `1px solid ${theme.colors.approxZircon}`,
+    boxShadow:
+      '0 2px 10px 0 rgba(0,0,0,0.15), 4px 2px 10px -2px rgba(0,0,0,0.06)',
+  },
+  titleWrapper: {
+    flexDirection: 'row',
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer',
+    paddingLeft: 5.5,
+  },
+  title: {
+    paddingLeft: 33,
+    color: themeRoot.colors.primaryBlack,
+    fontSize: 25,
+    fontWeight: 800,
+    letterSpacing: -0.63,
+    lineHeight: `60.02px`,
+    margin: 0,
+  },
+  description: {
+    padding: [35, 0],
+    margin: 0,
+    color: themeRoot.colors.textGrey,
+    fontSize: 25,
+    lineHeight: `42px`,
+    letterSpacing: -0.63,
+  },
+  iconExpanded: {
+    transform: `rotate(90deg)`,
+  },
+}));
+
 type Props = {
   item: ExpandItemType;
   onClickItem: () => void;
 };
+export const ExpandItemView = ({ item, onClickItem }: Props): ReactElement => {
+  const theme = useTheme();
+  const classes = useStyles({ theme });
+  return (
+    <div className={classes.rootExpandItemView}>
+      <div onClick={onClickItem} className={classes.titleWrapper}>
+        <Icon
+          name={'Arrow_Right_Blue'}
+          size={25}
+          color={themeRoot.colors.navyBlue2}
+          className={classNames({
+            [classes.iconExpanded]: item.isExpanded,
+          })}
+        />
+        <p className={classes.title}>{item.title}</p>
+      </div>
 
-export const ExpandItemView = ({ item, onClickItem }: Props): ReactElement => (
-  <div
-    style={{
-      padding: 20,
-      paddingLeft: 33,
-      paddingRight: 33,
-      marginBottom: 20,
-      backgroundColor: 'white',
-      border: '1px solid #E9EBEB',
-      boxShadow:
-        '0 2px 10px 0 rgba(0,0,0,0.15), 4px 2px 10px -2px rgba(0,0,0,0.06)',
-    }}
-  >
-    <div
-      onClick={onClickItem}
-      style={{
-        flexDirection: 'row',
-        display: 'flex',
-        alignItems: 'center',
-      }}
-    >
-      <Icon
-        name={item.isExpanded ? 'Down_Arrow' : 'Right_Arrow'}
-        size={25}
-        color="#0E63E8"
-      />
-      <p
-        style={{
-          paddingLeft: 33,
-          color: '#0C152E',
-          fontFamily: 'Muli',
-          fontSize: 25,
-          fontWeight: 800,
-        }}
-      >
-        {item.title}
-      </p>
+      {item.isExpanded && (
+        <div
+          className={classes.description}
+          dangerouslySetInnerHTML={{ __html: item.description }}
+        ></div>
+      )}
     </div>
-
-    {item.isExpanded && (
-      <p
-        style={{
-          paddingTop: 35,
-          color: '#737988',
-          fontFamily: 'Muli',
-          fontSize: 25,
-        }}
-      >
-        {item.description}
-      </p>
-    )}
-  </div>
-);
+  );
+};

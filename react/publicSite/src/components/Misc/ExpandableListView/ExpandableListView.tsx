@@ -1,16 +1,12 @@
 import React, { useState, ReactElement } from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
-import classNames from 'classnames';
-import theme, { Theme } from 'helpers/theme';
-import Icon from 'sharedComponents/core/Icon';
-
-import 'react-multi-carousel/lib/styles.css';
+import { Theme } from 'helpers/theme';
 
 import { ExpandItemView } from './ExpandItemView';
 import { ExpandItemType } from './types';
 
 const useStyles = createUseStyles((theme: Theme) => ({
-  carousel: { backgroundColor: theme.colors.primaryWhite },
+  rootExpandableListView: { backgroundColor: theme.colors.primaryWhite },
 }));
 
 type Props = {
@@ -37,7 +33,7 @@ function ExpandableListView({ data }: Props): ReactElement {
     };
   }
   return (
-    <div className={classes.carousel}>
+    <div className={classes.rootExpandableListView}>
       {expandList.map((item) => (
         <ExpandItemView
           key={item.id}

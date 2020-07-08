@@ -4,7 +4,7 @@ const spacing = {
   2: 20,
   3: 50,
   4: 70,
-  5: 100
+  5: 100,
 };
 
 export type Theme = {
@@ -95,11 +95,11 @@ const theme: Theme = {
     approxZircon: '#E9EBEB',
     secondaryDanger: '#DB5C5D',
     navyBlue2: '#0E63E8',
-    silver: '#BFBFBF'
+    silver: '#BFBFBF',
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
-    body: 'inset 0px -2px 10px 0px #0000001f'
+    body: 'inset 0px -2px 10px 0px #0000001f',
   },
   fontSizes: {
     extraLargeHeading: 34,
@@ -113,8 +113,8 @@ const theme: Theme = {
     small: 13,
     xSmall: 12,
     tiny: 11,
-    xTiny: 9
-  }
+    xTiny: 9,
+  },
 };
 
 export default theme;
