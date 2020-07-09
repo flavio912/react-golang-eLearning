@@ -41,9 +41,9 @@ func TestUpdateCourse(t *testing.T) {
 		inp := course.CourseInput{
 			Name:         helpers.StringPointer("UpdatedCourse"),
 			Price:        helpers.FloatPointer(43.4),
-			Color:        helpers.StringPointer("#ffffff"),
-			Excerpt:      helpers.StringPointer("{}"),
-			Introduction: helpers.StringPointer("{}"),
+			Color:        helpers.StringPointer("#fffffa"),
+			Excerpt:      helpers.StringPointer("this is a cool excerpt"),
+			Introduction: helpers.StringPointer("i am an introduction oifdsf"),
 			AccessType:   &open,
 			WhatYouLearn: &[]string{
 				"This cool thing",
@@ -55,10 +55,11 @@ func TestUpdateCourse(t *testing.T) {
 				"req 3",
 			},
 			BackgroundCheck: helpers.BoolPointer(false),
-			SpecificTerms:   helpers.StringPointer("{}"),
+			SpecificTerms:   helpers.StringPointer("Some specific terms"),
 		}
-		_, err := courseRepo.UpdateCourse(1, inp)
+		course, err := courseRepo.UpdateCourse(1, inp)
 		assert.Nil(t, err)
+		assert.NotEqual(t, models.Course{}, course)
 
 		info, err := courseRepo.Course(1)
 		assert.Nil(t, err)

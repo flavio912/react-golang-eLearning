@@ -59,6 +59,7 @@ type CourseApp interface {
 	CreateQuestion(input gentypes.CreateQuestionInput) (gentypes.Question, error)
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
 	DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error)
+	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
 }
