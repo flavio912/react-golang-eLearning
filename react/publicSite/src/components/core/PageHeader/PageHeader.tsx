@@ -5,6 +5,7 @@ import { useRouter } from 'found';
 import { Theme } from 'helpers/theme';
 import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
+import PageMargin from '../PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -14,11 +15,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center',
     backgroundColor: theme.colors.lightBlue,
     padding: '57px 0'
-  },
-  centered: {
-    display: 'flex',
-    flexDirection: 'column',
-    maxWidth: theme.centerColumnWidth
   },
   defaultTitle: {
     alignSelf: 'center',
@@ -126,7 +122,7 @@ function PageHeader({
 
   return (
     <div className={classNames(classes.root, className)}>
-      <div className={classNames(classes.centered)}>
+      <PageMargin>
         {history && (
           <div className={classNames(classes.row, classes.history)}>
             {history.map((page: string, index: number) =>
@@ -173,7 +169,7 @@ function PageHeader({
             )}
           </div>
         </div>
-      </div>
+      </PageMargin>
     </div>
   );
 }

@@ -13,21 +13,12 @@ import FourPanel from 'components/core/FourPanel';
 import { Panel } from 'components/core/FourPanel/FourPanel';
 import PeopleCurve from 'components/core/Curve/PeopleCurve';
 import ExpandableListView, { ExpandItemType } from 'components/Misc/ExpandableListView';
+import PageMargin from 'components/core/PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
     width: '100%',
     backgroundColor: theme.colors.primaryWhite
-  },
-  centerer: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  centered: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: theme.centerColumnWidth,
   },
   heading: {
     fontSize: 32,
@@ -176,20 +167,18 @@ function Courses({}: Props) {
             history={["Courses", "Aviation Security"]}
         />
         <Spacer spacing={4} vertical />
-        <div className={classes.centerer}>
-            <div className={classes.centered}>
-                <div className={classNames(classes.heading, classes.smallMargin)}>Our four-step training process</div>
-                <FourPanel
-                    className={classes.marginBottom}
-                    panels={defaultImagePanels}
-                    noBorders
-                />
-                <div className={classes.margin}>
-                    <div className={classes.heading}>Explore Aviation Security Courses</div>
-                    <div className={classes.text}>We have over 100 Aviation Security Courses lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</div>
-                </div>
+        <PageMargin>
+            <div className={classNames(classes.heading, classes.smallMargin)}>Our four-step training process</div>
+            <FourPanel
+                className={classes.marginBottom}
+                panels={defaultImagePanels}
+                noBorders
+            />
+            <div className={classes.margin}>
+                <div className={classes.heading}>Explore Aviation Security Courses</div>
+                <div className={classes.text}>We have over 100 Aviation Security Courses lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</div>
             </div>
-        </div>
+        </PageMargin>
         <CourseSearch
             className={classes.courseSearch}
             tabs={defaultTabs}
@@ -199,33 +188,29 @@ function Courses({}: Props) {
             moreToShow={true}
             onMore={() => console.log("More")}
         />
-        <div className={classes.centerer}>
-            <div className={classes.centered}>
-                <div className={classNames(classes.heading, classes.margin)}>Frequently Asked Questions about Aviation Security</div>
-                <ExpandableListView data={[FAQOne, FAQTwo, FAQThree, FAQFour, FAQFive]} />
-            </div>
-        </div>
+        <PageMargin>
+            <div className={classNames(classes.heading, classes.margin)}>Frequently Asked Questions about Aviation Security</div>
+            <ExpandableListView data={[FAQOne, FAQTwo, FAQThree, FAQFour, FAQFive]} />
+        </PageMargin>
         <TrustedCard
             text="Trusted by more than 1,000 businesses in 120 countries."
             className={classes.margin}
             noShadow
         />
-        <div className={classes.centerer}>
-            <div className={classes.centered}>
-                <div className={classes.margin}>
-                    <FloatingVideo
-                        height={352}
-                        width={628}
-                        source={require('assets/Stock_Video.mp4')}
-                        author={{
-                            "name": "Kristian Durhuus",
-                            "title": "Chief Executive Officer",
-                            "quote": "TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ."
-                        }}
-                    />
-                </div>
+        <PageMargin>
+            <div className={classes.margin}>
+                <FloatingVideo
+                    height={352}
+                    width={628}
+                    source={require('assets/Stock_Video.mp4')}
+                    author={{
+                        "name": "Kristian Durhuus",
+                        "title": "Chief Executive Officer",
+                        "quote": "TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore ."
+                    }}
+                />
             </div>
-        </div>
+        </PageMargin>
         <PeopleCurve stack={defaultStack} />
     </div>
   );
