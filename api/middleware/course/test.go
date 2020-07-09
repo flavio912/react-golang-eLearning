@@ -342,6 +342,16 @@ func (c *coursesRepoImpl) DeleteTest(uuid gentypes.UUID) (bool, error) {
 		return false, &errors.ErrWhileHandling
 	}
 
+	updates := map[string]interface{}{
+		"test":      nil,
+		"test_uuid": nil,
+	}
+
+	if err := tx.Model(&models.ModuleStructure{}).Where("test_uuid = ?", uuid).Updates(updates).Error; err != nil {
+		c.Logger.Logf(sentry.LevelWarning, err, "Unable to remove test link from module structur: %s", uuid)
+		return false, &errors.ErrWhileHandling
+	}
+
 	if err := tx.Delete(models.Test{}, "uuid = ?", uuid).Error; err != nil {
 		c.Logger.Logf(sentry.LevelError, err, "Unable to delete test: %s", uuid)
 		return false, &errors.ErrWhileHandling
