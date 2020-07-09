@@ -97,14 +97,89 @@ export const AppHolder = ({ children }: Props) => {
   const classes = useStyles({ theme });
 
   const { match, router } = useRouter();
-  const tabs: Tab[] = [
-    { id: 0, title: 'Features', options: ['Some', 'Different', 'Options'] },
-    { id: 1, title: 'Courses', options: ['Some', 'Different', 'Options'] },
-    { id: 2, title: 'Resources', options: ['Some', 'Different', 'Options'] },
-    { id: 3, title: 'Consultancy' }
+  const tabs: Array<Tab> = [
+    {
+      id: 0,
+      title: 'Features',
+      options: [
+        {
+          title: 'For Companies',
+          text:
+            "We're training the finest minds in air, road and sea - are you on the list?",
+          link: '/register/company'
+        },
+        {
+          title: 'For Individuals',
+          text:
+            'Do you need trainingsolutions for your next role in Transport Compliance?',
+          link: '/register/individual'
+        }
+      ]
+    },
+    {
+      id: 1,
+      title: 'Courses',
+      options: [
+        {
+          title: 'Aviation Security',
+          text:
+            'Training courses specifically designed for those who work in Aviation Security',
+          link: '/courses'
+        },
+        {
+          title: 'Dangerous Goods',
+          text:
+            'Courses for both air and road, all in accordance with CAA Regulations',
+          link: '/'
+        },
+        {
+          title: 'Health & Safety',
+          text:
+            'All our courses can be taken online in conjunction withyour internal policies',
+          link: '/'
+        },
+        {
+          title: 'Classroom Courses',
+          text:
+            'All classroom courses are delivered in London at our purpose built facility',
+          link: '/'
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Resources',
+      options: [
+        {
+          title: 'News & Blog',
+          text:
+            'Stay in touch with all the industry news from the team at TTC Hub',
+          link: '/articles'
+        },
+        {
+          title: 'Book A Demo',
+          text:
+            'Looking for more information on our platform? Let us show you the ropes',
+          link: '/'
+        },
+        {
+          title: 'About Us',
+          text:
+            "We're a growing team of industry experts with 40+ years of experience",
+          link: '/aboutus'
+        },
+        {
+          title: 'Contact Us',
+          text:
+            "We're a growing team of industry experts with 100+ years of experience",
+          link: '/contact'
+        }
+      ]
+    },
+    { id: 3, title: 'Consultancy', link: '/consultancy' }
   ];
 
-  const selected = () => {
+  const selectedRoute = () => {
     const { routes } = match;
     const currentRouter = routes[routes.length - 1];
     switch (currentRouter.path) {
@@ -115,19 +190,16 @@ export const AppHolder = ({ children }: Props) => {
     }
   };
 
+  const [selected, setSelected] = React.useState<Tab | undefined>();
+
   return (
     <div className={classes.appHolderRoot}>
       <HeaderMenu
         tabs={tabs}
-        selected={selected()}
-        onClick={(tab) => {
-          switch (tab.id) {
-            case 0:
-              router.push('/app');
-              break;
-            default:
-              break;
-          }
+        selected={selected}
+        setSelected={(tab?: Tab) => setSelected(tab)}
+        onClick={(link) => {
+          router.push(link);
         }}
         onRegisterClick={() => {
           router.push('/register');

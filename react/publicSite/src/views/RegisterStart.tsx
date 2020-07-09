@@ -7,6 +7,8 @@ import ImageWithText from 'components/core/ImageWithText';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import AccountTypeCard from 'components/Overview/Registration/AccountTypeCard';
 import { Router } from 'found';
+import { Image } from 'components/Misc/CarouselImage';
+import RegistrationCarousel from 'components/Overview/Registration/RegistrationCarousel';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   registerRoot: {
@@ -14,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     minHeight: '100%',
     background: 'white',
     gridTemplateColumns: '600px 1fr',
-    '@media (max-width: 800px)': {
+    '@media (max-width: 1000px)': {
       gridTemplateColumns: '1fr'
     }
   },
@@ -23,8 +25,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   picker: {
     padding: 48
+  },
+  carousel: {
+
   }
 }));
+
+const defaultImage: Image = {
+  url: require('assets/carouselImage.svg'),
+  alt: 'Image'
+};
 
 type Props = {
   router: Router;
@@ -33,6 +43,11 @@ type Props = {
 function RegisterStart({ router }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const images = [1, 2, 3].map((item) => ({
+    ...defaultImage,
+    alt: `${defaultImage.alt} ${item}`
+  }));
 
   return (
     <div className={classes.registerRoot}>
@@ -49,7 +64,12 @@ function RegisterStart({ router }: Props) {
           }}
         />
       </div>
-      <div className={classes.fancyBackground}></div>
+      <div className={classes.fancyBackground}>
+        <RegistrationCarousel
+          onBook={() => console.log('Book')}
+          images={images}
+        />
+      </div>
     </div>
   );
 }

@@ -5,15 +5,19 @@ import { Theme } from 'helpers/theme';
 import Button from 'sharedComponents/core/Input/Button';
 
 const useStyles = createUseStyles((theme: Theme) => ({
+  wrapper: {
+    position: 'absolute',
+    top: '90px',
+    zIndex: 10
+  },
   root: {
+    position: 'relative',
+    right: '25px',
     display: 'flex',
     flexDirection: 'column',
     borderRadius: '10px',
     backgroundColor: theme.colors.primaryWhite,
     boxShadow: '2px 7px 20px 2px rgba(0,0,0,0.15)',
-    position: 'absolute',
-    marginTop: '18px',
-    zIndex: 10
   },
   column: {
     display: 'flex',
@@ -80,13 +84,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   start: {
     justifyContent: 'flex-start'
-  },
-  backgroundHider: {
-    position: 'absolute',
-    width: '100%',
-    height: '100%',
-    top: 0,
-    left: 0
   }
 }));
 
@@ -99,7 +96,6 @@ export type BasketItem = {
 
 type Props = {
   showPopup: boolean;
-  onHide: () => void;
   basketItems: BasketItem[];
   onCheckout: () => void;
   className?: string;
@@ -109,7 +105,6 @@ const CheckoutPopup = ({
   basketItems,
   onCheckout,
   className,
-  onHide,
   showPopup
 }: Props) => {
   const theme = useTheme();
@@ -123,8 +118,7 @@ const CheckoutPopup = ({
   }
 
   return (
-    <>
-      <div className={classes.backgroundHider} onClick={() => onHide()} />
+    <div className={classes.wrapper}>
       {showPopup && (
         <div
           className={classNames(classes.root, className)}
@@ -162,7 +156,7 @@ const CheckoutPopup = ({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };
 
