@@ -45,6 +45,8 @@ const SAVE_ONLINE_COURSE = gql`
     $accessType: AccessType
     $howToComplete: String
     $hoursToComplete: Float
+    $whatYouLearn: [String!]
+    $requirements: [String!]
   ) {
     saveOnlineCourse(
       input: {
@@ -56,6 +58,8 @@ const SAVE_ONLINE_COURSE = gql`
         accessType: $accessType
         howToComplete: $howToComplete
         hoursToComplete: $hoursToComplete
+        whatYouLearn: $whatYouLearn
+        requirements: $requirements
       }
     ) {
       id
@@ -96,17 +100,6 @@ function CreateCourse({ match, history }) {
     history.push(value);
   };
 
-  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
-    SAVE_ONLINE_COURSE
-  );
-  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
-    variables: {
-      id: parseInt(ident)
-    },
-    fetchPolicy: 'cache-and-network',
-    skip: !ident
-  });
-
   var initState = {
     name: '',
     primaryCategory: {},
@@ -125,12 +118,16 @@ function CreateCourse({ match, history }) {
   };
 
   const [state, setState] = useState(initState);
-
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
-    setState(updatedState);
-  };
-
+  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
+    SAVE_ONLINE_COURSE
+  );
+  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
+    variables: {
+      id: parseInt(ident)
+    },
+    fetchPolicy: 'cache-and-network',
+    skip: !ident
+  });
   useEffect(() => {
     if (loading || error) return;
     if (!data) return;
@@ -143,9 +140,16 @@ function CreateCourse({ match, history }) {
       accessType: data.course.accessType,
       howToComplete: data.course.howToComplete,
       hoursToComplete: data.course.hoursToComplete,
+      whatYouLearn: data.course.whatYouLearn,
+      requirements: data.course.requirements,
       price: data.course.price
     });
   }, [data, loading]);
+
+  const updateState = (item, value) => {
+    var updatedState = { ...state, [item]: value };
+    setState(updatedState);
+  };
 
   if (ident) {
     if (loading) return <CircularProgress className={classes.centerProgress} />;
@@ -164,6 +168,8 @@ function CreateCourse({ match, history }) {
           accessType: state.accessType,
           howToComplete: state.howToComplete,
           hoursToComplete: state.hoursToComplete,
+          whatYouLearn: state.whatYouLearn,
+          requirements: state.requirements,
           price: state.price
         }
       });
