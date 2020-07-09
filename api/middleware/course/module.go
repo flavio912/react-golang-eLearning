@@ -4,6 +4,7 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -314,4 +315,26 @@ func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes
 	}
 
 	return moduleModel, nil
+}
+
+func (c *coursesRepoImpl) DeleteModule(uuid gentypes.UUID) (bool, error) {
+	tx := database.GormDB.Begin()
+
+	var course_structure models.CourseStructure
+	if !tx.Model(&models.CourseStructure{}).Where("module_uuid = ?", uuid).Find(&course_structure).RecordNotFound() {
+		glog.Info("Cannot delete module that is part of a course")
+		return false, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Delete(models.Module{}, "uuid = ?", uuid).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete module: %s", uuid)
+		return false, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }

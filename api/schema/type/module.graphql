@@ -64,3 +64,7 @@ input UpdateModuleInput {
 type UpdateModulePayload {
   module: Module
 }
+
+input DeleteModuleInput {
+  uuid: UUID!
+}

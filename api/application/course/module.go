@@ -175,3 +175,15 @@ func getUploadKey(token *string, uploadIdent string) (*string, error) {
 	}
 	return uploadKey, nil
 }
+
+func (c *courseAppImpl) DeleteModule(input gentypes.DeleteModuleInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return false, err
+	}
+
+	return c.coursesRepository.DeleteModule(input.UUID)
+}

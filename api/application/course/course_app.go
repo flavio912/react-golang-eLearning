@@ -49,6 +49,7 @@ type CourseApp interface {
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
+	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
 
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(

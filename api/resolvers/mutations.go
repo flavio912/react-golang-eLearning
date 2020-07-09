@@ -548,3 +548,8 @@ func (m *MutationResolver) AnswerImageUploadRequest(
 		SuccessToken: successToken,
 	}, err
 }
+
+func (m *MutationResolver) DeleteModule(ctx context.Context, args struct{ Input gentypes.DeleteModuleInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.DeleteModule(args.Input)
+}

@@ -49,6 +49,7 @@ type CoursesRepository interface {
 
 	CreateModule(input CreateModuleInput) (models.Module, error)
 	UpdateModule(input UpdateModuleInput) (models.Module, error)
+	DeleteModule(uuid gentypes.UUID) (bool, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
