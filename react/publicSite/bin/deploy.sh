@@ -2,7 +2,7 @@
 
 set -e
 
-TAG=$CI_PIPELINE_ID-delegate
+TAG=$CI_PIPELINE_ID-public
 PREFIX="$EB_APPLICATION"
 
 zip app.zip ./* -r

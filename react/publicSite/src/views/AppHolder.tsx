@@ -199,6 +199,7 @@ export const AppHolder = ({ children }: Props) => {
         selected={selected}
         setSelected={(tab?: Tab) => setSelected(tab)}
         onClick={(link) => {
+          setSelected(undefined);
           router.push(link);
         }}
         onRegisterClick={() => {
