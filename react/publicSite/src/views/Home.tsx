@@ -10,6 +10,7 @@ import { Router } from 'found';
 import CarouselCourse from 'components/Misc/CarouselCourse';
 import { Course } from 'sharedComponents/Overview/CourseCard';
 import Button from 'sharedComponents/core/Input/Button';
+import CarouselWithDemo from 'components/Misc/CarouselCourse/CarouselWithDemo';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   homeRoot: {
@@ -110,32 +111,13 @@ function Home({ router }: Props) {
       </div>
       <div className={classnames(classes.centerer)}>
         <div className={classes.centered}>
-          <div className={classes.explore}>
-            <div className={classes.heading}>Explore our popular courses</div>
-            <CarouselCourse
+          <CarouselWithDemo
+              className={classes.explore}
+              heading="Explore our popular courses"
+              description="It’s time to remove the headache for you and your team, with TTC
+              you could be logged in and learning in 24 hours."
               courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
-            />
-            <Spacer vertical spacing={3} />
-            <div className={classes.exploreCont}>
-              <p className={classes.exploreText}>
-                It’s time to remove the headache for you and your team, with TTC
-                you could be logged in and learning in 24 hours.
-              </p>
-              <Spacer vertical spacing={3} />
-              <div className={classes.buttonHolder}>
-                <Button archetype="gradient" className={classes.button}>
-                  Register your Team
-                </Button>
-                <Spacer horizontal spacing={2} />
-                <p>OR</p>
-                <Spacer horizontal spacing={2} />
-                <Button archetype="default" className={classes.button}>
-                  Request Demo
-                </Button>
-              </div>
-            </div>
-            <Spacer vertical spacing={3} />
-          </div>
+          />
         </div>
       </div>
       <div className={classnames(classes.centerer, classes.whiteSpacer)}>

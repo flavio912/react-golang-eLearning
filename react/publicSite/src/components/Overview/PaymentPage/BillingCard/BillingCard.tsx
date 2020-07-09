@@ -57,7 +57,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '0 15px'
   },
   last: {
-    marginBottom: 0
+    marginBottom: 0,
+    maxHeight: '42px'
+  },
+  spacer: {
+    flex: 1,
+    '@media (max-width: 600px)': {
+      flex: 0,
+      width: '50px'
+    }
   }
 }));
 
@@ -146,7 +154,7 @@ function BillingCard({ billingDetails, className }: Props) {
           value={postcode}
           className={classNames(classes.input, classes.last)}
         />
-        <div style={{ flex: 1 }} />
+        <div className={classes.spacer} />
         <CheckboxSingle
           className={classes.checkbox}
           fontStyle={classes.checkboxText}

@@ -129,7 +129,7 @@ function PaymentPage({}: Props) {
               Pay securely using our credt card. All payments are 128-Bit
               secured by Global Payments. Your personal data will be used to
               process your order, support your experience through this website,
-              and for other purposes described in our
+              and for other purposes described in our{' '}
               <span className={classes.underline} onClick={onPrivacy}>
                 privacy policy
               </span>
