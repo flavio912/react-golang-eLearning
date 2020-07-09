@@ -66,7 +66,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: '300',
     marginRight: '30px',
-    cursor: 'pointer',
+    cursor: 'pointer'
   },
   register: {
     height: '40px',
@@ -133,16 +133,26 @@ function HeaderMenu({
   const onHide = () => {
     setShowPopup(false);
     setSelected(undefined);
-  }
+  };
 
   return (
     <>
-    <div className={classes.backgroundHider} onClick={() => onHide()} />
+      {!showPopup && (
+        <div className={classes.backgroundHider} onClick={() => onHide()} />
+      )}
+
       <MobileMenu
-        tabs={tabs} selected={selected} setSelected={setSelected}
-        onClick={onClick} onRegisterClick={onRegisterClick} onLogoClick={onLogoClick}
-        basketItems={basketItems} onCheckout={onCheckout} showPopup={showPopup}
-        setShowPopup={setShowPopup} className={classes.mobileMenu}
+        tabs={tabs}
+        selected={selected}
+        setSelected={setSelected}
+        onClick={onClick}
+        onRegisterClick={onRegisterClick}
+        onLogoClick={onLogoClick}
+        basketItems={basketItems}
+        onCheckout={onCheckout}
+        showPopup={showPopup}
+        setShowPopup={setShowPopup}
+        className={classes.mobileMenu}
       />
       <div className={classNames(classes.headerRoot, className)}>
         <div className={classes.centerer}>
@@ -156,14 +166,21 @@ function HeaderMenu({
               <div className={classes.tabs}>
                 {tabs &&
                   tabs.map((tab) => (
-                    <TabOption tab={tab} selected={selected} setSelected={setSelected} onClick={onClick} />
+                    <TabOption
+                      tab={tab}
+                      selected={selected}
+                      setSelected={setSelected}
+                      onClick={onClick}
+                    />
                   ))}
               </div>
             </div>
             <div className={classes.row}>
               {basketItems && basketItems.length > 0 && (
                 <div onClick={() => setShowPopup(!showPopup)}>
-                  <div className={classes.notification}>{basketItems.length}</div>
+                  <div className={classes.notification}>
+                    {basketItems.length}
+                  </div>
                   <Icon
                     name="Basket"
                     className={classes.basket}
