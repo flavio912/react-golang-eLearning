@@ -9,15 +9,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: 'fixed',
     width: '100%',
     display: 'flex',
+    zIndex: 10,
     justifyContent: 'center',
-    backgroundColor: theme.colors.backgroundGrey
+    backgroundColor: theme.colors.backgroundGrey,
   },
   genreRow: {
     display: 'flex',
     width: theme.centerColumnWidth,
     '@media (max-width: 800px)': {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   genre: {
     cursor: 'pointer',
@@ -25,20 +26,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.textGrey,
     margin: '20px 40px 20px 0',
     '@media (max-width: 800px)': {
-      margin: '20px'
-    }
+      margin: '20px',
+    },
   },
   selected: {
     color: theme.colors.primaryBlack,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   mobileGenre: {
     display: 'flex',
     width: theme.centerColumnWidth,
     paddingLeft: '25px',
     '@media (min-width: 800px)': {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   genreDropdown: {
     position: 'absolute',
@@ -49,15 +50,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: '8px',
     backgroundColor: theme.colors.backgroundGrey,
     padding: '5px 0',
-    boxShadow: '0px 3px 10px #0000001f'
+    boxShadow: '0px 3px 10px #0000001f',
   },
   backgroundHider: {
     position: 'fixed',
     width: '100%',
     height: '100%',
     top: 0,
-    left: 0
-  }
+    left: 0,
+  },
 }));
 
 type Props = {
@@ -86,7 +87,7 @@ function GenreHeader({ genres, selected, setSelected, className }: Props) {
             <div
               className={classNames(
                 classes.genre,
-                selected === genre && classes.selected
+                selected === genre && classes.selected,
               )}
               onClick={() => setSelected(genre)}
             >
