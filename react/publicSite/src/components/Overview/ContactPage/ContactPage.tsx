@@ -12,12 +12,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         padding: '65px',
         borderRadius: '14px',
+        backgroundColor: theme.colors.primaryWhite,
         boxShadow: '0 1px 7px 3px rgba(0,0,0,0.11)'
     },
     row: {
         display: 'flex',
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        '@media (max-width: 500px)': {
+            flexDirection: 'column',
+        }
     },
     header: {
         fontSize: theme.fontSizes.extraLargeHeading,
@@ -47,7 +51,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
         marginBottom: '30px'
     },
     marginLeft: {
-        marginLeft: '27px'
+        marginLeft: '27px',
+        '@media (max-width: 500px)': {
+            marginLeft: 0
+        }
     },
     dropdown: {
         marginBottom: '30px'
