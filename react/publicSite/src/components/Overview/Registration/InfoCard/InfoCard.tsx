@@ -9,15 +9,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
-  },
-  logo: {
-    margin: '83px 0 73px 0'
+    height: '100vh',
+    alignItems: 'center',
+    justifyContent: 'space-evenly'
   },
   title: {
     fontSize: '37px',
-    fontWeight: '800',
-    marginBottom: '30px'
+    fontWeight: '800'
   },
   subtitle: {
     fontSize: theme.fontSizes.tinyHeading,
@@ -25,14 +23,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   image: {
     height: '315px',
-    width: '354px',
-    margin: '60px 0 40px 0'
+    width: '354px'
   },
   imageTitle: {
     fontSize: '28px',
     fontWeight: '800',
-    color: theme.colors.navyBlue,
-    marginBottom: '10px'
+    color: theme.colors.navyBlue
   },
   imageSubtitle: {
     fontSize: theme.fontSizes.large,
@@ -65,7 +61,7 @@ function InfoCard({
   const classes = useStyles({ theme });
   return (
     <div className={classNames(classes.root, className)}>
-      <Icon className={classes.logo} name="TTC_Logo_Icon" size={44} />
+      <Icon name="TTC_Logo" style={{ height: '44px', width: '130px' }} />
       <div className={classNames(classes.title, classes.center)}>{title}</div>
       <div className={classNames(classes.subtitle, classes.center)}>
         {subtitle}
