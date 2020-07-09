@@ -46,6 +46,11 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none'
+  },
+  previewImage: {
+    width: 200,
+    maxHeight: 200,
+    marginLeft: 16
   }
 }));
 
@@ -126,6 +131,7 @@ function AnswerInput({ answer, onSave, onChange }) {
                   switch (value) {
                     case 'TEXT':
                       newAns.imageToken = undefined;
+                      newAns.imageURL = undefined;
                     case 'IMAGE':
                       newAns.text = undefined;
                   }
@@ -170,6 +176,9 @@ function AnswerInput({ answer, onSave, onChange }) {
               <Grid item>
                 <Typography variant="h6">Answer Image</Typography>
               </Grid>
+              {answer.imageURL && (
+                <img src={answer.imageURL} className={classes.previewImage} />
+              )}
               <Grid item>
                 <input
                   accept="image/*"

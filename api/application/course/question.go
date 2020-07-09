@@ -100,10 +100,11 @@ func (c *courseAppImpl) UpdateQuestion(input gentypes.UpdateQuestionInput) (gent
 			}
 
 			answers = append(answers, course.UpdateAnswerArgs{
-				UUID:      ans.UUID,
-				IsCorrect: ans.IsCorrect,
-				Text:      ans.Text,
-				ImageKey:  key,
+				UUID:       ans.UUID,
+				IsCorrect:  ans.IsCorrect,
+				Text:       ans.Text,
+				ImageKey:   key,
+				AnswerType: ans.AnswerType,
 			})
 
 		}
