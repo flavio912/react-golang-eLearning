@@ -14,6 +14,7 @@ export type Theme = {
   buttonBorderRadius: number;
   primaryGradient: string;
   loginBackgroundGradient: string;
+  carouselImageBackgroundGradient: string;
   centerColumnWidth: number;
   colors: {
     primaryBlack: string;
@@ -69,6 +70,8 @@ const theme: Theme = {
   buttonBorderRadius: 4,
   primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
   loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
+  carouselImageBackgroundGradient:
+    'linear-gradient(222.02deg, #16BB33 0%, #0E69DA 100%)',
   centerColumnWidth: 1200,
   colors: {
     primaryBlack: '#0C152E',
