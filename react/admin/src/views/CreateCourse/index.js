@@ -100,17 +100,6 @@ function CreateCourse({ match, history }) {
     history.push(value);
   };
 
-  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
-    SAVE_ONLINE_COURSE
-  );
-  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
-    variables: {
-      id: parseInt(ident)
-    },
-    fetchPolicy: 'cache-and-network',
-    skip: !ident
-  });
-
   var initState = {
     name: '',
     primaryCategory: {},
@@ -129,12 +118,16 @@ function CreateCourse({ match, history }) {
   };
 
   const [state, setState] = useState(initState);
-
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
-    setState(updatedState);
-  };
-
+  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
+    SAVE_ONLINE_COURSE
+  );
+  const { loading, error, data, refetch } = useQuery(GET_COURSE, {
+    variables: {
+      id: parseInt(ident)
+    },
+    fetchPolicy: 'cache-and-network',
+    skip: !ident
+  });
   useEffect(() => {
     if (loading || error) return;
     if (!data) return;
@@ -152,6 +145,11 @@ function CreateCourse({ match, history }) {
       price: data.course.price
     });
   }, [data, loading]);
+
+  const updateState = (item, value) => {
+    var updatedState = { ...state, [item]: value };
+    setState(updatedState);
+  };
 
   if (ident) {
     if (loading) return <CircularProgress className={classes.centerProgress} />;

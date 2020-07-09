@@ -541,3 +541,15 @@ func (m *MutationResolver) DeleteTest(ctx context.Context, args struct{ Input ge
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteTest(args.Input)
 }
+
+func (m *MutationResolver) AnswerImageUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.CourseApp.AnswerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}

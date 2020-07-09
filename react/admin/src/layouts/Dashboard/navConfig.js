@@ -41,6 +41,14 @@ export default [
             href: '/modules'
           },
           {
+            title: 'Tests',
+            href: '/tests'
+          },
+          {
+            title: 'Questions',
+            href: '/questions'
+          },
+          {
             title: 'Lessons',
             href: '/lessons'
           }

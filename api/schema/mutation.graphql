@@ -57,6 +57,7 @@ type Mutation {
   updateTest(input: UpdateTestInput!): UpdateTestPayload
   deleteTest(input: DeleteTestInput!): Boolean!
 
+  answerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
   # deleteQuestion
