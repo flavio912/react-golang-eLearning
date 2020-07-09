@@ -18,17 +18,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: '100%',
     zIndex: 100,
     '@media (max-width: 650px)': {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   centerer: {
     width: theme.centerColumnWidth,
-    margin: '0 20px'
+    margin: '0 20px',
   },
   menu: {
     display: 'flex',
     flexDirection: 'row',
-    padding: '20px 0px'
+    padding: '20px 0px',
   },
   tabs: {
     display: 'grid',
@@ -37,13 +37,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     '@media (max-width: 900px)': {
       gridTemplateColumns: '1fr 1fr',
       gridTemplateRows: '1fr 1fr',
-      gridRowGap: '4px'
-    }
+      gridRowGap: '4px',
+    },
   },
   basket: {
     paddingRight: '25px',
     marginRight: '25px',
-    borderRight: [1, 'solid', theme.colors.borderGrey]
+    borderRight: [1, 'solid', theme.colors.borderGrey],
   },
   notification: {
     position: 'absolute',
@@ -56,50 +56,50 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: '20px',
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   checkoutPopup: {
-    right: '155px'
+    right: '155px',
   },
   login: {
     fontFamily: 'Muli',
     fontSize: theme.fontSizes.large,
     fontWeight: '300',
     marginRight: '30px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   register: {
     height: '40px',
     width: '127.75px',
-    boxShadow: '0px 3px 10px #0000001f'
+    boxShadow: '0px 3px 10px #0000001f',
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   body: {
     backgroundColor: theme.colors.backgroundGrey,
-    flexGrow: 1
+    flexGrow: 1,
   },
   logo: {
     cursor: 'pointer',
     marginRight: '70px',
-    width: 128
+    width: 128,
   },
   backgroundHider: {
     position: 'fixed',
     width: '100%',
     height: '100%',
     top: 0,
-    left: 0
+    left: 0,
   },
   mobileMenu: {
     '@media (min-width: 650px)': {
-      display: 'none'
-    }
-  }
+      display: 'none',
+    },
+  },
 }));
 
 type Props = {
@@ -123,7 +123,7 @@ function HeaderMenu({
   onLogoClick,
   basketItems,
   onCheckout,
-  className
+  className,
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });

@@ -14,15 +14,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     color: theme.colors.primaryBlack,
-    paddingTop: 83
+    paddingTop: 83,
   },
-  appHolderRoot: {}
+  appHolderRoot: {},
 }));
 
 const defaultLink = {
   id: 0,
   name: 'Feature',
-  link: ''
+  link: '',
 };
 
 const defaultNew = {
@@ -31,8 +31,8 @@ const defaultNew = {
   link: '',
   alert: {
     type: 'new',
-    value: 'NEW'
-  }
+    value: 'NEW',
+  },
 };
 
 const defaultIncrease = {
@@ -41,8 +41,8 @@ const defaultIncrease = {
   link: '',
   alert: {
     type: 'increase',
-    value: '99.9%'
-  }
+    value: '99.9%',
+  },
 };
 
 const footerColumns = [
@@ -58,8 +58,8 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 1,
@@ -70,8 +70,8 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 2,
@@ -82,14 +82,20 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 3,
     header: 'Get Help',
-    links: [defaultLink, defaultLink, defaultLink, defaultLink, defaultIncrease]
-  }
+    links: [
+      defaultLink,
+      defaultLink,
+      defaultLink,
+      defaultLink,
+      defaultIncrease,
+    ],
+  },
 ];
 
 export const AppHolder = ({ children }: Props) => {
@@ -106,15 +112,15 @@ export const AppHolder = ({ children }: Props) => {
           title: 'For Companies',
           text:
             "We're training the finest minds in air, road and sea - are you on the list?",
-          link: '/register/company'
+          link: '/register/company',
         },
         {
           title: 'For Individuals',
           text:
             'Do you need trainingsolutions for your next role in Transport Compliance?',
-          link: '/register/individual'
-        }
-      ]
+          link: '/register/individual',
+        },
+      ],
     },
     {
       id: 1,
@@ -124,27 +130,27 @@ export const AppHolder = ({ children }: Props) => {
           title: 'Aviation Security',
           text:
             'Training courses specifically designed for those who work in Aviation Security',
-          link: '/courses'
+          link: '/courses',
         },
         {
           title: 'Dangerous Goods',
           text:
             'Courses for both air and road, all in accordance with CAA Regulations',
-          link: '/'
+          link: '/',
         },
         {
           title: 'Health & Safety',
           text:
             'All our courses can be taken online in conjunction withyour internal policies',
-          link: '/'
+          link: '/',
         },
         {
           title: 'Classroom Courses',
           text:
             'All classroom courses are delivered in London at our purpose built facility',
-          link: '/'
-        }
-      ]
+          link: '/',
+        },
+      ],
     },
     {
       id: 2,
@@ -154,29 +160,29 @@ export const AppHolder = ({ children }: Props) => {
           title: 'News & Blog',
           text:
             'Stay in touch with all the industry news from the team at TTC Hub',
-          link: '/articles'
+          link: '/articles',
         },
         {
           title: 'Book A Demo',
           text:
             'Looking for more information on our platform? Let us show you the ropes',
-          link: '/'
+          link: '/',
         },
         {
           title: 'About Us',
           text:
             "We're a growing team of industry experts with 40+ years of experience",
-          link: '/aboutus'
+          link: '/aboutus',
         },
         {
           title: 'Contact Us',
           text:
             "We're a growing team of industry experts with 100+ years of experience",
-          link: '/contact'
-        }
-      ]
+          link: '/contact',
+        },
+      ],
     },
-    { id: 3, title: 'Consultancy', link: '/consultancy' }
+    { id: 3, title: 'Consultancy', link: '/consultancy' },
   ];
 
   const selectedRoute = () => {
