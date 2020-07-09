@@ -326,6 +326,11 @@ func (c *coursesRepoImpl) DeleteModule(uuid gentypes.UUID) (bool, error) {
 		return false, &errors.ErrWhileHandling
 	}
 
+	if err := tx.Delete(models.ModuleStructure{}, "module_uuid = ?", uuid).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete module structure of module: %s", uuid)
+		return false, &errors.ErrWhileHandling
+	}
+
 	if err := tx.Delete(models.Module{}, "uuid = ?", uuid).Error; err != nil {
 		c.Logger.Logf(sentry.LevelError, err, "Unable to delete module: %s", uuid)
 		return false, &errors.ErrWhileHandling
