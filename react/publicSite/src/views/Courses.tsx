@@ -12,6 +12,7 @@ import TrustedCard from 'components/core/Cards/TrustedCard';
 import FourPanel from 'components/core/FourPanel';
 import { Panel } from 'components/core/FourPanel/FourPanel';
 import PeopleCurve from 'components/core/Curve/PeopleCurve';
+import ExpandableListView, { ExpandItemType } from 'components/Misc/ExpandableListView';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
@@ -121,6 +122,41 @@ const defaultStack: Row[] = [
         link: { title: "Knowledge Base", link: "/"}
     },
 ];
+const FAQOne: ExpandItemType = {
+    id: 0,
+    title: 'What do I need to know about Aviation Security?',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum iplorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.',
+    isExpanded: false,
+  };
+const FAQTwo: ExpandItemType = {
+    id: 1,
+    title: 'How do I enroll on a Aviation Security Course?',
+    description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum iplorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.',
+    isExpanded: false,
+};
+const FAQThree: ExpandItemType = {
+    id: 2,
+    title: 'Are these Courses free?',
+    description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum iplorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.',
+    isExpanded: false,
+};
+const FAQFour: ExpandItemType = {
+    id: 3,
+    title: 'How long is each Course?',
+    description:
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum iplorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.',
+    isExpanded: false,
+};
+const FAQFive: ExpandItemType = {
+    id: 4,
+    title: 'What is the meaning of life?',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Ex ea commodo consequat.Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum iplorem ipsum Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut.',
+    isExpanded: false,
+  };
 
 type Props = {};
 
@@ -163,6 +199,12 @@ function Courses({}: Props) {
             moreToShow={true}
             onMore={() => console.log("More")}
         />
+        <div className={classes.centerer}>
+            <div className={classes.centered}>
+                <div className={classNames(classes.heading, classes.margin)}>Frequently Asked Questions about Aviation Security</div>
+                <ExpandableListView data={[FAQOne, FAQTwo, FAQThree, FAQFour, FAQFive]} />
+            </div>
+        </div>
         <TrustedCard
             text="Trusted by more than 1,000 businesses in 120 countries."
             className={classes.margin}

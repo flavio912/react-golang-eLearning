@@ -16,7 +16,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     carousel: {
         width: '40vw',
-        maxWidth: '668px'
+        maxWidth: '668px',
+        '@media (max-width: 1000px)': {
+            width: '80vw',
+        }
     },
     image: {
         height: '68px',
