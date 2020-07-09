@@ -1443,191 +1443,36 @@ func TestUpdateLesson(t *testing.T) {
 					updateLesson(input: {
 						uuid: "00000000-0000-0000-0000-000000000000"
 					}) {
-						uuid
-					}
+							test {
+								name
+								complete
+								attemptsAllowed
+								passPercentage
+								questionsToAnswer
+								randomiseAnswers
+								questions {
+									text
+								}
+							}
+						}
 				}
 			`,
 			ExpectedResult: `
 				{
-					"updateLesson": null
-				}
-			`,
-			ExpectedErrors: []gqltest.TestQueryError{
-				{
-					ResolverError: &errors.ErrLessonNotFound,
-					Path:          []interface{}{"updateLesson"},
-				},
-			},
-		},
-	})
-
-	t.Run("Test loaders reset", func(t *testing.T) {
-		prepareTestDatabase()
-
-		gqltest.RunTests(t, []*gqltest.Test{
-			{
-				Name:    "Get lesson into loader ctx",
-				Context: adminContext(),
-				Schema:  schema,
-				Query: `
-					{
-						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
-							uuid
-							title
-							text
-							tags {
-								name
-								uuid
-								color
-							}
-						}
-					}
-				`,
-				ExpectedResult: `
-					{
-						"lesson": {
-							"uuid": "00000000-0000-0000-0000-000000000003",
-							"tags": [
-								{
-									"name": "Handling cool things",
-									"uuid": "00000000-0000-0000-0000-000000000002",
-									"color": "#123"
-								}
-							],
-							"title": "Eigenvalues and Eigenvectors",
-							"text": "{}"
-						}
-					}
-				`,
-			},
-			{
-				Name:    "Update all fields",
-				Context: adminContext(),
-				Schema:  schema,
-				Query: `
-					mutation {
-						updateLesson(input: {
-							uuid: "00000000-0000-0000-0000-000000000003"
-							title: "Jacobian Matrix"
-							text: "space time"
-							tags: ["00000000-0000-0000-0000-000000000001"]
-						}) {
-							uuid
-							title
-							text
-							tags {
-								uuid
-							}
-						}
-					}
-				`,
-				ExpectedResult: `
-					{
-						"updateLesson" : {
-							"uuid" : "00000000-0000-0000-0000-000000000003",
-							"title": "Jacobian Matrix",
-							"text": "space time",
-							"tags": [
-								{
-									"uuid": "00000000-0000-0000-0000-000000000001"
-								}
-							]
-						}
-					}
-				`,
-			},
-			{
-				Name:    "Check loader has been flushed",
-				Context: adminContext(),
-				Schema:  schema,
-				Query: `
-					{
-						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
-							uuid
-							title
-							text
-							tags {
-								name
-								uuid
-								color
-							}
-						}
-					}
-				`,
-				ExpectedResult: `
-					{
-						"lesson": {
-							"uuid": "00000000-0000-0000-0000-000000000003",
-							"tags": [
-								{
-									"name": "existing tag",
-									"uuid": "00000000-0000-0000-0000-000000000001",
-									"color": "#123"
-								}
-							],
-							"title": "Jacobian Matrix",
-							"text": "space time"
-						}
-					}
-				`,
-			},
-		})
-	})
-
-	accessTest(t, schema, accessTestOpts{
-		Query: `
-			mutation {
-				updateLesson(input: {
-					uuid: "00000000-0000-0000-0000-000000000003"
-				}) {
-					uuid
-				}
-			}
-		`,
-		Path:            []interface{}{"updateLesson"},
-		MustAuth:        true,
-		AdminAllowed:    true,
-		ManagerAllowed:  false,
-		DelegateAllowed: false,
-	})
-}
-
-func TestDeleteLesson(t *testing.T) {
-	prepareTestDatabase()
-
-	gqltest.RunTests(t, []*gqltest.Test{
-		{
-			Name:    "Delete lesson",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-				mutation {
-					deleteLesson(input: {
-						uuid: "00000000-0000-0000-0000-000000000002"
-					})
-				}
-			`,
-			ExpectedResult: `
-				{
-					"deleteLesson": true
+					"createTest": {
+            "test": {
+                "name": "Cake",
+                "complete": false,
+                "attemptsAllowed": 3,
+                "passPercentage": 30,
+                "questionsToAnswer": 7,
+                "randomiseAnswers": false,
+                "questions": null
+            }
+        	}
 				}
 			`,
 		},
-	})
-
-	accessTest(t, schema, accessTestOpts{
-		Query: `
-			mutation {
-				deleteLesson(input: {
-					uuid: "00000000-0000-0000-0000-000000000001"
-				})
-			}
-		`,
-		Path:            []interface{}{"deleteLesson"},
-		AdminAllowed:    true,
-		MustAuth:        true,
-		DelegateAllowed: false,
-		ManagerAllowed:  false,
 	})
 }
 
@@ -1741,5 +1586,203 @@ func TestCreateBlog(t *testing.T) {
 		AdminAllowed:    true,
 		DelegateAllowed: false,
 		ManagerAllowed:  false,
+	})
+}
+
+func TestUpdateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						title: "How To Backtrack"
+					}) {
+						uuid
+						title
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"title": "How To Backtrack"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all (non-images) fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid : "00000000-0000-0000-0000-000000000003"
+						title: "How To Do Gaussian Elimination"
+						body: "{\"space\":\"time\"}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						uuid
+						title
+						body
+						category {
+							name
+							color
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000003",
+						"title": "How To Do Gaussian Elimination",
+						"body": "{\"space\":\"time\"}",
+						"category": {
+							"name": "cat1",
+							"color": "#123"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Blog does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: errors.ErrBlogNotFound("00000000-0000-0000-0000-000000000000"),
+					Path:          []interface{}{"updateBlog"},
+				},
+			},
+		},
+	})
+
+	t.Run("Test loaders reset", func(t *testing.T) {
+		prepareTestDatabase()
+
+		gqltest.RunTests(t, []*gqltest.Test{
+			{
+				Name:    "Get blog into loader ctx",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							createdAt
+							title
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"createdAt": "2020-03-08T13:53:37Z",
+							"title": "How To Build A Custom Autoencoder"
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Update all (non-images) fields",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						updateBlog(input: {
+							uuid : "00000000-0000-0000-0000-000000000003"
+							title: "How To Do Gaussian Elimination"
+							body: "{\"space\":\"time\"}"
+							categoryUUID: "00000000-0000-0000-0000-000000000001"
+						}) {
+							uuid
+							title
+							body
+							category {
+								name
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"updateBlog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}",
+							"category": {
+								"name": "cat1",
+								"color": "#123"
+							}
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Check loader has been flushed",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							title
+							body
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}"
+						}
+					}
+				`,
+			},
+		})
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateBlog(input: {
+					uuid: "00000000-0000-0000-0000-000000000002"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateBlog"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
 	})
 }

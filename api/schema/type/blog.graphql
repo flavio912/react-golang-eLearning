@@ -5,6 +5,8 @@ type BlogAuthor {
 }
 
 type Blog {
+  createdAt: String!
+  updatedAt: String
   uuid: UUID!
   title: String!
   body: String!
@@ -19,6 +21,11 @@ type BlogImage {
   url: String!
 }
 
+type BlogPage implements PaginatedQuery {
+  edges: [Blog]
+  pageInfo: PageInfo
+}
+
 input BlogImageInput {
   jsonID: String!
   token: String!
@@ -30,6 +37,15 @@ input CreateBlogInput {
   categoryUUID: UUID!
   headerImageToken: String
   authorUUID: UUID
+  bodyImages: [BlogImageInput!]
+}
+
+input UpdateBlogInput {
+  uuid: UUID!
+  title: String
+  body: String
+  categoryUUID: UUID
+  headerImageToken: String
   bodyImages: [BlogImageInput!]
 }
 

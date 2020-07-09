@@ -52,14 +52,9 @@ type CoursesRepository interface {
 	CreateModule(input CreateModuleInput) (models.Module, error)
 	UpdateModule(input UpdateModuleInput) (models.Module, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
-	GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error)
-	UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error)
+	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
+	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 	IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error)
-
-	CreateBlog(input gentypes.CreateBlogInput) (models.Blog, error)
-	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
-	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
-	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
 	Tests(

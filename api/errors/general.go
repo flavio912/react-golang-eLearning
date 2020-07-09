@@ -157,12 +157,6 @@ var (
 			Message: fmt.Sprintf("The field '%s', is required", name),
 		}
 	}
-	ErrBlogNotFound = func(uuid string) *SimpleError {
-		return &SimpleError{
-			Type:    "ErrBlogNotFound",
-			Message: fmt.Sprintf("The given blog does not exist: %s", uuid),
-		}
-	}
 	ErrInputValidation = func(paramName string, issue string) *SimpleError {
 		return &SimpleError{
 			Type:    "ErrInputValidation",
@@ -176,5 +170,11 @@ var (
 	ErrNotEnoughAnswersGiven = SimpleError{
 		Type:    "ErrNotEnoughAnswersGiven",
 		Message: "Not enough answers were given to complete the test, please try again",
+	}
+	ErrBlogNotFound = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrBlogNotFound",
+			Message: fmt.Sprintf("The given blog does not exist: %s", uuid),
+		}
 	}
 )

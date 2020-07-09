@@ -16,6 +16,8 @@ type BlogImage struct {
 }
 
 type Blog struct {
+	CreatedAt      string
+	UpdatedAt      *string
 	UUID           UUID
 	Title          string
 	Body           string
@@ -41,6 +43,20 @@ type CreateBlogInput struct {
 
 func (c *CreateBlogInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
+	return err
+}
+
+type UpdateBlogInput struct {
+	UUID             UUID `valid:"required"`
+	Title            *string
+	Body             *string `valid:"json"`
+	CategoryUUID     *UUID
+	HeaderImageToken *string
+	BodyImages       *[]BlogImageInput
+}
+
+func (u *UpdateBlogInput) Validate() error {
+	_, err := govalidator.ValidateStruct(u)
 	return err
 }
 

@@ -55,12 +55,6 @@ type Mutation {
   deleteLesson(input: DeleteLessonInput!): Boolean!
 
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
-
-  createBlog(input: CreateBlogInput!): Blog
-  blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
-  updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
-  blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
-  
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   updateTest(input: UpdateTestInput!): UpdateTestPayload
@@ -77,4 +71,11 @@ type Mutation {
   # updateTutor
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+  
+  createBlog(input: CreateBlogInput!): Blog
+  updateBlog(input: UpdateBlogInput!): Blog
+  blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
+  blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
 }

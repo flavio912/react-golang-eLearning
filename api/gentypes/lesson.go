@@ -23,9 +23,9 @@ func (l *LessonFilter) Validate() error {
 }
 
 type CreateLessonInput struct {
-	Title string `valid:"required"`
-	Tags  *[]UUID
-	Text  string
+	Name string `valid:"required"`
+	Tags *[]UUID
+	Text string
 }
 
 func (c *CreateLessonInput) Validate() error {
@@ -34,10 +34,10 @@ func (c *CreateLessonInput) Validate() error {
 }
 
 type UpdateLessonInput struct {
-	UUID  UUID `valid:"required"`
-	Title *string
-	Text  *string
-	Tags  *[]UUID
+	UUID UUID `valid:"required"`
+	Name *string
+	Text *string
+	Tags *[]UUID
 }
 
 func (u *UpdateLessonInput) Validate() error {

@@ -11,7 +11,7 @@ input CreateLessonInput {
 
 input UpdateLessonInput {
   uuid: UUID!
-  title: String
+  name: String
   text: String
   tags: [UUID!]
 }

@@ -38,12 +38,6 @@ type CourseApp interface {
 	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
-	CreateBlog(input gentypes.CreateBlogInput) (gentypes.Blog, error)
-	BlogHeaderImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-	UpdateBlogHeaderImage(blogUUID gentypes.UUID, token string) error
-	BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-	GetBlogBodyImages(blogUUID gentypes.UUID) ([]gentypes.BlogImage, error)
-
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 	Tests(
 		page *gentypes.Page,

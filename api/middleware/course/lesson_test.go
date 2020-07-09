@@ -202,17 +202,17 @@ func TestUpdateLesson(t *testing.T) {
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
 	input := gentypes.UpdateLessonInput{
-		UUID:  gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		Title: helpers.StringPointer("Diagonalizing Matrices"),
-		Text:  helpers.StringPointer(`{"ayy" : "yoo"}`),
-		Tags:  &tags,
+		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Name: helpers.StringPointer("Diagonalizing Matrices"),
+		Text: helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags: &tags,
 	}
 	t.Run("Updates existing lesson", func(t *testing.T) {
 		lesson, err := courseRepo.UpdateLesson(input)
 
 		assert.Nil(t, err)
 		assert.Equal(t, input.UUID, lesson.UUID)
-		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Name, lesson.Name)
 		assert.Equal(t, *input.Text, lesson.Text)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
@@ -225,7 +225,7 @@ func TestUpdateLesson(t *testing.T) {
 
 		assert.Nil(t, tag_err)
 		assert.Equal(t, input.UUID, lesson.UUID)
-		assert.Equal(t, *input.Title, lesson.Title)
+		assert.Equal(t, *input.Name, lesson.Name)
 		assert.Equal(t, *input.Text, lesson.Text)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
