@@ -54,7 +54,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   backgroundHider: {
     position: 'fixed',
     width: '100%',
-    height: '50%',
+    height: '100%',
     top: 0,
     left: 0
   }

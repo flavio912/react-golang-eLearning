@@ -21,7 +21,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
         flexDirection: 'column',
         alignItems: 'flex-start',
         width: '1000px',
-        marginLeft: '30px',
         '@media (max-width: 800px)': {
             alignItems: 'center',
         }
