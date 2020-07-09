@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react';
-import { ExpandItemType } from './types';
+import { ExpandItemType } from './ExpandableListView';
 import { createUseStyles, useTheme } from 'react-jss';
 import themeRoot, { Theme } from 'helpers/theme';
 import classNames from 'classnames';

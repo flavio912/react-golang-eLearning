@@ -3,11 +3,20 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 
 import { ExpandItemView } from './ExpandItemView';
-import { ExpandItemType } from './types';
 
 const useStyles = createUseStyles((theme: Theme) => ({
-  rootExpandableListView: { backgroundColor: theme.colors.primaryWhite },
+  rootExpandableListView: {
+    backgroundColor: theme.colors.primaryWhite,
+    width: '100%'
+  },
 }));
+
+export type ExpandItemType = {
+  id: number;
+  title: string;
+  description: string;
+  isExpanded: boolean;
+};
 
 type Props = {
   data: ExpandItemType[];

@@ -1,7 +1,6 @@
 import * as React from 'react';
-import ExpandableListView from './ExpandableListView';
+import ExpandableListView, { ExpandItemType } from './ExpandableListView';
 import { withKnobs } from '@storybook/addon-knobs';
-import { ExpandItemType } from './types';
 
 export default {
   title: 'Misc/ExpandableListView',
