@@ -5,6 +5,7 @@ import { Redirect } from 'react-router-dom';
 import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
+import AdminsView from './views/AdminsList';
 import TutorsView from './views/TutorsList';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';
@@ -101,6 +102,11 @@ export default [
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementDetails'))
+      },
+      {
+        path: '/admins',
+        exact: true,
+        component: AdminsView
       },
       {
         path: '/tutors',
