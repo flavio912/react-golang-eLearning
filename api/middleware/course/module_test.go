@@ -3,6 +3,7 @@ package course_test
 import (
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
@@ -260,4 +261,28 @@ func TestIsModuleInCourses(t *testing.T) {
 			assert.Equal(t, test.wantResult, res)
 		})
 	}
+}
+
+func TestDeleteModule(t *testing.T) {
+	t.Run("Should not delete module that is part of a course", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f")
+
+		b, err := courseRepo.DeleteModule(uuid)
+
+		assert.Equal(t, &errors.ErrWhileHandling, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Deletes a module", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
+
+		b, err := courseRepo.DeleteModule(uuid)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+	})
 }
