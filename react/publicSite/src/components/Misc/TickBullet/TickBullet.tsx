@@ -9,8 +9,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         display: 'flex'
     },
     text: {
-        fontSize: theme.fontSizes.large,
-        fontweight: '500',
+        fontSize: '15px',
+        fontWeight: '500',
         color: theme.colors.secondaryBlack,
         marginLeft: '25px'
     }

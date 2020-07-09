@@ -21,7 +21,6 @@ import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
 import AboutUs from 'views/AboutUs';
 import PaymentPage from 'views/PaymentPage';
-import Register from 'views/RegisterStart';
 import RegisterStart from 'views/RegisterStart';
 import RegisterIndividual from 'views/RegisterIndividual';
 import RegisterCompany from 'views/RegisterCompany';

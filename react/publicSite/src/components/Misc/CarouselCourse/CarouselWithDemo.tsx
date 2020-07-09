@@ -30,9 +30,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
         maxWidth: 500
     },
     buttonHolder: {
-        display: 'flex'
+        display: 'grid',
+        gridTemplateColumns: '1fr 75px 1fr',
+        gridSpace: '50px',
+        '@media (max-width: 575px)': {
+            gridTemplateColumns: '1fr',
+            gridTemplateRows: '1fr 1fr 1fr',
+        }
     },
-        button: {
+    text: {
+        alignSelf: 'center',
+        textAlign: 'center',
+        fontSize: theme.fontSizes.extraLarge,
+        color: theme.colors.primaryBlack
+    },
+    button: {
         height: 52,
         fontSize: 18,
         fontWeight: 800,
@@ -67,9 +79,7 @@ function CarouselWithDemo({ heading, description, courses, className}: Props) {
             <Button archetype="gradient" className={classes.button}>
             Register your Team
             </Button>
-            <Spacer horizontal spacing={2} />
-            <p>OR</p>
-            <Spacer horizontal spacing={2} />
+            <div className={classes.text}>OR</div>
             <Button archetype="default" className={classes.button}>
             Request Demo
             </Button>

@@ -17,7 +17,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         justifyContent: 'center'
       },
       centered: {
-        flex: 8,
+        display: 'flex',
         width: theme.centerColumnWidth,
       },
       row: {
@@ -58,13 +58,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
       marginBottom: {
         marginBottom: '100px',
       },
+      mainColumn: {
+        flex: 2,
+      },
       spacer: {
-        flex: 5,
-        '@media (min-width: 850px) and (max-width: 1250px)': {
-            flex: 8
+        flex: 1,
+        '@media (min-width: 850px) and (max-width: 1300px)': {
+            flex: 2
         },
         '@media (max-width: 850px)': {
-            flex: 1
+          display: 'none'
         }
       },
       carousel: {
@@ -113,79 +116,80 @@ function CourseDetailsPage(props: Props) {
   const classes = useStyles({ theme });
   return (
     <div className={classes.courseRoot}>
-        <CoursePageHeader
-                title="Cargo Operative Screener (COS) Recurrent – VC, HS, MDE"
-                description="This recurrent course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search and metal detection equipment."
-                history={["Courses", "Aviation Security", "Regulated Agents"]}
-                estimatedTime="6 hours"
-                lastUpdated="May 2020"
+      <CoursePageHeader
+        title="Cargo Operative Screener (COS) Recurrent – VC, HS, MDE"
+        description="This recurrent course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search and metal detection equipment."
+        history={["Courses", "Aviation Security", "Regulated Agents"]}
+        estimatedTime="6 hours"
+        lastUpdated="May 2020"
+        price="£310.00"
+        video={require("assets/Stock_Video.mp4")}
+        onBuy={() => console.log("Buy")}
+        onBasket={() => console.log("Basket")}
+        sideComponent={
+            <CoursePreview
                 price="£310.00"
-                video={require("assets/Stock_Video.mp4")}
+                details={defaultDetails}
                 onBuy={() => console.log("Buy")}
                 onBasket={() => console.log("Basket")}
-                sideComponent={
-                    <CoursePreview
-                        price="£310.00"
-                        details={defaultDetails}
-                        onBuy={() => console.log("Buy")}
-                        onBasket={() => console.log("Basket")}
-                        video={require("assets/Stock_Video.mp4")}
-                    />}
-            />
-        <div className={classNames(classes.centerer, classes.whiteBackground)}>
-            <div style={{ flex: 1 }} />
-            <div className={classes.centered}>
-                <div className={classes.heading}>What you’ll learn</div>
-                <div className={classes.row}>
-                    <div className={classes.column}>
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                        />
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea"
-                        />
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
-                        />
-                    </div>
-                    <div className={classes.column}>
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Punt in culpa qui officia deserunt mollit anim id est laboru"
-                        />
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum ip"
-                        />
-                        <TickBullet
-                            className={classes.tickMargin}
-                            text="Punt in culpa qui officia deserunt mollit anim id est laboru"
-                        />
-                    </div>
+                video={require("assets/Stock_Video.mp4")}
+            />}
+      />
+      <div className={classNames(classes.centerer, classes.whiteBackground)}>
+        <div className={classes.centered}>
+          <div className={classes.mainColumn}>
+            <div className={classes.heading}>What you’ll learn</div>
+            <div className={classes.row}>
+                <div className={classes.column}>
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+                    />
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea"
+                    />
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor"
+                    />
                 </div>
-                <div className={classes.heading}>About this Course – Estimated time to complete 6 hours</div>
-                <div className={classes.text}>This recurrent course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search and metal detection equipment.</div>
-                <div className={classes.heading}>How to complete this Course</div>
-                <div className={classes.text}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br/><br/>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.<br/><br/>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
-                <div className={classes.heading}>Requirements</div>
-                <div className={classes.text}><div className={classes.bullet}/>Have a computer with Internet</div>
-                <div className={classes.text}><div className={classes.bullet}/>Have a pair of working speakers or headphones</div>
-                <div className={classNames(classes.text, classes.marginBottom)}><div className={classes.bullet}/>Brace yourself for a 6 hour stint of education!</div>
+                <div className={classes.column}>
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Punt in culpa qui officia deserunt mollit anim id est laboru"
+                    />
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum ip"
+                    />
+                    <TickBullet
+                        className={classes.tickMargin}
+                        text="Punt in culpa qui officia deserunt mollit anim id est laboru"
+                    />
+                </div>
             </div>
-            <div className={classes.spacer} />
+            <div className={classes.heading}>About this Course – Estimated time to complete 6 hours</div>
+            <div className={classes.text}>This recurrent course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search and metal detection equipment.</div>
+            <div className={classes.heading}>How to complete this Course</div>
+            <div className={classes.text}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.<br/><br/>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.<br/><br/>Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</div>
+            <div className={classes.heading}>Requirements</div>
+            <div className={classes.text}><div className={classes.bullet}/>Have a computer with Internet</div>
+            <div className={classes.text}><div className={classes.bullet}/>Have a pair of working speakers or headphones</div>
+            <div className={classNames(classes.text, classes.marginBottom)}><div className={classes.bullet}/>Brace yourself for a 6 hour stint of education!</div>
+          </div>
+          <div className={classes.spacer} />
         </div>
-        <div className={classes.centerer}>
-          <CarouselWithDemo
-              className={classes.carousel}
-              heading="Explore our popular courses"
-              description="It’s time to remove the headache for you and your team, with TTC
-              you could be logged in and learning in 24 hours."
-              courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
-          />
-        </div>
+      </div>
+      <div className={classes.centerer}>
+        <CarouselWithDemo
+            className={classes.carousel}
+            heading="Explore our popular courses"
+            description="It’s time to remove the headache for you and your team, with TTC
+            you could be logged in and learning in 24 hours."
+            courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
+        />
+      </div>
     </div>
   );
 }

@@ -9,29 +9,36 @@ import VideoPlayer from '../VideoPlayer';
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     width: '100%',
-    display: 'flex',
     backgroundColor: theme.colors.lightBlue,
     padding: '57px 0',
     '@media (max-width: 850px)': {
+        display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
         backgroundColor: theme.colors.primaryWhite,
         padding: 0
     }
   },
+  centerer: {
+    display: 'flex',
+    justifyContent: 'center'
+  },
+  centered: {
+    display: 'flex',
+    maxWidth: theme.centerColumnWidth,
+  },
   courseDetails: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    flex: 8,
+    flex: 2,
     '@media (max-width: 850px)': {
-        flex: 1,
-        maxWidth: '850px',
         justifyContent: 'center',
     },
   },
   history: {
     display: 'flex',
+    flexWrap: 'wrap',
     width: '100%',
     justifyContent: 'flex-start',
     marginBottom: '50px',
@@ -125,9 +132,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexWrap: 'wrap'
   },
   spacer: {
-    flex: 5,
-    '@media (max-width: 1250px)': {
-        flex: 8
+    flex: 1,
+    '@media (min-width: 850px) and (max-width: 1300px)': {
+      flex: 2
+    },
+    '@media (max-width: 850px)': {
+      display: 'none'
     }
   },
   mobileMargin: {
@@ -216,8 +226,9 @@ function CoursePageHeader({
 
   return (
     <div className={classNames(classes.root, className)}>
-        <div style={{ flex: 1 }} />
-        <div className={classes.courseDetails}>
+        <div className={classes.centerer}>
+          <div className={classes.centered}>
+          <div className={classes.courseDetails}>
             {history && (
                 <div className={classes.history}>
                     {history.map((page: string, index: number) =>
@@ -283,6 +294,8 @@ function CoursePageHeader({
         </div>
         <div className={classes.spacer} />
         <div className={classes.component}>{sideComponent}</div>
+          </div>
+        </div>
     </div>
   );
 }
