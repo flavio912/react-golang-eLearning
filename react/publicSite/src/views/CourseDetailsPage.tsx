@@ -7,6 +7,7 @@ import CoursePreview from "components/Misc/CoursePreview";
 import TickBullet from "components/Misc/TickBullet";
 import CarouselWithDemo from "components/Misc/CarouselCourse/CarouselWithDemo";
 import { Course } from "sharedComponents/Overview/CourseCard";
+import PageMargin from "components/core/PageMargin";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     courseRoot: {
@@ -17,8 +18,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         justifyContent: 'center'
       },
       centered: {
-        display: 'flex',
-        width: theme.centerColumnWidth,
+        flexDirection: 'row'
       },
       row: {
         display: 'flex',
@@ -135,8 +135,7 @@ function CourseDetailsPage(props: Props) {
                 video={require("assets/Stock_Video.mp4")}
             />}
       />
-      <div className={classNames(classes.centerer, classes.whiteBackground)}>
-        <div className={classes.centered}>
+      <PageMargin centererStyle={classes.whiteBackground} centeredStyle={classes.centered}>
           <div className={classes.mainColumn}>
             <div className={classes.heading}>What you’ll learn</div>
             <div className={classes.row}>
@@ -179,8 +178,7 @@ function CourseDetailsPage(props: Props) {
             <div className={classNames(classes.text, classes.marginBottom)}><div className={classes.bullet}/>Brace yourself for a 6 hour stint of education!</div>
           </div>
           <div className={classes.spacer} />
-        </div>
-      </div>
+        </PageMargin>
       <div className={classes.centerer}>
         <CarouselWithDemo
             className={classes.carousel}

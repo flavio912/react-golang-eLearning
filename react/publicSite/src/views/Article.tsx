@@ -3,6 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from "helpers/theme";
 import ArticleHeader from "components/Overview/Article/ArticleHeader";
 import GenreHeader from "components/Overview/Article/GenreHeader";
+import PageMargin from "components/core/PageMargin";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     articleRoot: {
@@ -11,15 +12,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     header: {
         marginTop: '60px'
-    },
-    centerer: {
-        display: 'flex',
-        justifyContent: 'center'
-    },
-    centered: {
-        display: 'flex',
-        flexDirection: 'column',
-        width: theme.centerColumnWidth,
     },
     text: {
         fontSize: theme.fontSizes.extraLarge,
@@ -54,13 +46,11 @@ function Article(props: Props) {
             image={require("assets/articleHeader.svg")}
             author={{ name: "James Green", url: require("assets/SampleImage_ClassroomCoursesDetail_Feat.png")}}
         />
-        <div className={classes.centerer}>
-            <div className={classes.centered}>
-                <div className={classes.text}>
-                    {text}
-                </div>
+        <PageMargin>
+            <div className={classes.text}>
+                {text}
             </div>
-        </div>
+        </PageMargin>
     </div>
   );
 }

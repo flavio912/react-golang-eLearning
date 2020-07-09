@@ -5,6 +5,7 @@ import { Theme } from 'helpers/theme';
 import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
 import VideoPlayer from '../VideoPlayer';
+import PageMargin from '../PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -20,12 +21,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     }
   },
   centerer: {
-    display: 'flex',
-    justifyContent: 'center'
+    '@media (max-width: 850px)': {
+      padding: 0
+    },
   },
   centered: {
-    display: 'flex',
-    maxWidth: theme.centerColumnWidth,
+    flexDirection: 'row',
+    '@media (max-width: 850px)': {
+      width: '100%'
+    },
   },
   courseDetails: {
     display: 'flex',
@@ -226,8 +230,7 @@ function CoursePageHeader({
 
   return (
     <div className={classNames(classes.root, className)}>
-        <div className={classes.centerer}>
-          <div className={classes.centered}>
+        <PageMargin centererStyle={classes.centerer} centeredStyle={classes.centered}>
           <div className={classes.courseDetails}>
             {history && (
                 <div className={classes.history}>
@@ -294,8 +297,7 @@ function CoursePageHeader({
         </div>
         <div className={classes.spacer} />
         <div className={classes.component}>{sideComponent}</div>
-          </div>
-        </div>
+      </PageMargin>
     </div>
   );
 }

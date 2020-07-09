@@ -7,20 +7,11 @@ import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import PageHeader from 'components/core/PageHeader';
 import Quote from 'components/Overview/Article/Quote';
 import Card from 'sharedComponents/core/Cards/Card';
+import PageMargin from 'components/core/PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   aboutRoot: {
     width: '100%'
-  },
-  centerer: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  centered: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    width: theme.centerColumnWidth,
   },
   textCenter: {
     maxWidth: '821px',
@@ -72,8 +63,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     position: 'relative',
     width: '100vw',
     overflow: 'hidden',
-    margin: '100px 0',
+    margin: '100px 0px',
     '@media (max-width: 750px)': {
+      width: '95vw',
       boxShadow: 'none',
       margin: '5% 0',
     }
@@ -107,9 +99,8 @@ function AboutUs({}: Props) {
         description="Our mission is to create the highest quality safety &amp; compliance training in the world"
       />
       <Spacer spacing={4} vertical />
-      <div className={classes.centerer}>
-        <div className={classes.centered}>
-          <div className={classes.centeredLogoItems}>
+      <PageMargin>
+        <div className={classes.centeredLogoItems}>
             <img
               src={require('assets/logo/blueCircleLogo.svg')}
               className={classes.blueLogo}
@@ -154,8 +145,7 @@ function AboutUs({}: Props) {
               <div className={classnames(classes.text, classes.cardText)}>We’re always looking for people to raise the bar and help us deliver an even better service to customers. <span className={classes.link}>Join us!</span></div>
             </Card>
           </div>
-        </div>
-      </div>
+      </PageMargin>
     </div>
   );
 }

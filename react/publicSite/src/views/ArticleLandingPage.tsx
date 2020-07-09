@@ -7,6 +7,7 @@ import ArticleHeader from "components/Overview/Article/ArticleHeader";
 import ArticleCard, { ArticleDetails } from "components/Overview/Article/ArticleCard/ArticleCard";
 import Button from "sharedComponents/core/Input/Button";
 import GenreHeader from "components/Overview/Article/GenreHeader";
+import PageMargin from "components/core/PageMargin";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     landingRoot: {
@@ -15,16 +16,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     header: {
         marginTop: '60px'
-    },
-    centerer: {
-        display: 'flex',
-        justifyContent: 'center'
-    },
-    centered: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: theme.centerColumnWidth,
     },
     articleGrid: {
         margin: '30px',
@@ -84,24 +75,22 @@ function ArticleLandingPage(props: Props) {
             featured="Featured Article"
             image={require("assets/articleHeader.svg")}
           />
-          <div className={classes.centerer}>
-              <div className={classes.centered}>
-                  <div className={classes.articleGrid}>
-                    {articles.map((article: ArticleDetails) => (
-                        <ArticleCard
-                            article={article}
-                            onClick={() => router.push('/article')}
-                        />
-                    ))}
-                  </div>
-                  <Button
-                    className={classes.button}
-                    small
-                  >
-                      More Articles
-                  </Button>
-              </div>
-          </div>
+          <PageMargin>
+            <div className={classes.articleGrid}>
+            {articles.map((article: ArticleDetails) => (
+                <ArticleCard
+                    article={article}
+                    onClick={() => router.push('/article')}
+                />
+            ))}
+            </div>
+            <Button
+            className={classes.button}
+            small
+            >
+                More Articles
+            </Button>
+        </PageMargin>
       </div>
   );
 }

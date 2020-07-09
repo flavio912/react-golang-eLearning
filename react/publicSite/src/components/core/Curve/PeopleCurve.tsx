@@ -3,6 +3,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import { Theme } from 'helpers/theme';
 import ImageWithText, { Row } from 'components/core/ImageWithText';
+import PageMargin from '../PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -63,20 +64,18 @@ function PeopleCurve({ stack, className }: Props) {
   return (
     <div className={classNames(classes.root, className)}>
       <img className={classes.curve} src={require('assets/grey-curve.svg')} />
-      <div className={classNames(classes.centerer, classes.greyBackground)}>
-        <div className={classes.centered}>
-          <div className={classes.heading}>Our people make the difference.</div>
-          <div className={classes.text}>
-            Not only do we offer incredible training, but our customer service
-            is world-class too
-          </div>
-          <ImageWithText
-            className={classes.margin}
-            image={require('assets/StockUKTeam.svg')}
-            stack={stack}
-          />
+      <PageMargin centererStyle={classNames(classes.centerer, classes.greyBackground)} centeredStyle={classes.centered}>
+        <div className={classes.heading}>Our people make the difference.</div>
+        <div className={classes.text}>
+          Not only do we offer incredible training, but our customer service
+          is world-class too
         </div>
-      </div>
+        <ImageWithText
+          className={classes.margin}
+          image={require('assets/StockUKTeam.svg')}
+          stack={stack}
+        />
+      </PageMargin>
     </div>
   );
 }

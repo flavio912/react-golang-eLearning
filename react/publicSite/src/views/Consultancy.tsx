@@ -9,25 +9,14 @@ import PeopleCurve from "components/core/Curve/PeopleCurve";
 import VideoPlayer from "components/core/VideoPlayer";
 import { Row } from "components/core/ImageWithText/ImageWithText";
 import BrandCard, { Author } from "components/core/Cards/BrandCard";
+import PageMargin from "components/core/PageMargin";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     consultancyRoot: {
         width: '100%',
         backgroundColor: theme.colors.primaryWhite
     },
-    centerer: {
-        display: 'flex',
-        justifyContent: 'center'
-    },
-    centered: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: theme.centerColumnWidth,
-    },
     textCentered: {
-        display: 'flex',
-        flexDirection: 'column',
         alignItems: 'flex-start',
     },
     heading: {
@@ -166,76 +155,70 @@ function Consultancy(props: Props) {
             title="Consultancy"
             description="Take advantage of our full dangerous goods safety adviser service."
         />
-        <div className={classes.centerer}>
-            <div className={classes.centered}>
-                <div className={classes.heading}>How we work</div>
-                <FourPanel panels={defaultIconPanels} />
-            </div>
-        </div>
-        <div className={classNames(classes.centerer, classes.greyBackground)}>
-            <div className={classes.centered}>
-                <div className={classNames(classes.heading, classes.lessMargin)}>Don't just take our word for it</div>
-                <div className={classes.row}>
-                    <VideoPlayer
-                        width={853}
-                        className={classes.video}
-                        source={require('assets/Stock_Video.mp4')}
-                        thumbnail={
-                            <div className={classes.thumbnailRoot}>
-                                <div className={classes.playCircle}>
-                                    <div className={classes.playTriangle} />
-                                </div>
-                                <Curve
-                                    width={853}
-                                    logo="Dhl"
-                                    description="“ TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, se oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusm.”"
-                                    link={{
-                                        title: 'Read & watch their story',
-                                        link: '/'
-                                    }}
-                                    blue
-                                />
+        <PageMargin>
+            <div className={classes.heading}>How we work</div>
+            <FourPanel panels={defaultIconPanels} />
+        </PageMargin>
+        <PageMargin centererStyle={classes.greyBackground}>
+            <div className={classNames(classes.heading, classes.lessMargin)}>Don't just take our word for it</div>
+            <div className={classes.row}>
+                <VideoPlayer
+                    width={853}
+                    className={classes.video}
+                    source={require('assets/Stock_Video.mp4')}
+                    thumbnail={
+                        <div className={classes.thumbnailRoot}>
+                            <div className={classes.playCircle}>
+                                <div className={classes.playTriangle} />
                             </div>
-                        }
-                    />
-                    <BrandCard
-                        className={classes.card}
-                        logoURL={require("assets/maersk-logo.svg")}
-                        link="/"
-                        author={defaultAuthor}
-                    />
-                
-                    <BrandCard
-                        className={classes.card}
-                        logoURL={require("assets/heathrow-logo.png")}
-                        link="/"
-                        text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
-                    />
-                    <BrandCard
-                        className={classes.card}
-                        logoURL={require("assets/ups-logo.svg")}
-                        link="/"
-                        text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
-                    />
-                    <BrandCard
-                        className={classes.card}
-                        logoURL={require("assets/nippon-express-logo.png")}
-                        link="/"
-                        text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
-                    />
-                </div>
+                            <Curve
+                                width={853}
+                                logo="Dhl"
+                                description="“ TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, se oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusm.”"
+                                link={{
+                                    title: 'Read & watch their story',
+                                    link: '/'
+                                }}
+                                blue
+                            />
+                        </div>
+                    }
+                />
+                <BrandCard
+                    className={classes.card}
+                    logoURL={require("assets/maersk-logo.svg")}
+                    link="/"
+                    author={defaultAuthor}
+                />
+            
+                <BrandCard
+                    className={classes.card}
+                    logoURL={require("assets/heathrow-logo.png")}
+                    link="/"
+                    text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
+                />
+                <BrandCard
+                    className={classes.card}
+                    logoURL={require("assets/ups-logo.svg")}
+                    link="/"
+                    text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
+                />
+                <BrandCard
+                    className={classes.card}
+                    logoURL={require("assets/nippon-express-logo.png")}
+                    link="/"
+                    text="TTC Lorem ipsum dolor sit amet, consectetur adipiscing elitse oddo eiusmod tempor incididunt ut labore Lorem ipsum dolor sit amet, consecte"
+                />
             </div>
-        </div>
-        <div className={classes.centerer}>
-            <div className={classes.textCentered}>
-                <div className={classes.subheading}>DGSA Services</div>
-                <div className={classes.text}>TTC offers a full dangerous goods safety adviser service. This includes an audit, telephone and email support as well as completing the annual report, which is a legal requirement.<br/><br/>We also offer a DGSA support service for those companies that need support for their in- house DGSA or who do not require the full DGSA service. We offer competitive rates and work with you to ensure you are compliant whilst also helping you to save money with efficient and effective processes.</div>
-                <div className={classes.subheading}>Dangerous Goods Consultancy Services</div>
-                <div className={classes.text}>Through our compliance and consultancy services, TTC can help you to ensure that your dangerous goods processes operate in the most cost-effective way as well as being fully compliant with all the relevant dangerous goods transport regulations.<br/><br/>We can undertake a compliance audit of your processes and offer honest and cost-effective solutions, if and when these are required.<br/><br/>We are happy to discuss any consultancy services you may need such as producing standard operating procedures or helping companies to navigate the maze of requirements for the transport of dangerous goods.</div>
-                <div className={classes.subheading}>Aviation Security Consultancy Services</div>
-                <div className={classes.text}>TTC offers a full security manager service ensuring that your security compliance is taken care of to the highest standard leaving you free to run your business. We can also take a more advisory role supporting your security manager allowing them to manage day to day operations with the safety net of an expert at the end of a phone.</div>
-            </div>
-        </div>
+        </PageMargin>
+        <PageMargin centeredStyle={classes.textCentered}>
+            <div className={classes.subheading}>DGSA Services</div>
+            <div className={classes.text}>TTC offers a full dangerous goods safety adviser service. This includes an audit, telephone and email support as well as completing the annual report, which is a legal requirement.<br/><br/>We also offer a DGSA support service for those companies that need support for their in- house DGSA or who do not require the full DGSA service. We offer competitive rates and work with you to ensure you are compliant whilst also helping you to save money with efficient and effective processes.</div>
+            <div className={classes.subheading}>Dangerous Goods Consultancy Services</div>
+            <div className={classes.text}>Through our compliance and consultancy services, TTC can help you to ensure that your dangerous goods processes operate in the most cost-effective way as well as being fully compliant with all the relevant dangerous goods transport regulations.<br/><br/>We can undertake a compliance audit of your processes and offer honest and cost-effective solutions, if and when these are required.<br/><br/>We are happy to discuss any consultancy services you may need such as producing standard operating procedures or helping companies to navigate the maze of requirements for the transport of dangerous goods.</div>
+            <div className={classes.subheading}>Aviation Security Consultancy Services</div>
+            <div className={classes.text}>TTC offers a full security manager service ensuring that your security compliance is taken care of to the highest standard leaving you free to run your business. We can also take a more advisory role supporting your security manager allowing them to manage day to day operations with the safety net of an expert at the end of a phone.</div>
+        </PageMargin>
         <PeopleCurve stack={defaultStack} />
       </div>
   );
