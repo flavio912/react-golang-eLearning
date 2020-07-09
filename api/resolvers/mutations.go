@@ -604,6 +604,18 @@ func (m *MutationResolver) BlogHeaderImageUploadRequest(
 	}, err
 }
 
+func (m *MutationResolver) AnswerImageUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.CourseApp.AnswerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
 func (m *MutationResolver) UpdateBlogHeaderImage(
 	ctx context.Context,
 	args struct {
