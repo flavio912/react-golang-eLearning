@@ -5,25 +5,31 @@ import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    height: '370px',
-    width: '402px',
+    cursor: 'pointer',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     borderRadius: '3px',
+    backgroundColor: theme.colors.backgroundGrey,
+    transition: 'all 0.2s',
     '&:hover': {
-      boxShadow: '4px 9px 39px -22px rgba(0,0,0,0.18)'
+      boxShadow: '4px 9px 39px rgba(0,0,0,0.19)',
+      backgroundColor: theme.colors.primaryWhite
     }
   },
   image: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    justifyContent: 'flex-start',
     height: '241px',
-    width: '402px',
+    width: '100%',
     borderRadius: '3px 3px 0 0'
   },
   type: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    padding: '0 20px',
     height: '33px',
     backgroundColor: theme.colors.navyBlue,
     fontSize: theme.fontSizes.xSmall,
@@ -35,37 +41,42 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.xSmall,
     fontWeight: '800',
     color: theme.colors.textGrey,
-    margin: '25px 0 20px 0'
+    margin: '15px 0'
   },
   description: {
     textAlign: 'center',
-    fontSize: theme.fontSizes.extraLarge,
+    fontSize: theme.fontSizes.large,
     margin: '0 25px 20px 25px'
   }
 }));
 
-type Props = {
+export type ArticleDetails = {
   type: string;
   imageURL: string;
   date: string;
   description: string;
+};
+
+type Props = {
+  article: ArticleDetails;
+  onClick: () => void;
   className?: string;
 };
 
-function ArticleCard({ type, imageURL, date, description, className }: Props) {
+function ArticleCard({ article, onClick, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
-    <div className={classNames(classes.root, className)}>
+    <div className={classNames(classes.root, className)} onClick={onClick}>
       <div
         className={classes.image}
-        style={{ backgroundImage: `url(${imageURL})` }}
+        style={{ backgroundImage: `url(${article.imageURL})` }}
       >
-        <div className={classes.type}>{type.toUpperCase()}</div>
+        <div className={classes.type}>{article.type.toUpperCase()}</div>
       </div>
-      <div className={classes.date}>{date}</div>
-      <div className={classes.description}>{description}</div>
+      <div className={classes.date}>{article.date}</div>
+      <div className={classes.description}>{article.description}</div>
     </div>
   );
 }
