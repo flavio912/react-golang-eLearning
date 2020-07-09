@@ -122,6 +122,7 @@ const iconNameMap = {
   Maersk: require('../../../assets/maersk-logo.svg'),
   Maersk_Grey: require('../../../assets/maersk-logo-grey.png'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Nippon_Express: require("../../../assets/nippon-express-logo.png"),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
   Stripe: require("../../../assets/Stripe.svg"),
   Tick: require("../../../assets/Tick.svg"),

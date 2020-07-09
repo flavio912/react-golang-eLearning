@@ -6,8 +6,7 @@ import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
 const useStyles = createUseStyles((theme: Theme) => ({
   rootCarouselImage: {
-    padding: theme.spacing(2),
-    background: theme.carouselImageBackgroundGradient
+    padding: theme.spacing(2)
   },
   carousel: {},
   containerClass: {
@@ -62,6 +61,7 @@ export interface Image {
 }
 type Props = {
   images: Image[];
+  className?: string;
 };
 const responsive = {
   superLargeDesktop: {
@@ -91,11 +91,11 @@ const CustomDot = ({ onClick, active, classes }: any) => {
     </li>
   );
 };
-function CarouselImage({ images }: Props) {
+function CarouselImage({ images, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
-    <div className={classes.rootCarouselImage}>
+    <div className={classNames(classes.rootCarouselImage, className)}>
       <div className={classes.carousel}>
         <Carousel
           additionalTransfrom={0}
