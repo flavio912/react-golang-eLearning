@@ -89,7 +89,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: 128
   },
   backgroundHider: {
-    position: 'absolute',
+    position: 'fixed',
     width: '100%',
     height: '100%',
     top: 0,

@@ -52,7 +52,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     boxShadow: '0px 3px 10px #0000001f'
   },
   backgroundHider: {
-    position: 'absolute',
+    position: 'fixed',
     width: '100%',
     height: '50%',
     top: 0,
