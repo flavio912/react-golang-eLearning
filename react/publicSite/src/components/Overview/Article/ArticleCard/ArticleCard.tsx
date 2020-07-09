@@ -11,9 +11,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center',
     borderRadius: '3px',
     backgroundColor: theme.colors.backgroundGrey,
+    transition: 'all 0.2s',
     '&:hover': {
       boxShadow: '4px 9px 39px rgba(0,0,0,0.19)',
-      backgroundColor: theme.colors.primaryWhite,
+      backgroundColor: theme.colors.primaryWhite
     }
   },
   image: {
@@ -54,7 +55,7 @@ export type ArticleDetails = {
   imageURL: string;
   date: string;
   description: string;
-}
+};
 
 type Props = {
   article: ArticleDetails;
@@ -67,10 +68,7 @@ function ArticleCard({ article, onClick, className }: Props) {
   const classes = useStyles({ theme });
 
   return (
-    <div
-      className={classNames(classes.root, className)}
-      onClick={onClick}
-    >
+    <div className={classNames(classes.root, className)} onClick={onClick}>
       <div
         className={classes.image}
         style={{ backgroundImage: `url(${article.imageURL})` }}
