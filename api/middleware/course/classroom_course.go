@@ -52,7 +52,7 @@ func (c *coursesRepoImpl) CreateClassroomCourse(courseInfo gentypes.SaveClassroo
 		return models.Course{}, err
 	}
 
-	course.ClassroomCourse = classroomCourse
+	course.ClassroomCourse = &classroomCourse
 
 	query := database.GormDB.Create(&course)
 	if query.Error != nil {
@@ -71,7 +71,7 @@ func (c *coursesRepoImpl) UpdateClassroomCourse(courseInfo gentypes.SaveClassroo
 	}
 
 	// Update courseInfo
-	course, err := c.UpdateCourse(*courseInfo.ID, CourseInput{
+	course, err := c.UpdateCourse(uint(*courseInfo.ID), CourseInput{
 		Name:            courseInfo.Name,
 		CategoryUUID:    courseInfo.CategoryUUID,
 		Excerpt:         courseInfo.Excerpt,
@@ -103,7 +103,7 @@ func (c *coursesRepoImpl) UpdateClassroomCourse(courseInfo gentypes.SaveClassroo
 	}
 
 	courseModel := models.Course{ID: course.ID}
-	courseModel.ClassroomCourse = updates
+	courseModel.ClassroomCourse = &updates
 
 	q := database.GormDB.Model(models.Course{}).
 		Where("id = ?", course.ID).

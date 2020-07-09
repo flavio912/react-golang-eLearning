@@ -10,10 +10,9 @@ import {
   Divider
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
+import TagsInput from 'src/components/TagsInput';
 
-function CourseInfo() {
-  const [title, setTitle] = useState();
-
+function CourseInfo({ state, setState }) {
   const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
 
   return (
@@ -28,10 +27,10 @@ function CourseInfo() {
               label="Course Name"
               name="courseName"
               onChange={inp => {
-                setTitle(inp.target.value);
+                setState('name', inp.target.value);
               }}
               placeholder="e.g Dangerous Goods"
-              value={title}
+              value={state.name}
               variant="outlined"
             />
           </Grid>
@@ -41,6 +40,9 @@ function CourseInfo() {
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
+                  onChange={(event, newValue) => {
+                    setState('primaryCategory', newValue.value);
+                  }}
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -61,6 +63,9 @@ function CourseInfo() {
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
+                  onChange={(event, newValue) => {
+                    setState('secondaryCategory', newValue.value);
+                  }}
                   renderInput={params => (
                     <TextField
                       {...params}
@@ -76,30 +81,7 @@ function CourseInfo() {
             </Grid>
           </Grid>
           <Grid item>
-            <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
-                <Autocomplete
-                  multiple
-                  options={categoryOptions}
-                  getOptionLabel={option => option.title}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        variant="outlined"
-                        label={option.title}
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={params => (
-                    <TextField {...params} label="Tags" variant="outlined" />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
-              </Grid>
-            </Grid>
+            <TagsInput onChange={newVal => setState('tags', newVal)} />
           </Grid>
         </Grid>
       </CardContent>

@@ -43,9 +43,9 @@ func TestCreateTag(t *testing.T) {
 	})
 }
 
-func TestGetTagsByCourseInfoIDs(t *testing.T) {
+func TestManyCourseTags(t *testing.T) {
 	prepareTestDatabase()
-	courseToTags, err := courseRepo.GetTagsByCourseInfoIDs([]uint{3, 2})
+	courseToTags, err := courseRepo.ManyCourseTags([]uint{3, 2})
 	assert.Nil(t, err)
 	assert.Equal(t, 2, len(courseToTags[2]))
 	assert.Equal(t, 3, len(courseToTags[3]))

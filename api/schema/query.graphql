@@ -43,7 +43,7 @@ input CompanyFilter {
 
 input LessonFilter {
   uuid: UUID
-  title: String
+  name: String
   tags: [UUID]
 }
 
@@ -58,7 +58,7 @@ input OrderBy {
 
 type Query {
   info: String!
-  admin(uuid: UUID!): Admin
+  admin(uuid: UUID): Admin
   admins(page: Page): AdminPage!
   manager(uuid: UUID): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
@@ -69,5 +69,17 @@ type Query {
   lesson(uuid: UUID!): Lesson
   lessons(page: Page, filter: LessonFilter, orderBy: OrderBy): LessonPage
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
-  user: User 
+  course(id: Int!): Course
+  user: User
+
+  questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
+  question(uuid: UUID!): Question
+  tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
+  test(uuid: UUID!): Test
+  # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
+  module(uuid: UUID!): Module
+
+  # searchSyllabus(page: Page, filter: SyllabusFilter) // Allows searching modules, lessons and tests
+  # categories(level: Primary || Secondary, text: String) // Get all of the course categories
+  # tags(text: String) // searches all of the tags
 }

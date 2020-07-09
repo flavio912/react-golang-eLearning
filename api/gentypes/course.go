@@ -7,12 +7,12 @@ const (
 	Open       AccessType = "open"
 )
 
-type StructureElement string
+type CourseElement string
 
 const (
-	ModuleType StructureElement = "module"
-	TestType   StructureElement = "test"
-	LessonType StructureElement = "lesson"
+	ModuleType CourseElement = "module"
+	TestType   CourseElement = "test"
+	LessonType CourseElement = "lesson"
 )
 
 type CourseType string
@@ -23,7 +23,7 @@ const (
 )
 
 type CourseInput struct {
-	ID                 *uint
+	ID                 *int32
 	Name               *string
 	CategoryUUID       *UUID
 	Excerpt            *string
@@ -42,13 +42,7 @@ type CourseInput struct {
 }
 
 type CourseItem struct {
-	Type  StructureElement
-	UUID  UUID
-	Items []ModuleItem
-}
-
-type ModuleItem struct {
-	Type StructureElement
+	Type CourseElement
 	UUID UUID
 }
 
@@ -70,6 +64,12 @@ type Course struct {
 	Excerpt         string
 	SpecificTerms   string
 	CategoryUUID    *UUID
+}
+
+type ActiveCourse struct {
+	CourseID       uint
+	CurrentAttempt uint
+	MinutesTracked float64
 }
 
 type CourseFilter struct {

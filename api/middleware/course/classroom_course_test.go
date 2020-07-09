@@ -52,7 +52,7 @@ func TestUpdateClassroomCourse(t *testing.T) {
 
 		startTime := gentypes.Time{time.Now()}
 		endTime := gentypes.Time{time.Now().AddDate(0, 1, 0)}
-		var id = uint(1)
+		var id = int32(1)
 		updates := gentypes.SaveClassroomCourseInput{
 			CourseInput: gentypes.CourseInput{
 				ID:   &id,

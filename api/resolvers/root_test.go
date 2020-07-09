@@ -85,12 +85,12 @@ func addAdminCreds(ctx context.Context) (context.Context, error) {
 		return nil, err
 	}
 	ctx = context.WithValue(ctx, auth.AuthKey, adminToken)
-
 	grant, err := middleware.Authenticate(adminToken)
 	if err != nil {
 		fmt.Printf("Unable auth admin! %#v", err)
 		return nil, err
 	}
+	ctx = auth.AddAppContext(ctx, grant)
 
 	return context.WithValue(ctx, auth.GrantKey, grant), nil
 }
@@ -110,11 +110,14 @@ func addManagerCreds(ctx context.Context) (context.Context, error) {
 		return nil, err
 	}
 
+	ctx = auth.AddAppContext(ctx, grant)
 	return context.WithValue(ctx, auth.GrantKey, grant), nil
 }
 
 func addPublicCreds(ctx context.Context) (context.Context, error) {
-	return context.WithValue(ctx, auth.GrantKey, &middleware.Grant{IsPublic: true}), nil
+	grant := &middleware.Grant{IsPublic: true}
+	ctx = auth.AddAppContext(ctx, grant)
+	return context.WithValue(ctx, auth.GrantKey, grant), nil
 }
 
 func prepareTestDatabase() {
@@ -152,7 +155,7 @@ func accessTest(t *testing.T, schema *graphql.Schema, opts accessTestOpts) {
 	}
 
 	t.Run(fmt.Sprintf("Must be authed:%v", opts.MustAuth), func(t *testing.T) {
-		checkAccess(t, defaultContext(), !opts.MustAuth)
+		checkAccess(t, publicContext(), !opts.MustAuth)
 	})
 
 	t.Run(fmt.Sprintf("Admin Allowed:%v", opts.AdminAllowed), func(t *testing.T) {

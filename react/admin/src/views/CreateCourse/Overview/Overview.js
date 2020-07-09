@@ -1,5 +1,12 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  Divider
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import CourseFeatures from './CourseFeatures';
 import CourseInfo from './CourseInfo';
@@ -13,10 +20,13 @@ const useStyles = makeStyles(theme => ({
     color: '#4a4a4a',
     fontSize: 11,
     fontWeight: 'weight: 700'
+  },
+  shortDescription: {
+    width: '100%'
   }
 }));
 
-function Overview() {
+function Overview({ state, setState }) {
   const classes = useStyles();
 
   return (
@@ -25,15 +35,32 @@ function Overview() {
         <Grid item={6} xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
-              <CourseInfo />
+              <CourseInfo state={state} setState={setState} />
             </Grid>
             <Grid item>
-              <EditorCard inlineOnly title={'About this course (70 words)'} />
+              <Card>
+                <CardHeader title={'Short Description'} />
+                <Divider />
+                <CardContent>
+                  <TextField
+                    label=""
+                    multiline
+                    className={classes.shortDescription}
+                    rows={5}
+                    value={state.excerpt}
+                    onChange={inp => {
+                      setState('excerpt', inp.target.value);
+                    }}
+                    placeholder={'Short description'}
+                    variant="outlined"
+                  />
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={4}>
-          <CourseFeatures />
+          <CourseFeatures state={state} setState={setState} />
         </Grid>
       </Grid>
     </div>

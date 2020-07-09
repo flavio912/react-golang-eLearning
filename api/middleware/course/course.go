@@ -5,6 +5,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -22,6 +23,9 @@ type CoursesRepository interface {
 	UpdateCourse(courseID uint, infoChanges CourseInput) (models.Course, error)
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
+	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
+	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
+	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
@@ -39,13 +43,37 @@ type CoursesRepository interface {
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)
 	CreateTag(input gentypes.CreateTagInput) (models.Tag, error)
-	GetTagsByCourseInfoIDs(ids []uint) (map[uint][]models.Tag, error)
+	ManyCourseTags(ids []uint) (map[uint][]models.Tag, error)
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]models.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]models.Tag, error)
 
+	CreateModule(input CreateModuleInput) (models.Module, error)
+	UpdateModule(input UpdateModuleInput) (models.Module, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
-	GetModuleStructure(moduleUUID gentypes.UUID) (gentypes.CourseItem, error)
-	UpdateModuleStructure(tx *gorm.DB, moduleItem gentypes.CourseItem, duplicateTemplates bool) (models.Module, error)
+	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
+	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
+	IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error)
+
+	Test(testUUID gentypes.UUID) (models.Test, error)
+	Tests(
+		page *gentypes.Page,
+		filter *gentypes.TestFilter,
+		orderBy *gentypes.OrderBy,
+	) ([]models.Test, gentypes.PageInfo, error)
+	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
+	CreateTest(input CreateTestInput) (models.Test, error)
+	UpdateTest(input UpdateTestInput) (models.Test, error)
+	TestQuestions(testUUID gentypes.UUID) ([]models.Question, error)
+	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
+
+	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
+
+	Question(uuid gentypes.UUID) (models.Question, error)
+	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
+	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
+	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
+
+	CreateTestMarks(mark models.TestMark) error
 }
 
 type coursesRepoImpl struct {
@@ -112,53 +140,72 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		return models.Course{}, err
 	}
 
-	var courseInfo models.Course
-	courseInfo.ID = courseID
+	updates := make(map[string]interface{})
+
 	if helpers.StringNotNilOrEmpty(infoChanges.ImageSuccessToken) {
 		key, err := uploads.VerifyUploadSuccess(*infoChanges.ImageSuccessToken, "courseBannerImage")
 		if err != nil {
 			return models.Course{}, err
 		}
-		courseInfo.ImageKey = &key
+		updates["image_key"] = key
 	}
+
+	if infoChanges.Name != nil {
+		glog.Errorf("GOT name update: %s", *infoChanges.Name)
+		updates["name"] = *infoChanges.Name
+	}
+	if infoChanges.Price != nil {
+		updates["price"] = *infoChanges.Price
+	}
+	if infoChanges.Color != nil {
+		updates["color"] = *infoChanges.Color
+	}
+	if infoChanges.CategoryUUID != nil {
+		updates["category_uuid"] = infoChanges.CategoryUUID // TODO: Check if exists
+	}
+	if infoChanges.Excerpt != nil {
+		updates["excerpt"] = *infoChanges.Excerpt
+	}
+	if infoChanges.Introduction != nil {
+		updates["introduction"] = *infoChanges.Introduction
+	}
+	if infoChanges.HowToComplete != nil {
+		updates["how_to_complete"] = *infoChanges.HowToComplete
+	}
+	if infoChanges.HoursToComplete != nil {
+		updates["hours_to_complete"] = *infoChanges.HoursToComplete
+	}
+	if infoChanges.AccessType != nil {
+		updates["access_type"] = *infoChanges.AccessType
+	}
+	if infoChanges.BackgroundCheck != nil {
+		updates["background_check"] = *infoChanges.BackgroundCheck
+	}
+	if infoChanges.SpecificTerms != nil {
+		updates["specific_terms"] = *infoChanges.SpecificTerms
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "UpdateCourse: Forced to recover")
+		}
+	}()
 
 	if infoChanges.Tags != nil {
 		// Check each tag exists
 		if tags, err := c.CheckTagsExist(*infoChanges.Tags); err == nil {
-			courseInfo.Tags = tags
+			repErr := tx.Model(models.Course{ID: courseID}).Association("Tags").Replace(tags).Error
+			if repErr != nil {
+				c.Logger.Log(sentry.LevelError, repErr, "Could not replace tags")
+				tx.Rollback()
+				return models.Course{}, &errors.ErrWhileHandling
+			}
 		} else {
 			return models.Course{}, err
 		}
 	}
-	if infoChanges.Name != nil {
-		courseInfo.Name = *infoChanges.Name
-	}
-	if infoChanges.Price != nil {
-		courseInfo.Price = *infoChanges.Price
-	}
-	if infoChanges.Color != nil {
-		courseInfo.Color = *infoChanges.Color
-	}
-	if infoChanges.CategoryUUID != nil {
-		courseInfo.CategoryUUID = infoChanges.CategoryUUID // TODO: Check if exists
-	}
-	if infoChanges.Excerpt != nil {
-		courseInfo.Excerpt = *infoChanges.Excerpt
-	}
-	if infoChanges.Introduction != nil {
-		courseInfo.Introduction = *infoChanges.Introduction
-	}
-	if infoChanges.AccessType != nil {
-		courseInfo.AccessType = *infoChanges.AccessType
-	}
-	if infoChanges.BackgroundCheck != nil {
-		courseInfo.BackgroundCheck = *infoChanges.BackgroundCheck
-	}
-	if infoChanges.SpecificTerms != nil {
-		courseInfo.SpecificTerms = *infoChanges.SpecificTerms
-	}
-
-	tx := database.GormDB.Begin()
 
 	// If requirements changed, remove all old ones and repopulate
 	if infoChanges.Requirements != nil {
@@ -170,7 +217,12 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			return models.Course{}, &errors.ErrWhileHandling
 		}
 
-		courseInfo.Requirements = newRequirements
+		repErr := tx.Model(&models.Course{ID: courseID}).Association("Requirements").Replace(newRequirements).Error
+		if repErr != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, repErr, "Unable to replace requirements")
+			return models.Course{}, &errors.ErrWhileHandling
+		}
 	}
 
 	// If requirements changed, remove all old ones and repopulate
@@ -183,11 +235,17 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 			return models.Course{}, &errors.ErrWhileHandling
 		}
 
-		courseInfo.WhatYouLearn = newWhatYouLearn
+		repErr := tx.Model(&models.Course{ID: courseID}).Association("WhatYouLearn").Replace(newWhatYouLearn).Error
+		if repErr != nil {
+			tx.Rollback()
+			c.Logger.Log(sentry.LevelError, repErr, "Unable to replace whatYouLearn")
+			return models.Course{}, &errors.ErrWhileHandling
+		}
 	}
 
-	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(&courseInfo)
+	query := tx.Model(&models.Course{}).Where("id = ?", courseID).Updates(updates)
 	if query.Error != nil {
+		tx.Rollback()
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to update course")
 		return models.Course{}, &errors.ErrWhileHandling
 	}
@@ -197,7 +255,11 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		return models.Course{}, &errors.ErrWhileHandling
 	}
 
-	return courseInfo, nil
+	course, err := c.Course(courseID)
+	if err != nil {
+		return models.Course{}, &errors.ErrNotFound
+	}
+	return course, nil
 }
 
 func (c *coursesRepoImpl) RequirementBullets(courseID uint) ([]models.RequirementBullet, error) {
@@ -372,4 +434,36 @@ func (c *coursesRepoImpl) GetCourses(page *gentypes.Page, filter *gentypes.Cours
 		Limit:  limit,
 		Given:  int32(len(courses)),
 	}, nil
+}
+
+// ManyOnlineCourseStructures maps many given onlineCourseUUID to a slice of their respective course structures
+func (c *coursesRepoImpl) ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error) {
+	var structureItems []models.CourseStructure
+	query := database.GormDB.Where("online_course_uuid IN (?)", onlineCourseUUIDs).Order("online_course_uuid, rank ASC").Find(&structureItems)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get online course structures")
+		return map[gentypes.UUID][]models.CourseStructure{}, &errors.ErrWhileHandling
+	}
+
+	var syllabuses = make(map[gentypes.UUID][]models.CourseStructure)
+	for _, item := range structureItems {
+		id := item.OnlineCourseUUID
+		syllabuses[id] = append(syllabuses[id], item)
+	}
+
+	return syllabuses, nil
+}
+
+// OnlineCourseStructure gets ordered structure items for a course
+func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error) {
+	structures, err := c.ManyOnlineCourseStructures([]gentypes.UUID{onlineCourseUUID})
+	if err != nil {
+		return []models.CourseStructure{}, err
+	}
+
+	if _, ok := structures[onlineCourseUUID]; ok {
+		return structures[onlineCourseUUID], nil
+	}
+
+	return []models.CourseStructure{}, nil
 }

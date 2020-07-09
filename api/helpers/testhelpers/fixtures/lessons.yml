@@ -1,11 +1,11 @@
 - uuid: 00000000-0000-0000-0000-000000000001
-  title: Dynamic Programming
+  name: Dynamic Programming
   text: {}
 
 - uuid: 00000000-0000-0000-0000-000000000002
-  title: Lorentz Invariance
+  name: Lorentz Invariance
   text: {}
 
 - uuid: 00000000-0000-0000-0000-000000000003
-  title: Eigenvalues and Eigenvectors
+  name: Eigenvalues and Eigenvectors
   text: {}

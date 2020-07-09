@@ -7,7 +7,7 @@ schema {
 
 type Query {
   info: String!
-  user: User 
+  user: User
 }
 
 type Mutation {
@@ -57,16 +57,40 @@ type Address {
   country: String!
 }
 
+type Course {
+  id: Int!
+  type: CourseType!
+  name: String!
+  backgroundCheck: Boolean
+  price: Float!
+  color: String
+  excerpt: String
+  introduction: String
+  howToComplete: String
+  hoursToComplete: Float
+  whatYouLearn: [String!]
+  requirements: [String!]
+  specificTerms: String
+  category: Category
+  allowedToBuy: Boolean
+  syllabus: [SyllabusItem!]
+}
+
+type CoursePage implements PaginatedQuery {
+  edges: [Course]
+  pageInfo: PageInfo
+}
+
 enum UserType {
   manager
   individual
   delegate
 }
 
+# User is a thin type that collates information about the manager, delegate
+# and individual user types. Some fields are not going to be available depending
+# on the type of user you are requesting data for.
 type User {
-  # certificates
-  # onlineCourses: OnlineCoursePage
-  # activity
   type: UserType!
   email: String
   firstName: String!
@@ -76,11 +100,80 @@ type User {
   lastLogin: String!
   company: Company
   profileImageUrl: String
+  activity(page: Page): ActivityPage
+  activeCourses: [ActiveCourse!]
+  # certificates
   # address: Address
 }
 
+enum ActivityType {
+  newCourse
+  activated
+  completedCourse
+  failedCourse
+}
 
+type ActivityPage implements PaginatedQuery {
+  edges: [Activity]
+  pageInfo: PageInfo
+}
+
+type Activity {
+  uuid: UUID!
+  type: ActivityType!
+  createdAt: String!
+  course: Course
+}
+
+# type ActiveCoursePage implements PaginatedQuery {
+#   edges: [ActiveCourse]
+#   pageInfo: PageInfo
+# }
+
+# # A course currently being taken by a user
+type ActiveCourse {
+  course: Course!
+  currentAttempt: Int!
+  minutesTracked: Float!
+}
 
 type AuthToken {
   token: String!
+}
+
+enum AccessType {
+  restricted
+  open
+}
+
+enum StructureElement {
+  module
+  test
+  lesson
+}
+
+enum CourseType {
+  online
+  classroom
+}
+
+interface SyllabusItem {
+  name: String!
+  uuid: UUID!
+  complete: Boolean
+}
+
+type Lesson implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  complete: Boolean
+  mp3URL: String
+  text: String!
+  tags: [Tag!]
+}
+
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
 }

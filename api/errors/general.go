@@ -132,7 +132,7 @@ var (
 		Message: "The given CSRF token was blank or invalid",
 	}
 	ErrUnauthorizedToBook = SimpleError{
-		Type:    "ErrUnauthorizedToBook",
+		Type:    "ErrUnauthorized",
 		Message: "You cannot book these courses as you are not authorized",
 	}
 	ErrNotAllFound = SimpleError{
@@ -150,5 +150,19 @@ var (
 			Type:    "ErrRequiredField",
 			Message: fmt.Sprintf("The field '%s', is required", name),
 		}
+	}
+	ErrInputValidation = func(paramName string, issue string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrInputValidation",
+			Message: fmt.Sprintf("The field '%s' is invalid: %s", paramName, issue),
+		}
+	}
+	ErrAlreadyTakenTest = SimpleError{
+		Type:    "ErrAlreadyTakenTest",
+		Message: "You cannot take this test again",
+	}
+	ErrNotEnoughAnswersGiven = SimpleError{
+		Type:    "ErrNotEnoughAnswersGiven",
+		Message: "Not enough answers were given to complete the test, please try again",
 	}
 )

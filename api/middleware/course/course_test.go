@@ -19,7 +19,7 @@ var fixtures *testfixtures.Loader
 
 func TestMain(m *testing.M) {
 	var err error
-	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(true, "middleware_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}
@@ -41,9 +41,9 @@ func TestUpdateCourse(t *testing.T) {
 		inp := course.CourseInput{
 			Name:         helpers.StringPointer("UpdatedCourse"),
 			Price:        helpers.FloatPointer(43.4),
-			Color:        helpers.StringPointer("#ffffff"),
-			Excerpt:      helpers.StringPointer("{}"),
-			Introduction: helpers.StringPointer("{}"),
+			Color:        helpers.StringPointer("#fffffa"),
+			Excerpt:      helpers.StringPointer("this is a cool excerpt"),
+			Introduction: helpers.StringPointer("i am an introduction oifdsf"),
 			AccessType:   &open,
 			WhatYouLearn: &[]string{
 				"This cool thing",
@@ -55,10 +55,11 @@ func TestUpdateCourse(t *testing.T) {
 				"req 3",
 			},
 			BackgroundCheck: helpers.BoolPointer(false),
-			SpecificTerms:   helpers.StringPointer("{}"),
+			SpecificTerms:   helpers.StringPointer("Some specific terms"),
 		}
-		_, err := courseRepo.UpdateCourse(1, inp)
+		course, err := courseRepo.UpdateCourse(1, inp)
 		assert.Nil(t, err)
+		assert.NotEqual(t, models.Course{}, course)
 
 		info, err := courseRepo.Course(1)
 		assert.Nil(t, err)
@@ -196,4 +197,20 @@ func checkCourseInfoEqual(t *testing.T, inpInfo gentypes.CourseInput, outInfo ge
 	if inpInfo.SpecificTerms != nil {
 		assert.Equal(t, *inpInfo.SpecificTerms, outInfo.SpecificTerms)
 	}
+}
+
+func TestManyOnlineCourseStructures(t *testing.T) {
+	t.Run("Gets single", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")
+		mapping, err := courseRepo.ManyOnlineCourseStructures([]gentypes.UUID{uuid})
+		assert.Nil(t, err)
+
+		assert.Equal(t, "0", mapping[uuid][0].Rank)
+		assert.Equal(t, gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"), *mapping[uuid][0].LessonUUID)
+
+		assert.Equal(t, "1", mapping[uuid][1].Rank)
+		assert.Equal(t, gentypes.MustParseToUUID("2a7e551a-0291-422d-8508-c0ee8ff4c67e"), *mapping[uuid][1].TestUUID)
+	})
+
+	// TODO: Add test for multiple
 }

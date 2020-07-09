@@ -18,7 +18,7 @@ var usersRepo = user.NewUsersRepository(&logging.Logger{})
 
 func TestMain(m *testing.M) {
 	var err error
-	fixtures, err = testhelpers.SetupTestDatabase(false, "middleware_test")
+	fixtures, err = testhelpers.SetupTestDatabase(true, "middleware_test")
 	if err != nil {
 		panic("Failed to init test db")
 	}

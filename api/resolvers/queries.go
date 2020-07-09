@@ -51,8 +51,10 @@ func (q *QueryResolver) Admins(ctx context.Context, args struct{ Page *gentypes.
 }
 
 // Admin gets a single admin
-func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID gentypes.UUID }) (*AdminResolver, error) {
-	admin, err := loader.LoadAdmin(ctx, args.UUID.String())
+func (q *QueryResolver) Admin(ctx context.Context, args struct{ UUID *gentypes.UUID }) (*AdminResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	admin, err := app.AdminApp.Admin(args.UUID)
 	return &AdminResolver{admin: admin}, err
 }
 
@@ -246,13 +248,8 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 	Filter  *gentypes.CourseFilter
 	OrderBy *gentypes.OrderBy
 }) (*CoursePageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &CoursePageResolver{}, &errors.ErrUnauthorized
-	}
-
-	courseFuncs := course.NewCourseApp(grant)
-	courses, page, err := courseFuncs.GetCourses(args.Page, args.Filter, args.OrderBy)
+	app := auth.AppFromContext(ctx)
+	courses, page, err := app.CourseApp.GetCourses(args.Page, args.Filter, args.OrderBy)
 
 	var courseResolvers []*CourseResolver
 	for _, course := range courses {
@@ -267,4 +264,67 @@ func (q *QueryResolver) Courses(ctx context.Context, args struct {
 			&page,
 		},
 	}, err
+}
+
+func (q *QueryResolver) Course(ctx context.Context, args struct{ ID int32 }) (*CourseResolver, error) {
+	id := uint(args.ID)
+	return NewCourseResolver(ctx, NewCourseArgs{
+		ID: &id,
+	})
+}
+
+func (q *QueryResolver) Question(ctx context.Context, args struct{ UUID gentypes.UUID }) (*QuestionResolver, error) {
+	return NewQuestionResolver(ctx, NewQuestionArgs{
+		UUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Questions(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.QuestionFilter
+		OrderBy *gentypes.OrderBy
+	}) (*QuestionPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	questions, pageInfo, err := app.CourseApp.Questions(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &QuestionPageResolver{}, err
+	}
+
+	return NewQuestionPageResolver(ctx, NewQuestionPageArgs{
+		PageInfo:  pageInfo,
+		Questions: &questions,
+	})
+}
+
+func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
+	return NewTestResolver(ctx, NewTestArgs{
+		TestUUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Tests(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.TestFilter
+		OrderBy *gentypes.OrderBy
+	}) (*TestPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	tests, pageInfo, err := app.CourseApp.Tests(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &TestPageResolver{}, err
+	}
+
+	return NewTestPageResolver(ctx, NewTestPageArgs{
+		PageInfo: pageInfo,
+		Tests:    &tests,
+	})
+}
+
+func (q *QueryResolver) Module(ctx context.Context, args struct{ UUID gentypes.UUID }) (*ModuleResolver, error) {
+	return NewModuleResolver(ctx, NewModuleArgs{
+		ModuleUUID: &args.UUID,
+	})
 }

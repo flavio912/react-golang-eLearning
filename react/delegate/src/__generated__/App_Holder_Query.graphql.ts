@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 55e76af96306363a100a293bc8208c56 */
+/* @relayHash 9f626e8c768518eb3b28b845c0dbddef */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -27,7 +27,6 @@ query App_Holder_Query {
 fragment AppHolder_user on User {
   firstName
   lastName
-  profileImageUrl
 }
 */
 
@@ -85,13 +84,6 @@ const node: ConcreteRequest = ({
                         "name": "lastName",
                         "args": null,
                         "storageKey": null
-                    },
-                    {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "profileImageUrl",
-                        "args": null,
-                        "storageKey": null
                     }
                 ]
             }
@@ -101,7 +93,7 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_Holder_Query",
         "id": null,
-        "text": "query App_Holder_Query {\n  user {\n    ...AppHolder_user\n  }\n}\n\nfragment AppHolder_user on User {\n  firstName\n  lastName\n  profileImageUrl\n}\n",
+        "text": "query App_Holder_Query {\n  user {\n    ...AppHolder_user\n  }\n}\n\nfragment AppHolder_user on User {\n  firstName\n  lastName\n}\n",
         "metadata": {}
     }
 } as any);

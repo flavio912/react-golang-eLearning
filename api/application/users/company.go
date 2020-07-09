@@ -83,7 +83,10 @@ func (u *usersAppImpl) UpdateCompany(company gentypes.UpdateCompanyInput) (genty
 }
 
 func (u *usersAppImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error) {
-	// TODO add back auth
+	if !u.grant.IsAdmin {
+		return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
 	return u.usersRepository.GetCompanyUUIDs(page, filter, orderBy)
 }
 

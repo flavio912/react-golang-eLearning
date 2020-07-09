@@ -1,5 +1,12 @@
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import {
+  Grid,
+  TextField,
+  Card,
+  CardHeader,
+  CardContent,
+  Divider
+} from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import SideOptions from './SideOptions';
 import EditorCard from 'src/components/EditorCard';
@@ -12,10 +19,13 @@ const useStyles = makeStyles(theme => ({
     color: '#4a4a4a',
     fontSize: 11,
     fontWeight: 'weight: 700'
+  },
+  termsInput: {
+    width: '100%'
   }
 }));
 
-function Pricing() {
+function Pricing({ state, setState }) {
   const classes = useStyles();
 
   return (
@@ -24,17 +34,31 @@ function Pricing() {
         <Grid item={6} xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
-              <EditorCard title={'Standard Terms'} />
-            </Grid>
-            <Grid item>
-              <EditorCard title={'Specific Terms'} />
+              <Card>
+                <CardHeader title={'Terms and conditions'} />
+                <Divider />
+                <CardContent>
+                  <TextField
+                    label=""
+                    multiline
+                    className={classes.termsInput}
+                    rows={5}
+                    value={state.terms}
+                    onChange={inp => {
+                      setState('terms', inp.target.value);
+                    }}
+                    placeholder={'Terms and conditions'}
+                    variant="outlined"
+                  />
+                </CardContent>
+              </Card>
             </Grid>
           </Grid>
         </Grid>
         <Grid item xs={4}>
           <Grid container direction={'column'} spacing={2}>
             <Grid item>
-              <SideOptions />
+              <SideOptions state={state} setState={setState} />
             </Grid>
           </Grid>
         </Grid>

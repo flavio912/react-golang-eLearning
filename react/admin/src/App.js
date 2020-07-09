@@ -18,7 +18,9 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { HttpLink } from 'apollo-link-http';
-import { ApolloLink, concat } from 'apollo-link';
+import { ApolloLink, concat, from } from 'apollo-link';
+import { onError } from 'apollo-link-error';
+import { gql } from 'apollo-boost';
 
 import './mixins/chartjs';
 import './mixins/moment';
@@ -52,14 +54,42 @@ const authMiddleware = new ApolloLink((operation, forward) => {
   return forward(operation);
 });
 
+const errorLink = new onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors)
+    graphQLErrors.map(({ message, locations, path }) =>
+      console.log(
+        `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+      )
+    );
+
+  if (networkError) console.log(`[Network error]: ${networkError}`);
+});
+
 const link = new HttpLink({
-  uri: 'https://ttc.devserver.london/graphql',
+  uri: 'http://localhost:8080/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 
 const client = new ApolloClient({
-  link: concat(authMiddleware, link),
-  cache: new InMemoryCache()
+  link: from([errorLink, authMiddleware, link]),
+  cache: new InMemoryCache(),
+  defaultOptions: {
+    query: {
+      fetchPolicy: 'cache-and-network',
+      errorPolicy: 'all'
+    }
+  },
+  typeDefs: gql`
+    enum AccessType {
+      restricted
+      open
+    }
+
+    enum CourseType {
+      online
+      classroom
+    }
+  `
 });
 
 function App() {

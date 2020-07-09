@@ -31,7 +31,7 @@ function Header({ className, ...rest }) {
           <Button
             color="primary"
             component={RouterLink}
-            to="/courses/create"
+            to="/courses/create/overview"
             variant="contained"
           >
             <AddIcon className={classes.addIcon} />
