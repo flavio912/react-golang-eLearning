@@ -98,22 +98,84 @@ export const AppHolder = ({ children }: Props) => {
 
   const { match, router } = useRouter();
   const tabs: Array<Tab> = [
-    { id: 0, title: 'Features', options: [
-      { title: 'For Companies', text: "We're training the finest minds in air, road and sea - are you on the list?", link: '/register/company'},
-      { title: 'For Individuals', text: "Do you need trainingsolutions for your next role in Transport Compliance?", link: '/register/individual'}
-    ]},
-    { id: 1, title: 'Courses', options: [
-      { title: 'Aviation Security', text: "Training courses specifically designed for those who work in Aviation Security", link: '/courses'},
-      { title: 'Dangerous Goods', text: "Courses for both air and road, all in accordance with CAA Regulations", link: '/'},
-      { title: 'Health & Safety', text: "All our courses can be taken online in conjunction withyour internal policies", link: '/'},
-      { title: 'Classroom Courses', text: "All classroom courses are delivered in London at our purpose built facility", link: '/'}
-    ]},
-    { id: 2, title: 'Resources', options: [
-      { title: 'News & Blog', text: "Stay in touch with all the industry news from the team at TTC Hub", link: '/'},
-      { title: 'Book A Demo', text: "Looking for more information on our platform? Let us show you the ropes", link: '/'},
-      { title: 'About Us', text: "We're a growing team of industry experts with 40+ years of experience", link: '/aboutus'},
-      { title: 'Contact Us', text: "We're a growing team of industry experts with 100+ years of experience", link: '/'}
-    ]},
+    {
+      id: 0,
+      title: 'Features',
+      options: [
+        {
+          title: 'For Companies',
+          text:
+            "We're training the finest minds in air, road and sea - are you on the list?",
+          link: '/register/company'
+        },
+        {
+          title: 'For Individuals',
+          text:
+            'Do you need trainingsolutions for your next role in Transport Compliance?',
+          link: '/register/individual'
+        }
+      ]
+    },
+    {
+      id: 1,
+      title: 'Courses',
+      options: [
+        {
+          title: 'Aviation Security',
+          text:
+            'Training courses specifically designed for those who work in Aviation Security',
+          link: '/courses'
+        },
+        {
+          title: 'Dangerous Goods',
+          text:
+            'Courses for both air and road, all in accordance with CAA Regulations',
+          link: '/'
+        },
+        {
+          title: 'Health & Safety',
+          text:
+            'All our courses can be taken online in conjunction withyour internal policies',
+          link: '/'
+        },
+        {
+          title: 'Classroom Courses',
+          text:
+            'All classroom courses are delivered in London at our purpose built facility',
+          link: '/'
+        }
+      ]
+    },
+    {
+      id: 2,
+      title: 'Resources',
+      options: [
+        {
+          title: 'News & Blog',
+          text:
+            'Stay in touch with all the industry news from the team at TTC Hub',
+          link: '/articles'
+        },
+        {
+          title: 'Book A Demo',
+          text:
+            'Looking for more information on our platform? Let us show you the ropes',
+          link: '/'
+        },
+        {
+          title: 'About Us',
+          text:
+            "We're a growing team of industry experts with 40+ years of experience",
+          link: '/aboutus'
+        },
+        {
+          title: 'Contact Us',
+          text:
+            "We're a growing team of industry experts with 100+ years of experience",
+          link: '/contact'
+        }
+      ]
+    },
     { id: 3, title: 'Consultancy', link: '/consultancy' }
   ];
 

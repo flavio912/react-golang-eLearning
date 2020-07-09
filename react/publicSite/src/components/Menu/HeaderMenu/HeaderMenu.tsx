@@ -137,7 +137,7 @@ function HeaderMenu({
 
   return (
     <>
-      {!showPopup && (
+      {selected && (
         <div className={classes.backgroundHider} onClick={() => onHide()} />
       )}
 
