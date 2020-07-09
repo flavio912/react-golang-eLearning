@@ -20,7 +20,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
       },
       contents: {
         display: 'flex',
-        flex: 1
+        flex: 1,
+        margin: '0 20px'
       },
       heading: {
         marginBottom: '65px'

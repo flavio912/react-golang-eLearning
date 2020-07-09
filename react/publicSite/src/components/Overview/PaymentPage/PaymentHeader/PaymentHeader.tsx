@@ -20,7 +20,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontSize: theme.fontSizes.extraLargeHeading,
         fontWeight: '800',
         color: theme.colors.primaryWhite,
-        textAlign: 'center'
+        textAlign: 'center',
+        margin: '0 20px'
     },
     image: {
         width: '225px',

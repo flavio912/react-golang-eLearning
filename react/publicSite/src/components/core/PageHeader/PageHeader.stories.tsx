@@ -13,13 +13,14 @@ import {
   createRender
 } from 'found';
 import environment from '../../../api/environment';
+import CoursePageHeader from "./CoursePageHeader";
 
 export default {
   title: "core/PageHeader",
   decorators: [withKnobs],
 };
 
-const archetypes: Archetypes[] = ["default", "buttons", "course"];
+const archetypes: Archetypes[] = ["default", "buttons"];
 
 const defaultButtons: ButtonLink[] = [
   { title: "Regulated Agents", link: "/"},
@@ -42,8 +43,6 @@ const normal = () => {
   const archetype: Archetypes = select("Type", archetypes, "default");
   const title: string = text("Title", "About Us");
   const description: string = text("Description", "Our mission is to create the highest quality safety & compliance training in the world");
-  const estimatedTime: string = text("Estimated Time", "6 hours");
-  const lastUpdated: string = text("Last Updated", "May 2020");
   const history: string[] = array("History", ["Courses", "Aviation Security"]);
   const buttons: ButtonLink[] = object("Buttons", defaultButtons);
 
@@ -53,6 +52,24 @@ const normal = () => {
             archetype={archetype}
             history={history}
             buttons={buttons}
+          />;
+};
+
+const courseHeader = () => {
+  const title: string = text("Title", "About Us");
+  const description: string = text("Description", "Our mission is to create the highest quality safety & compliance training in the world");
+  const estimatedTime: string = text("Estimated Time", "6 hours");
+  const lastUpdated: string = text("Last Updated", "May 2020");
+  const history: string[] = array("History", ["Courses", "Aviation Security"]);
+
+  return <CoursePageHeader
+            title={title}
+            description={description}
+            history={history}
+            price="£310.00"
+            video={require("assets/Stock_Video.mp4")}
+            onBuy={() => console.log("Buy")}
+            onBasket={() => console.log("Basket")}
             estimatedTime={estimatedTime}
             lastUpdated={lastUpdated}
             sideComponent={<CoursePreview price="£310.00" details={defaultDetails} video={require("assets/Stock_Video.mp4")}/>}
@@ -67,3 +84,12 @@ const StoryRouter = createFarceRouter({
 })
 
 export const withRouter = () => (<StoryRouter resolver={new Resolver(environment)} />);
+
+// Mock Router
+const Router = createFarceRouter({
+  historyProtocol: new MemoryProtocol('/'),
+  routeConfig: [{ path: '/', Component: courseHeader }],
+  render: createRender({})
+})
+
+export const CourseType = () => (<Router resolver={new Resolver(environment)} />);
