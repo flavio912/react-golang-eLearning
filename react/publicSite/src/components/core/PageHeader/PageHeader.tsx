@@ -14,7 +14,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: theme.colors.lightBlue,
-    padding: '57px 0'
+    padding: '57px 0',
   },
   defaultTitle: {
     alignSelf: 'center',
@@ -23,28 +23,28 @@ const useStyles = createUseStyles((theme: Theme) => ({
     textAlign: 'center',
     borderBottom: '3px solid #0f62e8',
     paddingBottom: 10,
-    marginBottom: 30
+    marginBottom: 30,
   },
   defaultDesc: {
     fontSize: '40px',
     fontWeight: '800',
     marginTop: '10px',
     maxWidth: '950px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
   buttonsTitle: {
     fontSize: '40px',
-    border: 'none'
+    border: 'none',
   },
   buttonsDesc: {
     fontSize: theme.fontSizes.xSmallHeading,
-    fontWeight: '500'
+    fontWeight: '400',
   },
   bar: {
     alignSelf: 'center',
     width: '55px',
     height: '3px',
-    backgroundColor: theme.colors.navyBlue
+    backgroundColor: theme.colors.navyBlue,
   },
   jumpText: {
     margin: '20px 20px 0 20px',
@@ -53,36 +53,36 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '800',
     margin: '20px 20px 0 20px',
     height: '53px',
-    width: '211px'
+    width: '211px',
   },
   buttons: {
     flexWrap: 'wrap',
     '@media (max-width: 500px)': {
-      flexDirection: 'column'
-    }
+      flexDirection: 'column',
+    },
   },
   history: {
     alignSelf: 'flex-start',
-    marginBottom: '50px'
+    marginBottom: '50px',
   },
   extraLarge: {
-    fontSize: theme.fontSizes.extraLarge
+    fontSize: theme.fontSizes.extraLarge,
   },
   bold: {
     fontWeight: 'bold',
-    marginLeft: '3px'
+    marginLeft: '3px',
   },
   row: {
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   column: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'flex-start',
-    alignItems: 'center'
-  }
+    alignItems: 'center',
+  },
 }));
 
 export type Archetypes = 'default' | 'buttons';
@@ -107,7 +107,7 @@ function PageHeader({
   archetype,
   history,
   buttons,
-  className
+  className,
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -134,7 +134,7 @@ function PageHeader({
                 <div className={classNames(classes.extraLarge, classes.bold)}>
                   {page}
                 </div>
-              )
+              ),
             )}
           </div>
         )}
@@ -153,7 +153,9 @@ function PageHeader({
 
             {archetype && archetype === 'buttons' && (
               <div className={classNames(classes.row, classes.buttons)}>
-                <div className={classNames(classes.jumpText, classes.extraLarge)}>
+                <div
+                  className={classNames(classes.jumpText, classes.extraLarge)}
+                >
                   Jump to:
                 </div>
                 {buttons &&

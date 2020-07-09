@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
 import { useMutation, useQuery } from '@apollo/react-hooks';
@@ -105,7 +104,7 @@ function UpdateQuestion({ match, history }) {
         };
       })
     });
-  }, [queryData, loading]);
+  }, [queryData, loading, initState, error]);
 
   if (ident) {
     if (loading) return <CircularProgress className={classes.centerProgress} />;
@@ -114,7 +113,7 @@ function UpdateQuestion({ match, history }) {
 
   const onUpdate = async () => {
     try {
-      const resp = await updateQuestion({
+      await updateQuestion({
         variables: {
           uuid: ident,
           text: state.name,

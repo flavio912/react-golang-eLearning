@@ -109,7 +109,7 @@ const theme: Theme = {
     heading: 25,
     smallHeading: 24,
     xSmallHeading: 21,
-    tinyHeading: 20,
+    tinyHeading: 18,
     extraLarge: 18,
     large: 16,
     default: 14,

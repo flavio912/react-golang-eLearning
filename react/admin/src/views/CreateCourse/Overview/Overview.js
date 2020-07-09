@@ -10,7 +10,6 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import CourseFeatures from './CourseFeatures';
 import CourseInfo from './CourseInfo';
-import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
   root: {

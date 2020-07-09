@@ -54,6 +54,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   tickMargin: {
     margin: '15px',
+    alignItems: 'center',
   },
   marginBottom: {
     marginBottom: '100px',

@@ -1,21 +1,18 @@
 /* eslint-disable react/no-multi-comp */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useLocation, matchPath } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import {
   Drawer,
   Divider,
-  Avatar,
   List,
   ListSubheader,
   Typography,
   Hidden,
   IconButton,
-  Badge,
   Link,
   colors
 } from '@material-ui/core';
@@ -150,19 +147,19 @@ function NavBar({
 }) {
   const classes = useStyles();
   const location = useLocation();
-  const session = useSelector(state => state.session);
-  const [status, setStatus] = useState('online');
+  // const session = useSelector(state => state.session);
+  // const [status, setStatus] = useState('online');
 
-  const handleStatusToggle = () => {
-    const statusSeq = {
-      online: 'away',
-      away: 'busy',
-      busy: 'offline',
-      offline: 'online'
-    };
+  // const handleStatusToggle = () => {
+  //   const statusSeq = {
+  //     online: 'away',
+  //     away: 'busy',
+  //     busy: 'offline',
+  //     offline: 'online'
+  //   };
 
-    setStatus(prevStatus => statusSeq[prevStatus]);
-  };
+  //   setStatus(prevStatus => statusSeq[prevStatus]);
+  // };
 
   useEffect(() => {
     if (openMobile && onMobileClose) {

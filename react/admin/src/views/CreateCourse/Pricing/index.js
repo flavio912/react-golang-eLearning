@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import SideOptions from './SideOptions';
-import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
   root: {

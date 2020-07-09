@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { Redirect } from 'react-router-dom';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider } from '@material-ui/core';
 import Page from 'src/components/Page';

@@ -1,14 +1,11 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import {
   Card,
   CardContent,
   CardMedia,
   Typography,
-  Divider,
-  Link,
-  Avatar
+  Divider
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import Page from 'src/components/Page';

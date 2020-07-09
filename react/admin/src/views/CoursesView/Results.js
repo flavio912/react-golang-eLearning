@@ -53,29 +53,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const test_courses = [
-  {
-    id: 'test',
-    name: 'Fire Safety Awareness',
-    creator: {
-      firstName: 'TTC',
-      lastName: 'Admin'
-    },
-    createdAt: '12/12/12',
-    excerpt: '{}',
-    totalGross: 23000,
-    delegates: {
-      pageInfo: {
-        total: 600
-      }
-    },
-    category: {
-      name: 'Fire Safety'
-    },
-    tags: []
-  }
-];
-
 function Projects({ courses, className, ...rest }) {
   const classes = useStyles();
   const sortRef = useRef(null);

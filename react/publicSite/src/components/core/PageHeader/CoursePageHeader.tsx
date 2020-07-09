@@ -62,7 +62,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   courseDesc: {
     fontSize: theme.fontSizes.tinyHeading,
     color: theme.colors.footerBlue,
-    fontWeight: '500',
+    fontWeight: '400',
     marginTop: '10px',
     maxWidth: '950px',
   },

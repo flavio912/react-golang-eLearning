@@ -29,7 +29,7 @@ function SideOptions({ state, setState }) {
               name="gender1"
               value={state.priceType}
               onChange={(evt, value) => {
-                if (value == 'free') {
+                if (value === 'free') {
                   setState('price', parseFloat(0));
                 }
                 setState('priceType', value);

@@ -118,9 +118,7 @@ function CreateCourse({ match, history }) {
   };
 
   const [state, setState] = useState(initState);
-  const [saveOnlineCourse, { data: savedOnline }] = useMutation(
-    SAVE_ONLINE_COURSE
-  );
+  const [saveOnlineCourse] = useMutation(SAVE_ONLINE_COURSE);
   const { loading, error, data, refetch } = useQuery(GET_COURSE, {
     variables: {
       id: parseInt(ident)
@@ -144,7 +142,7 @@ function CreateCourse({ match, history }) {
       requirements: data.course.requirements,
       price: data.course.price
     });
-  }, [data, loading]);
+  }, [data, loading, error, initState]);
 
   const updateState = (item, value) => {
     var updatedState = { ...state, [item]: value };
@@ -157,7 +155,7 @@ function CreateCourse({ match, history }) {
   }
 
   const saveDraft = async () => {
-    if (state.courseType == 'online') {
+    if (state.courseType === 'online') {
       console.log('updating', state);
       const { data } = await saveOnlineCourse({
         variables: {

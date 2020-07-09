@@ -18,7 +18,7 @@ import { InMemoryCache } from 'apollo-cache-inmemory';
 import { ApolloClient } from 'apollo-client';
 import { ApolloProvider } from '@apollo/react-hooks';
 import { HttpLink } from 'apollo-link-http';
-import { ApolloLink, concat, from } from 'apollo-link';
+import { ApolloLink, from } from 'apollo-link';
 import { onError } from 'apollo-link-error';
 import { gql } from 'apollo-boost';
 

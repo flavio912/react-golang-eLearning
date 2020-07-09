@@ -11,15 +11,12 @@ import {
   InputLabel,
   Select,
   Typography,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
   Button,
   CircularProgress
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -68,7 +65,7 @@ const UPLOAD_REQUEST = gql`
 function AnswerInput({ answer, onSave, onChange }) {
   const classes = useStyles();
 
-  const [uploadRequest, { error: mutationErr }] = useMutation(UPLOAD_REQUEST);
+  const [uploadRequest] = useMutation(UPLOAD_REQUEST);
   const [uploadText, setUploadText] = useState('Upload Image');
 
   const uploadChange = async evt => {
@@ -92,6 +89,10 @@ function AnswerInput({ answer, onSave, onChange }) {
         method: 'PUT',
         body: file
       });
+
+      if (uploadResp.status !== 200) {
+        console.log('Unable to upload');
+      }
 
       setUploadText(file.name);
       const newAns = {
@@ -132,8 +133,13 @@ function AnswerInput({ answer, onSave, onChange }) {
                     case 'TEXT':
                       newAns.imageToken = undefined;
                       newAns.imageURL = undefined;
+                      break;
                     case 'IMAGE':
                       newAns.text = undefined;
+                      break;
+                    default:
+                      console.error('Unable to find onChange type');
+                      break;
                   }
 
                   newAns.answerType = value;
@@ -147,8 +153,8 @@ function AnswerInput({ answer, onSave, onChange }) {
               </Select>
             </FormControl>
           </Grid>
-          {(answer.answerType == 'TEXT' ||
-            answer.answerType == 'TEXT_IMAGE') && (
+          {(answer.answerType === 'TEXT' ||
+            answer.answerType === 'TEXT_IMAGE') && (
             <>
               <Grid item>
                 <Typography variant="h6">Answer Text</Typography>
@@ -170,14 +176,18 @@ function AnswerInput({ answer, onSave, onChange }) {
               </Grid>
             </>
           )}
-          {(answer.answerType == 'IMAGE' ||
-            answer.answerType == 'TEXT_IMAGE') && (
+          {(answer.answerType === 'IMAGE' ||
+            answer.answerType === 'TEXT_IMAGE') && (
             <>
               <Grid item>
                 <Typography variant="h6">Answer Image</Typography>
               </Grid>
               {answer.imageURL && (
-                <img src={answer.imageURL} className={classes.previewImage} />
+                <img
+                  src={answer.imageURL}
+                  className={classes.previewImage}
+                  alt="preview"
+                />
               )}
               <Grid item>
                 <input

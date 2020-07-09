@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardHeader,
@@ -6,7 +6,6 @@ import {
   CardContent,
   Button,
   Grid,
-  Chip,
   Divider
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
