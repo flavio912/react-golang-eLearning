@@ -1313,7 +1313,7 @@ func TestBlog(t *testing.T) {
 		t, schema, accessTestOpts{
 			Query:           `{blog(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
 			Path:            []interface{}{"blog"},
-			MustAuth:        true,
+			MustAuth:        false,
 			AdminAllowed:    true,
 			ManagerAllowed:  true,
 			DelegateAllowed: true,
@@ -1447,7 +1447,7 @@ func TestBlogs(t *testing.T) {
 		t, schema, accessTestOpts{
 			Query:           `{blogs { edges { uuid } }}`,
 			Path:            []interface{}{"blogs"},
-			MustAuth:        true,
+			MustAuth:        false,
 			AdminAllowed:    true,
 			ManagerAllowed:  true,
 			DelegateAllowed: true,
