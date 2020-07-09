@@ -35,6 +35,14 @@ const (
 	SingleAnswerType QuestionType = "singleAnswer"
 )
 
+type AnswerType string
+
+const (
+	TextAnswer      AnswerType = "TEXT"
+	ImageAnswer     AnswerType = "IMAGE"
+	TextImageAnswer AnswerType = "TEXT_IMAGE"
+)
+
 type Answer struct {
 	UUID      UUID
 	IsCorrect *bool
@@ -46,6 +54,7 @@ type CreateBasicAnswerInput struct {
 	Text       *string
 	ImageToken *string
 	IsCorrect  bool
+	AnswerType AnswerType
 }
 
 func (c CreateBasicAnswerInput) Validate() error {
@@ -93,6 +102,7 @@ type UpdateBasicAnswerInput struct {
 	Text       *string
 	ImageToken *string
 	IsCorrect  *bool
+	AnswerType AnswerType
 }
 
 func (u UpdateBasicAnswerInput) Validate() error {
@@ -100,11 +110,6 @@ func (u UpdateBasicAnswerInput) Validate() error {
 		return errors.ErrInputValidation("IsCorrect", "IsCorrect must be given if no UUID")
 	}
 
-	if u.ImageToken != nil {
-		if !govalidator.IsBase64(*u.ImageToken) {
-			return errors.ErrInputValidation("ImageToken", "Not JWT string")
-		}
-	}
 	if u.UUID == nil && u.ImageToken == nil && u.Text == nil {
 		return errors.ErrInputValidation("ImageToken, Text", "Answer type must have Text or ImageToken of no UUID given")
 	}

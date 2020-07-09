@@ -82,14 +82,16 @@ func (c *courseAppImpl) UpdateQuestion(input gentypes.UpdateQuestionInput) (gent
 		return gentypes.Question{}, err
 	}
 
+	// TODO: If answer type is text delete any images associated with it
+
 	// Validate image tokens if given
 	var ans *[]course.UpdateAnswerArgs
 	if input.Answers != nil {
 		answers := []course.UpdateAnswerArgs{}
 		for _, ans := range *input.Answers {
 			var key *string
-			if ans.ImageToken != nil {
-				imgKey, err := uploads.VerifyUploadSuccess(*ans.ImageToken, "questionImages")
+			if ans.ImageToken != nil && (ans.AnswerType == gentypes.ImageAnswer || ans.AnswerType == gentypes.TextImageAnswer) {
+				imgKey, err := uploads.VerifyUploadSuccess(*ans.ImageToken, "answerImages")
 				if err != nil {
 					return gentypes.Question{}, err
 				}
@@ -239,4 +241,23 @@ func (c *courseAppImpl) Questions(
 	}
 
 	return c.questionsToGentypes(questions), pageInfo, nil
+}
+
+// AnswerImageUploadRequest generates a link that lets users upload a profile image to S3 directly
+// Used by all user types
+func (c *courseAppImpl) AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"answers",               // Save files in the "answers" s3 directory
+		"answerImages",          // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
 }

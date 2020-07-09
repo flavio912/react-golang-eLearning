@@ -10,6 +10,7 @@ import {
   Divider
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
+import TagsInput from 'src/components/TagsInput';
 
 function CourseInfo({ state, setState }) {
   const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
@@ -80,33 +81,7 @@ function CourseInfo({ state, setState }) {
             </Grid>
           </Grid>
           <Grid item>
-            <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
-                <Autocomplete
-                  multiple
-                  options={categoryOptions}
-                  getOptionLabel={option => option.title}
-                  onChange={(event, newValue) => {
-                    setState('tags', newValue);
-                  }}
-                  renderTags={(value, getTagProps) =>
-                    value.map((option, index) => (
-                      <Chip
-                        variant="outlined"
-                        label={option.title}
-                        {...getTagProps({ index })}
-                      />
-                    ))
-                  }
-                  renderInput={params => (
-                    <TextField {...params} label="Tags" variant="outlined" />
-                  )}
-                />
-              </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
-              </Grid>
-            </Grid>
+            <TagsInput onChange={newVal => setState('tags', newVal)} />
           </Grid>
         </Grid>
       </CardContent>
