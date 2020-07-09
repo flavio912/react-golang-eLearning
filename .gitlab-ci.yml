@@ -229,7 +229,7 @@ deploy-publicSite-staging:
     refs:
       - dev
     changes:
-      - react/manager/**/*
+      - react/publicSite/**/*
       - .gitlab-ci.yml
   variables:
     EB_ENV: 'react-public'
@@ -237,7 +237,7 @@ deploy-publicSite-staging:
     - pip install awscli
     - apt-get update
     - apt-get install -y zip
-    - cd ./react/manager
+    - cd ./react/publicSite
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
 
