@@ -13,31 +13,31 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.lightBlue,
     padding: '57px 0',
     '@media (max-width: 850px)': {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        backgroundColor: theme.colors.primaryWhite,
-        padding: 0
-    }
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      backgroundColor: theme.colors.primaryWhite,
+      padding: 0,
+    },
   },
   centerer: {
     '@media (max-width: 850px)': {
-      padding: 0
+      padding: 0,
     },
   },
   centered: {
     flexDirection: 'row',
     '@media (max-width: 850px)': {
-      width: '100%'
+      width: '100%',
     },
   },
   courseDetails: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'flex-start',
-    flex: 2,
+    flex: 1.8,
     '@media (max-width: 850px)': {
-        justifyContent: 'center',
+      justifyContent: 'center',
     },
   },
   history: {
@@ -47,17 +47,17 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'flex-start',
     marginBottom: '50px',
     '@media (max-width: 850px)': {
-        justifyContent: 'center',
-        backgroundColor: theme.colors.lightBlue,
-        padding: '50px 0',
-        marginBottom: '0px',
-    }
+      justifyContent: 'center',
+      backgroundColor: theme.colors.lightBlue,
+      padding: '50px 0',
+      marginBottom: '0px',
+    },
   },
   courseTitle: {
     fontSize: theme.fontSizes.heading,
     color: theme.colors.primaryBlack,
     fontWeight: '800',
-    paddingBottom: 30
+    paddingBottom: 30,
   },
   courseDesc: {
     fontSize: theme.fontSizes.tinyHeading,
@@ -67,7 +67,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     maxWidth: '950px',
   },
   updatedText: {
-    marginLeft: '25px'
+    marginLeft: '25px',
   },
   extraLarge: {
     fontSize: theme.fontSizes.extraLarge,
@@ -75,7 +75,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   bold: {
     fontWeight: 'bold',
-    marginLeft: '3px'
+    marginLeft: '3px',
   },
   price: {
     fontSize: theme.fontSizes.smallHeading,
@@ -83,7 +83,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '600',
     margin: '30px 25px',
     '@media (min-width: 850px)': {
-        display: 'none'
+      display: 'none',
     },
   },
   vat: {
@@ -98,25 +98,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     width: '327px',
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)',
     '@media (min-width: 850px)': {
-        display: 'none'
+      display: 'none',
     },
   },
   shadow: {
-    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)'
+    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)',
   },
   component: {
     position: 'absolute',
-    top: '21vh',
-    right: '10%',
-    '@media (min-width: 1250px) and (max-width: 1450px)': {
-        right: '5%'
-    },
-    '@media (min-width: 850px) and (max-width: 1250px)': {
-        right: '3%'
-    },
+    top: '9vh',
+    right: '0px',
     '@media (max-width: 850px)': {
-        display: 'none'
-    }
+      display: 'none',
+    },
   },
   timeRow: {
     display: 'flex',
@@ -125,29 +119,29 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignSelf: 'flex-start',
     marginTop: '31px',
     '@media (max-width: 850px)': {
-        flexDirection: 'column',
-        alignItems: 'flex-start'
-    }
+      flexDirection: 'column',
+      alignItems: 'flex-start',
+    },
   },
   buttonRow: {
     alignSelf: 'center',
     display: 'flex',
     justifyContent: 'center',
-    flexWrap: 'wrap'
+    flexWrap: 'wrap',
   },
   spacer: {
     flex: 1,
     '@media (min-width: 850px) and (max-width: 1300px)': {
-      flex: 2
+      flex: 2,
     },
     '@media (max-width: 850px)': {
-      display: 'none'
-    }
+      display: 'none',
+    },
   },
   mobileMargin: {
     '@media (max-width: 850px)': {
-        margin: '0 25px'
-    }
+      margin: '0 25px',
+    },
   },
   // Video styles
   video: {
@@ -157,20 +151,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: '5px 5px 0 0',
     overflow: 'hidden',
     '@media (min-width: 850px)': {
-        display: 'none'
-    }
+      display: 'none',
+    },
   },
   preview: {
     fontSize: theme.fontSizes.xSmall,
     fontWeight: 'bold',
     color: theme.colors.primaryWhite,
-    margin: '45px 0 10px 0'
+    margin: '45px 0 10px 0',
   },
   thumbnail: {
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   playCircle: {
     display: 'flex',
@@ -181,16 +175,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     height: '76px',
     borderRadius: '76px',
     backgroundColor: theme.colors.navyBlue,
-    opacity: 0.8
-},
-playTriangle: {
-    width: 0, 
+    opacity: 0.8,
+  },
+  playTriangle: {
+    width: 0,
     height: 0,
     marginLeft: 6,
-    borderTop: "13.5px solid transparent",
-    borderBottom: "13.5px solid transparent",
-    borderLeft: ["27px", "solid", theme.colors.primaryWhite]
-}
+    borderTop: '13.5px solid transparent',
+    borderBottom: '13.5px solid transparent',
+    borderLeft: ['27px', 'solid', theme.colors.primaryWhite],
+  },
 }));
 
 export type ButtonLink = {
@@ -223,77 +217,90 @@ function CoursePageHeader({
   onBuy,
   onBasket,
   sideComponent,
-  className
+  className,
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <div className={classNames(classes.root, className)}>
-        <PageMargin centererStyle={classes.centerer} centeredStyle={classes.centered}>
-          <div className={classes.courseDetails}>
-            {history && (
-                <div className={classes.history}>
-                    {history.map((page: string, index: number) =>
-                        index !== history.length - 1 ? (
-                            <div className={classes.extraLarge}>
-                                {page} <Icon name="Right_Arrow" size={12} />
-                            </div>
-                        ) : (
-                            <div className={classNames(classes.extraLarge, classes.bold)}>
-                                {page}
-                            </div>
-                        )
-                    )}
+      <PageMargin
+        centererStyle={classes.centerer}
+        centeredStyle={classes.centered}
+      >
+        <div className={classes.courseDetails}>
+          {history && (
+            <div className={classes.history}>
+              {history.map((page: string, index: number) =>
+                index !== history.length - 1 ? (
+                  <div className={classes.extraLarge}>
+                    {page} <Icon name="Right_Arrow" size={12} />
+                  </div>
+                ) : (
+                  <div className={classNames(classes.extraLarge, classes.bold)}>
+                    {page}
+                  </div>
+                ),
+              )}
+            </div>
+          )}
+          <VideoPlayer
+            source={video}
+            className={classes.video}
+            thumbnail={
+              <div className={classes.thumbnail}>
+                <div className={classes.playCircle}>
+                  <div className={classes.playTriangle} />
                 </div>
-            )}
-            <VideoPlayer
-                source={video}
-                className={classes.video}
-                thumbnail={
-                    <div className={classes.thumbnail}>
-                        <div className={classes.playCircle}>
-                            <div className={classes.playTriangle}/>
-                        </div>
-                        <div className={classes.preview}>Preview this course</div>
-                    </div>
-                }
-            />
-            <div className={classNames(classes.courseTitle, classes.mobileMargin)}>
-                {title}
+                <div className={classes.preview}>Preview this course</div>
+              </div>
+            }
+          />
+          <div
+            className={classNames(classes.courseTitle, classes.mobileMargin)}
+          >
+            {title}
+          </div>
+          <div className={classNames(classes.courseDesc, classes.mobileMargin)}>
+            {description}
+          </div>
+          <div className={classes.timeRow}>
+            <div
+              className={classNames(classes.extraLarge, classes.mobileMargin)}
+            >
+              {<strong>Estimated Time:</strong>} {estimatedTime}
             </div>
-            <div className={classNames(classes.courseDesc, classes.mobileMargin)}>
-                {description}
+            <div
+              className={classNames(
+                classes.updatedText,
+                classes.extraLarge,
+                classes.mobileMargin,
+              )}
+            >
+              {<strong>Last Updated:</strong>} {lastUpdated}
             </div>
-            <div className={classes.timeRow}>
-                <div className={classNames(classes.extraLarge, classes.mobileMargin)}>
-                    {<strong>Estimated Time:</strong>} {estimatedTime}
-                </div>
-                <div
-                    className={classNames(classes.updatedText, classes.extraLarge, classes.mobileMargin)}
-                >
-                    {<strong>Last Updated:</strong>} {lastUpdated}
-                </div>
-            </div>
+          </div>
 
-            <div className={classes.price}>{price} <span className={classes.vat}>+VAT</span></div>
+          <div className={classes.price}>
+            {price} <span className={classes.vat}>+VAT</span>
+          </div>
 
-            <div className={classes.buttonRow}>
-                <Button
-                    archetype="submit"
-                    className={classes.button}
-                    onClick={() => onBasket && onBasket()}
-                >
-                    Add to Basket
-                </Button>
+          <div className={classes.buttonRow}>
+            <Button
+              archetype="submit"
+              className={classes.button}
+              onClick={() => onBasket && onBasket()}
+            >
+              Add to Basket
+            </Button>
 
-                <Button
-                    className={classNames(classes.button, classes.shadow)}
-                    onClick={() => onBuy && onBuy()}
-                >
-                    Buy Now
-                </Button>
-            </div>
+            <Button
+              className={classNames(classes.button, classes.shadow)}
+              onClick={() => onBuy && onBuy()}
+            >
+              Buy Now
+            </Button>
+          </div>
         </div>
         <div className={classes.spacer} />
         <div className={classes.component}>{sideComponent}</div>
