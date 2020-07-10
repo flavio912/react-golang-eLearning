@@ -46,6 +46,7 @@ type Mutation {
   saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
   saveClassroomCourse(input: SaveClassroomCourseInput!): Course # Todo add tutor to course
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+  deleteCourse(input: DeleteCourseInput!): Boolean!
 
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
