@@ -474,7 +474,7 @@ func (c *coursesRepoImpl) DeleteCourse(ID uint) (bool, error) {
 
 	// if there's an active course, that means a course has courseTaker(s)
 	var active_course models.ActiveCourse
-	if tx.Model(&models.ActiveCourse{}).Where("id = ?", ID).Find(&active_course).Error == nil {
+	if tx.Model(&models.ActiveCourse{}).Where("course_id = ?", ID).Find(&active_course).Error == nil {
 		glog.Info("Cannot delete an active course")
 		return false, &errors.ErrWhileHandling
 	}
