@@ -9,57 +9,56 @@ import CertLogoImg from '../../assets/large-1200px-Department_for_Transport.svg.
 
 const useStyles = createUseStyles((theme: Theme) => ({
   certGeneratorRoot: {
-    display: 'flex',
-    flexDirection: 'column',
-    flexGrow: 1,
+    margin: 0
   },
-  pages: {
+  firstPage: {
     marginBottom: 50
   },
   logoArea: {
-    height: 150,
+    height: 100,
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'center'
   },
   certLogo: {
-    height: 150
-  },
-  logo: {
     height: 100
   },
+  logo: {
+    height: 70
+  },
   certHeader: {
-    marginTop: 80,
+    marginTop: 20,
     display: 'flex',
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
 
     '& h1': {
-      fontSize: '3.5rem',
+      fontSize: '2rem',
       fontWeight: 900,
       textAlign: 'center',
-      width: 1000
+      width: 600
     },
 
     '& p': {
-      fontSize: '2rem',
+      fontSize: '1.5rem',
       margin: 0
     },
 
     '& h3': {
-      fontSize: '3rem',
+      fontSize: '2rem',
       marginTop: '1rem',
       marginBottom: '0'
     },
 
     '& h4': {
-      fontSize: '2.5rem',
-      marginTop: 0
+      fontSize: '1.8rem',
+      marginTop: 0,
+      marginBottom: '1rem'
     }
   },
   certInfoFirst: {
-    marginTop: 50,
+    marginTop: 20,
     display: 'flex'
   },
   certRow: {
@@ -70,20 +69,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
   certLabel: {
     fontWeight: 900,
     marginRight: 15,
-    fontSize: '1.7rem'
+    fontSize: '1.3rem'
   },
   certRowLeft: {
-    width: 350,
+    width: 240,
     textAlign: 'right',
     marginRight: 15
   },
   certRowRight: {
     display: 'flex',
     justifyContent: 'space-between',
-    width: 600,
+    width: 400,
     
     '& span': {
-      fontSize: '1.7rem'
+      fontSize: '1.3rem'
     }
   },
   trainingCompany: {
@@ -92,8 +91,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flex: 1
   },
   trainingInfo: {
-    width: 600,
-    height: 200,
+    width: 400,
+    height: 130,
     border: `1px solid ${theme.colors.borderGrey}`,
     padding: 15,
     display: 'flex',
@@ -101,9 +100,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: 5,
 
     '& h4': {
-      fontSize: '1.3rem',
+      fontSize: '1rem',
       marginTop: 0,
-      marginBottom: '1rem'
+      marginBottom: '0.5rem'
     },
 
     '& span': {
@@ -118,7 +117,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
     '& p': {
       margin: 0,
-      fontSize: '1.3rem'
+      fontSize: '0.7rem'
     }
   },
   certContent: {
@@ -130,12 +129,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   leftContent: {
     flex: 1,
     padding: '0 50px 0 20px',
-    fontSize: '1.2rem'
+    fontSize: '0.8rem'
   },
   rightContent: {
     flex: 1,
     padding: '0 50px 0 20px',
-    fontSize: '1.2rem',
+    fontSize: '0.8rem',
 
     '& span': {
       fontWeight: 100
@@ -197,7 +196,7 @@ function CertGenerator({
 
   return (
     <div className={classes.certGeneratorRoot}>
-      <div className={classes.pages}>
+      <div className={classes.firstPage}>
         <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
             <img src={CertLogoImg} className={classes.certLogo} />
@@ -231,7 +230,7 @@ function CertGenerator({
             <div className={classes.certRowLeft}>
               <span className={classes.certLabel}>Instructor's Signature: </span>
             </div>
-            <Signature width={ 600 } height={ 50 } imgSrc={instructorSign} />
+            <Signature width={ 400 } height={ 50 } imgSrc={instructorSign} />
           </div>
           <div className={classes.trainingCompany}>
             <div className={classes.certRowLeft}>
@@ -250,7 +249,7 @@ function CertGenerator({
           </div>
         </FancyBorder>
       </div>
-      <div className={classes.pages}>
+      <div>
         <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
             <img src={CertLogoImg} className={classes.certLogo} />

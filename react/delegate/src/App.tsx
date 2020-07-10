@@ -60,8 +60,8 @@ const Router = createFarceRouter({
         <Route path="/courses" Component={OnlineCourses} />
         <Route path="/courses/:id" Component={OnlineCoursePage} />
         <Route path="/progress" Component={Progress} />
-        <Route path="/cert-generator" Component={CertGenerator} />
       </Route>
+      <Route path="/cert-generator" Component={CertGenerator} />
     </Route>
   ),
   render: createRender({})

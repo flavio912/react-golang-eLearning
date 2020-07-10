@@ -20,19 +20,19 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center',
     background: theme.colors.certBackgroundGrey,
     border: `1px solid ${theme.colors.borderGrey}`,
-    padding: '20px 0'
+    padding: '15px 0'
   },
   certName: {
-    fontSize: '2rem',
+    fontSize: '1.3rem',
     margin: '1rem 0',
     color: theme.colors.primaryBlue
   },
   certInfoRow: {
     margin: 0,
-    fontSize: '2rem',
+    fontSize: '1.3rem',
 
     '& span': {
-      fontSize: '1.7rem',
+      fontSize: '1.1rem',
       float: 'left'
     }
   },
@@ -40,7 +40,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginBottom: '10px'
   },
   certInfoLabel: {
-    width: '240px',
+    width: '150px',
     fontWeight: 900,
     textAlign: 'right',
     display: 'block',

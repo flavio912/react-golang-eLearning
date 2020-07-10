@@ -113,8 +113,8 @@ const theme: Theme = {
   },
   paperSizes: {
     A4: {
-      width: 1240,
-      height: 1754
+      width: 794,
+      height: 1043
     }
   }
 };
