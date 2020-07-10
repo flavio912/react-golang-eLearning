@@ -42,13 +42,12 @@ function AdminsList() {
   const classes = useStyles();
 
   const { loading, error, data } = useQuery(GET_ADMINS);
-
   if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
+  const admins = data?.admins?.edges;
 
   const handleFilter = () => {};
   const handleSearch = () => {};
-  const admins = data?.admins?.edges;
 
   // const admins = [
   //   {

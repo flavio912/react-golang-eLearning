@@ -6,6 +6,7 @@ import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
 import AdminsView from './views/AdminsList';
+import AdminDetails from './views/AdminDetails';
 import TutorsView from './views/TutorsList';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';
@@ -106,7 +107,17 @@ export default [
       {
         path: '/admins',
         exact: true,
-        component: AdminsView
+        component: lazy(() => import('src/views/AdminsList'))
+      },
+      {
+        path: '/admins/:id',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
+        path: '/admins/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
       },
       {
         path: '/tutors',

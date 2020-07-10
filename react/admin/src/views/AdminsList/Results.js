@@ -93,7 +93,14 @@ function Results({ className, admins, ...rest }) {
                   <Avatar className={classes.avatar} src={admin.logo}>
                     {/* {getInitials(admin.fullName)} */}
                   </Avatar>
-                  <div>{admin.email}</div>
+                  <Link
+                    color="inherit"
+                    component={RouterLink}
+                    to={`/admins/${admin.uuid}/overview`}
+                    variant="h6"
+                  >
+                    {admin.email}
+                  </Link>
                 </div>
               </TableCell>
               <TableCell>{admin.firstName}</TableCell>

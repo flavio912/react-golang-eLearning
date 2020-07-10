@@ -1,11 +1,15 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import uuid from 'uuid/v4';
+// import uuid from 'uuid/v4';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+
 import Page from 'src/components/Page';
-// import Header from './Header';
+import Header from './Header';
+import Overview from './Overview';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,32 +27,62 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const GET_ADMIN = gql`
+  query GetAdmin($id: UUID) {
+    admin(uuid: $id) {
+      uuid
+      email
+      firstName
+      lastName
+    }
+  }
+`;
+
+const initAdmin = {
+  uuid: '',
+  email: '',
+  firstName: '',
+  lastName: ''
+};
+
 function AdminDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
-  const tabs = [{ value: 'summary', label: 'Summary' }];
+  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const [admin, setAdmin] = useState(initAdmin);
+
+  const { loading, error, data, refetch } = useQuery(GET_ADMIN, {
+    variables: {
+      id: id
+    },
+    fetchPolicy: 'cache-and-network',
+    skip: !id
+  });
+
+  useEffect(() => {
+    if (loading || error) return;
+    if (!data) return;
+
+    setAdmin({
+      ...initAdmin,
+      uuid: data.admin.uuid,
+      email: data.admin.email,
+      firstName: data.admin.firstName,
+      lastName: data.admin.lastName
+    });
+  }, [loading, data]);
 
   const handleTabsChange = (event, value) => {
     history.push(value);
   };
 
   if (!currentTab) {
-    return <Redirect to={`/admins/${id}/summary`} />;
+    return <Redirect to={`/admins/${id}/overview`} />;
   }
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
   }
-
-  const company = {
-    id: uuid(),
-    name: 'FedEx',
-    email: 'kate@fedex.com',
-    logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
-    noDelegates: 40,
-    noManagers: 1,
-    paymentType: 'Contract'
-  };
 
   return (
     <Page className={classes.root} title="Admin Details">
@@ -67,7 +101,7 @@ function AdminDetails({ match, history }) {
         </Tabs>
         <Divider className={classes.divider} />
         <div className={classes.content}>
-          {/* {currentTab === 'summary' && <Summary />} */}
+          {currentTab === 'overview' && <Overview admin={admin} />}
         </div>
       </Container>
     </Page>
