@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -8,7 +8,12 @@ import {
   CardContent,
   Button,
   Divider,
-  Typography
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 
@@ -35,8 +40,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const handleDeleteAccount = () => {};
+
 function OtherActions({ className, ...rest }) {
   const classes = useStyles();
+  const [openDialog, setOpenDialog] = useState(false);
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -47,11 +55,45 @@ function OtherActions({ className, ...rest }) {
         <Typography className={classes.notice} variant="body2">
           Note: Once deleted data cannot be retrieved
         </Typography>
-        <Button className={classes.deleteButton}>
+        <Button
+          className={classes.deleteButton}
+          onClick={() => {
+            setOpenDialog(true);
+          }}
+        >
           <DeleteIcon className={classes.buttonIcon} />
           Delete Admin Account
         </Button>
       </CardContent>
+      <Dialog
+        open={openDialog}
+        onClose={() => {
+          setOpenDialog(false);
+        }}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {'Delete Admin account?'}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you sure to delete this admin account?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setOpenDialog(false);
+            }}
+          >
+            cancel
+          </Button>
+          <Button onClick={handleDeleteAccount} color="primary" autoFocus>
+            Agree
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Card>
   );
 }

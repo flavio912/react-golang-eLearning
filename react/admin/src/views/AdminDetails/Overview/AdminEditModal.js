@@ -108,7 +108,7 @@ function AdminEditModal({ open, onClose, admin, className, ...rest }) {
                   variant="outlined"
                 />
               </Grid>
-              <Grid item md={6} xs={12}>
+              {/* <Grid item md={6} xs={12}>
                 <Typography variant="h5">Email Verified</Typography>
                 <Typography variant="body2">
                   Disabling this will automatically send the user a verification
@@ -122,7 +122,7 @@ function AdminEditModal({ open, onClose, admin, className, ...rest }) {
                   onChange={handleFieldChange}
                   value={values.verified}
                 />
-              </Grid>
+              </Grid> */}
             </Grid>
           </CardContent>
           <Divider />
