@@ -238,9 +238,7 @@ func TestDeleteLesson(t *testing.T) {
 	t.Run("Must delete lesson", func(t *testing.T) {
 		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
 
-		b, err := courseRepo.DeleteLesson(gentypes.DeleteLessonInput{
-			UUID: uuid,
-		})
+		b, err := courseRepo.DeleteLesson(uuid)
 
 		assert.Nil(t, err)
 		assert.True(t, b)

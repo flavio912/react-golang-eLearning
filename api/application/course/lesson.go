@@ -12,10 +12,10 @@ func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
 		tags = tagsToGentypes(lesson.Tags)
 	}
 	return gentypes.Lesson{
-		UUID:  lesson.UUID,
+		UUID: lesson.UUID,
 		Name: lesson.Name,
-		Tags:  tags,
-		Text:  lesson.Text,
+		Tags: tags,
+		Text: lesson.Text,
 	}
 }
 
@@ -72,6 +72,6 @@ func (c *courseAppImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, er
 		return false, &errors.ErrUnauthorized
 	}
 
-	b, err := c.coursesRepository.DeleteLesson(input)
+	b, err := c.coursesRepository.DeleteLesson(input.UUID)
 	return b, err
 }

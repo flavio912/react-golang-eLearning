@@ -181,26 +181,26 @@ func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models
 	return lesson, nil
 }
 
-func (c *coursesRepoImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
-	query := database.GormDB.Begin().Delete(models.LessonTagsLink{}, "lesson_uuid = ?", input.UUID)
+func (c *coursesRepoImpl) DeleteLesson(uuid gentypes.UUID) (bool, error) {
+	query := database.GormDB.Begin().Delete(models.LessonTagsLink{}, "lesson_uuid = ?", uuid)
 	if query.Error != nil {
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to remove tags linked with lesson: %s", input.UUID)
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to remove tags linked with lesson: %s", uuid)
 		return false, &errors.ErrDeleteFailed
 	}
 
-	query = query.Delete(models.Lesson{}, "uuid = ?", input.UUID)
+	query = query.Delete(models.Lesson{}, "uuid = ?", uuid)
 	if query.Error != nil {
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete lesson: %s", input.UUID)
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete lesson: %s", uuid)
 		return false, &errors.ErrDeleteFailed
 	}
 
 	if query.RowsAffected == 0 {
-		c.Logger.Logf(sentry.LevelError, &errors.ErrLessonNotFound, "Unable to delete non-existant lesson: %s", input.UUID)
+		c.Logger.Logf(sentry.LevelError, &errors.ErrLessonNotFound, "Unable to delete non-existant lesson: %s", uuid)
 		return false, &errors.ErrLessonNotFound
 	}
 
 	if err := query.Commit().Error; err != nil {
-		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to commit transaction of deleting lesson %s", input.UUID)
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to commit transaction of deleting lesson %s", uuid)
 		return false, &errors.ErrWhileHandling
 	}
 
