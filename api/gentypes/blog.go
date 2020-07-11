@@ -46,13 +46,18 @@ func (c *CreateBlogInput) Validate() error {
 	return err
 }
 
+type UpdateBlogImageInput struct {
+	JsonID string
+	Token  *string
+}
+
 type UpdateBlogInput struct {
 	UUID             UUID `valid:"required"`
 	Title            *string
 	Body             *string `valid:"json"`
 	CategoryUUID     *UUID
 	HeaderImageToken *string
-	BodyImages       *[]BlogImageInput
+	BodyImages       *[]UpdateBlogImageInput
 }
 
 func (u *UpdateBlogInput) Validate() error {

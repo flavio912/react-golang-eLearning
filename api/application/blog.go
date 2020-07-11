@@ -256,8 +256,11 @@ func (b *blogAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog,
 		// It should ignore images that are existant and upload new ones
 		var imgs []gentypes.BlogImageInput
 		for _, img := range *input.BodyImages {
-			if img.Token != "" {
-				imgs = append(imgs, img)
+			if img.Token != nil {
+				imgs = append(imgs, gentypes.BlogImageInput{
+					JsonID: img.JsonID,
+					Token:  *img.Token,
+				})
 			}
 		}
 		err = b.BlogImagesUploadSuccess(blog.UUID, imgs)

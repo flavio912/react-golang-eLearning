@@ -40,13 +40,18 @@ input CreateBlogInput {
   bodyImages: [BlogImageInput!]
 }
 
+input UpdateBlogImageInput {
+  jsonID: String!
+  token: String
+}
+
 input UpdateBlogInput {
   uuid: UUID!
   title: String
   body: String
   categoryUUID: UUID
   headerImageToken: String
-  bodyImages: [BlogImageInput!]
+  bodyImages: [UpdateBlogImageInput!]
 }
 
 input UpdateBlogHeaderImageInput {
