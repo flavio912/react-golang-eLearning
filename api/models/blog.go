@@ -12,7 +12,7 @@ type Blog struct {
 }
 
 type BlogImage struct {
-	BlogUUID gentypes.UUID
-	BodyID   string
+	BlogUUID gentypes.UUID `gorm:"primary_key;"`
+	BodyID   string        `gorm:"primary_key;"`
 	S3key    string
 }
