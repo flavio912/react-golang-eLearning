@@ -1,0 +1,6 @@
+type Tutor {
+  uuid: UUID!
+  name: String!
+  cin: Int!
+  signatureURL: String
+}

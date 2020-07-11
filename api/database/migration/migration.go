@@ -35,6 +35,7 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
+	database.GormDB.AutoMigrate(&models.Tutor{})
 
 	// Tests
 	database.GormDB.AutoMigrate(&models.Test{})
