@@ -1290,3 +1290,93 @@ func TestGetCourses(t *testing.T) {
 	// 	},
 	// )
 }
+
+func TestGetModules(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return filtered modules",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					modules(page: {}, filter: {name: "steve"}) {
+							edges {
+									uuid
+									name
+							}
+							pageInfo {
+									total
+									offset
+									given
+							}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"modules":{
+						"edges": [
+							{"uuid": "00000000-0000-0000-0000-000000000001", "name": "Module Steve"}
+						],
+						"pageInfo": {
+							"total": 1,
+							"offset": 0,
+							"given": 1
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all modules",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					modules {
+							edges {
+									uuid
+							}
+							pageInfo {
+									total
+									offset
+									given
+							}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"modules":{
+						"edges": [
+							{"uuid": "e9b02390-3d83-4100-b90e-ac29a68b473f"},
+							{"uuid": "00000000-0000-0000-0000-000000000002"},
+							{"uuid": "00000000-0000-0000-0000-000000000001"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{modules { edges { uuid } }}`,
+			Path:            []interface{}{"modules"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
+	)
+}

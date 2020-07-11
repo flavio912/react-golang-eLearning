@@ -8,8 +8,48 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
+
+func filterModule(query *gorm.DB, filter *gentypes.ModuleFilter) *gorm.DB {
+	if filter != nil {
+		if filter.UUID != nil {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+
+		if filter.Description != nil && *filter.Description != "" {
+			query = query.Where("description ILIKE ?", "%%"+*filter.Description+"%%")
+		}
+
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error) {
+	var modules []models.Module
+	utils := dbutils.NewDBUtils(c.Logger)
+
+	pageInfo, err := utils.GetPageOf(
+		&models.Module{},
+		&modules,
+		page,
+		orderBy,
+		[]string{"created_at", "name"},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return filterModule(db, filter)
+		},
+	)
+	pageInfo.Given = int32(len(modules))
+
+	return modules, pageInfo, err
+}
 
 type VideoInput struct {
 	Type gentypes.VideoType

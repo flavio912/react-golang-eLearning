@@ -55,3 +55,9 @@ type UpdateModuleInput struct {
 	Tags                    *[]UUID
 	Syllabus                *[]ModuleItem
 }
+
+type ModuleFilter struct {
+	UUID        *UUID
+	Name        *string
+	Description *string
+}

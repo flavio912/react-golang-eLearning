@@ -620,6 +620,36 @@ func (_m *CoursesRepository) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.
 	return r0, r1
 }
 
+// Modules provides a mock function with given fields: page, filter, orderBy
+func (_m *CoursesRepository) Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter, orderBy)
+
+	var r0 []models.Module
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.ModuleFilter, *gentypes.OrderBy) []models.Module); ok {
+		r0 = rf(page, filter, orderBy)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Module)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.ModuleFilter, *gentypes.OrderBy) gentypes.PageInfo); ok {
+		r1 = rf(page, filter, orderBy)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.ModuleFilter, *gentypes.OrderBy) error); ok {
+		r2 = rf(page, filter, orderBy)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // OnlineCourse provides a mock function with given fields: courseID
 func (_m *CoursesRepository) OnlineCourse(courseID uint) (models.OnlineCourse, error) {
 	ret := _m.Called(courseID)

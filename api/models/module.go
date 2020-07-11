@@ -1,9 +1,14 @@
 package models
 
-import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+import (
+	"time"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+)
 
 type Module struct {
 	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt    time.Time
 	Name         string
 	Tags         []Tag `gorm:"many2many:module_tags_link"`
 	Description  string

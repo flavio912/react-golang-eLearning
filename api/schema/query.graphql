@@ -76,7 +76,7 @@ type Query {
   question(uuid: UUID!): Question
   tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
   test(uuid: UUID!): Test
-  # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
+  modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   module(uuid: UUID!): Module
 
   # searchSyllabus(page: Page, filter: SyllabusFilter) // Allows searching modules, lessons and tests

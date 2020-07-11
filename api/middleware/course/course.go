@@ -47,6 +47,7 @@ type CoursesRepository interface {
 	GetTags(page gentypes.Page, filter gentypes.GetTagsFilter, orderBy gentypes.OrderBy) ([]models.Tag, error)
 	GetTagsByLessonUUID(uuid string) ([]models.Tag, error)
 
+	Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error)
 	CreateModule(input CreateModuleInput) (models.Module, error)
 	UpdateModule(input UpdateModuleInput) (models.Module, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
