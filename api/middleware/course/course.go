@@ -77,6 +77,7 @@ type CoursesRepository interface {
 
 	CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error)
 	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
+	Tutor(uuid gentypes.UUID) (models.Tutor, error)
 }
 
 type coursesRepoImpl struct {

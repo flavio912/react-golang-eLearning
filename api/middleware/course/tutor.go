@@ -8,6 +8,21 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
+func (c *coursesRepoImpl) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
+	var tutor models.Tutor
+	query := database.GormDB.Where("uuid = ?", uuid).Find(&tutor)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Tutor{}, errors.ErrTutorDoesNotExist(uuid.String())
+		}
+
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to get tutor: %s", uuid)
+		return models.Tutor{}, &errors.ErrWhileHandling
+	}
+
+	return tutor, nil
+}
+
 func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error) {
 	tutor := models.Tutor{
 		Name: details.Name,

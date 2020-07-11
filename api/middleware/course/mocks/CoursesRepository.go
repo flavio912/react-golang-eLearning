@@ -833,6 +833,27 @@ func (_m *CoursesRepository) Tests(page *gentypes.Page, filter *gentypes.TestFil
 	return r0, r1, r2
 }
 
+// Tutor provides a mock function with given fields: uuid
+func (_m *CoursesRepository) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
+	ret := _m.Called(uuid)
+
+	var r0 models.Tutor
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) models.Tutor); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Get(0).(models.Tutor)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateClassroomCourse provides a mock function with given fields: courseInfo
 func (_m *CoursesRepository) UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error) {
 	ret := _m.Called(courseInfo)
