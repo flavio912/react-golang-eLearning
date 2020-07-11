@@ -3,7 +3,6 @@ package course_test
 import (
 	"testing"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
@@ -271,7 +270,7 @@ func TestDeleteModule(t *testing.T) {
 
 		b, err := courseRepo.DeleteModule(uuid)
 
-		assert.Equal(t, &errors.ErrWhileHandling, err)
+		assert.NotNil(t, err)
 		assert.False(t, b)
 	})
 
