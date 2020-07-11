@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -45,6 +46,46 @@ func TestCreateBlog(t *testing.T) {
 		assert.Equal(t, input.Title, blog.Title)
 		assert.Equal(t, adminUUID, blog.Author.UUID)
 		assert.Equal(t, input.CategoryUUID, blog.Category.UUID)
+	})
+}
+
+func TestUploadBlogImages(t *testing.T) {
+	prepareTestDatabase()
+
+	keyMap := map[string]string{
+		"img1": "key1",
+		"img2": "key2",
+	}
+	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
+
+	t.Run("Creates blog images", func(t *testing.T) {
+		err := blogRepo.UploadBlogImages(blogUUID, keyMap)
+
+		assert.Nil(t, err)
+
+		var imgs []models.BlogImage
+		database.GormDB.Where("blog_uuid = ?", blogUUID).Find(&imgs)
+
+		assert.Len(t, imgs, len(keyMap))
+	})
+
+	keyMap["img2"] = "bomb"
+	keyMap["img3"] = "key3"
+
+	t.Run("Create new blog image and update existing one", func(t *testing.T) {
+		err := blogRepo.UploadBlogImages(blogUUID, keyMap)
+
+		assert.Nil(t, err)
+
+		var imgs []models.BlogImage
+		database.GormDB.Where("blog_uuid = ?", blogUUID).Find(&imgs)
+
+		assert.Len(t, imgs, len(keyMap))
+		for _, img := range imgs {
+			if img.BodyID == "img2" {
+				assert.Equal(t, "bomb", img.S3key)
+			}
+		}
 	})
 }
 
