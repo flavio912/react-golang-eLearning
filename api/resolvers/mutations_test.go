@@ -1369,3 +1369,52 @@ func TestCreateTest(t *testing.T) {
 		},
 	})
 }
+
+func TestCreateTutor(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Creates tutor",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createTutor(input: {
+						name: "Walter White"
+						cin: 420
+					}) {
+						name
+						cin
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createTutor": {
+						"name": "Walter White",
+						"cin": 420
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createTutor(input: {
+					name: "Savage"
+					cin: 21
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"createTutor"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
