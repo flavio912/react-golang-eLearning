@@ -4,7 +4,6 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -318,13 +317,14 @@ func (c *coursesRepoImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
 
 	var test_question_link models.TestQuestionsLink
 	if !tx.Model(&models.TestQuestionsLink{}).Where("question_uuid = ?", input).First(&test_question_link).RecordNotFound() {
-		glog.Info("Cannot delete question that is part of a test")
-		return false, &errors.ErrWhileHandling
+		err := errors.ErrUnableToDelete("Cannot delete question that is part of a test")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete question")
+		return false, err
 	}
 
 	if err := tx.Delete(models.Question{}, "uuid = ?", input).Error; err != nil {
 		c.Logger.Logf(sentry.LevelError, err, "Unable to delete question: %s", input)
-		return false, &errors.ErrWhileHandling
+		return false, &errors.ErrDeleteFailed
 	}
 
 	if err := tx.Commit().Error; err != nil {
