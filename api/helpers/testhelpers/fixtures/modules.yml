@@ -1,5 +1,14 @@
 - uuid: 00000000-0000-0000-0000-000000000001
+  created_at: 2020-01-08 13:53:37.338775+00
+  name: Module Steve
+  description: A fun guy, likes cake
 
 - uuid: 00000000-0000-0000-0000-000000000002
+  created_at: 2020-01-09 13:53:37.338775+00
+  name: Module Joe
+  description: Loves pies, don't give him plants
 
 - uuid: e9b02390-3d83-4100-b90e-ac29a68b473f
+  created_at: 2020-01-10 13:53:37.338775+00
+  name: Module Henry
+  description: Loves ironing
