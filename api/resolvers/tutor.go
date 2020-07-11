@@ -8,5 +8,5 @@ type TutorResolver struct {
 
 func (t *TutorResolver) UUID() gentypes.UUID   { return t.Tutor.UUID }
 func (t *TutorResolver) Name() string          { return t.Tutor.Name }
-func (t *TutorResolver) CIN() int32            { return int32(t.Tutor.CIN) }
+func (t *TutorResolver) CIN() int32            { return t.Tutor.CIN }
 func (t *TutorResolver) SignatureURL() *string { return t.Tutor.SignatureURL }

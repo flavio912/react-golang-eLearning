@@ -548,3 +548,13 @@ func (m *MutationResolver) AnswerImageUploadRequest(
 		SuccessToken: successToken,
 	}, err
 }
+
+func (m *MutationResolver) CreateTutor(ctx context.Context, args struct{ Input gentypes.CreateTutorInput }) (*TutorResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	tutor, err := app.CourseApp.CreateTutor(args.Input)
+
+	return &TutorResolver{
+		Tutor: tutor,
+	}, err
+}

@@ -74,6 +74,8 @@ type CoursesRepository interface {
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 
 	CreateTestMarks(mark models.TestMark) error
+
+	CreateTutor(details gentypes.CreateTutorInput, s3key *string) (models.Tutor, error)
 }
 
 type coursesRepoImpl struct {

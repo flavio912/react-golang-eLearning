@@ -64,7 +64,7 @@ type Mutation {
   createModule(input: CreateModuleInput!): CreateModulePayload
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
 
-  # createTutor
+  createTutor(input: CreateTutorInput!): Tutor
   # updateTutor
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
