@@ -71,9 +71,25 @@ func TestDeleteBlogImages(t *testing.T) {
 	keyMap := map[string]string{
 		"img1": "key1",
 		"img2": "key2",
+		"img3": "key3",
+		"img4": "key4",
 	}
 	blogUUID := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")
 	_ = blogRepo.UploadBlogImages(blogUUID, keyMap)
+
+	t.Run("Deletes specific images of blog", func(t *testing.T) {
+		to_delete := []string{
+			"img1", "img3",
+		}
+		err := blogRepo.DeleteBlogImages(blogUUID, &to_delete)
+
+		assert.Nil(t, err)
+
+		imgs, err := blogRepo.GetBlogImages(blogUUID)
+
+		assert.Nil(t, err)
+		assert.Len(t, imgs, len(keyMap)-len(to_delete))
+	})
 
 	t.Run("Deletes all images of blog", func(t *testing.T) {
 		err := blogRepo.DeleteBlogImages(blogUUID, nil)
