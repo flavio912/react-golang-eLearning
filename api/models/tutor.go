@@ -6,5 +6,5 @@ type Tutor struct {
 	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name         string
 	CIN          uint
-	SignatureKey *string
+	SignatureKey string
 }

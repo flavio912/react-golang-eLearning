@@ -10,3 +10,8 @@ input CreateTutorInput {
   cin: Int!
   signatureToken: String
 }
+
+input UpdateTutorSignatureInput {
+  fileSuccess: UploadFileSuccess!
+  tutorUUID: UUID!
+}

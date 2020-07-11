@@ -165,4 +165,10 @@ var (
 		Type:    "ErrNotEnoughAnswersGiven",
 		Message: "Not enough answers were given to complete the test, please try again",
 	}
+	ErrTutorDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrTutorDoesNotExist",
+			Message: fmt.Sprintf("The given tutor does not exist: %s", uuid),
+		}
+	}
 )

@@ -19,3 +19,8 @@ func (c *CreateTutorInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }
+
+type UpdateTutorSignatureInput struct {
+	FileSuccess UploadFileSuccess
+	TutorUUID   UUID
+}

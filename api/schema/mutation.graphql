@@ -65,6 +65,8 @@ type Mutation {
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
 
   createTutor(input: CreateTutorInput!): Tutor
+  tutorSignatureImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateTutorSignature(input: UpdateTutorSignatureInput!): Tutor
   # updateTutor
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)

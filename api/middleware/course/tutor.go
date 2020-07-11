@@ -8,11 +8,10 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
-func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput, s3key *string) (models.Tutor, error) {
+func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error) {
 	tutor := models.Tutor{
-		Name:         details.Name,
-		CIN:          uint(details.CIN),
-		SignatureKey: s3key,
+		Name: details.Name,
+		CIN:  uint(details.CIN),
 	}
 
 	query := database.GormDB.Create(&tutor)
@@ -22,4 +21,18 @@ func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput, s3key *
 	}
 
 	return tutor, nil
+}
+
+func (c *coursesRepoImpl) UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error {
+	query := database.GormDB.Model(&models.Tutor{}).Where("uuid = ?", tutorUUID).Update("signature_key", s3key)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return errors.ErrTutorDoesNotExist(tutorUUID.String())
+		}
+
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to update tutor signature: %s", tutorUUID)
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
 }

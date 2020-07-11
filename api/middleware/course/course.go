@@ -75,7 +75,8 @@ type CoursesRepository interface {
 
 	CreateTestMarks(mark models.TestMark) error
 
-	CreateTutor(details gentypes.CreateTutorInput, s3key *string) (models.Tutor, error)
+	CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error)
+	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
 }
 
 type coursesRepoImpl struct {
