@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers/testhelpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
@@ -222,7 +221,7 @@ func TestDeleteCourse(t *testing.T) {
 
 		b, err := courseRepo.DeleteCourse(2)
 
-		assert.Equal(t, &errors.ErrWhileHandling, err)
+		assert.NotNil(t, err)
 		assert.False(t, b)
 	})
 
