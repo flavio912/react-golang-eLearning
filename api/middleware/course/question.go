@@ -138,10 +138,11 @@ func (c *coursesRepoImpl) CreateQuestion(input CreateQuestionArgs) (models.Quest
 }
 
 type UpdateAnswerArgs struct {
-	UUID      *gentypes.UUID
-	IsCorrect *bool
-	Text      *string
-	ImageKey  *string
+	AnswerType gentypes.AnswerType
+	UUID       *gentypes.UUID
+	IsCorrect  *bool
+	Text       *string
+	ImageKey   *string
 }
 
 type UpdateQuestionArgs struct {
@@ -213,12 +214,38 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 				updates := map[string]interface{}{
 					"rank": strconv.Itoa(i),
 				}
-				if ans.Text != nil {
+
+				switch ans.AnswerType {
+				case gentypes.TextAnswer:
+					updates["image_key"] = nil
+
+					if ans.Text == nil {
+						tx.Rollback()
+						return models.Question{}, errors.ErrInputValidation("Answers", "Text answer has no text")
+					}
 					updates["text"] = *ans.Text
-				}
-				if ans.ImageKey != nil {
+				case gentypes.ImageAnswer:
+					updates["text"] = nil
+
+					if ans.ImageKey == nil {
+						break
+					}
 					updates["image_key"] = *ans.ImageKey
+				case gentypes.TextImageAnswer:
+					if ans.Text == nil {
+						tx.Rollback()
+						return models.Question{}, errors.ErrInputValidation("Answers", "Text + Image answer has no text")
+					}
+					updates["text"] = *ans.Text
+
+					if ans.ImageKey != nil {
+						updates["image_key"] = *ans.ImageKey
+					}
+				default:
+					tx.Rollback()
+					return models.Question{}, errors.ErrInputValidation("Answers", "Invalid answer type")
 				}
+
 				if ans.IsCorrect != nil {
 					updates["is_correct"] = *ans.IsCorrect
 				}
