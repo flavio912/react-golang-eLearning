@@ -64,3 +64,14 @@ input UpdateModuleInput {
 type UpdateModulePayload {
   module: Module
 }
+
+type ModulePage implements PaginatedQuery {
+  edges: [Module]
+  pageInfo: PageInfo
+}
+
+input ModuleFilter {
+  uuid: UUID
+  name: String
+  description: String
+}
