@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -16,6 +18,9 @@ import {
   DialogTitle
 } from '@material-ui/core';
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
+import { deleteAdminAction } from '../../../actions/adminActions';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -40,11 +45,35 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const handleDeleteAccount = () => {};
+const DELETE_ADMIN = gql`
+  mutation DeleteAdmin($uuid: UUID!) {
+    deleteAdmin(input: { uuid: $uuid })
+  }
+`;
 
-function OtherActions({ className, ...rest }) {
+function OtherActions({ admin, className, ...rest }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const history = useHistory();
   const [openDialog, setOpenDialog] = useState(false);
+  const [deleteAdmin, { data: isDeleted }] = useMutation(DELETE_ADMIN);
+
+  const handleDeleteAccount = async event => {
+    try {
+      console.log(admin);
+      const resp = await deleteAdmin({
+        variables: {
+          uuid: admin.uuid
+        }
+      });
+
+      dispatch(deleteAdminAction(admin.uuid));
+      setOpenDialog(false);
+      history.push('/admins');
+    } catch (err) {
+      console.warn(err);
+    }
+  };
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
@@ -90,7 +119,7 @@ function OtherActions({ className, ...rest }) {
             cancel
           </Button>
           <Button onClick={handleDeleteAccount} color="primary" autoFocus>
-            Agree
+            Delete
           </Button>
         </DialogActions>
       </Dialog>
@@ -99,7 +128,8 @@ function OtherActions({ className, ...rest }) {
 }
 
 OtherActions.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  admin: PropTypes.object.isRequired
 };
 
 export default OtherActions;

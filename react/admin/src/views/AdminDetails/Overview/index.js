@@ -28,7 +28,7 @@ function Overview({ admin, className, ...rest }) {
         <AdminInfo admin={admin} />
       </Grid>
       <Grid item lg={4} md={6} xl={3} xs={12}>
-        <OtherActions />
+        <OtherActions admin={admin} />
       </Grid>
     </Grid>
   );

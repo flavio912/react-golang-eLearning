@@ -139,7 +139,6 @@ function AdminCreateModal({ open, onClose, className, ...rest }) {
 
   const handleCreateAdmin = async event => {
     event.preventDefault();
-    console.log(formState.values);
     try {
       const resp = await createAdmin({
         variables: {

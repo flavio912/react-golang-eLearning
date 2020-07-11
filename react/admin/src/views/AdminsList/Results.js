@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
@@ -66,6 +66,10 @@ function Results({ className, ...rest }) {
   const adminState = useSelector(state => state.admin);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  useEffect(() => {
+    console.log(adminState);
+  }, [adminState]);
 
   const handleChangePage = (event, page) => {
     setPage(page);

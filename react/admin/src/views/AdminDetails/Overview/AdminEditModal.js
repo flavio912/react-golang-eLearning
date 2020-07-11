@@ -15,6 +15,7 @@ import {
   Switch,
   Button
 } from '@material-ui/core';
+import validate from 'validate.js';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -34,23 +35,94 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const schema = {
+  firstName: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 32
+    }
+  },
+  lastName: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 32
+    }
+  },
+  email: {
+    presence: { allowEmpty: false, message: 'is required' },
+    email: true,
+    length: {
+      maximum: 64
+    }
+  },
+  password: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 128
+    }
+  }
+};
+
 function AdminEditModal({ open, onClose, admin, className, ...rest }) {
   const classes = useStyles();
-  const [values, setValues] = useState(admin);
+  const [formState, setFormState] = useState({
+    isValid: false,
+    values: { ...admin },
+    touched: {},
+    errors: {}
+  });
+
+  const hasError = field =>
+    !!(formState.touched[field] && formState.errors[field]);
 
   useEffect(() => {
-    setValues(admin);
+    const errors = validate(formState.values, schema);
+
+    setFormState(prevFormState => ({
+      ...prevFormState,
+      isValid: !errors,
+      errors: errors || {}
+    }));
+  }, [formState.values]);
+
+  useEffect(() => {
+    if (!admin.isValid && admin.errorMsg) {
+      setFormState(prevFormState => ({
+        ...prevFormState,
+        isValid: false,
+        errors: {
+          email: [admin.errorMsg]
+        },
+        touched: {
+          ...prevFormState.touched,
+          email: true
+        }
+      }));
+      console.warn(admin.errorMsg);
+    } else {
+      setFormState(prevFormState => ({
+        ...prevFormState,
+        values: { ...admin }
+      }));
+    }
   }, [admin]);
 
   const handleFieldChange = event => {
     event.persist();
 
-    setValues(currentValues => ({
-      ...currentValues,
-      [event.target.name]:
-        event.target.type === 'checkbox'
-          ? event.target.checked
-          : event.target.value
+    setFormState(prevFormState => ({
+      ...prevFormState,
+      values: {
+        ...prevFormState.values,
+        [event.target.name]:
+          event.target.type === 'checkbox'
+            ? event.target.checked
+            : event.target.value
+      },
+      touched: {
+        ...prevFormState.touched,
+        [event.target.name]: true
+      }
     }));
   };
 
@@ -66,45 +138,61 @@ function AdminEditModal({ open, onClose, admin, className, ...rest }) {
           <Divider />
           <CardContent>
             <Grid container spacing={3}>
-              <Grid item md={12} xs={12}>
-                <TextField
-                  error={!values.isValid && values.errorMsg}
-                  fullWidth
-                  helperText={
-                    !values.isValid && values.errorMsg ? values.errorMsg : null
-                  }
-                  label="Email address"
-                  name="email"
-                  onChange={handleFieldChange}
-                  value={values.email}
-                  variant="outlined"
-                />
-              </Grid>
               <Grid item md={6} xs={12}>
                 <TextField
-                  error={!values.isValid && values.errorMsg}
+                  error={hasError('firstName')}
                   fullWidth
                   helperText={
-                    !values.isValid && values.errorMsg ? values.errorMsg : null
+                    hasError('firstName') ? formState.errors.firstName[0] : null
                   }
                   label="First Name"
                   name="firstName"
                   onChange={handleFieldChange}
-                  value={values.firstName}
+                  value={formState.values.firstName || ''}
                   variant="outlined"
                 />
               </Grid>
               <Grid item md={6} xs={12}>
                 <TextField
-                  error={!values.isValid && values.errorMsg}
+                  error={hasError('lastName')}
                   fullWidth
                   helperText={
-                    !values.isValid && values.errorMsg ? values.errorMsg : null
+                    hasError('lastName') ? formState.errors.lastName[0] : null
                   }
                   label="Last Name"
                   name="lastName"
                   onChange={handleFieldChange}
-                  value={values.lastName}
+                  value={formState.values.lastName || ''}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                123123{hasError('email').toString()}
+                <TextField
+                  error={hasError('email')}
+                  fullWidth
+                  helperText={
+                    hasError('email') ? formState.errors.email[0] : null
+                  }
+                  label="Email address"
+                  name="email"
+                  onChange={handleFieldChange}
+                  value={formState.values.email || ''}
+                  variant="outlined"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <TextField
+                  error={hasError('password')}
+                  fullWidth
+                  helperText={
+                    hasError('password') ? formState.errors.password[0] : null
+                  }
+                  label="Password"
+                  name="password"
+                  onChange={handleFieldChange}
+                  type="password"
+                  value={formState.values.password || ''}
                   variant="outlined"
                 />
               </Grid>
@@ -130,7 +218,7 @@ function AdminEditModal({ open, onClose, admin, className, ...rest }) {
             <Button onClick={() => onClose(null)}>Close</Button>
             <Button
               color="primary"
-              onClick={() => onClose(values)}
+              onClick={() => onClose(formState.values)}
               variant="contained"
             >
               Save

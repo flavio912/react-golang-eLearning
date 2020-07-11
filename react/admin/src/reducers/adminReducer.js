@@ -3,7 +3,7 @@ import initialState from './initialState';
 
 const adminReducer = (state = initialState.admin, action) => {
   switch (action.type) {
-    case actionTypes.GET_ADMIN_LIST_SUCCESS:
+    case actionTypes.SET_ADMIN_LIST_SUCCESS:
       return {
         ...state,
         list: [...action.payload],

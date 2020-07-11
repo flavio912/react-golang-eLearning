@@ -1,7 +1,7 @@
 export const CREATE_ADMIN_SUCCESS = 'CREATE_ADMIN_SUCCESS';
 export const UPDATE_ADMIN_SUCCESS = 'UPDATE_ADMIN_SUCCESS';
 export const DELETE_ADMIN_SUCCESS = 'DELETE_ADMIN_SUCCESS';
-export const GET_ADMIN_LIST_SUCCESS = 'GET_ADMIN_LIST_SUCCESS';
+export const SET_ADMIN_LIST_SUCCESS = 'SET_ADMIN_LIST_SUCCESS';
 
 export const createAdminAction = newAdmin => dispatch => {
   dispatch({
@@ -24,9 +24,9 @@ export const deleteAdminAction = id => dispatch => {
   });
 };
 
-export const getAdminListAction = adminList => dispatch => {
+export const setAdminListAction = adminList => dispatch => {
   dispatch({
-    type: GET_ADMIN_LIST_SUCCESS,
+    type: SET_ADMIN_LIST_SUCCESS,
     payload: adminList
   });
 };

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
-import { getAdminListAction } from '../../actions/adminActions';
+import { setAdminListAction } from '../../actions/adminActions';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
@@ -43,12 +43,15 @@ const GET_ADMINS = gql`
 function AdminsList() {
   const classes = useStyles();
   const dispatch = useDispatch();
-
+  const adminState = useSelector(state => state.admin);
   const { loading, error, data } = useQuery(GET_ADMINS);
-  if (loading) return <div>Loading</div>;
-  if (error) return <div>{error.message}</div>;
-  const admins = data?.admins?.edges;
-  dispatch(getAdminListAction(admins));
+
+  if (!adminState.listLoaded) {
+    if (loading) return <div>Loading</div>;
+    if (error) return <div>{error.message}</div>;
+    const admins = data?.admins?.edges;
+    dispatch(setAdminListAction(admins));
+  }
 
   const handleFilter = () => {};
   const handleSearch = () => {};
