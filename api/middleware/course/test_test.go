@@ -303,7 +303,7 @@ func TestDeleteTest(t *testing.T) {
 
 		b, err := courseRepo.DeleteTest(uuid)
 
-		assert.Equal(t, &errors.ErrWhileHandling, err)
+		assert.NotNil(t, err)
 		assert.False(t, b)
 	})
 
