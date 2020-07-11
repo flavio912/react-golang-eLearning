@@ -174,5 +174,5 @@ func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, er
 		return false, err
 	}
 
-	return c.coursesRepository.DeleteCourse(input.ID)
+	return c.coursesRepository.DeleteCourse(uint(input.ID))
 }

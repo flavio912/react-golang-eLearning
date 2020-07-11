@@ -96,7 +96,7 @@ type PurchaseCoursesResponse struct {
 }
 
 type DeleteCourseInput struct {
-	ID uint `valid:"required"`
+	ID int32 `valid:"required"`
 }
 
 func (d *DeleteCourseInput) Validate() error {
