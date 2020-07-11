@@ -217,7 +217,6 @@ func (b *blogAppImpl) GetBlogs(
 }
 
 func (b *blogAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog, error) {
-	// TODO: Does it need to check if update is coming from author?
 	if !b.grant.IsAdmin {
 		return gentypes.Blog{}, &errors.ErrUnauthorized
 	}
@@ -233,12 +232,35 @@ func (b *blogAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog,
 		blog.HeaderImageKey = key
 	}
 	if input.BodyImages != nil {
-		err = b.blogRepository.DeleteBlogImages(blog.UUID)
+		olds, err := b.blogRepository.GetBlogImages(blog.UUID)
 		if err != nil {
 			return gentypes.Blog{}, err
 		}
 
-		err = b.BlogImagesUploadSuccess(blog.UUID, *input.BodyImages)
+		// If an existing img is not provided, it will be deleted
+		var to_delete []string
+		for _, oldie := range olds {
+			to_keep := false
+			for _, img := range *input.BodyImages {
+				to_keep = to_keep || oldie.BodyID == img.JsonID
+			}
+			if !to_keep {
+				to_delete = append(to_delete, oldie.BodyID)
+			}
+		}
+		err = b.blogRepository.DeleteBlogImages(blog.UUID, &to_delete)
+		if err != nil {
+			return gentypes.Blog{}, err
+		}
+
+		// It should ignore images that are existant and upload new ones
+		var imgs []gentypes.BlogImageInput
+		for _, img := range *input.BodyImages {
+			if img.Token != "" {
+				imgs = append(imgs, img)
+			}
+		}
+		err = b.BlogImagesUploadSuccess(blog.UUID, imgs)
 		if err != nil {
 			return gentypes.Blog{}, err
 		}

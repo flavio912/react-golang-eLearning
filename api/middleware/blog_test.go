@@ -76,7 +76,7 @@ func TestDeleteBlogImages(t *testing.T) {
 	_ = blogRepo.UploadBlogImages(blogUUID, keyMap)
 
 	t.Run("Deletes all images of blog", func(t *testing.T) {
-		err := blogRepo.DeleteBlogImages(blogUUID)
+		err := blogRepo.DeleteBlogImages(blogUUID, nil)
 
 		assert.Nil(t, err)
 

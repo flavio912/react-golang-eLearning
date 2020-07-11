@@ -14,7 +14,7 @@ type BlogRepository interface {
 	UpdateBlog(input gentypes.UpdateBlogInput) (models.Blog, error)
 	UploadHeaderImage(blogUUID gentypes.UUID, key string) error
 	UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error
-	DeleteBlogImages(blogUUID gentypes.UUID) error
+	DeleteBlogImages(blogUUID gentypes.UUID, bodyIds *[]string) error
 	GetBlogImages(blogUUID gentypes.UUID) ([]models.BlogImage, error)
 	GetBlogsByUUID(uuids []string) ([]models.Blog, error)
 	GetBlogs(page *gentypes.Page, orderBy *gentypes.OrderBy) ([]models.Blog, gentypes.PageInfo, error)
@@ -94,10 +94,18 @@ func (b *blogRepoImpl) UploadHeaderImage(blogUUID gentypes.UUID, key string) err
 	return nil
 }
 
+// UploadBlogImages creates body images of blog or update them if they exist
 func (b *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]string) error {
 	query := database.GormDB.Begin()
 	for k, v := range imgs {
-		img := models.BlogImage{
+		var img models.BlogImage
+		if query.Model(&models.BlogImage{}).Where("blog_uuid = ?", blog).Where("body_id = ?", k).Find(&img).Error == nil {
+			// Can update other fields if needed
+			img.S3key = v
+			query = query.Save(&img)
+			continue
+		}
+		img = models.BlogImage{
 			BlogUUID: blog,
 			BodyID:   k,
 			S3key:    v,
@@ -113,12 +121,29 @@ func (b *blogRepoImpl) UploadBlogImages(blog gentypes.UUID, imgs map[string]stri
 	return nil
 }
 
-// DeleteBlogImages deletes images inside blog body
-func (b *blogRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID) error {
-	query := database.GormDB.Delete(models.BlogImage{}, "blog_uuid = ?", blogUUID)
-	if query.Error != nil {
-		b.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete blog's images: %s", blogUUID)
-		return &errors.ErrDeleteFailed
+// DeleteBlogImages deletes images inside blog body. If bodyIds is nil, it will delete all images
+func (b *blogRepoImpl) DeleteBlogImages(blogUUID gentypes.UUID, bodyIds *[]string) error {
+	query := database.GormDB.Begin()
+
+	query = query.Where("blog_uuid = ?", blogUUID)
+	if bodyIds != nil {
+		for _, id := range *bodyIds {
+			if err := query.Where("body_id = ?", id).Delete(models.BlogImage{}).Error; err != nil {
+				b.Logger.Logf(sentry.LevelWarning, err, "Unable to delete blog's body image: %s at json %s", blogUUID, id)
+				return &errors.ErrDeleteFailed
+			}
+		}
+	} else {
+		query = query.Delete(models.BlogImage{})
+		if err := query.Error; err != nil {
+			b.Logger.Logf(sentry.LevelError, err, "Unable to delete blog's body images: %s", blogUUID)
+			return &errors.ErrDeleteFailed
+		}
+	}
+
+	if err := query.Commit().Error; err != nil {
+		b.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		return &errors.ErrWhileHandling
 	}
 
 	return nil
