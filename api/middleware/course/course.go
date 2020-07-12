@@ -543,6 +543,12 @@ func (c *coursesRepoImpl) SearchSyllabus(
 		return []models.Module{}, []models.Lesson{}, []models.Test{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
 	}
 
+	if err := query.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		query.Rollback()
+		return []models.Module{}, []models.Lesson{}, []models.Test{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
 	return modules, lessons, tests, gentypes.PageInfo{
 		Total:  count,
 		Offset: offset,
