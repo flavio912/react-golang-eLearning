@@ -314,21 +314,29 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 
 func (c *coursesRepoImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
 	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
 
 	var test_question_link models.TestQuestionsLink
 	if !tx.Model(&models.TestQuestionsLink{}).Where("question_uuid = ?", input).First(&test_question_link).RecordNotFound() {
 		err := errors.ErrUnableToDelete("Cannot delete question that is part of a test")
 		c.Logger.Log(sentry.LevelError, err, "Unable to delete question")
+		tx.Rollback()
 		return false, err
 	}
 
 	if err := tx.Delete(models.Question{}, "uuid = ?", input).Error; err != nil {
 		c.Logger.Logf(sentry.LevelError, err, "Unable to delete question: %s", input)
+		tx.Rollback()
 		return false, &errors.ErrDeleteFailed
 	}
 
 	if err := tx.Commit().Error; err != nil {
 		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
 		return false, &errors.ErrWhileHandling
 	}
 
