@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { fetchQuery, graphql } from 'relay-runtime';
 import Tabs, {
   TabContent,
   Body,
@@ -19,6 +20,9 @@ import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
 import Button from 'sharedComponents/core/Input/Button';
 import Checkbox from 'components/core/Input/Checkbox';
 import { ResultItem } from 'components/UserSearch';
+import environment from 'api/environment';
+import { TabsDelegateQueryResponse } from './__generated__/TabsDelegateQuery.graphql';
+import { TabsCoursesQueryResponse } from './__generated__/TabsCoursesQuery.graphql';
 
 const items: ResultItem[] = [
   {
@@ -93,29 +97,113 @@ const categories: CourseCategory[] = [
   }
 ];
 
-const userSearchFunction = async (query: string) => {
-  return await new Promise<ResultItem[]>((resolve) =>
-    setTimeout(() => resolve(items), 200)
-  );
+const userSearchFunction = async (text: string) => {
+  const query = graphql`
+    query TabsDelegateQuery($name: String!) {
+      delegates(filter: { name: $name }, page: { limit: 8 }) {
+        edges {
+          uuid
+          TTC_ID
+          firstName
+          lastName
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    name: text
+  };
+
+  const data = (await fetchQuery(
+    environment,
+    query,
+    variables
+  )) as TabsDelegateQueryResponse;
+
+  if (!data || !data.delegates || !data.delegates.edges) {
+    console.error('Could not get data', data);
+    return [];
+  }
+
+  const results = data.delegates?.edges.map((delegate) => ({
+    uuid: delegate?.uuid ?? '',
+    key: `${delegate?.firstName} ${delegate?.lastName}`,
+    value: delegate?.TTC_ID ?? ''
+  }));
+
+  return results;
 };
 
-const courseSearchFunction = async (query: string) => {
-  return await new Promise<CourseCategory[]>((resolve) =>
-    setTimeout(
-      () =>
-        resolve(
-          categories
-            .map(({ title, courses }) => ({
-              title,
-              courses: courses.filter(({ name }) =>
-                name.toLocaleLowerCase().includes(query.toLocaleLowerCase())
-              )
-            }))
-            .filter(({ courses }) => courses.length > 0)
-        ),
-      200
-    )
-  );
+const courseSearchFunction = async (text: string) => {
+  const query = graphql`
+    query TabsCoursesQuery($name: String!) {
+      courses(filter: { name: $name }, page: { limit: 60 }) {
+        edges {
+          ident: id
+          name
+          price
+          category {
+            uuid
+            name
+            color
+          }
+        }
+      }
+    }
+  `;
+
+  const variables = {
+    name: text
+  };
+
+  const data = (await fetchQuery(
+    environment,
+    query,
+    variables
+  )) as TabsCoursesQueryResponse;
+
+  if (!data || !data.courses || !data.courses.edges) {
+    console.error('Could not get course data', data);
+    return [];
+  }
+
+  const results: CourseCategory[] = [];
+
+  // Get categories
+  const categories = {};
+  const uuidToTitle = {};
+  data.courses?.edges.forEach((course) => {
+    const courseItem = {
+      id: course?.ident,
+      name: course?.name,
+      price: course?.price,
+      trainingReq: false
+    };
+
+    const index = course?.category?.uuid;
+    if (!index) return;
+
+    const name = course?.category?.name;
+    if (name == undefined) return;
+
+    uuidToTitle[index] = name;
+
+    if (categories.hasOwnProperty(index)) {
+      categories[index].push(courseItem);
+    } else {
+      categories[index] = [courseItem];
+    }
+  });
+
+  for (const key in categories) {
+    results.push({
+      title: uuidToTitle[key],
+      courses: categories[key]
+    });
+  }
+
+  return results;
 };
 
 export const tabList: TabContent[] = [
