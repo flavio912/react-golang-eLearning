@@ -24,3 +24,15 @@ type UpdateTutorSignatureInput struct {
 	FileSuccess UploadFileSuccess
 	TutorUUID   UUID
 }
+
+type UpdateTutorInput struct {
+	UUID           UUID `valid:"required"`
+	Name           *string
+	CIN            *int32
+	SignatureToken *string
+}
+
+func (u *UpdateTutorInput) Validate() error {
+	_, err := govalidator.ValidateStruct(u)
+	return err
+}

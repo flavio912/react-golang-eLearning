@@ -38,6 +38,27 @@ func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput) (models
 	return tutor, nil
 }
 
+func (c *coursesRepoImpl) UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error) {
+	tutor, err := c.Tutor(details.UUID)
+	if err != nil {
+		return tutor, err
+	}
+
+	if details.Name != nil {
+		tutor.Name = *details.Name
+	}
+	if details.CIN != nil {
+		tutor.CIN = uint(*details.CIN)
+	}
+
+	if err := database.GormDB.Save(&tutor).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to update tutor: %s", details.UUID)
+		return models.Tutor{}, &errors.ErrSaveFail
+	}
+
+	return tutor, nil
+}
+
 func (c *coursesRepoImpl) UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error {
 	query := database.GormDB.Model(&models.Tutor{}).Where("uuid = ?", tutorUUID).Update("signature_key", s3key)
 	if query.Error != nil {

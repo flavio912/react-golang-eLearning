@@ -15,3 +15,10 @@ input UpdateTutorSignatureInput {
   fileSuccess: UploadFileSuccess!
   tutorUUID: UUID!
 }
+
+input UpdateTutorInput {
+  uuid: UUID!
+  name: String
+  cin: Int
+  signatureToken: String
+}

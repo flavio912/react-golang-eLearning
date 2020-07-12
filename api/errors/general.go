@@ -171,4 +171,8 @@ var (
 			Message: fmt.Sprintf("The given tutor does not exist: %s", uuid),
 		}
 	}
+	ErrSaveFail = SimpleError{
+		Type:    "ErrSaveFail",
+		Message: "Unable to save model",
+	}
 )

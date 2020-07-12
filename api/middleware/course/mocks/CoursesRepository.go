@@ -1001,6 +1001,27 @@ func (_m *CoursesRepository) UpdateTest(input course.UpdateTestInput) (models.Te
 	return r0, r1
 }
 
+// UpdateTutor provides a mock function with given fields: details
+func (_m *CoursesRepository) UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error) {
+	ret := _m.Called(details)
+
+	var r0 models.Tutor
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateTutorInput) models.Tutor); ok {
+		r0 = rf(details)
+	} else {
+		r0 = ret.Get(0).(models.Tutor)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateTutorInput) error); ok {
+		r1 = rf(details)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateTutorSignature provides a mock function with given fields: tutorUUID, s3key
 func (_m *CoursesRepository) UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error {
 	ret := _m.Called(tutorUUID, s3key)

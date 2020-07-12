@@ -46,6 +46,34 @@ func (c *courseAppImpl) CreateTutor(input gentypes.CreateTutorInput) (gentypes.T
 	return c.tutorToGentype(tutor), err
 }
 
+func (c *courseAppImpl) UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Tutor{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.Tutor{}, err
+	}
+
+	tutor, err := c.coursesRepository.UpdateTutor(input)
+
+	if input.SignatureToken != nil {
+		key, err := c.UpdateTutorSignature(gentypes.UpdateTutorSignatureInput{
+			FileSuccess: gentypes.UploadFileSuccess{
+				SuccessToken: *input.SignatureToken,
+			},
+			TutorUUID: tutor.UUID,
+		})
+		if err != nil {
+			return gentypes.Tutor{}, err
+		}
+
+		tutor.SignatureKey = key
+	}
+
+	return c.tutorToGentype(tutor), err
+}
+
 func (c *courseAppImpl) TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
 	if !c.grant.IsAdmin {
 		return "", "", &errors.ErrUnauthorized

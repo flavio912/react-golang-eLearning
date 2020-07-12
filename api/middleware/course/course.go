@@ -76,6 +76,7 @@ type CoursesRepository interface {
 	CreateTestMarks(mark models.TestMark) error
 
 	CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error)
+	UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error)
 	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
 	Tutor(uuid gentypes.UUID) (models.Tutor, error)
 }

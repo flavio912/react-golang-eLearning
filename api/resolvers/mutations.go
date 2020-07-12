@@ -559,6 +559,16 @@ func (m *MutationResolver) CreateTutor(ctx context.Context, args struct{ Input g
 	}, err
 }
 
+func (m *MutationResolver) UpdateTutor(ctx context.Context, args struct{ Input gentypes.UpdateTutorInput }) (*TutorResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	tutor, err := app.CourseApp.UpdateTutor(args.Input)
+
+	return &TutorResolver{
+		Tutor: tutor,
+	}, err
+}
+
 func (m *MutationResolver) TutorSignatureImageUploadRequest(
 	ctx context.Context,
 	args struct{ Input gentypes.UploadFileMeta },
