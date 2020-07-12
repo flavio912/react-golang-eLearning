@@ -21,7 +21,7 @@ import AppHolder from 'views/AppHolder';
 import OnlineCoursePage from 'views/OnlineCourse';
 import TrainingZone from 'views/TrainingZone/TrainingZone';
 import OnlineCourses from 'views/OnlineCourses';
-import Progress from 'views/Progress';
+import TrainingProgress from 'views/TrainingProgress';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -70,7 +70,7 @@ const Router = createFarceRouter({
           }}
         />
         <Route path="/courses/:id" Component={OnlineCoursePage} />
-        <Route path="/progress" Component={Progress} />
+        <Route path="/progress" Component={TrainingProgress} />
       </Route>
     </Route>
   ),
