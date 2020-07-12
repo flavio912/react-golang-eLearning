@@ -11,7 +11,7 @@ type Tutor struct {
 
 type CreateTutorInput struct {
 	Name           string `valid:"required"`
-	CIN            int32
+	CIN            int32  `valid:"required"`
 	SignatureToken *string
 }
 
