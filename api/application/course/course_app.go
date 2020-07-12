@@ -58,7 +58,7 @@ type CourseApp interface {
 	SearchSyllabus(
 		page *gentypes.Page,
 		filter *gentypes.SyllabusFilter,
-	) ([]gentypes.Module, []gentypes.Lesson, []gentypes.Test, gentypes.PageInfo, error)
+	) ([]gentypes.SearchResult, gentypes.PageInfo, error)
 
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(

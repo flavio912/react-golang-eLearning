@@ -356,24 +356,28 @@ func (q *QueryResolver) SearchSyllabus(
 	}) (*SearchSyllabusResultResolver, error) {
 	app := auth.AppFromContext(ctx)
 
-	modules, lessons, tests, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
+	results, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
 
 	var syllabusResolvers []SyllabusResolver
 
-	for _, m := range modules {
-		syllabusResolvers = append(syllabusResolvers, &ModuleResolver{
-			Module: m,
-		})
-	}
-	for _, l := range lessons {
-		syllabusResolvers = append(syllabusResolvers, &LessonResolver{
-			Lesson: l,
-		})
-	}
-	for _, t := range tests {
-		syllabusResolvers = append(syllabusResolvers, &TestResolver{
-			test: t,
-		})
+	for _, res := range results {
+		switch res.Type {
+		case "module":
+			m, _ := NewModuleResolver(ctx, NewModuleArgs{
+				ModuleUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, m)
+		case "lesson":
+			l, _ := NewLessonResolver(ctx, NewLessonArgs{
+				UUID: res.UUID.String(),
+			})
+			syllabusResolvers = append(syllabusResolvers, l)
+		case "test":
+			t, _ := NewTestResolver(ctx, NewTestArgs{
+				TestUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, t)
+		}
 	}
 
 	return &SearchSyllabusResultResolver{

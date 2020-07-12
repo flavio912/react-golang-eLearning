@@ -489,11 +489,11 @@ func (c *coursesRepoImpl) SearchSyllabus(
 	sb.WriteString("SELECT DISTINCT sylb.uuid, type FROM (")
 
 	// Select uuids and names from modules, lessons and tests
-	sb.WriteString("SELECT uuid, name, 'Module' AS type FROM modules ")
+	sb.WriteString("SELECT uuid, name, 'module' AS type FROM modules ")
 
-	sb.WriteString("UNION SELECT uuid, name, 'Lesson' AS type FROM lessons ")
+	sb.WriteString("UNION SELECT uuid, name, 'lesson' AS type FROM lessons ")
 
-	sb.WriteString("UNION SELECT uuid, name, 'Test' AS type FROM tests ")
+	sb.WriteString("UNION SELECT uuid, name, 'test' AS type FROM tests ")
 	sb.WriteString(") AS sylb ")
 
 	// Left Join them with tags

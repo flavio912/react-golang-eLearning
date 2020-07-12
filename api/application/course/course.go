@@ -168,18 +168,12 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 func (c *courseAppImpl) SearchSyllabus(
 	page *gentypes.Page,
 	filter *gentypes.SyllabusFilter,
-) ([]gentypes.Module, []gentypes.Lesson, []gentypes.Test, gentypes.PageInfo, error) {
+) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
 	if !c.grant.IsAdmin {
-		return []gentypes.Module{}, []gentypes.Lesson{}, []gentypes.Test{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+		return []gentypes.SearchResult{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
-	_, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+	results, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
 
-	var (
-		modules []models.Module
-		lessons []models.Lesson
-		tests   []models.Test
-	)
-
-	return c.modulesToGentypes(modules), c.lessonsToGentype(lessons), c.testsToGentypes(tests), pageInfo, err
+	return results, pageInfo, err
 }
