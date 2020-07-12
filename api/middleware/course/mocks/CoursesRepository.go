@@ -769,51 +769,33 @@ func (_m *CoursesRepository) RequirementBullets(courseID uint) ([]models.Require
 }
 
 // SearchSyllabus provides a mock function with given fields: page, filter
-func (_m *CoursesRepository) SearchSyllabus(page *gentypes.Page, filter *gentypes.SyllabusFilter) ([]models.Module, []models.Lesson, []models.Test, gentypes.PageInfo, error) {
+func (_m *CoursesRepository) SearchSyllabus(page *gentypes.Page, filter *gentypes.SyllabusFilter) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
 	ret := _m.Called(page, filter)
 
-	var r0 []models.Module
-	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.SyllabusFilter) []models.Module); ok {
+	var r0 []gentypes.SearchResult
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.SyllabusFilter) []gentypes.SearchResult); ok {
 		r0 = rf(page, filter)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]models.Module)
+			r0 = ret.Get(0).([]gentypes.SearchResult)
 		}
 	}
 
-	var r1 []models.Lesson
-	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.SyllabusFilter) []models.Lesson); ok {
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.SyllabusFilter) gentypes.PageInfo); ok {
 		r1 = rf(page, filter)
 	} else {
-		if ret.Get(1) != nil {
-			r1 = ret.Get(1).([]models.Lesson)
-		}
+		r1 = ret.Get(1).(gentypes.PageInfo)
 	}
 
-	var r2 []models.Test
-	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.SyllabusFilter) []models.Test); ok {
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.SyllabusFilter) error); ok {
 		r2 = rf(page, filter)
 	} else {
-		if ret.Get(2) != nil {
-			r2 = ret.Get(2).([]models.Test)
-		}
+		r2 = ret.Error(2)
 	}
 
-	var r3 gentypes.PageInfo
-	if rf, ok := ret.Get(3).(func(*gentypes.Page, *gentypes.SyllabusFilter) gentypes.PageInfo); ok {
-		r3 = rf(page, filter)
-	} else {
-		r3 = ret.Get(3).(gentypes.PageInfo)
-	}
-
-	var r4 error
-	if rf, ok := ret.Get(4).(func(*gentypes.Page, *gentypes.SyllabusFilter) error); ok {
-		r4 = rf(page, filter)
-	} else {
-		r4 = ret.Error(4)
-	}
-
-	return r0, r1, r2, r3, r4
+	return r0, r1, r2
 }
 
 // Test provides a mock function with given fields: testUUID

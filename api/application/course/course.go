@@ -173,6 +173,13 @@ func (c *courseAppImpl) SearchSyllabus(
 		return []gentypes.Module{}, []gentypes.Lesson{}, []gentypes.Test{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
-	modules, lessons, tests, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+	_, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+
+	var (
+		modules []models.Module
+		lessons []models.Lesson
+		tests   []models.Test
+	)
+
 	return c.modulesToGentypes(modules), c.lessonsToGentype(lessons), c.testsToGentypes(tests), pageInfo, err
 }

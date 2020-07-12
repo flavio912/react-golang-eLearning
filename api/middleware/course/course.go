@@ -2,6 +2,7 @@ package course
 
 import (
 	"sort"
+	"strings"
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
@@ -72,7 +73,7 @@ type CoursesRepository interface {
 	SearchSyllabus(
 		page *gentypes.Page,
 		filter *gentypes.SyllabusFilter,
-	) ([]models.Module, []models.Lesson, []models.Test, gentypes.PageInfo, error)
+	) ([]gentypes.SearchResult, gentypes.PageInfo, error)
 
 	Question(uuid gentypes.UUID) (models.Question, error)
 	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
@@ -474,85 +475,71 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 	return []models.CourseStructure{}, nil
 }
 
-func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.DB {
-	if filter != nil {
-		if filter.Name != nil {
-			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
-
-			query = query.Table("modules").
-				Joins("JOIN module_tags_link ON module_tags_link.module_uuid = modules.uuid").
-				Joins("JOIN tags ON tags.uuid = module_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
-
-			query = query.Table("lessons").
-				Joins("JOIN lesson_tags_link ON lesson_tags_link.lesson_uuid = lessons.uuid").
-				Joins("JOIN tags ON tags.uuid = lesson_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
-
-			query = query.Table("tests").
-				Joins("JOIN test_tags_link ON test_tags_link.lesson_uuid = tests.uuid").
-				Joins("JOIN tags ON tags.uuid = test_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
-		}
-	}
-
-	return query
-}
-
+// SearchSyllabus searches through modules, lessons and tests on their names and tags
 func (c *coursesRepoImpl) SearchSyllabus(
 	page *gentypes.Page,
 	filter *gentypes.SyllabusFilter,
-) ([]models.Module, []models.Lesson, []models.Test, gentypes.PageInfo, error) {
-	query := database.GormDB.Begin()
-	defer func() {
-		if r := recover(); r != nil {
-			query.Rollback()
-			c.Logger.LogMessage(sentry.LevelFatal, "SearchSyllabus: Forced to recover")
+) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
+	// builders ftw
+	var sb strings.Builder
+
+	// WARNING: Raw PostgreSQL area, proceed cautiously (18+)
+
+	// Distinct to avoid a syllabus that has name similar to its tag name
+	sb.WriteString("SELECT DISTINCT sylb.uuid, type FROM (")
+
+	// Select uuids and names from modules, lessons and tests
+	sb.WriteString("SELECT uuid, name, 'Module' AS type FROM modules ")
+
+	sb.WriteString("UNION SELECT uuid, name, 'Lesson' AS type FROM lessons ")
+
+	sb.WriteString("UNION SELECT uuid, name, 'Test' AS type FROM tests ")
+	sb.WriteString(") AS sylb ")
+
+	// Left Join them with tags
+	sb.WriteString("LEFT JOIN (")
+
+	sb.WriteString("SELECT module_uuid AS uuid, name FROM module_tags_link ")
+	sb.WriteString("INNER JOIN tags ON tags.uuid = module_tags_link.tag_uuid ")
+
+	sb.WriteString("UNION SELECT lesson_uuid AS uuid, name FROM lesson_tags_link ")
+	sb.WriteString("INNER JOIN tags ON tags.uuid = lesson_tags_link.tag_uuid ")
+
+	sb.WriteString("UNION SELECT test_uuid AS uuid, name FROM test_tags_link ")
+	sb.WriteString("INNER JOIN tags ON tags.uuid = test_tags_link.tag_uuid ")
+
+	sb.WriteString(") AS sylb_tags ON sylb_tags.uuid = sylb.uuid ")
+
+	if filter != nil {
+		if filter.Name != nil {
+			name := "'%%" + *filter.Name + "%%'"
+			sb.WriteString("WHERE sylb.name ILIKE " + name + " OR sylb_tags.name ILIKE " + name)
 		}
-	}()
+	}
 
-	var (
-		modules []models.Module
-		lessons []models.Lesson
-		tests   []models.Test
-	)
+	var results []gentypes.SearchResult
 
-	query = filterSyllabus(query, filter)
+	query := database.GormDB
+	sub := query.Raw(sb.String()).SubQuery()
 
 	var count int32
-	if err := query.Model(&models.Module{}).Model(&models.Lesson{}).Model(&models.Test{}).Count(&count).Error; err != nil {
+	if err := query.Raw("SELECT count(*) FROM ? as simp", sub).Count(&count).Error; err != nil {
 		c.Logger.Log(sentry.LevelError, err, "Unable to count syllabus items")
-		query.Rollback()
-		return modules, lessons, tests, gentypes.PageInfo{}, &errors.ErrWhileHandling
+		return results, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
 
+	// PostgreSQL forces you to use an alias even if you don't use it
+	query = query.Raw("SELECT uuid, type FROM ? as simp", sub)
 	query, limit, offset := middleware.GetPage(query, page)
-
-	if err := query.Find(&modules).Error; err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to find modules")
-		query.Rollback()
-		return []models.Module{}, lessons, tests, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	if err := query.Scan(&results).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to find syllabus items")
+		return []gentypes.SearchResult{}, gentypes.PageInfo{}, &errors.ErrNotFound
 	}
 
-	if err := query.Find(&lessons).Error; err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to find lessons")
-		query.Rollback()
-		return []models.Module{}, []models.Lesson{}, tests, gentypes.PageInfo{}, &errors.ErrNotAllFound
-	}
-
-	if err := query.Find(&tests).Error; err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to find tests")
-		query.Rollback()
-		return []models.Module{}, []models.Lesson{}, []models.Test{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
-	}
-
-	if err := query.Commit().Error; err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
-		query.Rollback()
-		return []models.Module{}, []models.Lesson{}, []models.Test{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
-	}
-
-	return modules, lessons, tests, gentypes.PageInfo{
+	return results, gentypes.PageInfo{
 		Total:  count,
 		Offset: offset,
 		Limit:  limit,
-		Given:  int32(len(modules) + len(lessons) + len(tests)),
+		Given:  int32(len(results)),
 	}, nil
 }

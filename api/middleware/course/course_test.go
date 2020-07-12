@@ -219,13 +219,47 @@ func TestSearchSyllabus(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Should return all modules, lessons and tests", func(t *testing.T) {
-		modules, lessons, tests, _, err := courseRepo.SearchSyllabus(nil, nil)
+		uuids, _, err := courseRepo.SearchSyllabus(nil, nil)
 
 		assert.Nil(t, err)
-		assert.Len(t, modules, 3)
-		assert.Len(t, lessons, 3)
-		assert.Len(t, tests, 2)
+		assert.Len(t, uuids, 8)
 	})
 
-	// More to come
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(4)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+
+		results, pageInfo, err := courseRepo.SearchSyllabus(&page, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, results, int(limit))
+		assert.Equal(t, gentypes.PageInfo{Total: 8, Given: 4, Limit: limit}, pageInfo)
+	})
+
+	t.Run("Should search in all names and tag names", func(t *testing.T) {
+		name := "existing"
+		results, _, err := courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 2)
+
+		name = "to"
+		results, _, err = courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 2)
+
+		name = "i"
+		results, _, err = courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 5)
+	})
+	// More to come, I think
 }

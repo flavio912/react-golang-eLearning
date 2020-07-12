@@ -96,3 +96,8 @@ type PurchaseCoursesResponse struct {
 type SyllabusFilter struct {
 	Name *string
 }
+
+type SearchResult struct {
+	UUID UUID
+	Type string
+}
