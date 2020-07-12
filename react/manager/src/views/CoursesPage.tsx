@@ -76,6 +76,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   filterRow: {
     margin: '30px 0px',
     justifyContent: 'space-between'
+  },
+  courses: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, 298px)',
+    gridGap: 26
   }
 }));
 
@@ -147,11 +152,10 @@ const CoursesPageComp = ({ courses }: Props) => {
           </div>
         </div>
       </div>
-      <div className={classNames(classes.row, classes.spaceEvenly)}>
+      <div className={classNames(classes.spaceEvenly, classes.courses)}>
         {_courses &&
           _courses.map((course) => (
             <CourseCard
-              className={classes.course}
               course={course}
               onClick={() => console.log('Pressed')}
               size={isOnline ? 'small' : 'large'}
