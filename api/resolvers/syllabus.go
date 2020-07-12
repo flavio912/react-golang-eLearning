@@ -53,3 +53,11 @@ func NewSyllabusResolvers(ctx context.Context, args NewSyllabusArgs) (*[]Syllabu
 
 	return &resolvers, nil
 }
+
+type SearchSyllabusResultResolver struct {
+	edges    *[]SyllabusResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *SearchSyllabusResultResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *SearchSyllabusResultResolver) Edges() *[]SyllabusResolver  { return r.edges }

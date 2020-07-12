@@ -347,3 +347,39 @@ func (q *QueryResolver) Modules(
 		Modules:  &modules,
 	})
 }
+
+func (q *QueryResolver) SearchSyllabus(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.SyllabusFilter
+	}) (*SearchSyllabusResultResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	modules, lessons, tests, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
+
+	var syllabusResolvers []SyllabusResolver
+
+	for _, m := range modules {
+		syllabusResolvers = append(syllabusResolvers, &ModuleResolver{
+			Module: m,
+		})
+	}
+	for _, l := range lessons {
+		syllabusResolvers = append(syllabusResolvers, &LessonResolver{
+			Lesson: l,
+		})
+	}
+	for _, t := range tests {
+		syllabusResolvers = append(syllabusResolvers, &TestResolver{
+			test: t,
+		})
+	}
+
+	return &SearchSyllabusResultResolver{
+		edges: &syllabusResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, err
+}

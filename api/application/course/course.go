@@ -164,3 +164,15 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 		},
 	}, nil
 }
+
+func (c *courseAppImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]gentypes.Module, []gentypes.Lesson, []gentypes.Test, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Module{}, []gentypes.Lesson{}, []gentypes.Test{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	modules, lessons, tests, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+	return c.modulesToGentypes(modules), c.lessonsToGentype(lessons), c.testsToGentypes(tests), pageInfo, err
+}

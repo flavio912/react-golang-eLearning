@@ -69,6 +69,11 @@ type CoursesRepository interface {
 
 	CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error)
 
+	SearchSyllabus(
+		page *gentypes.Page,
+		filter *gentypes.SyllabusFilter,
+	) ([]models.Module, []models.Lesson, []models.Test, gentypes.PageInfo, error)
+
 	Question(uuid gentypes.UUID) (models.Question, error)
 	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
@@ -467,4 +472,81 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 	}
 
 	return []models.CourseStructure{}, nil
+}
+
+func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.DB {
+	if filter != nil {
+		if filter.Name != nil {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+
+			query = query.Table("modules").
+				Joins("JOIN module_tags_link ON module_tags_link.module_uuid = modules.uuid").
+				Joins("JOIN tags ON tags.uuid = module_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
+
+			query = query.Table("lessons").
+				Joins("JOIN lesson_tags_link ON lesson_tags_link.lesson_uuid = lessons.uuid").
+				Joins("JOIN tags ON tags.uuid = lesson_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
+
+			query = query.Table("tests").
+				Joins("JOIN test_tags_link ON test_tags_link.lesson_uuid = tests.uuid").
+				Joins("JOIN tags ON tags.uuid = test_tags_link.tag_uuid AND tags.name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]models.Module, []models.Lesson, []models.Test, gentypes.PageInfo, error) {
+	query := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			query.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "SearchSyllabus: Forced to recover")
+		}
+	}()
+
+	var (
+		modules []models.Module
+		lessons []models.Lesson
+		tests   []models.Test
+	)
+
+	query = filterSyllabus(query, filter)
+
+	var count int32
+	if err := query.Count(&count).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to count syllabus items")
+		query.Rollback()
+		return modules, lessons, tests, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := middleware.GetPage(query, page)
+
+	if err := query.Find(&modules).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to find modules")
+		query.Rollback()
+		return []models.Module{}, lessons, tests, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
+	if err := query.Find(&lessons).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to find lessons")
+		query.Rollback()
+		return []models.Module{}, []models.Lesson{}, tests, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
+	if err := query.Find(&tests).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to find tests")
+		query.Rollback()
+		return []models.Module{}, []models.Lesson{}, []models.Test{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
+	return modules, lessons, tests, gentypes.PageInfo{
+		Total:  count,
+		Offset: offset,
+		Limit:  limit,
+		Given:  int32(len(modules) + len(lessons) + len(tests)),
+	}, nil
 }

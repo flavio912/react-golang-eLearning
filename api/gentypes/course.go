@@ -92,3 +92,7 @@ type PurchaseCoursesResponse struct {
 	TransactionComplete bool
 	StripeClientSecret  *string
 }
+
+type SyllabusFilter struct {
+	Name *string
+}

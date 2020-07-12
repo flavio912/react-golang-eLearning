@@ -55,6 +55,11 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 
+	SearchSyllabus(
+		page *gentypes.Page,
+		filter *gentypes.SyllabusFilter,
+	) ([]gentypes.Module, []gentypes.Lesson, []gentypes.Test, gentypes.PageInfo, error)
+
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(
 		page *gentypes.Page,
