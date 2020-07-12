@@ -214,3 +214,18 @@ func TestManyOnlineCourseStructures(t *testing.T) {
 
 	// TODO: Add test for multiple
 }
+
+func TestSearchSyllabus(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should return all modules, lessons and tests", func(t *testing.T) {
+		modules, lessons, tests, _, err := courseRepo.SearchSyllabus(nil, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, modules, 3)
+		assert.Len(t, lessons, 3)
+		assert.Len(t, tests, 2)
+	})
+
+	// More to come
+}

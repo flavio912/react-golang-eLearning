@@ -517,7 +517,7 @@ func (c *coursesRepoImpl) SearchSyllabus(
 	query = filterSyllabus(query, filter)
 
 	var count int32
-	if err := query.Count(&count).Error; err != nil {
+	if err := query.Model(&models.Module{}).Model(&models.Lesson{}).Model(&models.Test{}).Count(&count).Error; err != nil {
 		c.Logger.Log(sentry.LevelError, err, "Unable to count syllabus items")
 		query.Rollback()
 		return modules, lessons, tests, gentypes.PageInfo{}, &errors.ErrWhileHandling
