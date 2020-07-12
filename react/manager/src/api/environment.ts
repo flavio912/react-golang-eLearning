@@ -32,7 +32,7 @@ async function fetchQuery(operation: any, variables: any) {
     'X-CSRF-TOKEN': CSRF_TOKEN
   };
 
-  return fetch('https://ttc.devserver.london/graphql', {
+  return fetch('http://localhost:8080/graphql', {
     method: 'POST',
     headers,
     body: JSON.stringify({
