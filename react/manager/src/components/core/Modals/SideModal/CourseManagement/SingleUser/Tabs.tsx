@@ -22,14 +22,17 @@ import { ResultItem } from 'components/UserSearch';
 
 const items: ResultItem[] = [
   {
+    uuid: '',
     key: 'Jim Smith',
     value: 'uuid-1'
   },
   {
+    uuid: '',
     key: 'Bruce Willis',
     value: 'uuid-2'
   },
   {
+    uuid: '',
     key: 'Tony Stark',
     value: 'uuid-3'
   }

@@ -1,20 +1,20 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import { ResultItem } from "./UserSearch";
-import ThemeObject, { Theme } from "helpers/theme";
-import { ScaleLoader } from "react-spinners";
-import UserResult from "./UserResult";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import { ResultItem } from './UserSearch';
+import ThemeObject, { Theme } from 'helpers/theme';
+import { ScaleLoader } from 'react-spinners';
+import UserResult from './UserResult';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {},
   results: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(1)
   },
   loader: {
     paddingTop: theme.spacing(1),
-    display: "flex",
-    justifyContent: "center",
-  },
+    display: 'flex',
+    justifyContent: 'center'
+  }
 }));
 
 type Props = {
@@ -31,7 +31,7 @@ function UserResults({ results, loading, onSelect }: Props) {
       {!loading && (
         <div>
           {results.map((result) => (
-            <UserResult result={result} onClick={onSelect} key={result.key} />
+            <UserResult result={result} onClick={onSelect} key={result.uuid} />
           ))}
         </div>
       )}

@@ -16,6 +16,10 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegatesPage_delegates } from './__generated__/DelegatesPage_delegates.graphql';
 import { DelegatesPage_manager } from './__generated__/DelegatesPage_manager.graphql';
+import { fetchQuery } from 'relay-runtime';
+import environment from 'api/environment';
+import { OrgOverviewDelegatesQueryResponse } from './__generated__/OrgOverviewDelegatesQuery.graphql';
+import { DelegatesPageQueryResponse } from './__generated__/DelegatesPageQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -128,21 +132,42 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
         <div className={classes.search}>
           <UserSearch
             companyName={manager.company.name}
-            searchFunction={async (query: string) => {
-              return [
-                {
-                  key: 'Jim Smith',
-                  value: 'uuid-1'
-                },
-                {
-                  key: 'Bruce Willis',
-                  value: 'uuid-2'
-                },
-                {
-                  key: 'Tony Stark',
-                  value: 'uuid-3'
+            searchFunction={async (text: string) => {
+              const query = graphql`
+                query DelegatesPageQuery($name: String!) {
+                  delegates(filter: { name: $name }, page: { limit: 8 }) {
+                    edges {
+                      uuid
+                      TTC_ID
+                      firstName
+                      lastName
+                    }
+                  }
                 }
-              ];
+              `;
+
+              const variables = {
+                name: text
+              };
+
+              const data = (await fetchQuery(
+                environment,
+                query,
+                variables
+              )) as DelegatesPageQueryResponse;
+
+              if (!data || !data.delegates || !data.delegates.edges) {
+                console.error('Could not get data', data);
+                return [];
+              }
+
+              const results = data.delegates?.edges.map((delegate) => ({
+                uuid: delegate?.uuid ?? '',
+                key: `${delegate?.firstName} ${delegate?.lastName}`,
+                value: delegate?.TTC_ID ?? ''
+              }));
+
+              return results;
             }}
           />
         </div>
