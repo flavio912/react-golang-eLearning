@@ -7,7 +7,8 @@ import {
   makeRouteConfig,
   Route,
   useRouter,
-  RouteRenderArgs
+  RouteRenderArgs,
+  RouterRenderArgs
 } from 'found';
 //@ts-ignore
 import { Resolver } from 'found-relay';
@@ -19,7 +20,7 @@ import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
 import OrgOverview from 'views/OrgOverview';
 import DelegatesPage from 'views/DelegatesPage';
-import { OnlineCoursesPage } from 'views/CoursesPage';
+import CoursesPage from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
@@ -99,11 +100,11 @@ const Router = createFarceRouter({
         />
         <Route
           path="/courses"
-          Component={OnlineCoursesPage}
+          Component={CoursesPage}
           query={graphql`
-            query App_OnlineCourses_Query($page: Page) {
-              onlineCourses(page: $page) {
-                ...CoursesPage_onlineCourses
+            query App_Courses_Query($page: Page) {
+              courses(page: $page) {
+                ...CoursesPage_courses
               }
             }
           `}
@@ -120,24 +121,6 @@ const Router = createFarceRouter({
             };
           }}
         />
-        {/* <Route
-          path="/courses/classroom"
-          Component={CoursesPage}
-          query={graphql`
-            query App_ClassroomCourses_Query {
-
-            }
-          `}
-          prepareVariables={(params: any, { location }: any) => {
-            console.log(params);
-            console.log(location);
-            const { page, type } = location.query;
-            return {
-              page,
-
-            };
-          }}
-        /> */}
       </Route>
     </Route>
   ),

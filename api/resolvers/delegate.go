@@ -59,6 +59,11 @@ func (d *DelegateResolver) Activity(ctx context.Context, args struct{ Page *gent
 		CourseTakerUUID: &d.delegate.CourseTakerUUID,
 	}, args.Page)
 }
+func (d *DelegateResolver) ActiveCourses(ctx context.Context) (*[]*ActiveCourseResolver, error) {
+	return NewActiveCoursesResolvers(ctx, NewActiveCourseArgs{
+		TakerUUID: &d.delegate.CourseTakerUUID,
+	})
+}
 
 type DelegatePageResolver struct {
 	edges    *[]*DelegateResolver
@@ -67,6 +72,38 @@ type DelegatePageResolver struct {
 
 func (r *DelegatePageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
 func (r *DelegatePageResolver) Edges() *[]*DelegateResolver { return r.edges }
+
+type NewDelegatePageArgs struct {
+	Delegates *[]gentypes.Delegate
+	PageInfo  gentypes.PageInfo
+}
+
+func NewDelegatePageResolver(ctx context.Context, args NewDelegatePageArgs) (*DelegatePageResolver, error) {
+	var resolvers []*DelegateResolver
+	switch {
+	case args.Delegates != nil:
+		for _, delegate := range *args.Delegates {
+			res, err := NewDelegateResolver(ctx, NewDelegateArgs{
+				Delegate: delegate,
+			})
+
+			if err != nil {
+				return nil, err
+			}
+
+			resolvers = append(resolvers, res)
+		}
+	default:
+		return &DelegatePageResolver{}, &errors.ErrUnableToResolve
+	}
+
+	return &DelegatePageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &args.PageInfo,
+		},
+	}, nil
+}
 
 type CreateDelegateResponse struct {
 	delegate          gentypes.Delegate

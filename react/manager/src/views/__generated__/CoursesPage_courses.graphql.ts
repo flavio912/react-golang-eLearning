@@ -3,32 +3,30 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type CoursesPage_onlineCourses = {
+export type CoursesPage_courses = {
     readonly edges: ReadonlyArray<{
-        readonly uuid: string;
-        readonly info: {
-            readonly name: string | null;
-            readonly color: string | null;
-            readonly excerpt: string | null;
-            readonly price: number | null;
-            readonly category: {
-                readonly name: string;
-                readonly color: string;
-            } | null;
-        };
-    } | null>;
+        readonly ident: number;
+        readonly name: string;
+        readonly color: string | null;
+        readonly excerpt: string | null;
+        readonly price: number;
+        readonly category: {
+            readonly name: string;
+            readonly color: string;
+        } | null;
+    } | null> | null;
     readonly pageInfo: {
         readonly total: number;
         readonly offset: number;
         readonly limit: number;
         readonly given: number;
     } | null;
-    readonly " $refType": "CoursesPage_onlineCourses";
+    readonly " $refType": "CoursesPage_courses";
 };
-export type CoursesPage_onlineCourses$data = CoursesPage_onlineCourses;
-export type CoursesPage_onlineCourses$key = {
-    readonly " $data"?: CoursesPage_onlineCourses$data;
-    readonly " $fragmentRefs": FragmentRefs<"CoursesPage_onlineCourses">;
+export type CoursesPage_courses$data = CoursesPage_courses;
+export type CoursesPage_courses$key = {
+    readonly " $data"?: CoursesPage_courses$data;
+    readonly " $fragmentRefs": FragmentRefs<"CoursesPage_courses">;
 };
 
 
@@ -49,8 +47,8 @@ const node: ReaderFragment = (function () {
     } as any);
     return {
         "kind": "Fragment",
-        "name": "CoursesPage_onlineCourses",
-        "type": "OnlineCoursePage",
+        "name": "CoursesPage_courses",
+        "type": "CoursePage",
         "metadata": null,
         "argumentDefinitions": [],
         "selections": [
@@ -60,54 +58,43 @@ const node: ReaderFragment = (function () {
                 "name": "edges",
                 "storageKey": null,
                 "args": null,
-                "concreteType": "OnlineCourse",
+                "concreteType": "Course",
                 "plural": true,
                 "selections": [
                     {
                         "kind": "ScalarField",
+                        "alias": "ident",
+                        "name": "id",
+                        "args": null,
+                        "storageKey": null
+                    },
+                    (v0 /*: any*/),
+                    (v1 /*: any*/),
+                    {
+                        "kind": "ScalarField",
                         "alias": null,
-                        "name": "uuid",
+                        "name": "excerpt",
+                        "args": null,
+                        "storageKey": null
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "price",
                         "args": null,
                         "storageKey": null
                     },
                     {
                         "kind": "LinkedField",
                         "alias": null,
-                        "name": "info",
+                        "name": "category",
                         "storageKey": null,
                         "args": null,
-                        "concreteType": "CourseInfo",
+                        "concreteType": "Category",
                         "plural": false,
                         "selections": [
                             (v0 /*: any*/),
-                            (v1 /*: any*/),
-                            {
-                                "kind": "ScalarField",
-                                "alias": null,
-                                "name": "excerpt",
-                                "args": null,
-                                "storageKey": null
-                            },
-                            {
-                                "kind": "ScalarField",
-                                "alias": null,
-                                "name": "price",
-                                "args": null,
-                                "storageKey": null
-                            },
-                            {
-                                "kind": "LinkedField",
-                                "alias": null,
-                                "name": "category",
-                                "storageKey": null,
-                                "args": null,
-                                "concreteType": "Category",
-                                "plural": false,
-                                "selections": [
-                                    (v0 /*: any*/),
-                                    (v1 /*: any*/)
-                                ]
-                            }
+                            (v1 /*: any*/)
                         ]
                     }
                 ]
@@ -154,5 +141,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = 'e364f655046380720f4f8f5e971363a8';
+(node as any).hash = '172bd14a3c1370079363ff4a71e47496';
 export default node;

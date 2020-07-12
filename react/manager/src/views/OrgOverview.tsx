@@ -121,7 +121,7 @@ const OrgOverview = ({ manager }: Props) => {
         <TitleWrapper title="Quick Overview" className={classes.quickOverview}>
           <QuickOverview
             purchasedCourses={20}
-            numDelegates={130}
+            numDelegates={manager.company.delegates?.pageInfo?.total ?? 0}
             numValidCertificates={10}
             numCertificatesExpiringSoon={15}
           />
@@ -167,17 +167,17 @@ const OrgOverview = ({ manager }: Props) => {
           <ActvityCard
             className={classes.activity}
             padding={'medium'}
-            leftHeading={'Delegates activity'}
+            leftHeading={'Certificate status'}
             rightHeading={'Recent Updates'}
-            options={['This month', 'All Time']}
+            options={[]}
             updates={[]}
             data={{
               outerRing: {
-                name: 'Active',
+                name: 'Current',
                 value: 154
               },
               innerRing: {
-                name: 'Inactive',
+                name: 'Expired',
                 value: 64
               }
             }}
@@ -198,6 +198,11 @@ export default createFragmentContainer(OrgOverview, {
       createdAt
       company {
         name
+        delegates {
+          pageInfo {
+            total
+          }
+        }
       }
     }
   `

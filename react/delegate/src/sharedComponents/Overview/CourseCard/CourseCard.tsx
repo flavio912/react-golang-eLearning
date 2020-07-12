@@ -14,25 +14,26 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     transition: '0.2s all',
     '&:hover': {
-      boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
-    }
+      boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)',
+    },
   },
   noBorder: {
-    borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`
+    borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`,
   },
   mainContainer: {
     borderRadius: `0 ${theme.primaryBorderRadius}px 0 0`,
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'
+    backgroundSize: 'cover',
+    height: 186,
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   column: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   heading: {
     alignSelf: 'flex-start',
@@ -40,23 +41,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '700',
     color: theme.colors.primaryWhite,
     borderRadius: `0 0 ${theme.secondaryBorderRadius}px 0`,
-    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`
+    padding: `${theme.spacing(1)}px ${theme.spacing(2)}px`,
   },
   icon: {
     alignSelf: 'flex-start',
-    margin: `${theme.spacing(1)}px`
+    margin: `${theme.spacing(1)}px`,
   },
   price: {
     color: theme.colors.primaryWhite,
     fontSize: theme.fontSizes.large,
     margin: '20px 20px 5px 20px',
-    fontWeight: '800'
+    fontWeight: '800',
   },
   title: {
     color: theme.colors.primaryWhite,
     margin: '0 20px 30px 20px',
-    fontSize: theme.fontSizes.heading,
-    fontWeight: '900'
+    fontSize: '23px',
+    fontWeight: '900',
   },
   lecture: {
     display: 'flex',
@@ -66,7 +67,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     lineHeight: '1.5em',
     margin: `${theme.spacing(2)}px ${theme.spacing(2)}px 0`,
     color: theme.colors.textGrey,
-    padding: 0
+    padding: 0,
   },
   lectureItem: {
     position: 'relative',
@@ -80,62 +81,61 @@ const useStyles = createUseStyles((theme: Theme) => ({
       width: '4px',
       height: '4px',
       backgroundColor: theme.colors.textGrey,
-      borderRadius: '4px'
+      borderRadius: '4px',
     },
     '&:first-child': {
       marginLeft: 0,
       '&:after': {
-        display: 'none'
-      }
-    }
+        display: 'none',
+      },
+    },
   },
   description: {
     flex: 3,
     lineHeight: '1.5em',
-    height: '4.5em',
     overflow: 'hidden',
     fontWeight: '300',
     fontSize: theme.fontSizes.small,
     margin: `10px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
-    color: theme.colors.secondaryBlack
+    color: theme.colors.secondaryBlack,
   },
   progress: {
     color: theme.colors.primaryBlack,
     margin: '15px 0',
     fontSize: theme.fontSizes.tiny,
-    fontWeight: '400'
+    fontWeight: '400',
   },
   button: {
     flex: 1,
     display: 'flex',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   viewButton: {
     width: '100%',
     paddingTop: theme.spacing(1),
-    paddingBottom: theme.spacing(1)
+    paddingBottom: theme.spacing(1),
   },
   viewCourseButton: {
-    width: '100%'
+    width: '100%',
   },
   footer: {
     padding: `0 ${theme.spacing(2)}px`,
     backgroundColor: theme.colors.backgroundGrey,
     border: `1px solid ${theme.colors.borderGrey}`,
     borderWidth: '1px 0 0 0',
-    borderRadius: `0 0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`
+    borderRadius: `0 0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`,
   },
   filler: {
-    flex: 0.5
+    flex: 0.5,
   },
   small: {
     width: '298px',
-    cursor: 'pointer'
+    cursor: 'pointer',
   },
   large: {
-    width: '610px'
-  }
+    width: '610px',
+  },
 }));
 
 export type SizeOptions = 'small' | 'large';
@@ -173,7 +173,7 @@ function CourseCard({
   size = 'small',
   progress,
   className,
-  isShowViewButton = false
+  isShowViewButton = false,
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -191,7 +191,7 @@ function CourseCard({
         classes.root,
         classes.noBorder,
         classes[size],
-        className
+        className,
       )}
       onClick={() => {
         onClick();
@@ -216,12 +216,7 @@ function CourseCard({
             £{course.price?.toFixed(2)}
           </div>
         )}
-        <div
-          className={classNames(classes.title)}
-          style={{ marginTop: course.price ? 0 : '45px' }}
-        >
-          {course.title}
-        </div>
+        <div className={classNames(classes.title)}>{course.title}</div>
       </div>
 
       <div className={classNames(classes.column)}>
@@ -253,7 +248,7 @@ function CourseCard({
               marginTop:
                 course.modules || course.lessons || course.videoTime
                   ? '10px'
-                  : '22px'
+                  : '22px',
             }}
           >
             {course.description}
