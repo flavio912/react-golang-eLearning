@@ -16,6 +16,7 @@ type Query {
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 }
 
 # Delegate
@@ -96,6 +97,7 @@ input OrderBy {
 
 type Company {
   approved: Boolean
+  isContract: Boolean!
   uuid: UUID!
   createdAt: String
   name: String!
@@ -237,4 +239,17 @@ type ActiveCourse {
   course: Course!
   currentAttempt: Int!
   minutesTracked: Float!
+}
+
+input PurchaseCoursesInput {
+  courses: [Int!]!
+  users: [UUID!]! # List of delegates UUIDs
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
 }

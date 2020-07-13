@@ -18,11 +18,12 @@ export const normal = () => {
             'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD'
           ),
           price: number('price', 55),
-          sku: text('sku', '082739428374'),
-          qty: number('qty', 1),
-          subtotal: number('subtotal', 110)
+          sku: text('sku', '082739428374')
         }
       ]}
+      userUUIDs={['123']}
+      isContract={false}
+      onPurchase={() => false}
     />
   );
 };

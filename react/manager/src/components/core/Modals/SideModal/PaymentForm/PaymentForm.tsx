@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { createUseStyles } from 'react-jss';
 import theme, { Theme } from 'helpers/theme';
-import { loadStripe } from '@stripe/stripe-js';
+import { loadStripe, ConfirmCardPaymentData } from '@stripe/stripe-js';
 import {
   CardElement,
   Elements,
@@ -9,6 +9,7 @@ import {
   useElements
 } from '@stripe/react-stripe-js';
 import Button from 'components/core/Input/Button';
+import { OnPurchase } from '../CourseManagement/MultiUser/Tabs';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentFormRoot: {
@@ -46,18 +47,47 @@ const useStyles = createUseStyles((theme: Theme) => ({
     }
   }
 }));
-const stripePromise = loadStripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
+const stripePromise = loadStripe('pk_test_T5ZBhTO9Lq709gdga8c9aoPN00PnTm0tfU');
 
-function PaymentForm({}: any) {
+type Props = {
+  onPurchase: OnPurchase;
+};
+
+function PaymentForm({ onPurchase }: Props) {
   const classes = useStyles();
-  const stripe = useStripe() as any;
-  const elements = useElements() as any;
+  const stripe = useStripe();
+  const elements = useElements();
   const handleSubmit = async (event: any) => {
     event.preventDefault();
-    const { error, paymentMethod } = await stripe.createPaymentMethod({
-      type: 'card',
-      card: elements.getElement(CardElement)
-    } as any);
+
+    // Get clientsecret
+    onPurchase(async (resp, err) => {
+      console.log('RESP', resp);
+      console.log('purerr', err);
+
+      if (resp.purchaseCourses?.transactionComplete) {
+        console.log('Transaction unexpectly complete');
+        return;
+      }
+
+      if (!resp.purchaseCourses?.stripeClientSecret) return;
+
+      const cardEl = elements?.getElement(CardElement);
+      if (!cardEl) return;
+
+      const paymentData: ConfirmCardPaymentData = {
+        payment_method: {
+          card: cardEl
+        }
+      };
+
+      const result = await stripe?.confirmCardPayment(
+        resp.purchaseCourses?.stripeClientSecret,
+        paymentData
+      );
+
+      console.log('res', result);
+    });
   };
   return (
     <div className={classes.paymentFormRoot}>
@@ -87,11 +117,11 @@ function PaymentForm({}: any) {
     </div>
   );
 }
-function PaymentStripProvider() {
+function PaymentStripeProvider({ onPurchase }: Props) {
   return (
     <Elements stripe={stripePromise}>
-      <PaymentForm />
+      <PaymentForm onPurchase={onPurchase} />
     </Elements>
   );
 }
-export default PaymentStripProvider;
+export default PaymentStripeProvider;

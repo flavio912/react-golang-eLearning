@@ -1,5 +1,6 @@
 type Company {
   approved: Boolean
+  isContract: Boolean!
   uuid: UUID!
   createdAt: String
   name: String!
