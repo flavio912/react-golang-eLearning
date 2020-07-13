@@ -246,7 +246,7 @@ func (b *blogAppImpl) UpdateBlog(input gentypes.UpdateBlogInput) (gentypes.Blog,
 			}
 			if !to_keep {
 				to_delete = append(to_delete, oldie.BodyID)
-				err = uploads.DeleteImageFromKey(oldie.BodyID)
+				err = uploads.DeleteImageFromKey(oldie.S3key)
 
 				if err != nil {
 					return gentypes.Blog{}, err
