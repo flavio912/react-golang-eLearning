@@ -362,17 +362,17 @@ func (q *QueryResolver) SearchSyllabus(
 
 	for _, res := range results {
 		switch res.Type {
-		case "module":
+		case gentypes.ModuleType:
 			m, _ := NewModuleResolver(ctx, NewModuleArgs{
 				ModuleUUID: &res.UUID,
 			})
 			syllabusResolvers = append(syllabusResolvers, m)
-		case "lesson":
+		case gentypes.LessonType:
 			l, _ := NewLessonResolver(ctx, NewLessonArgs{
 				UUID: res.UUID.String(),
 			})
 			syllabusResolvers = append(syllabusResolvers, l)
-		case "test":
+		case gentypes.TestType:
 			t, _ := NewTestResolver(ctx, NewTestArgs{
 				TestUUID: &res.UUID,
 			})

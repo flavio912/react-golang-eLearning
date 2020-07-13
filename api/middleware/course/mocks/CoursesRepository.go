@@ -769,15 +769,15 @@ func (_m *CoursesRepository) RequirementBullets(courseID uint) ([]models.Require
 }
 
 // SearchSyllabus provides a mock function with given fields: page, filter
-func (_m *CoursesRepository) SearchSyllabus(page *gentypes.Page, filter *gentypes.SyllabusFilter) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
+func (_m *CoursesRepository) SearchSyllabus(page *gentypes.Page, filter *gentypes.SyllabusFilter) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
 	ret := _m.Called(page, filter)
 
-	var r0 []gentypes.SearchResult
-	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.SyllabusFilter) []gentypes.SearchResult); ok {
+	var r0 []gentypes.CourseItem
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.SyllabusFilter) []gentypes.CourseItem); ok {
 		r0 = rf(page, filter)
 	} else {
 		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]gentypes.SearchResult)
+			r0 = ret.Get(0).([]gentypes.CourseItem)
 		}
 	}
 

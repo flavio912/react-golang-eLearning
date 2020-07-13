@@ -168,9 +168,9 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 func (c *courseAppImpl) SearchSyllabus(
 	page *gentypes.Page,
 	filter *gentypes.SyllabusFilter,
-) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
 	if !c.grant.IsAdmin {
-		return []gentypes.SearchResult{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+		return []gentypes.CourseItem{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 	}
 
 	results, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)

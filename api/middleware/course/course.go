@@ -73,7 +73,7 @@ type CoursesRepository interface {
 	SearchSyllabus(
 		page *gentypes.Page,
 		filter *gentypes.SyllabusFilter,
-	) ([]gentypes.SearchResult, gentypes.PageInfo, error)
+	) ([]gentypes.CourseItem, gentypes.PageInfo, error)
 
 	Question(uuid gentypes.UUID) (models.Question, error)
 	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
@@ -479,7 +479,7 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 func (c *coursesRepoImpl) SearchSyllabus(
 	page *gentypes.Page,
 	filter *gentypes.SyllabusFilter,
-) ([]gentypes.SearchResult, gentypes.PageInfo, error) {
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
 	// builders ftw
 	var sb strings.Builder
 
@@ -517,7 +517,7 @@ func (c *coursesRepoImpl) SearchSyllabus(
 		}
 	}
 
-	var results []gentypes.SearchResult
+	var results []gentypes.CourseItem
 
 	query := database.GormDB
 	sub := query.Raw(sb.String()).SubQuery()
@@ -533,7 +533,7 @@ func (c *coursesRepoImpl) SearchSyllabus(
 	query, limit, offset := middleware.GetPage(query, page)
 	if err := query.Scan(&results).Error; err != nil {
 		c.Logger.Log(sentry.LevelError, err, "Unable to find syllabus items")
-		return []gentypes.SearchResult{}, gentypes.PageInfo{}, &errors.ErrNotFound
+		return []gentypes.CourseItem{}, gentypes.PageInfo{}, &errors.ErrNotFound
 	}
 
 	return results, gentypes.PageInfo{
