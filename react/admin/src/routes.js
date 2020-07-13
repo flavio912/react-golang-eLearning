@@ -14,6 +14,8 @@ import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
 import TestsList from './views/TestsList';
+import CreateTest from './views/Test/CreateTest';
+import UpdateTest from './views/Test/UpdateTest';
 
 export default [
   {
@@ -152,6 +154,16 @@ export default [
         path: '/tests',
         exact: true,
         component: TestsList
+      },
+      {
+        path: '/test/create/:tab',
+        exact: true,
+        component: CreateTest
+      },
+      {
+        path: '/test/:ident/:tab',
+        exact: true,
+        component: UpdateTest
       },
       {
         path: '/modules',

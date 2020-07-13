@@ -65,7 +65,7 @@ function TestsList({ match, history }) {
       <Container maxWidth={false}>
         <Header
           onAdd={() => {
-            history.push('/tests/create/overview');
+            history.push('/test/create/overview');
           }}
         />
         <SearchBar onFilter={false} onSearch={handleSearch} />
