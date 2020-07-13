@@ -475,11 +475,7 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 	return []models.CourseStructure{}, nil
 }
 
-// SearchSyllabus searches through modules, lessons and tests on their names and tags
-func (c *coursesRepoImpl) SearchSyllabus(
-	page *gentypes.Page,
-	filter *gentypes.SyllabusFilter,
-) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
+func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.SqlExpr {
 	// builders ftw
 	var sb strings.Builder
 
@@ -547,10 +543,19 @@ func (c *coursesRepoImpl) SearchSyllabus(
 		}
 	}
 
+	return query.Raw(sb.String()).SubQuery()
+}
+
+// SearchSyllabus searches through modules, lessons and tests on their names and tags
+func (c *coursesRepoImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
+
 	var results []gentypes.CourseItem
 
 	query := database.GormDB
-	sub := query.Raw(sb.String()).SubQuery()
+	sub := filterSyllabus(query, filter)
 
 	var count int32
 	if err := query.Raw("SELECT count(*) FROM ? as simp", sub).Count(&count).Error; err != nil {
