@@ -328,3 +328,22 @@ func (q *QueryResolver) Module(ctx context.Context, args struct{ UUID gentypes.U
 		ModuleUUID: &args.UUID,
 	})
 }
+
+func (q *QueryResolver) Modules(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.ModuleFilter
+		OrderBy *gentypes.OrderBy
+	}) (*ModulePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	modules, pageInfo, err := app.CourseApp.Modules(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &ModulePageResolver{}, err
+	}
+
+	return NewModulePageResolver(ctx, NewModulePageArgs{
+		PageInfo: pageInfo,
+		Modules:  &modules,
+	})
+}

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 48776a4bb16e047e0f8c53836aa46ffa */
+/* @relayHash 1cd6bfcb53b6e69d68ef8e1b16bc6efd */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -8,42 +8,40 @@ export type Page = {
     offset?: number | null;
     limit?: number | null;
 };
-export type App_OnlineCourses_QueryVariables = {
+export type App_Courses_QueryVariables = {
     page?: Page | null;
 };
-export type App_OnlineCourses_QueryResponse = {
-    readonly onlineCourses: {
-        readonly " $fragmentRefs": FragmentRefs<"CoursesPage_onlineCourses">;
+export type App_Courses_QueryResponse = {
+    readonly courses: {
+        readonly " $fragmentRefs": FragmentRefs<"CoursesPage_courses">;
     } | null;
 };
-export type App_OnlineCourses_Query = {
-    readonly response: App_OnlineCourses_QueryResponse;
-    readonly variables: App_OnlineCourses_QueryVariables;
+export type App_Courses_Query = {
+    readonly response: App_Courses_QueryResponse;
+    readonly variables: App_Courses_QueryVariables;
 };
 
 
 
 /*
-query App_OnlineCourses_Query(
+query App_Courses_Query(
   $page: Page
 ) {
-  onlineCourses(page: $page) {
-    ...CoursesPage_onlineCourses
+  courses(page: $page) {
+    ...CoursesPage_courses
   }
 }
 
-fragment CoursesPage_onlineCourses on OnlineCoursePage {
+fragment CoursesPage_courses on CoursePage {
   edges {
-    uuid
-    info {
+    ident: id
+    name
+    color
+    excerpt
+    price
+    category {
       name
       color
-      excerpt
-      price
-      category {
-        name
-        color
-      }
     }
   }
   pageInfo {
@@ -86,7 +84,7 @@ const node: ConcreteRequest = (function () {
         "kind": "Request",
         "fragment": {
             "kind": "Fragment",
-            "name": "App_OnlineCourses_Query",
+            "name": "App_Courses_Query",
             "type": "Query",
             "metadata": null,
             "argumentDefinitions": (v0 /*: any*/),
@@ -94,15 +92,15 @@ const node: ConcreteRequest = (function () {
                 {
                     "kind": "LinkedField",
                     "alias": null,
-                    "name": "onlineCourses",
+                    "name": "courses",
                     "storageKey": null,
                     "args": (v1 /*: any*/),
-                    "concreteType": "OnlineCoursePage",
+                    "concreteType": "CoursePage",
                     "plural": false,
                     "selections": [
                         {
                             "kind": "FragmentSpread",
-                            "name": "CoursesPage_onlineCourses",
+                            "name": "CoursesPage_courses",
                             "args": null
                         }
                     ]
@@ -111,16 +109,16 @@ const node: ConcreteRequest = (function () {
         },
         "operation": {
             "kind": "Operation",
-            "name": "App_OnlineCourses_Query",
+            "name": "App_Courses_Query",
             "argumentDefinitions": (v0 /*: any*/),
             "selections": [
                 {
                     "kind": "LinkedField",
                     "alias": null,
-                    "name": "onlineCourses",
+                    "name": "courses",
                     "storageKey": null,
                     "args": (v1 /*: any*/),
-                    "concreteType": "OnlineCoursePage",
+                    "concreteType": "CoursePage",
                     "plural": false,
                     "selections": [
                         {
@@ -129,54 +127,43 @@ const node: ConcreteRequest = (function () {
                             "name": "edges",
                             "storageKey": null,
                             "args": null,
-                            "concreteType": "OnlineCourse",
+                            "concreteType": "Course",
                             "plural": true,
                             "selections": [
                                 {
                                     "kind": "ScalarField",
+                                    "alias": "ident",
+                                    "name": "id",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                (v2 /*: any*/),
+                                (v3 /*: any*/),
+                                {
+                                    "kind": "ScalarField",
                                     "alias": null,
-                                    "name": "uuid",
+                                    "name": "excerpt",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "price",
                                     "args": null,
                                     "storageKey": null
                                 },
                                 {
                                     "kind": "LinkedField",
                                     "alias": null,
-                                    "name": "info",
+                                    "name": "category",
                                     "storageKey": null,
                                     "args": null,
-                                    "concreteType": "CourseInfo",
+                                    "concreteType": "Category",
                                     "plural": false,
                                     "selections": [
                                         (v2 /*: any*/),
-                                        (v3 /*: any*/),
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "excerpt",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "price",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "LinkedField",
-                                            "alias": null,
-                                            "name": "category",
-                                            "storageKey": null,
-                                            "args": null,
-                                            "concreteType": "Category",
-                                            "plural": false,
-                                            "selections": [
-                                                (v2 /*: any*/),
-                                                (v3 /*: any*/)
-                                            ]
-                                        }
+                                        (v3 /*: any*/)
                                     ]
                                 }
                             ]
@@ -226,12 +213,12 @@ const node: ConcreteRequest = (function () {
         },
         "params": {
             "operationKind": "query",
-            "name": "App_OnlineCourses_Query",
+            "name": "App_Courses_Query",
             "id": null,
-            "text": "query App_OnlineCourses_Query(\n  $page: Page\n) {\n  onlineCourses(page: $page) {\n    ...CoursesPage_onlineCourses\n  }\n}\n\nfragment CoursesPage_onlineCourses on OnlineCoursePage {\n  edges {\n    uuid\n    info {\n      name\n      color\n      excerpt\n      price\n      category {\n        name\n        color\n      }\n    }\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n",
+            "text": "query App_Courses_Query(\n  $page: Page\n) {\n  courses(page: $page) {\n    ...CoursesPage_courses\n  }\n}\n\nfragment CoursesPage_courses on CoursePage {\n  edges {\n    ident: id\n    name\n    color\n    excerpt\n    price\n    category {\n      name\n      color\n    }\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = 'da85bef9d2e027aeb69035eb08fd76c1';
+(node as any).hash = '3523ef4afe25f69c3cfc73b1c140d579';
 export default node;

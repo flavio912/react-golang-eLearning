@@ -9,8 +9,11 @@ import { Theme } from 'helpers/theme';
 import ProfileCard from 'components/Overview/ProfileCard';
 import PageHeader from 'components/PageHeader';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { fetchQuery } from 'relay-runtime';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { OrgOverview_manager } from './__generated__/OrgOverview_manager.graphql';
+import environment from 'api/environment';
+import { OrgOverviewDelegatesQueryResponse } from './__generated__/OrgOverviewDelegatesQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -100,28 +103,49 @@ const OrgOverview = ({ manager }: Props) => {
         <div className={classes.search}>
           <UserSearch
             companyName={manager.company.name}
-            searchFunction={async (query: string) => {
-              return [
-                {
-                  key: 'Jim Smith',
-                  value: 'uuid-1'
-                },
-                {
-                  key: 'Bruce Willis',
-                  value: 'uuid-2'
-                },
-                {
-                  key: 'Tony Stark',
-                  value: 'uuid-3'
+            searchFunction={async (text: string) => {
+              const query = graphql`
+                query OrgOverviewDelegatesQuery($name: String!) {
+                  delegates(filter: { name: $name }, page: { limit: 8 }) {
+                    edges {
+                      uuid
+                      TTC_ID
+                      firstName
+                      lastName
+                    }
+                  }
                 }
-              ];
+              `;
+
+              const variables = {
+                name: text
+              };
+
+              const data = (await fetchQuery(
+                environment,
+                query,
+                variables
+              )) as OrgOverviewDelegatesQueryResponse;
+
+              if (!data || !data.delegates || !data.delegates.edges) {
+                console.error('Could not get data', data);
+                return [];
+              }
+
+              const results = data.delegates?.edges.map((delegate) => ({
+                uuid: delegate?.uuid ?? '',
+                key: `${delegate?.firstName} ${delegate?.lastName}`,
+                value: delegate?.TTC_ID ?? ''
+              }));
+
+              return results;
             }}
           />
         </div>
         <TitleWrapper title="Quick Overview" className={classes.quickOverview}>
           <QuickOverview
             purchasedCourses={20}
-            numDelegates={130}
+            numDelegates={manager.company.delegates?.pageInfo?.total ?? 0}
             numValidCertificates={10}
             numCertificatesExpiringSoon={15}
           />
@@ -167,17 +191,17 @@ const OrgOverview = ({ manager }: Props) => {
           <ActvityCard
             className={classes.activity}
             padding={'medium'}
-            leftHeading={'Delegates activity'}
+            leftHeading={'Certificate status'}
             rightHeading={'Recent Updates'}
-            options={['This month', 'All Time']}
+            options={[]}
             updates={[]}
             data={{
               outerRing: {
-                name: 'Active',
+                name: 'Current',
                 value: 154
               },
               innerRing: {
-                name: 'Inactive',
+                name: 'Expired',
                 value: 64
               }
             }}
@@ -198,6 +222,11 @@ export default createFragmentContainer(OrgOverview, {
       createdAt
       company {
         name
+        delegates {
+          pageInfo {
+            total
+          }
+        }
       }
     }
   `

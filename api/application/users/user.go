@@ -94,7 +94,12 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
-func (u *usersAppImpl) ActiveCourses() ([]gentypes.ActiveCourse, error) {
+// TODO
+// func (u *usersAppImpl) ActiveCourses(takerUUID gentypes.UUID) ([]gentypes.ActiveCourse, error) {
+
+// }
+
+func (u *usersAppImpl) MyActiveCourses() ([]gentypes.ActiveCourse, error) {
 	if !u.grant.IsDelegate && !u.grant.IsIndividual {
 		return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
 	}

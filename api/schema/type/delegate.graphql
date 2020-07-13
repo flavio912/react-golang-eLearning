@@ -11,6 +11,7 @@ type Delegate {
   company: Company!
   profileImageUrl: String
   activity(page: Page): ActivityPage
+  activeCourses: [ActiveCourse!]
 }
 
 input CreateDelegateInput {
