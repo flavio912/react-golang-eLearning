@@ -64,6 +64,20 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
   const classes = useStyles({ theme });
   const [action, setAction] = React.useState<DropdownOption>();
 
+  const activeCourses =
+    delegate?.activeCourses?.map((activeCourse) => ({
+      title: activeCourse.course.name,
+      categoryName: activeCourse.course.category?.name ?? '',
+      progress: {
+        total: 100,
+        completed: 0
+      },
+      attempt: activeCourse.currentAttempt,
+      status: {
+        isComplete: false
+      },
+      onClick: () => {}
+    })) ?? [];
   return (
     <div className={classes.root}>
       <div className={classes.top}>
@@ -126,8 +140,11 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
 
       <Spacer spacing={3} vertical />
       <CourseTable
+        courses={activeCourses}
         EmptyComponent={
-          <ActiveCoursesEmpty title="Book John on their first Course" />
+          <ActiveCoursesEmpty
+            title={`Book ${delegate.firstName} on their first Course`}
+          />
         }
         rowClicked={() => {}}
       />
@@ -142,6 +159,15 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
     fragment DelegateProfilePage_delegate on Delegate {
       firstName
       lastName
+      activeCourses {
+        currentAttempt
+        course {
+          name
+          category {
+            name
+          }
+        }
+      }
     }
   `
 });

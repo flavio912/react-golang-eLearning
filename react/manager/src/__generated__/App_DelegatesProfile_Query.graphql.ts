@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash cf5d02d75554a3684e45b339f756e1e4 */
+/* @relayHash 277b74ced60cfdd17b1fdf1ffc9df48e */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -31,6 +31,15 @@ query App_DelegatesProfile_Query(
 fragment DelegateProfilePage_delegate on Delegate {
   firstName
   lastName
+  activeCourses {
+    currentAttempt
+    course {
+      name
+      category {
+        name
+      }
+    }
+  }
 }
 */
 
@@ -48,7 +57,13 @@ const node: ConcreteRequest = (function () {
             "name": "uuid",
             "variableName": "uuid"
         } as any)
-    ];
+    ], v2 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "name",
+        "args": null,
+        "storageKey": null
+    } as any);
     return {
         "kind": "Request",
         "fragment": {
@@ -103,6 +118,48 @@ const node: ConcreteRequest = (function () {
                             "name": "lastName",
                             "args": null,
                             "storageKey": null
+                        },
+                        {
+                            "kind": "LinkedField",
+                            "alias": null,
+                            "name": "activeCourses",
+                            "storageKey": null,
+                            "args": null,
+                            "concreteType": "ActiveCourse",
+                            "plural": true,
+                            "selections": [
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "currentAttempt",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
+                                    "kind": "LinkedField",
+                                    "alias": null,
+                                    "name": "course",
+                                    "storageKey": null,
+                                    "args": null,
+                                    "concreteType": "Course",
+                                    "plural": false,
+                                    "selections": [
+                                        (v2 /*: any*/),
+                                        {
+                                            "kind": "LinkedField",
+                                            "alias": null,
+                                            "name": "category",
+                                            "storageKey": null,
+                                            "args": null,
+                                            "concreteType": "Category",
+                                            "plural": false,
+                                            "selections": [
+                                                (v2 /*: any*/)
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -112,7 +169,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_DelegatesProfile_Query",
             "id": null,
-            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  firstName\n  lastName\n}\n",
+            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  firstName\n  lastName\n  activeCourses {\n    currentAttempt\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
