@@ -13,6 +13,7 @@ import ModulesList from './views/ModulesList';
 import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
+import TestsList from './views/TestsList';
 
 export default [
   {
@@ -146,6 +147,11 @@ export default [
         path: '/courses/create/:tab',
         exact: true,
         component: CreateCourse
+      },
+      {
+        path: '/tests',
+        exact: true,
+        component: TestsList
       },
       {
         path: '/modules',
