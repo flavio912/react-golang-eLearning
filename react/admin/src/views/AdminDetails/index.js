@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
@@ -37,18 +37,10 @@ const GET_ADMIN = gql`
   }
 `;
 
-const initAdmin = {
-  uuid: '',
-  email: '',
-  firstName: '',
-  lastName: ''
-};
-
 function AdminDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
   const tabs = [{ value: 'overview', label: 'Overview' }];
-  const [admin, setAdmin] = useState(initAdmin);
 
   const { loading, error, data, refetch } = useQuery(GET_ADMIN, {
     variables: {
@@ -57,19 +49,9 @@ function AdminDetails({ match, history }) {
     fetchPolicy: 'cache-and-network',
     skip: !id
   });
-
-  useEffect(() => {
-    if (loading || error) return;
-    if (!data) return;
-
-    setAdmin({
-      ...initAdmin,
-      uuid: data.admin.uuid,
-      email: data.admin.email,
-      firstName: data.admin.firstName,
-      lastName: data.admin.lastName
-    });
-  }, [loading, data]);
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>{error.message}</div>;
+  const admin = data?.admin;
 
   const handleTabsChange = (event, value) => {
     history.push(value);

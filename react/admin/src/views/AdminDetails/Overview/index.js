@@ -35,7 +35,8 @@ function Overview({ admin, className, ...rest }) {
 }
 
 Overview.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  admin: PropTypes.object.isRequired
 };
 
 export default Overview;

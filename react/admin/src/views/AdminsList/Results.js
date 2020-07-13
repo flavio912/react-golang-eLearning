@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
 import moment from 'moment';
@@ -61,15 +60,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Results({ className, ...rest }) {
+function Results({ admins, className, ...rest }) {
   const classes = useStyles();
-  const adminState = useSelector(state => state.admin);
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  useEffect(() => {
-    console.log(adminState);
-  }, [adminState]);
 
   const handleChangePage = (event, page) => {
     setPage(page);
@@ -91,36 +85,34 @@ function Results({ className, ...rest }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {adminState.listLoaded &&
-            adminState.list.length > 0 &&
-            adminState.list.map(admin => (
-              <TableRow key={admin.uuid}>
-                <TableCell>
-                  <div className={classes.nameCell}>
-                    <Avatar className={classes.avatar} src={admin.logo}>
-                      {/* {getInitials(admin.fullName)} */}
-                    </Avatar>
-                    <Link
-                      color="inherit"
-                      component={RouterLink}
-                      to={`/admins/${admin.uuid}/overview`}
-                      variant="h6"
-                    >
-                      {admin.email}
-                    </Link>
-                  </div>
-                </TableCell>
-                <TableCell>{admin.firstName}</TableCell>
-                <TableCell>{admin.lastName}</TableCell>
-                <TableCell>{moment(admin.createdAt).format('LLL')}</TableCell>
-              </TableRow>
-            ))}
+          {admins.map(admin => (
+            <TableRow key={admin.uuid}>
+              <TableCell>
+                <div className={classes.nameCell}>
+                  <Avatar className={classes.avatar} src={admin.logo}>
+                    {/* {getInitials(admin.fullName)} */}
+                  </Avatar>
+                  <Link
+                    color="inherit"
+                    component={RouterLink}
+                    to={`/admins/${admin.uuid}/overview`}
+                    variant="h6"
+                  >
+                    {admin.email}
+                  </Link>
+                </div>
+              </TableCell>
+              <TableCell>{admin.firstName}</TableCell>
+              <TableCell>{admin.lastName}</TableCell>
+              <TableCell>{moment(admin.createdAt).format('LLL')}</TableCell>
+            </TableRow>
+          ))}
         </TableBody>
       </Table>
       <CardActions className={classes.actions}>
         <TablePagination
           component="div"
-          count={adminState.list.length}
+          count={admins.length}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           page={page}
@@ -133,7 +125,8 @@ function Results({ className, ...rest }) {
 }
 
 Results.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  avatars: PropTypes.array.isRequired
 };
 
 export default Results;

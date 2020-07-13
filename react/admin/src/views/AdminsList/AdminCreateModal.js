@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -19,7 +18,6 @@ import {
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import validate from 'validate.js';
-import { createAdminAction } from '../../actions/adminActions';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -92,7 +90,6 @@ const schema = {
 
 function AdminCreateModal({ open, onClose, className, ...rest }) {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const [formState, setFormState] = useState({
     isValid: false,
     values: {},
@@ -133,9 +130,16 @@ function AdminCreateModal({ open, onClose, className, ...rest }) {
     }));
   };
 
-  if (!open) {
-    return null;
-  }
+  useEffect(() => {
+    if (!open) return;
+
+    setFormState({
+      isValid: false,
+      values: {},
+      touched: {},
+      errors: {}
+    });
+  }, [open]);
 
   const handleCreateAdmin = async event => {
     event.preventDefault();
@@ -148,9 +152,7 @@ function AdminCreateModal({ open, onClose, className, ...rest }) {
           password: formState.values.password
         }
       });
-
-      dispatch(createAdminAction(resp.data.createAdmin));
-      onClose();
+      onClose(resp.data);
     } catch (err) {
       setFormState(prevFormState => ({
         ...prevFormState,

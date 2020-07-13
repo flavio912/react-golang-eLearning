@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
@@ -21,7 +20,6 @@ import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
 import Label from 'src/components/Label';
 import AdminEditModal from './AdminEditModal';
-import { updateAdminAction } from '../../../actions/adminActions';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -65,7 +63,6 @@ const UPDATE_ADMIN = gql`
 
 function AdminInfo({ admin, className, ...rest }) {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const [adminInfo, setAdminInfo] = useState(admin);
   const [openEdit, setOpenEdit] = useState(false);
   const [saveAdmin, { data: savedAdmin }] = useMutation(UPDATE_ADMIN);
@@ -99,7 +96,6 @@ function AdminInfo({ admin, className, ...rest }) {
         }
       });
       setAdminInfo({ ...data.updateAdmin });
-      dispatch(updateAdminAction(data.updateAdmin));
       setOpenEdit(false);
     } catch (err) {
       setAdminInfo({

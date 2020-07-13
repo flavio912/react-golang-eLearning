@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -20,7 +19,6 @@ import {
 import DeleteIcon from '@material-ui/icons/DeleteOutline';
 import gql from 'graphql-tag';
 import { useMutation } from '@apollo/react-hooks';
-import { deleteAdminAction } from '../../../actions/adminActions';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -53,21 +51,17 @@ const DELETE_ADMIN = gql`
 
 function OtherActions({ admin, className, ...rest }) {
   const classes = useStyles();
-  const dispatch = useDispatch();
   const history = useHistory();
   const [openDialog, setOpenDialog] = useState(false);
   const [deleteAdmin, { data: isDeleted }] = useMutation(DELETE_ADMIN);
 
   const handleDeleteAccount = async event => {
     try {
-      console.log(admin);
       const resp = await deleteAdmin({
         variables: {
           uuid: admin.uuid
         }
       });
-
-      dispatch(deleteAdminAction(admin.uuid));
       setOpenDialog(false);
       history.push('/admins');
     } catch (err) {

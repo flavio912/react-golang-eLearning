@@ -9,9 +9,14 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-function Header({ className, ...rest }) {
+function Header({ className, onCreateNewAdmin, ...rest }) {
   const classes = useStyles();
   const [openCreate, setOpenCreate] = useState(false);
+
+  const handleNewAdmin = data => {
+    if (data) onCreateNewAdmin(data);
+    setOpenCreate(false);
+  };
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
@@ -35,7 +40,7 @@ function Header({ className, ...rest }) {
         </Grid>
       </Grid>
       <AdminCreateModal
-        onClose={() => setOpenCreate(false)}
+        onClose={data => handleNewAdmin(data)}
         open={openCreate}
       />
     </div>
@@ -43,7 +48,8 @@ function Header({ className, ...rest }) {
 }
 
 Header.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  onCreateNewAdmin: PropTypes.func
 };
 
 export default Header;

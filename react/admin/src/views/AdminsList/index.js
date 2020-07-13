@@ -1,11 +1,9 @@
-import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 
-import { setAdminListAction } from '../../actions/adminActions';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
@@ -42,26 +40,28 @@ const GET_ADMINS = gql`
 
 function AdminsList() {
   const classes = useStyles();
-  const dispatch = useDispatch();
-  const adminState = useSelector(state => state.admin);
-  const { loading, error, data } = useQuery(GET_ADMINS);
-
-  if (!adminState.listLoaded) {
-    if (loading) return <div>Loading</div>;
-    if (error) return <div>{error.message}</div>;
-    const admins = data?.admins?.edges;
-    dispatch(setAdminListAction(admins));
-  }
+  const { loading, error, data, refetch } = useQuery(GET_ADMINS, {
+    fetchPolicy: 'cache-and-network'
+  });
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>{error.message}</div>;
+  const admins = data?.admins?.edges;
 
   const handleFilter = () => {};
   const handleSearch = () => {};
 
+  const handleNewAdmin = data => {
+    if (!data.createAdmin) return;
+
+    refetch();
+  };
+
   return (
     <Page className={classes.root} title="Admins">
       <Container maxWidth={false}>
-        <Header />
+        <Header onCreateNewAdmin={handleNewAdmin} />
         <SearchBar onFilter={false} onSearch={handleSearch} />
-        <Results className={classes.results} />
+        <Results className={classes.results} admins={admins} />
       </Container>
     </Page>
   );
