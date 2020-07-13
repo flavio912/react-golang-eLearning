@@ -195,16 +195,17 @@ export default function Payment({
   courses,
   userUUIDs,
   isContract,
-  onPurchase
+  onPurchase,
+  onSuccess,
+  onError
 }: {
   courses: Course[];
   userUUIDs: string[];
   isContract: boolean;
   onPurchase: OnPurchase;
+  onSuccess: () => void;
+  onError: (message: string) => void;
 }) {
-  console.log('COURSES', courses);
-  console.log('users', userUUIDs);
-
   const classes = useStyles();
   const subTotal = courses
     .map(({ price }: { price: number }) => price)
@@ -331,13 +332,16 @@ export default function Payment({
                 </div>
               </div>
             </div>
-            <PaymentForm onPurchase={onPurchase} />
+            <PaymentForm
+              onPurchase={onPurchase}
+              onSuccess={onSuccess}
+              onError={onError}
+            />
           </>
         )}
         {isContract && (
           <Button onClick={() => onPurchase()}>Place Order</Button>
         )}
-        {/* <PaymentSuccess total={totalDue} transactionId={`34239rCD`} /> */}
       </div>
     </>
   );

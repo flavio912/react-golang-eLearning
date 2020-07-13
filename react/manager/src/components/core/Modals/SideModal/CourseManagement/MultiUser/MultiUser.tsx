@@ -74,6 +74,22 @@ const PurchaseCourses = (
     extraEmail
   };
 
+  if (!users) {
+    if (callback)
+      callback(
+        { purchaseCourses: null },
+        'No users given, cannot purchase course without users'
+      );
+  }
+
+  if (!courses) {
+    if (callback)
+      callback(
+        { purchaseCourses: null },
+        'Please select at least one course to purchase'
+      );
+  }
+
   commitMutation(environment, {
     mutation,
     variables,
@@ -94,7 +110,10 @@ const PurchaseCourses = (
       }
       console.log('Response received from server.', response, errors);
     },
-    onError: (err) => console.error(err)
+    onError: (err) => {
+      console.log('ERR', err);
+      if (callback) callback({ purchaseCourses: null }, err.message);
+    }
   });
 };
 

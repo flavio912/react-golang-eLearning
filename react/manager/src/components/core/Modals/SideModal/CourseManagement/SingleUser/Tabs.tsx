@@ -251,6 +251,8 @@ export const tabList: TabContent[] = [
           userUUIDs={[]}
           isContract={false}
           onPurchase={() => false}
+          onSuccess={() => {}}
+          onError={() => {}}
         />
       </Body>
     )

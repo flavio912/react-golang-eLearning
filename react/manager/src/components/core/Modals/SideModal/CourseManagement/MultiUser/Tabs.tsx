@@ -25,6 +25,8 @@ import { TabsDelegateQueryResponse } from './__generated__/TabsDelegateQuery.gra
 import { TabsCoursesQueryResponse } from './__generated__/TabsCoursesQuery.graphql';
 import { MultiUser_PurchaseMutationResponse } from './__generated__/MultiUser_PurchaseMutation.graphql';
 import { PurchaseCoursesType } from './MultiUser';
+import PaymentSuccess from '../../PaymentSuccess';
+import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
 
 const userSearchFunction = async (text: string) => {
   const query = graphql`
@@ -139,7 +141,8 @@ export type OnPurchase = (
   callback?: (
     response: MultiUser_PurchaseMutationResponse,
     error: string | undefined
-  ) => void
+  ) => void,
+  showSuccess?: () => void
 ) => void;
 
 export const tabList: (
@@ -278,7 +281,7 @@ export const tabList: (
     },
     {
       key: 'Payment',
-      component: ({ state }) => (
+      component: ({ state, setState }) => (
         <Body>
           <Heading>Payment</Heading>
           <LargeText>
@@ -301,7 +304,22 @@ export const tabList: (
                 callback
               )
             }
+            onSuccess={() => {
+              setState((s: object) => ({ ...s, success: true }));
+            }}
+            onError={(message: string) => {
+              setState((s: object) => ({ ...s, error: message }));
+            }}
           />
+          {state.success && <PaymentSuccess total={0} transactionId={``} />}
+          {state.error !== undefined && (
+            <LabelledCard
+              label={'Transaction failed'}
+              labelBackground={'#ff7474'}
+            >
+              {state.error}
+            </LabelledCard>
+          )}
         </Body>
       )
     }
