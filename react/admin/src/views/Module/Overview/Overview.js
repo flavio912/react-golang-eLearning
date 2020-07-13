@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Overview({}) {
+function Overview({ state, setState }) {
   const classes = useStyles();
 
   const onChange=()=>{};

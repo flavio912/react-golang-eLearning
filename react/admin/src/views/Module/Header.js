@@ -11,23 +11,28 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Header({ className, onSave, title, ...rest }) {
+function Header({ className, onSaveDraft, onPublish, title, ...rest }) {
   const classes = useStyles();
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
-          <Typography component="h2" gutterBottom variant="overline">
-            Courses
-          </Typography>
           <Typography component="h1" variant="h3">
             {title}
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained" onClick={onSave}>
-            Save Question
+          <Button color="primary" variant="contained" onClick={onSaveDraft}>
+            Save Draft
+          </Button>
+          <Button
+            onClick={onPublish}
+            color="secondary"
+            variant="contained"
+            className={classes.publish}
+          >
+            Publish
           </Button>
         </Grid>
       </Grid>

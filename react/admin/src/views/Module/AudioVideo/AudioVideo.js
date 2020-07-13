@@ -6,6 +6,8 @@ import {
   CardContent,
   Divider,
   TextField,
+  Button,
+  Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Autocomplete } from '@material-ui/lab';
@@ -19,6 +21,11 @@ const useStyles = makeStyles(theme => ({
   },
   shortDescription: {
     width: '100%'
+  },
+  filename: {
+    display: 'inline',
+    fontWeight: '600',
+    marginLeft: theme.spacing(2)
   }
 }));
 
@@ -28,7 +35,7 @@ function AudioVideo({}) {
   const [name, setName] = React.useState();
   const [description, setDescription] = React.useState();
   const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
-
+  const [filename, setFilename] = React.useState('temp file name.mp3');
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -37,9 +44,7 @@ function AudioVideo({}) {
             <Card>
               <CardContent>
                 <Grid container spacing={2} direction={'column'}>
-                  <Grid item>
-                    <CardHeader title="Audio Voiceover" />
-                  </Grid>
+                <CardHeader title="Audio Voiceover" />
                   <Grid item>
                     <Autocomplete
                       options={categoryOptions}
@@ -50,17 +55,30 @@ function AudioVideo({}) {
                       renderInput={params => (
                           <TextField
                               {...params}
-                              label=""
+                              label="Upload Voiceover"
                               variant="outlined"
                               className={classes.thinInput}
                           />
                       )}
                     />
+                    
                   </Grid>
+                  <Grid item spacing={2}>
+                    <Button variant="contained">
+                      Upload MP3
+                    </Button>
+                    <Typography
+                      variant="body2"
+                      color="textPrimary"
+                      className={classes.filename}
+                    >
+                      {filename}
+                    </Typography>
+                 </ Grid>
                   <Grid item>
                     <Divider />
-                    <CardHeader title="Video Source" />
                   </Grid>
+                  <CardHeader title="Video Source" />
                   <Grid item>
                     <Autocomplete
                       options={categoryOptions}
@@ -71,7 +89,7 @@ function AudioVideo({}) {
                       renderInput={params => (
                           <TextField
                               {...params}
-                              label=""
+                              label="Wisita URL"
                               variant="outlined"
                               className={classes.thinInput}
                           />
@@ -79,7 +97,13 @@ function AudioVideo({}) {
                     />
                   </Grid>
                   <Grid item>
-                    <div>Select</div>
+                  <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      className={classes.filename}
+                    >
+                      Select your preferred video type (.mp4, Youtube Viemo, etc). Note when adding a video both the Audio Player + Module Banner Image will be hidden
+                    </Typography>
                   </Grid>
                   <Grid item>
                     <TextField

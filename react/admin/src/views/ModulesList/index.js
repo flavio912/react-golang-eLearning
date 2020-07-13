@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
+import { gql } from 'apollo-boost';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
@@ -16,25 +17,25 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-// const GET_MODULES = gql`
-//   query GetModules($id: Int!) {
-//     modules(id: $id) {
-//       id
-//       name
-//       excerpt
-//       price
-//       accessType
-//       backgroundCheck
-//       type
-//       howToComplete
-//       hoursToComplete
-//       whatYouLearn
-//       requirements
-//     }
-//   }
-// `;
+const GET_MODULES = gql`
+  query GetModules($id: Int!) {
+    modules(id: $id) {
+      id
+      name
+      excerpt
+      price
+      accessType
+      backgroundCheck
+      type
+      howToComplete
+      hoursToComplete
+      whatYouLearn
+      requirements
+    }
+  }
+`;
 
-function ModulesList() {
+function ModulesList({ match, history }) {
   const classes = useStyles();
 
   // const handleFilter = () => {};
@@ -59,7 +60,9 @@ function ModulesList() {
   return (
     <Page className={classes.root} title="Modules">
       <Container maxWidth={false}>
-        <Header />
+        <Header onAdd={() => {
+            history.push('/modules/create/overview');
+          }}/>
         <SearchBar onFilter={false} onSearch={handleSearch} />
         {modules && <Results className={classes.results} modules={modules} />}
       </Container>

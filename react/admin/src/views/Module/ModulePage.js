@@ -27,29 +27,26 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function ModulePage({
-    history,
-    match
+  tabs,
+  state,
+  setState,
+  currentTab,
+  error,
+  onSave,
+  history,
+  title
 }) {
   const classes = useStyles();
-
-  const { tab: currentTab, ident } = match.params;
-  const tabs = [
-      { value: 'overview', label: 'Overview' },
-      { value: 'audiovideo', label: 'Audio/Video' },
-      { value: 'modulebuilder', label: 'Module Builder' }
-    ];
 
   const handleTabsChange = (event, value) => {
     history.push(value);
   };
 
-  const onSave = () => {};
-
   return (
-    <Page className={classes.root} title="Test">
-      <ErrorModal />
+    <Page className={classes.root} title={title}>
+      <ErrorModal error={error} />
       <Container maxWidth={false}>
-        <Header onSave={onSave} title="Test" />
+        <Header onSaveDraft={onSave} title={title} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -64,7 +61,7 @@ function ModulePage({
         <Divider className={classes.divider} />
         <div className={classes.content}>
           {currentTab === 'overview' && (
-            <Overview />
+            <Overview state={state} setState={setState} />
           )}
           {currentTab === 'audiovideo' && (
             <AudioVideo />
