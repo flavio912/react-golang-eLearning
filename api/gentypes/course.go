@@ -94,5 +94,8 @@ type PurchaseCoursesResponse struct {
 }
 
 type SyllabusFilter struct {
-	Name *string
+	Name          *string
+	ExcludeModule *bool
+	ExcludeLesson *bool
+	ExcludeTest   *bool
 }

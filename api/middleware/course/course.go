@@ -483,30 +483,60 @@ func (c *coursesRepoImpl) SearchSyllabus(
 	// builders ftw
 	var sb strings.Builder
 
+	var (
+		excludeModule = filter != nil && (filter.ExcludeModule != nil && *filter.ExcludeModule)
+		excludeLesson = filter != nil && (filter.ExcludeLesson != nil && *filter.ExcludeLesson)
+		excludeTest   = filter != nil && (filter.ExcludeTest != nil && *filter.ExcludeTest)
+	)
+
 	// WARNING: Raw PostgreSQL area, proceed cautiously (18+)
 
 	// Distinct to avoid a syllabus that has name similar to its tag name
 	sb.WriteString("SELECT DISTINCT sylb.uuid, type FROM (")
 
 	// Select uuids and names from modules, lessons and tests
-	sb.WriteString("SELECT uuid, name, 'module' AS type FROM modules ")
+	if !excludeModule {
+		sb.WriteString("SELECT uuid, name, 'module' AS type FROM modules ")
+		if !excludeLesson || !excludeTest {
+			sb.WriteString("UNION ")
+		}
+	}
 
-	sb.WriteString("UNION SELECT uuid, name, 'lesson' AS type FROM lessons ")
+	if !excludeLesson {
+		sb.WriteString("SELECT uuid, name, 'lesson' AS type FROM lessons ")
+		if !excludeTest {
+			sb.WriteString("UNION ")
+		}
+	}
+	if !excludeTest {
+		sb.WriteString("SELECT uuid, name, 'test' AS type FROM tests ")
+	}
 
-	sb.WriteString("UNION SELECT uuid, name, 'test' AS type FROM tests ")
 	sb.WriteString(") AS sylb ")
 
 	// Left Join them with tags
 	sb.WriteString("LEFT JOIN (")
 
-	sb.WriteString("SELECT module_uuid AS uuid, name FROM module_tags_link ")
-	sb.WriteString("INNER JOIN tags ON tags.uuid = module_tags_link.tag_uuid ")
+	if !excludeModule {
+		sb.WriteString("SELECT module_uuid AS uuid, name FROM module_tags_link ")
+		sb.WriteString("INNER JOIN tags ON tags.uuid = module_tags_link.tag_uuid ")
+		if !excludeLesson || !excludeTest {
+			sb.WriteString("UNION ")
+		}
+	}
 
-	sb.WriteString("UNION SELECT lesson_uuid AS uuid, name FROM lesson_tags_link ")
-	sb.WriteString("INNER JOIN tags ON tags.uuid = lesson_tags_link.tag_uuid ")
+	if !excludeLesson {
+		sb.WriteString("SELECT lesson_uuid AS uuid, name FROM lesson_tags_link ")
+		sb.WriteString("INNER JOIN tags ON tags.uuid = lesson_tags_link.tag_uuid ")
+		if !excludeTest {
+			sb.WriteString("UNION ")
+		}
+	}
 
-	sb.WriteString("UNION SELECT test_uuid AS uuid, name FROM test_tags_link ")
-	sb.WriteString("INNER JOIN tags ON tags.uuid = test_tags_link.tag_uuid ")
+	if !excludeTest {
+		sb.WriteString("SELECT test_uuid AS uuid, name FROM test_tags_link ")
+		sb.WriteString("INNER JOIN tags ON tags.uuid = test_tags_link.tag_uuid ")
+	}
 
 	sb.WriteString(") AS sylb_tags ON sylb_tags.uuid = sylb.uuid ")
 
