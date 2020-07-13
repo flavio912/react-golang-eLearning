@@ -261,5 +261,67 @@ func TestSearchSyllabus(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Len(t, results, 5)
 	})
-	// More to come, I think
+
+	tests := []struct {
+		name          string
+		excludeModule bool
+		excludeLesson bool
+		excludeTest   bool
+		wantLen       int
+	}{
+		{
+			"modules",
+			false,
+			true,
+			true,
+			3,
+		},
+		{
+			"lessons",
+			true,
+			false,
+			true,
+			3,
+		},
+		{
+			"tests",
+			true,
+			true,
+			false,
+			2,
+		},
+		{
+			"modules and lesson",
+			false,
+			false,
+			true,
+			6,
+		},
+		{
+			"lessons and tests",
+			true,
+			false,
+			false,
+			5,
+		},
+		{
+			"modules and tests",
+			false,
+			true,
+			false,
+			5,
+		},
+	}
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Should filter to search for %s only", test.name), func(t *testing.T) {
+			results, _, err := courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+				ExcludeModule: &test.excludeModule,
+				ExcludeLesson: &test.excludeLesson,
+				ExcludeTest:   &test.excludeTest,
+			})
+
+			assert.Nil(t, err)
+			assert.Len(t, results, test.wantLen)
+		})
+	}
 }
