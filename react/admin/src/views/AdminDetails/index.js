@@ -42,7 +42,7 @@ function AdminDetails({ match, history }) {
   const { id, tab: currentTab } = match.params;
   const tabs = [{ value: 'overview', label: 'Overview' }];
 
-  const { loading, error, data, refetch } = useQuery(GET_ADMIN, {
+  const { loading, error, data } = useQuery(GET_ADMIN, {
     variables: {
       id: id
     },

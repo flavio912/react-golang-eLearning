@@ -10,9 +10,7 @@ import {
   CardActions,
   Grid,
   Divider,
-  Typography,
   TextField,
-  Switch,
   Button
 } from '@material-ui/core';
 import gql from 'graphql-tag';
@@ -96,7 +94,7 @@ function AdminCreateModal({ open, onClose, className, ...rest }) {
     touched: {},
     errors: {}
   });
-  const [createAdmin, { data: newAdmin }] = useMutation(CREATE_ADMIN);
+  const [createAdmin] = useMutation(CREATE_ADMIN);
 
   const hasError = field =>
     !!(formState.touched[field] && formState.errors[field]);

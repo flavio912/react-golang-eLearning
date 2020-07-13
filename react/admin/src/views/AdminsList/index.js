@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import gql from 'graphql-tag';
@@ -47,7 +47,6 @@ function AdminsList() {
   if (error) return <div>{error.message}</div>;
   const admins = data?.admins?.edges;
 
-  const handleFilter = () => {};
   const handleSearch = () => {};
 
   const handleNewAdmin = data => {

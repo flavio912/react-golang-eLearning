@@ -65,7 +65,7 @@ function AdminInfo({ admin, className, ...rest }) {
   const classes = useStyles();
   const [adminInfo, setAdminInfo] = useState(admin);
   const [openEdit, setOpenEdit] = useState(false);
-  const [saveAdmin, { data: savedAdmin }] = useMutation(UPDATE_ADMIN);
+  const [saveAdmin] = useMutation(UPDATE_ADMIN);
 
   useEffect(() => {
     setAdminInfo({

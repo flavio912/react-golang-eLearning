@@ -53,11 +53,11 @@ function OtherActions({ admin, className, ...rest }) {
   const classes = useStyles();
   const history = useHistory();
   const [openDialog, setOpenDialog] = useState(false);
-  const [deleteAdmin, { data: isDeleted }] = useMutation(DELETE_ADMIN);
+  const [deleteAdmin] = useMutation(DELETE_ADMIN);
 
   const handleDeleteAccount = async event => {
     try {
-      const resp = await deleteAdmin({
+      await deleteAdmin({
         variables: {
           uuid: admin.uuid
         }

@@ -5,8 +5,6 @@ import { Redirect } from 'react-router-dom';
 import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
-import AdminsView from './views/AdminsList';
-import AdminDetails from './views/AdminDetails';
 import TutorsView from './views/TutorsList';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';

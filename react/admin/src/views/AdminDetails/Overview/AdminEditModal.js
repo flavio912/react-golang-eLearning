@@ -10,9 +10,7 @@ import {
   CardActions,
   Grid,
   Divider,
-  Typography,
   TextField,
-  Switch,
   Button
 } from '@material-ui/core';
 import validate from 'validate.js';
