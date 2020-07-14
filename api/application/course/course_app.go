@@ -55,6 +55,7 @@ type CourseApp interface {
 	) ([]gentypes.Module, gentypes.PageInfo, error)
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
+	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
 
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(

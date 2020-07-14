@@ -554,6 +554,11 @@ func (m *MutationResolver) AnswerImageUploadRequest(
 	}, err
 }
 
+func (m *MutationResolver) DeleteModule(ctx context.Context, args struct{ Input gentypes.DeleteModuleInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.DeleteModule(args.Input)
+}
+
 func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input gentypes.DeleteCourseInput }) (bool, error) {
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteCourse(args.Input)

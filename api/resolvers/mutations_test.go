@@ -1370,6 +1370,45 @@ func TestCreateTest(t *testing.T) {
 	})
 }
 
+func TestDeleteModule(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete module",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteModule(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteModule": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteModule(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteModule"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
 func TestDeleteCourse(t *testing.T) {
 	prepareTestDatabase()
 

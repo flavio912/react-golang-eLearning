@@ -64,6 +64,7 @@ type Mutation {
 
   createModule(input: CreateModuleInput!): CreateModulePayload
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
+  deleteModule(input: DeleteModuleInput!): Boolean!
 
   # createTutor
   # updateTutor
