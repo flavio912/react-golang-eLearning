@@ -8,11 +8,12 @@ export type OnlineCourses_user = {
     readonly firstName: string;
     readonly activeCourses: ReadonlyArray<{
         readonly course: {
+            readonly ident: number;
             readonly name: string;
             readonly excerpt: string | null;
             readonly color: string | null;
             readonly type: CourseType;
-            readonly ident: number;
+            readonly bannerImageURL: string | null;
         };
         readonly currentAttempt: number;
     }> | null;
@@ -60,6 +61,13 @@ const node: ReaderFragment = ({
                     "selections": [
                         {
                             "kind": "ScalarField",
+                            "alias": "ident",
+                            "name": "id",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
                             "alias": null,
                             "name": "name",
                             "args": null,
@@ -88,8 +96,8 @@ const node: ReaderFragment = ({
                         },
                         {
                             "kind": "ScalarField",
-                            "alias": "ident",
-                            "name": "id",
+                            "alias": null,
+                            "name": "bannerImageURL",
                             "args": null,
                             "storageKey": null
                         }
@@ -106,5 +114,5 @@ const node: ReaderFragment = ({
         }
     ]
 } as any);
-(node as any).hash = '0550d2b2269ed130be1fa38a8d43c1cf';
+(node as any).hash = 'a24c3866b5792ecbef49e3b425b37e84';
 export default node;

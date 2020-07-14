@@ -90,19 +90,6 @@ function OnlineCourses({ className, user }: Props) {
 
   const filterOptions = [defaultOption];
 
-  let courses = [defaultCourse, defaultCourse, defaultCourse, defaultCourse];
-
-  if (selectedOption == selectOptions[0]) {
-    courses = [
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse
-    ];
-  }
-
   return (
     <div className={classes.onlineCoursesRoot}>
       <Heading
@@ -150,7 +137,7 @@ function OnlineCourses({ className, user }: Props) {
               type: 'Online Course',
               colour: course.course.color ?? '',
               description: course.course.excerpt ?? '',
-              url: ''
+              url: course.course.bannerImageURL ?? ''
             }}
             onClick={() => {
               router.push('/app/courses/1');
@@ -179,11 +166,12 @@ export default createFragmentContainer(OnlineCourses, {
       firstName
       activeCourses {
         course {
+          ident: id
           name
           excerpt
           color
           type
-          ident: id
+          bannerImageURL
         }
         currentAttempt
       }
