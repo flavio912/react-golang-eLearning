@@ -93,6 +93,9 @@ func (r *CourseResolver) AllowedToBuy() *bool {
 func (r *CourseResolver) Syllabus(ctx context.Context) (*[]SyllabusResolver, error) {
 	return NewSyllabusResolvers(ctx, NewSyllabusArgs{CourseID: &r.Course.ID})
 }
+func (r *CourseResolver) BannerImageURL() *string {
+	return r.Course.BannerImageURL
+}
 
 type CoursePageResolver struct {
 	edges    *[]*CourseResolver

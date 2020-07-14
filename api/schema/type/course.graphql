@@ -47,6 +47,7 @@ type Course {
   category: Category
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
+  bannerImageURL: String
 }
 
 type CoursePage implements PaginatedQuery {

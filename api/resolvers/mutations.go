@@ -280,6 +280,18 @@ func (m *MutationResolver) ApproveCompany(ctx context.Context, args struct{ UUID
 	})
 }
 
+func (m *MutationResolver) CourseBannerImageUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.CourseApp.CourseBannerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
 func (m *MutationResolver) SaveOnlineCourse(
 	ctx context.Context,
 	args struct {

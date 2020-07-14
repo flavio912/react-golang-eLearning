@@ -30,9 +30,9 @@ function SideOptions({ state, setState }) {
               value={state.priceType}
               onChange={(evt, value) => {
                 if (value === 'free') {
-                  setState('price', parseFloat(0));
+                  setState({ price: parseFloat(0) });
                 }
-                setState('priceType', value);
+                setState({ priceType: value });
               }}
             >
               <FormControlLabel
@@ -50,7 +50,7 @@ function SideOptions({ state, setState }) {
                     value={state.price}
                     onChange={evt => {
                       try {
-                        setState('price', parseFloat(evt.target.value));
+                        setState({ price: parseFloat(evt.target.value) });
                       } catch (err) {
                         return;
                       }

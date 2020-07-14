@@ -7,6 +7,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 // IsFullyApproved checks if a user is approved to view all restricted courses
@@ -57,6 +58,12 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		allowedToBuy = application.IsFullyApproved(&c.usersRepository, c.grant)
 	}
 
+	var bannerUrl *string
+	if courseInfo.ImageKey != nil {
+		url := uploads.GetImgixURL(*courseInfo.ImageKey)
+		bannerUrl = &url
+	}
+
 	return gentypes.Course{
 		ID:              courseInfo.ID,
 		Name:            courseInfo.Name,
@@ -74,6 +81,7 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		CategoryUUID:    courseInfo.CategoryUUID,
 		AllowedToBuy:    allowedToBuy,
 		CourseType:      courseInfo.CourseType,
+		BannerImageURL:  bannerUrl,
 	}
 }
 
@@ -175,4 +183,21 @@ func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, er
 	}
 
 	return c.coursesRepository.DeleteCourse(uint(input.ID))
+}
+
+func (c *courseAppImpl) CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"courseBanners",         // Save files in the "answers" s3 directory
+		"courseBannerImage",     // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
 }

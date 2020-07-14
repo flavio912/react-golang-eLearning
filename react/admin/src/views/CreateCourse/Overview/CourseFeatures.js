@@ -25,7 +25,7 @@ function CourseFeatures({ state, setState }) {
               name="course type"
               value={state.courseType}
               onChange={(evt, value) => {
-                setState('courseType', value);
+                setState({ courseType: value });
               }}
             >
               <FormControlLabel
@@ -47,7 +47,7 @@ function CourseFeatures({ state, setState }) {
               name="accessType"
               value={state.accessType}
               onChange={(evt, value) => {
-                setState('accessType', value);
+                setState({ accessType: value });
               }}
             >
               <FormControlLabel
@@ -83,7 +83,7 @@ function CourseFeatures({ state, setState }) {
                 <Switch
                   checked={state.backgroundCheck}
                   onChange={(evt, checked) => {
-                    setState('backgroundCheck', checked);
+                    setState({ backgroundCheck: checked });
                   }}
                   color="primary"
                   name="checkedB"

@@ -44,7 +44,7 @@ function Pricing({ state, setState }) {
                     rows={5}
                     value={state.terms}
                     onChange={inp => {
-                      setState('terms', inp.target.value);
+                      setState({ terms: inp.target.value });
                     }}
                     placeholder={'Terms and conditions'}
                     variant="outlined"
