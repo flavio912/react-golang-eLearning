@@ -1370,6 +1370,45 @@ func TestCreateTest(t *testing.T) {
 	})
 }
 
+func TestDeleteTest(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete test",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteTest(input: {
+						uuid: "2a56f8a8-1cd3-4e7b-bd10-c489b519828d"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteTest": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteTest(input: {
+					uuid: "2a56f8a8-1cd3-4e7b-bd10-c489b519828d"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteTest"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
 func TestDeleteModule(t *testing.T) {
 	prepareTestDatabase()
 

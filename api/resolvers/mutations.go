@@ -537,6 +537,11 @@ func (m *MutationResolver) FulfilPendingOrder(ctx context.Context, args struct{ 
 	return app.CourseApp.FulfilPendingOrder(args.ClientSecret)
 }
 
+func (m *MutationResolver) DeleteTest(ctx context.Context, args struct{ Input gentypes.DeleteTestInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.DeleteTest(args.Input)
+}
+
 func (m *MutationResolver) DeleteQuestion(ctx context.Context, args struct{ Input gentypes.DeleteQuestionInput }) (bool, error) {
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteQuestion(args.Input)

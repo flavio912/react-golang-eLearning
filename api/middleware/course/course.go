@@ -66,6 +66,7 @@ type CoursesRepository interface {
 	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
 	UpdateTest(input UpdateTestInput) (models.Test, error)
+	DeleteTest(uuid gentypes.UUID) (bool, error)
 	TestQuestions(testUUID gentypes.UUID) ([]models.Question, error)
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
 

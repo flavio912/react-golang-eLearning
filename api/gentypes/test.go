@@ -3,6 +3,7 @@ package gentypes
 import (
 	"time"
 
+	"github.com/asaskevich/govalidator"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
@@ -79,4 +80,13 @@ type SubmitTestInput struct {
 
 type SubmitTestPayload struct {
 	Success bool
+}
+
+type DeleteTestInput struct {
+	UUID UUID `valid:"required"`
+}
+
+func (d *DeleteTestInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
+	return err
 }
