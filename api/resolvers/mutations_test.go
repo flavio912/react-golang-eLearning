@@ -1370,6 +1370,267 @@ func TestCreateTest(t *testing.T) {
 	})
 }
 
+func TestUpdateLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						name: "Backtracking"
+					}) {
+						uuid
+						name
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"name": "Backtracking"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000003"
+						name: "Jacobian Matrix"
+						text: "{\"space\":\"time\"}"
+						tags: ["00000000-0000-0000-0000-000000000001"]
+					}) {
+						uuid
+						name
+						text
+						tags {
+							uuid
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson" : {
+						"uuid" : "00000000-0000-0000-0000-000000000003",
+						"name": "Jacobian Matrix",
+						"text": "{\"space\":\"time\"}",
+						"tags": [
+							{
+								"uuid": "00000000-0000-0000-0000-000000000001"
+							}
+						]
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Lesson does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: &errors.ErrLessonNotFound,
+					Path:          []interface{}{"updateLesson"},
+				},
+			},
+		},
+	})
+
+	t.Run("Test loaders reset", func(t *testing.T) {
+		prepareTestDatabase()
+
+		gqltest.RunTests(t, []*gqltest.Test{
+			{
+				Name:    "Get lesson into loader ctx",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							name
+							text
+							tags {
+								name
+								uuid
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"lesson": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"tags": [
+								{
+									"name": "Handling cool things",
+									"uuid": "00000000-0000-0000-0000-000000000002",
+									"color": "#123"
+								}
+							],
+							"name": "Eigenvalues and Eigenvectors",
+							"text": "{}"
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Update all fields",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						updateLesson(input: {
+							uuid: "00000000-0000-0000-0000-000000000003"
+							name: "Jacobian Matrix"
+							text: "space time"
+							tags: ["00000000-0000-0000-0000-000000000001"]
+						}) {
+							uuid
+							name
+							text
+							tags {
+								uuid
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"updateLesson" : {
+							"uuid" : "00000000-0000-0000-0000-000000000003",
+							"name": "Jacobian Matrix",
+							"text": "space time",
+							"tags": [
+								{
+									"uuid": "00000000-0000-0000-0000-000000000001"
+								}
+							]
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Check loader has been flushed",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							name
+							text
+							tags {
+								name
+								uuid
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"lesson": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"tags": [
+								{
+									"name": "existing tag",
+									"uuid": "00000000-0000-0000-0000-000000000001",
+									"color": "#123"
+								}
+							],
+							"name": "Jacobian Matrix",
+							"text": "space time"
+						}
+					}
+				`,
+			},
+		})
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateLesson(input: {
+					uuid: "00000000-0000-0000-0000-000000000003"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateLesson"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete lesson",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteLesson": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteLesson(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteLesson"},
+		AdminAllowed:    true,
+		MustAuth:        true,
+		DelegateAllowed: false,
+		ManagerAllowed:  false,
+	})
+}
+
 func TestCreateBlog(t *testing.T) {
 	prepareTestDatabase()
 
