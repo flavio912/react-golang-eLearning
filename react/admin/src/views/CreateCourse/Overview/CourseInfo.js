@@ -65,13 +65,14 @@ function CourseInfo({ state, setState }) {
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
+              <Grid item xs={12}>
                 <Autocomplete
                   options={categoryOptions}
                   loading={loading}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
-                    setState({ primaryCategory: newValue.value });
+                    if (!newValue) return;
+                    setState({ categoryUUID: newValue.value });
                   }}
                   renderInput={params => (
                     <TextField
@@ -82,14 +83,11 @@ function CourseInfo({ state, setState }) {
                   )}
                 />
               </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
-              </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
+              <Grid item xs={12}>
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
@@ -104,9 +102,6 @@ function CourseInfo({ state, setState }) {
                     />
                   )}
                 />
-              </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
               </Grid>
             </Grid>
           </Grid>
