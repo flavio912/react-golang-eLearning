@@ -52,6 +52,13 @@ const UPDATE_QUESTION = gql`
   }
 `;
 
+const initState = {
+  name: '',
+  randomise: false,
+  answers: [],
+  tags: []
+};
+
 function UpdateQuestion({ match, history }) {
   const classes = useStyles();
 
@@ -66,13 +73,6 @@ function UpdateQuestion({ match, history }) {
     skip: !ident
   });
   const [updateQuestion, { error: mutationErr }] = useMutation(UPDATE_QUESTION);
-
-  var initState = {
-    name: '',
-    randomise: false,
-    answers: [],
-    tags: []
-  };
 
   const [state, setState] = useState(initState);
 
@@ -104,7 +104,7 @@ function UpdateQuestion({ match, history }) {
         };
       })
     });
-  }, [queryData, loading, initState, error]);
+  }, [queryData, loading, error]);
 
   if (ident) {
     if (loading) return <CircularProgress className={classes.centerProgress} />;

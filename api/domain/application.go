@@ -12,4 +12,5 @@ type Application struct {
 	CourseApp course.CourseApp
 	UsersApp  users.UsersApp
 	AdminApp  application.AdminApp
+	BlogApp   application.BlogApp
 }

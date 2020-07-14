@@ -5,6 +5,9 @@ import Icon from 'sharedComponents/core/Icon';
 import CoreInput from 'components/core/Input/CoreInput';
 import PaymentForm from 'components/core/Modals/SideModal/PaymentForm';
 import PaymentSuccess from 'components/core/Modals/SideModal/PaymentSuccess';
+import Button from 'sharedComponents/core/Input/Button';
+import { MultiUser_PurchaseMutationResponse } from '../../CourseManagement/MultiUser/__generated__/MultiUser_PurchaseMutation.graphql';
+import { OnPurchase } from '../../CourseManagement/MultiUser/Tabs';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentRoot: {},
@@ -180,18 +183,32 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: 0
   }
 }));
+
 export type Course = {
   id: number;
   name: string;
   sku: string;
   price: number;
-  qty: number;
-  subtotal: number;
 };
-export default function Payment({ courses }: { courses: Course[] }) {
+
+export default function Payment({
+  courses,
+  userUUIDs,
+  isContract,
+  onPurchase,
+  onSuccess,
+  onError
+}: {
+  courses: Course[];
+  userUUIDs: string[];
+  isContract: boolean;
+  onPurchase: OnPurchase;
+  onSuccess: () => void;
+  onError: (message: string) => void;
+}) {
   const classes = useStyles();
   const subTotal = courses
-    .map(({ subtotal }: { subtotal: number }) => subtotal)
+    .map(({ price }: { price: number }) => price)
     .reduce(
       (prevValue: number, currentValue: number) => prevValue + currentValue,
       0
@@ -220,31 +237,28 @@ export default function Payment({ courses }: { courses: Course[] }) {
               </tr>
             </thead>
             <tbody>
-              {courses.map(
-                (
-                  { name, qty, subtotal, sku, price }: any,
-                  index: string | number
-                ) => (
-                  <tr key={index}>
-                    <td colSpan={2}>
-                      <span className={classes.productText}>
-                        <strong>{qty}x </strong>
-                        {name}
-                      </span>
-                      <span className={classes.productSku}>SKU: {sku}</span>
-                    </td>
-                    <td colSpan={1}>
-                      <span className={classes.productText}>{qty}</span>
-                    </td>
-                    <td colSpan={1}>
-                      <span className={classes.productText}>£{price}</span>
-                    </td>
-                    <td colSpan={1}>
-                      <span className={classes.productText}>£{subtotal}</span>
-                    </td>
-                  </tr>
-                )
-              )}
+              {courses.map(({ name, sku, price }, index: string | number) => (
+                <tr key={index}>
+                  <td colSpan={2}>
+                    <span className={classes.productText}>
+                      <strong>{userUUIDs.length}x </strong>
+                      {name}
+                    </span>
+                    <span className={classes.productSku}>SKU: {sku}</span>
+                  </td>
+                  <td colSpan={1}>
+                    <span className={classes.productText}>
+                      {userUUIDs.length}
+                    </span>
+                  </td>
+                  <td colSpan={1}>
+                    <span className={classes.productText}>£{price}</span>
+                  </td>
+                  <td colSpan={1}>
+                    <span className={classes.productText}>£{price}</span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -294,29 +308,40 @@ export default function Payment({ courses }: { courses: Course[] }) {
           </div>
         </div>
         <div className={classes.breakLine} />{' '}
-        <div className={classes.cardInfo}>
-          <h1 className={classes.smallHeading}>Pay by Card</h1>
-          <div className={classes.cardContent}>
-            <div className={classes.cardLeft}>
-              Pay securely using our credt card. All payments are 128-Bit
-              secured by Global Payments. Your personal data will be used to
-              process your order, support your experience through this website,
-              and for other purposes described in our privacy policy.
-            </div>
-            <div className={classes.cardRight}>
-              <div className={classes.cardRightImage}>
-                <div className={classes.stripeImage}>
-                  <Icon name="Stripe" />
+        {!isContract && (
+          <>
+            <div className={classes.cardInfo}>
+              <h1 className={classes.smallHeading}>Pay by Card</h1>
+              <div className={classes.cardContent}>
+                <div className={classes.cardLeft}>
+                  Pay securely using our credt card. All payments are 128-Bit
+                  secured by Global Payments. Your personal data will be used to
+                  process your order, support your experience through this
+                  website, and for other purposes described in our privacy
+                  policy.
                 </div>
-                <div className={classes.paymentImage}>
-                  <Icon name="Payments_Method" />
+                <div className={classes.cardRight}>
+                  <div className={classes.cardRightImage}>
+                    <div className={classes.stripeImage}>
+                      <Icon name="Stripe" />
+                    </div>
+                    <div className={classes.paymentImage}>
+                      <Icon name="Payments_Method" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <PaymentForm />
-        <PaymentSuccess total={totalDue} transactionId={`34239rCD`} />
+            <PaymentForm
+              onPurchase={onPurchase}
+              onSuccess={onSuccess}
+              onError={onError}
+            />
+          </>
+        )}
+        {isContract && (
+          <Button onClick={() => onPurchase()}>Place Order</Button>
+        )}
       </div>
     </>
   );

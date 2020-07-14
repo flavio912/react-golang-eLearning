@@ -14,6 +14,7 @@ type CourseApp interface {
 
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
 	FulfilPendingOrder(clientSecret string) (bool, error)
+	DeleteCourse(input gentypes.DeleteCourseInput) (bool, error)
 
 	Course(courseID uint) (gentypes.Course, error)
 	Courses(courseIDs []uint) ([]gentypes.Course, error)
@@ -22,6 +23,7 @@ type CourseApp interface {
 
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
+	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
 	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)
@@ -35,6 +37,8 @@ type CourseApp interface {
 		filter *gentypes.LessonFilter,
 		orderBy *gentypes.OrderBy,
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
+	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
+	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 	Tests(
@@ -45,6 +49,7 @@ type CourseApp interface {
 	CreateTest(input gentypes.CreateTestInput) (gentypes.Test, error)
 	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
 	SubmitTest(input gentypes.SubmitTestInput) (bool, error)
+	DeleteTest(input gentypes.DeleteTestInput) (bool, error)
 
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
 	Modules(
@@ -54,6 +59,7 @@ type CourseApp interface {
 	) ([]gentypes.Module, gentypes.PageInfo, error)
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
+	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
 
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(
@@ -63,6 +69,7 @@ type CourseApp interface {
 	) ([]gentypes.Question, gentypes.PageInfo, error)
 	CreateQuestion(input gentypes.CreateQuestionInput) (gentypes.Question, error)
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
+	DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error)
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)

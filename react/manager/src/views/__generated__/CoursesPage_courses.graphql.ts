@@ -14,6 +14,7 @@ export type CoursesPage_courses = {
             readonly name: string;
             readonly color: string;
         } | null;
+        readonly bannerImageURL: string | null;
     } | null> | null;
     readonly pageInfo: {
         readonly total: number;
@@ -96,6 +97,13 @@ const node: ReaderFragment = (function () {
                             (v0 /*: any*/),
                             (v1 /*: any*/)
                         ]
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "bannerImageURL",
+                        "args": null,
+                        "storageKey": null
                     }
                 ]
             },
@@ -141,5 +149,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = '172bd14a3c1370079363ff4a71e47496';
+(node as any).hash = '727fadbdb081ae6586fc4f27fdd61e40';
 export default node;

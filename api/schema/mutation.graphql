@@ -30,7 +30,7 @@ type Mutation {
   deleteAdmin(input: DeleteAdminInput!): Boolean!
 
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
-  # updateDelegate
+  updateDelegate(input: UpdateDelegateInput!): Delegate
 
   createCompany(input: CreateCompanyInput!): Company
   updateCompany(input: UpdateCompanyInput!): Company
@@ -45,27 +45,41 @@ type Mutation {
   fulfilPendingOrder(clientSecret: String!): Boolean!
   saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
   saveClassroomCourse(input: SaveClassroomCourseInput!): Course # Todo add tutor to course
+  courseBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+  deleteCourse(input: DeleteCourseInput!): Boolean!
 
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
 
   createLesson(input: CreateLessonInput!): Lesson
+  updateLesson(input: UpdateLessonInput!): Lesson
+  deleteLesson(input: DeleteLessonInput!): Boolean!
+
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   updateTest(input: UpdateTestInput!): UpdateTestPayload
+  deleteTest(input: DeleteTestInput!): Boolean!
 
   answerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
-  # deleteQuestion
+  deleteQuestion(input: DeleteQuestionInput!): Boolean!
 
   createModule(input: CreateModuleInput!): CreateModulePayload
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
+  deleteModule(input: DeleteModuleInput!): Boolean!
 
   # createTutor
   # updateTutor
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+
+  createBlog(input: CreateBlogInput!): Blog
+  updateBlog(input: UpdateBlogInput!): Blog
+  blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+  updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
+  blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
 }

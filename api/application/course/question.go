@@ -244,6 +244,18 @@ func (c *courseAppImpl) Questions(
 	return c.questionsToGentypes(questions), pageInfo, nil
 }
 
+func (c *courseAppImpl) DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return false, err
+	}
+
+	return c.coursesRepository.DeleteQuestion(input.UUID)
+}
+
 // AnswerImageUploadRequest generates a link that lets users upload a profile image to S3 directly
 // Used by all user types
 func (c *courseAppImpl) AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {

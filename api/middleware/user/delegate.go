@@ -182,3 +182,63 @@ func (u *usersRepoImpl) CreateDelegate(
 
 	return delegate, nil
 }
+
+func (u *usersRepoImpl) UpdateDelegate(
+	details gentypes.UpdateDelegateInput,
+	s3UploadKey *string,
+	password *string,
+) (models.Delegate, error) {
+	// Validate input
+	if err := details.Validate(); err != nil {
+		return models.Delegate{}, err
+	}
+
+	delegate, err := u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Log(sentry.LevelWarning, err, "Unable to find delegate")
+		return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
+	}
+
+	updates := make(map[string]interface{})
+	if details.CompanyUUID != nil {
+		if !u.CompanyExists(*details.CompanyUUID) {
+			return models.Delegate{}, &errors.ErrCompanyNotFound
+		}
+		updates["company_uuid"] = *details.CompanyUUID
+	}
+	if details.FirstName != nil {
+		updates["first_name"] = *details.FirstName
+	}
+	if details.LastName != nil {
+		updates["last_name"] = *details.LastName
+	}
+	if details.JobTitle != nil {
+		updates["job_title"] = *details.JobTitle
+	}
+	if details.Email != nil {
+		updates["email"] = details.Email
+	}
+	if details.Telephone != nil {
+		updates["telephone"] = details.Telephone
+	}
+	if s3UploadKey != nil {
+		updates["profile_key"] = s3UploadKey
+	}
+	if password != nil {
+		updates["password"] = password
+	}
+
+	save := database.GormDB.Model(&delegate).Updates(updates)
+	if save.Error != nil {
+		u.Logger.Logf(sentry.LevelError, save.Error, "Unable to update delegate: %s", details.UUID)
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	delegate, err = u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to get delegate after updating")
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	return delegate, nil
+}

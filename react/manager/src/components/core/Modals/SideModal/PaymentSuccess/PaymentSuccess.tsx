@@ -60,9 +60,9 @@ export default function PaymentSuccess({ total, transactionId }: Props) {
           </p>
         </div>
         <div className={classes.paymentSuccessRight}>
-          <p className={classes.paymentSuccessHead}>
+          {/* <p className={classes.paymentSuccessHead}>
             Amount recieved: £{total}
-          </p>
+          </p> */}
           <IdentTag label={'TRANS-ID'} ident={'REF-1231432'} />
         </div>
       </div>

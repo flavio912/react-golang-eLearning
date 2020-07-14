@@ -56,8 +56,8 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		}
 	}
 
-	// Create paymentIntent
-	pennyPrice := int64(price * 100) // This will discard any digit after two decimal places
+	// Add VAT on top of prices
+	pennyPrice := int64((price * 100) + (price * 0.2)) // This will discard any digit after two decimal places
 
 	params := &stripe.PaymentIntentParams{
 		Amount:   stripe.Int64(pennyPrice), // Convert to pence

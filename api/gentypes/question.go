@@ -136,3 +136,12 @@ func (u UpdateQuestionInput) Validate() error {
 	}
 	return nil
 }
+
+type DeleteQuestionInput struct {
+	UUID UUID `valid:"required"`
+}
+
+func (d *DeleteQuestionInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
+	return err
+}

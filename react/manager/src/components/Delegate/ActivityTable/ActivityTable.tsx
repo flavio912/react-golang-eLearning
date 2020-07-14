@@ -97,6 +97,7 @@ const activityRow = (
   ],
   onClick: () => {}
 });
+
 const ActivityTable = (props: any) => {
   const theme = useTheme();
   const classes = useStyles({ theme });

@@ -214,3 +214,30 @@ func TestManyOnlineCourseStructures(t *testing.T) {
 
 	// TODO: Add test for multiple
 }
+
+func TestDeleteCourse(t *testing.T) {
+	t.Run("Should not delete an active course", func(t *testing.T) {
+		prepareTestDatabase()
+
+		b, err := courseRepo.DeleteCourse(2)
+
+		assert.NotNil(t, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Deletes a course", func(t *testing.T) {
+		prepareTestDatabase()
+
+		var id uint = 1
+
+		b, err := courseRepo.DeleteCourse(id)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		// check for delete cascade
+		online_course, _ := courseRepo.OnlineCourse(id)
+
+		assert.Equal(t, models.OnlineCourse{}, online_course)
+	})
+}

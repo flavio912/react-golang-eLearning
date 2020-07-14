@@ -9,6 +9,7 @@ require (
 	github.com/friendsofgo/graphiql v0.2.2
 	github.com/getsentry/sentry-go v0.5.1
 	github.com/go-testfixtures/testfixtures/v3 v3.1.1
+	github.com/gogo/protobuf v1.3.1 // indirect
 	github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b
 	github.com/google/go-cmp v0.4.0
 	github.com/google/uuid v1.1.1

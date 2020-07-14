@@ -34,7 +34,7 @@ func NewActiveCoursesResolvers(ctx context.Context, args NewActiveCourseArgs) (*
 	var resolvers []*ActiveCourseResolver
 	switch {
 	case args.TakerUUID != nil:
-		activeCourses, err := app.UsersApp.MyActiveCourses()
+		activeCourses, err := app.UsersApp.ActiveCourses(*args.TakerUUID)
 		if err != nil {
 			return &resolvers, err
 		}

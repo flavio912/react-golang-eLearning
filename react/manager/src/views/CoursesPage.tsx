@@ -76,6 +76,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   filterRow: {
     margin: '30px 0px',
     justifyContent: 'space-between'
+  },
+  courses: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, 298px)',
+    gridGap: 26
   }
 }));
 
@@ -94,7 +99,9 @@ const CoursesPageComp = ({ courses }: Props) => {
       id: course.ident,
       type: course.category.name,
       colour: course?.category.color,
-      url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
+      url:
+        course.bannerImageURL ||
+        '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
       title: course.name,
       price: course.price,
       description: course.excerpt,
@@ -147,11 +154,10 @@ const CoursesPageComp = ({ courses }: Props) => {
           </div>
         </div>
       </div>
-      <div className={classNames(classes.row, classes.spaceEvenly)}>
+      <div className={classNames(classes.spaceEvenly, classes.courses)}>
         {_courses &&
           _courses.map((course) => (
             <CourseCard
-              className={classes.course}
               course={course}
               onClick={() => console.log('Pressed')}
               size={isOnline ? 'small' : 'large'}
@@ -185,6 +191,7 @@ const CoursesPage = createFragmentContainer(CoursesPageComp, {
           name
           color
         }
+        bannerImageURL
       }
       pageInfo {
         total

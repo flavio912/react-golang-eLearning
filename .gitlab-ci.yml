@@ -4,7 +4,7 @@ stages:
   - deploy-staging
 
 services:
-  - docker:dind
+  - docker:18.09.7-dind
 
 variables:
   MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
@@ -210,7 +210,7 @@ deploy-manager-staging:
       - react/manager/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-manager'
+    EB_ENV: "react-manager"
   script:
     - pip install awscli
     - apt-get update
@@ -232,7 +232,7 @@ deploy-publicSite-staging:
       - react/publicSite/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-public'
+    EB_ENV: "react-public"
   script:
     - pip install awscli
     - apt-get update
@@ -254,7 +254,7 @@ deploy-delegate-staging:
       - react/delegate/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-delegate-1'
+    EB_ENV: "react-delegate-1"
   script:
     - pip install awscli
     - apt-get update
@@ -275,7 +275,7 @@ deploy-admin-staging:
     changes:
       - react/admin/**/*
   variables:
-    EB_ENV: 'react-admin'
+    EB_ENV: "react-admin"
   script:
     - pip install awscli
     - apt-get update
@@ -296,7 +296,7 @@ deploy-api-staging:
     changes:
       - api/**/*
   variables:
-    EB_ENV: 'ttc-api-staging'
+    EB_ENV: "ttc-api-staging"
   script:
     - pip install awscli
     - apt-get update
