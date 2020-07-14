@@ -188,6 +188,8 @@ type Course {
   requirements: [String!]
   specificTerms: String
   category: Category
+  allowedToBuy: Boolean
+  bannerImageURL: String
 }
 
 type CoursePage implements PaginatedQuery {
