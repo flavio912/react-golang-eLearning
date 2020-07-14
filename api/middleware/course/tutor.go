@@ -26,7 +26,7 @@ func (c *coursesRepoImpl) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
 func (c *coursesRepoImpl) CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error) {
 	tutor := models.Tutor{
 		Name: details.Name,
-		CIN:  uint(details.CIN),
+		CIN:  details.CIN,
 	}
 
 	query := database.GormDB.Create(&tutor)
@@ -48,7 +48,7 @@ func (c *coursesRepoImpl) UpdateTutor(details gentypes.UpdateTutorInput) (models
 		tutor.Name = *details.Name
 	}
 	if details.CIN != nil {
-		tutor.CIN = uint(*details.CIN)
+		tutor.CIN = *details.CIN
 	}
 
 	if err := database.GormDB.Save(&tutor).Error; err != nil {

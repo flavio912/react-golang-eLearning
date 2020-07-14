@@ -1382,7 +1382,7 @@ func TestCreateTutor(t *testing.T) {
 				mutation {
 					createTutor(input: {
 						name: "Walter White"
-						cin: 420
+						cin: "420"
 					}) {
 						name
 						cin
@@ -1393,7 +1393,7 @@ func TestCreateTutor(t *testing.T) {
 				{
 					"createTutor": {
 						"name": "Walter White",
-						"cin": 420
+						"cin": "420"
 					}
 				}
 			`,
@@ -1405,7 +1405,7 @@ func TestCreateTutor(t *testing.T) {
 			mutation {
 				createTutor(input: {
 					name: "Savage"
-					cin: 21
+					cin: "21"
 				}) {
 					uuid
 				}
@@ -1432,7 +1432,7 @@ func TestUpdateTutor(t *testing.T) {
 					updateTutor(input: {
 						uuid: "386bd256-82e0-4d8a-91af-b4a117e0eda8"
 						name: "Richard Feynman"
-						cin: 69
+						cin: "69"
 					}) {
 						name
 						cin
@@ -1443,7 +1443,7 @@ func TestUpdateTutor(t *testing.T) {
 				{
 					"updateTutor": {
 						"name": "Richard Feynman",
-						"cin": 69
+						"cin": "69"
 					}
 				}
 			`,

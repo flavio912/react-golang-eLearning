@@ -5,6 +5,6 @@ import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentype
 type Tutor struct {
 	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name         string
-	CIN          uint `gorm:"unique"`
+	CIN          string `gorm:"unique"`
 	SignatureKey string
 }

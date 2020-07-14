@@ -13,7 +13,7 @@ func (c *courseAppImpl) tutorToGentype(tutor models.Tutor) gentypes.Tutor {
 	return gentypes.Tutor{
 		UUID:         tutor.UUID,
 		Name:         tutor.Name,
-		CIN:          int32(tutor.CIN),
+		CIN:          tutor.CIN,
 		SignatureURL: url,
 	}
 }

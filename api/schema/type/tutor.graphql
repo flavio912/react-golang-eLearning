@@ -1,13 +1,13 @@
 type Tutor {
   uuid: UUID!
   name: String!
-  cin: Int!
+  cin: String!
   signatureURL: String!
 }
 
 input CreateTutorInput {
   name: String!
-  cin: Int!
+  cin: String!
   signatureToken: String
 }
 
@@ -19,6 +19,6 @@ input UpdateTutorSignatureInput {
 input UpdateTutorInput {
   uuid: UUID!
   name: String
-  cin: Int
+  cin: String
   signatureToken: String
 }

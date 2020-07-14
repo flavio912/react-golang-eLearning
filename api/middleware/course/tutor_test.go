@@ -16,14 +16,14 @@ func TestCreateTutor(t *testing.T) {
 	t.Run("Must create a tutor", func(t *testing.T) {
 		input := gentypes.CreateTutorInput{
 			Name: "Richard Feynman",
-			CIN:  69,
+			CIN:  "69",
 		}
 
 		tutor, err := courseRepo.CreateTutor(input)
 
 		assert.Nil(t, err)
 		assert.Equal(t, input.Name, tutor.Name)
-		assert.Equal(t, uint(input.CIN), tutor.CIN)
+		assert.Equal(t, input.CIN, tutor.CIN)
 	})
 }
 
@@ -36,7 +36,7 @@ func TestTutor(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Equal(t, "Mohammed Rashwan", tutor.Name)
-		assert.Equal(t, uint(100), tutor.CIN)
+		assert.Equal(t, "100", tutor.CIN)
 	})
 
 	t.Run("Must fail to get non-existant", func(t *testing.T) {
@@ -67,13 +67,13 @@ func TestUpdateTutor(t *testing.T) {
 		input := gentypes.UpdateTutorInput{
 			UUID: gentypes.MustParseToUUID("386bd256-82e0-4d8a-91af-b4a117e0eda8"),
 			Name: helpers.StringPointer("Walter White"),
-			CIN:  helpers.Int32Pointer(69),
+			CIN:  helpers.StringPointer("69"),
 		}
 
 		tutor, err := courseRepo.UpdateTutor(input)
 
 		assert.Nil(t, err)
 		assert.Equal(t, *input.Name, tutor.Name)
-		assert.Equal(t, uint(*input.CIN), tutor.CIN)
+		assert.Equal(t, *input.CIN, tutor.CIN)
 	})
 }
