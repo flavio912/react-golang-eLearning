@@ -1165,9 +1165,9 @@ func TestLessons(t *testing.T) {
 							},
 							{
 								"tags":[
-									{"uuid":"00000000-0000-0000-0000-000000000001"},
 									{"uuid":"00000000-0000-0000-0000-000000000002"},
-									{"uuid":"00000000-0000-0000-0000-000000000003"}
+									{"uuid":"00000000-0000-0000-0000-000000000003"},
+									{"uuid":"00000000-0000-0000-0000-000000000001"}
 								]
 							}
 						],
@@ -1626,14 +1626,18 @@ func TestSearchSyllabus(t *testing.T) {
 					"searchSyllabus": {
 						"edges": [
 							{
+								"uuid":"2a56f8a8-1cd3-4e7b-bd10-c489b519828d",
+								"name":"Navier-Stokes equations"
+							},
+							{
 								"uuid": "c212859c-ddd3-433c-9bf5-15cdd1db32f9",
 								"name": "How to fibbonacci"
 							}
 						],
 						"pageInfo": {
-							"total": 1,
+							"total": 2,
 							"offset": 0,
-							"given": 1
+							"given": 2
 						}
 					}
 				}

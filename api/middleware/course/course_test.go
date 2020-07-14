@@ -222,7 +222,7 @@ func TestSearchSyllabus(t *testing.T) {
 		uuids, _, err := courseRepo.SearchSyllabus(nil, nil)
 
 		assert.Nil(t, err)
-		assert.Len(t, uuids, 8)
+		assert.Len(t, uuids, 9)
 	})
 
 	t.Run("Should page", func(t *testing.T) {
@@ -233,7 +233,7 @@ func TestSearchSyllabus(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Len(t, results, int(limit))
-		assert.Equal(t, gentypes.PageInfo{Total: 8, Given: 4, Limit: limit}, pageInfo)
+		assert.Equal(t, gentypes.PageInfo{Total: 9, Given: 4, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should search in all names and tag names", func(t *testing.T) {
@@ -251,7 +251,7 @@ func TestSearchSyllabus(t *testing.T) {
 		})
 
 		assert.Nil(t, err)
-		assert.Len(t, results, 2)
+		assert.Len(t, results, 3)
 
 		name = "i"
 		results, _, err = courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
@@ -259,7 +259,7 @@ func TestSearchSyllabus(t *testing.T) {
 		})
 
 		assert.Nil(t, err)
-		assert.Len(t, results, 5)
+		assert.Len(t, results, 6)
 	})
 
 	tests := []struct {
@@ -288,7 +288,7 @@ func TestSearchSyllabus(t *testing.T) {
 			true,
 			true,
 			false,
-			2,
+			3,
 		},
 		{
 			"modules and lesson",
@@ -302,14 +302,14 @@ func TestSearchSyllabus(t *testing.T) {
 			true,
 			false,
 			false,
-			5,
+			6,
 		},
 		{
 			"modules and tests",
 			false,
 			true,
 			false,
-			5,
+			6,
 		},
 		{
 			"none",
