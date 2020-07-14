@@ -48,7 +48,7 @@ func (c *coursesRepoImpl) GetLessonByUUID(UUID gentypes.UUID) (models.Lesson, er
 	query := database.GormDB.Where("uuid = ?", UUID).First(&lesson)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return models.Lesson{}, &errors.ErrNotFound
+			return models.Lesson{}, &errors.ErrLessonNotFound
 		}
 
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get lesson")
@@ -64,7 +64,7 @@ func (c *coursesRepoImpl) GetLessonsByUUID(uuids []string) ([]models.Lesson, err
 	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&lessons)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return lessons, &errors.ErrNotFound
+			return lessons, &errors.ErrLessonNotFound
 		}
 
 		c.Logger.Log(sentry.LevelError, query.Error, "Unable to find lessons")
@@ -130,4 +130,79 @@ func (c *coursesRepoImpl) GetLessons(
 		Limit:  limit,
 		Given:  int32(len(lessons)),
 	}, nil
+}
+
+// UpdateLesson updates an existing lesson
+func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error) {
+	// Validate input
+	if err := input.Validate(); err != nil {
+		return models.Lesson{}, err
+	}
+
+	var lesson models.Lesson
+	query := database.GormDB.Where("uuid = ?", input.UUID).First(&lesson)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.Lesson{}, &errors.ErrLessonNotFound
+		}
+
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find lesson to update with UUID: %s", input.UUID)
+		return models.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	if input.Name != nil {
+		lesson.Name = *input.Name
+	}
+	if input.Text != nil {
+		lesson.Text = *input.Text
+	}
+	if input.Tags != nil {
+		tags, err := c.CheckTagsExist(*input.Tags)
+
+		if err != nil {
+			return models.Lesson{}, err
+		}
+		lesson.Tags = tags
+
+		remove := database.GormDB.Delete(models.LessonTagsLink{}, "lesson_uuid = ?", lesson.UUID)
+		if remove.Error != nil {
+			c.Logger.Logf(sentry.LevelError, remove.Error, "Error updating tags linked with lesson %s", lesson.UUID)
+			return models.Lesson{}, &errors.ErrDeleteFailed
+		}
+
+	}
+
+	save := database.GormDB.Model(&models.Lesson{}).Where("uuid = ?", lesson.UUID).Updates(&lesson)
+	if save.Error != nil {
+		c.Logger.Logf(sentry.LevelError, save.Error, "Error updating lesson with UUID: %s", input.UUID)
+		return models.Lesson{}, &errors.ErrWhileHandling
+	}
+
+	return lesson, nil
+}
+
+func (c *coursesRepoImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
+	query := database.GormDB.Begin().Delete(models.LessonTagsLink{}, "lesson_uuid = ?", input.UUID)
+	if query.Error != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to remove tags linked with lesson: %s", input.UUID)
+		return false, &errors.ErrDeleteFailed
+	}
+
+	query = query.Delete(models.Lesson{}, "uuid = ?", input.UUID)
+	if query.Error != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to delete lesson: %s", input.UUID)
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if query.RowsAffected == 0 {
+		c.Logger.Logf(sentry.LevelError, &errors.ErrLessonNotFound, "Unable to delete non-existant lesson: %s", input.UUID)
+		return false, &errors.ErrLessonNotFound
+	}
+
+	if err := query.Commit().Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to commit transaction of deleting lesson %s", input.UUID)
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }

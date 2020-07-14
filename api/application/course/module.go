@@ -41,6 +41,31 @@ func (c *courseAppImpl) moduleToGentype(module models.Module) gentypes.Module {
 	}
 }
 
+func (c *courseAppImpl) modulesToGentypes(modules []models.Module) []gentypes.Module {
+	var genModules = make([]gentypes.Module, len(modules))
+	for i, module := range modules {
+		genModules[i] = c.moduleToGentype(module)
+	}
+	return genModules
+}
+
+func (c *courseAppImpl) Modules(
+	page *gentypes.Page,
+	filter *gentypes.ModuleFilter,
+	orderBy *gentypes.OrderBy,
+) ([]gentypes.Module, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Module{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	modules, pageInfo, err := c.coursesRepository.Modules(page, filter, orderBy)
+	if err != nil {
+		return c.modulesToGentypes(modules), pageInfo, &errors.ErrWhileHandling
+	}
+
+	return c.modulesToGentypes(modules), pageInfo, nil
+}
+
 func (c *courseAppImpl) Module(uuid gentypes.UUID) (gentypes.Module, error) {
 	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return gentypes.Module{}, &errors.ErrUnauthorized
@@ -174,4 +199,16 @@ func getUploadKey(token *string, uploadIdent string) (*string, error) {
 		uploadKey = &key
 	}
 	return uploadKey, nil
+}
+
+func (c *courseAppImpl) DeleteModule(input gentypes.DeleteModuleInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return false, err
+	}
+
+	return c.coursesRepository.DeleteModule(input.UUID)
 }

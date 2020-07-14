@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Card,
   CardHeader,
@@ -6,7 +6,6 @@ import {
   CardContent,
   Button,
   Grid,
-  Chip,
   Divider
 } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
@@ -27,7 +26,7 @@ function CourseInfo({ state, setState }) {
               label="Course Name"
               name="courseName"
               onChange={inp => {
-                setState('name', inp.target.value);
+                setState({ name: inp.target.value });
               }}
               placeholder="e.g Dangerous Goods"
               value={state.name}
@@ -41,7 +40,7 @@ function CourseInfo({ state, setState }) {
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
-                    setState('primaryCategory', newValue.value);
+                    setState({ primaryCategory: newValue.value });
                   }}
                   renderInput={params => (
                     <TextField
@@ -64,7 +63,7 @@ function CourseInfo({ state, setState }) {
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
-                    setState('secondaryCategory', newValue.value);
+                    setState({ secondaryCategory: newValue.value });
                   }}
                   renderInput={params => (
                     <TextField
@@ -81,7 +80,7 @@ function CourseInfo({ state, setState }) {
             </Grid>
           </Grid>
           <Grid item>
-            <TagsInput onChange={newVal => setState('tags', newVal)} />
+            <TagsInput onChange={newVal => setState({ tags: newVal })} />
           </Grid>
         </Grid>
       </CardContent>

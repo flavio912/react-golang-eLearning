@@ -8,3 +8,8 @@
   pass_percentage: 70
   questions_to_answer: 4
   randomise_answers: true
+- uuid: 2a56f8a8-1cd3-4e7b-bd10-c489b519828d
+  name: Navier-Stokes equations
+  pass_percentage: 50
+  questions_to_answer: 11
+  randomise_answers: false

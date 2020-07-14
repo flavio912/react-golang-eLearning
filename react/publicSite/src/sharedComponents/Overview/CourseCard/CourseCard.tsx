@@ -15,7 +15,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: '0.2s all',
     '&:hover': {
       boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
-    }
+    },
+    justifyContent: 'space-between'
   },
   noBorder: {
     borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`
@@ -23,7 +24,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   mainContainer: {
     borderRadius: `0 ${theme.primaryBorderRadius}px 0 0`,
     backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'
+    backgroundSize: 'cover',
+    height: 186
   },
   row: {
     display: 'flex',
@@ -55,7 +57,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   title: {
     color: theme.colors.primaryWhite,
     margin: '0 20px 30px 20px',
-    fontSize: theme.fontSizes.heading,
+    fontSize: '23px',
     fontWeight: '900'
   },
   lecture: {
@@ -92,7 +94,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   description: {
     flex: 3,
     lineHeight: '1.5em',
-    height: '4.5em',
     overflow: 'hidden',
     fontWeight: '300',
     fontSize: theme.fontSizes.small,
@@ -216,12 +217,7 @@ function CourseCard({
             £{course.price?.toFixed(2)}
           </div>
         )}
-        <div
-          className={classNames(classes.title)}
-          style={{ marginTop: course.price ? 0 : '45px' }}
-        >
-          {course.title}
-        </div>
+        <div className={classNames(classes.title)}>{course.title}</div>
       </div>
 
       <div className={classNames(classes.column)}>

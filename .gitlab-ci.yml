@@ -4,7 +4,7 @@ stages:
   - deploy-staging
 
 services:
-  - docker:dind
+  - docker:18.09.7-dind
 
 variables:
   MANAGER_IMAGE_TAG: $CI_REGISTRY_IMAGE:manager
@@ -95,6 +95,27 @@ build-delegate-webpack:
     paths:
       - react/delegate/build/
 
+build-publicSite-webpack:
+  stage: build
+  image: node:10.16.2
+  script:
+    - cd react/publicSite
+    - yarn
+    - yarn run build
+  only:
+    changes:
+      - react/publicSite/**/*
+      - .gitlab-ci.yml
+  cache:
+    paths:
+      - node_modules/
+  tags:
+    - big
+  artifacts:
+    expire_in: 3d
+    paths:
+      - react/publicSite/build/
+
 build-manager-storybook:
   stage: build
   image: node:10.16.2
@@ -138,7 +159,7 @@ build-manager-webpack:
     paths:
       - react/manager/build/
 
-build-api: 
+build-api:
   stage: build
   image: golang:1.14.1-alpine
   script:
@@ -189,12 +210,34 @@ deploy-manager-staging:
       - react/manager/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-manager'
+    EB_ENV: "react-manager"
   script:
     - pip install awscli
     - apt-get update
     - apt-get install -y zip
     - cd ./react/manager
+    - chmod +x ./bin/deploy.sh
+    - ./bin/deploy.sh
+
+deploy-publicSite-staging:
+  stage: deploy-staging
+  image: python:3.8-slim-buster
+  environment:
+    name: public-staging
+    url: http://www.ttc.devserver.london
+  only:
+    refs:
+      - dev
+    changes:
+      - react/publicSite/**/*
+      - .gitlab-ci.yml
+  variables:
+    EB_ENV: "react-public"
+  script:
+    - pip install awscli
+    - apt-get update
+    - apt-get install -y zip
+    - cd ./react/publicSite
     - chmod +x ./bin/deploy.sh
     - ./bin/deploy.sh
 
@@ -211,7 +254,7 @@ deploy-delegate-staging:
       - react/delegate/**/*
       - .gitlab-ci.yml
   variables:
-    EB_ENV: 'react-delegate-1'
+    EB_ENV: "react-delegate-1"
   script:
     - pip install awscli
     - apt-get update
@@ -232,7 +275,7 @@ deploy-admin-staging:
     changes:
       - react/admin/**/*
   variables:
-    EB_ENV: 'react-admin'
+    EB_ENV: "react-admin"
   script:
     - pip install awscli
     - apt-get update
@@ -253,7 +296,7 @@ deploy-api-staging:
     changes:
       - api/**/*
   variables:
-    EB_ENV: 'ttc-api-staging'
+    EB_ENV: "ttc-api-staging"
   script:
     - pip install awscli
     - apt-get update

@@ -9,7 +9,6 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import SideOptions from './SideOptions';
-import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,7 +44,7 @@ function Pricing({ state, setState }) {
                     rows={5}
                     value={state.terms}
                     onChange={inp => {
-                      setState('terms', inp.target.value);
+                      setState({ terms: inp.target.value });
                     }}
                     placeholder={'Terms and conditions'}
                     variant="outlined"

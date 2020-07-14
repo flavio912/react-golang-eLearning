@@ -8,16 +8,7 @@ schema {
 type Query {
   info: String!
   manager(uuid: UUID): Manager
-  onlineCourses(
-    page: Page
-    filter: OnlineCourseFilter
-    orderBy: OrderBy
-  ): OnlineCoursePage
-  classroomCourses(
-    page: Page
-    filter: ClassroomCourseFilter
-    orderBy: OrderBy
-  ): ClassroomCoursePage
+  courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   delegate(uuid: UUID!): Delegate
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
 }
@@ -25,12 +16,12 @@ type Query {
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 }
 
+# Delegate
 
-# Delegate 
-
-type Delegate  {
+type Delegate {
   uuid: UUID!
   createdAt: String
   TTC_ID: String!
@@ -42,6 +33,8 @@ type Delegate  {
   jobTitle: String!
   company: Company!
   profileImageUrl: String
+  activity(page: Page): ActivityPage
+  activeCourses: [ActiveCourse!]
 }
 
 input CreateDelegateInput {
@@ -56,7 +49,7 @@ input CreateDelegateInput {
 }
 
 type CreateDelegateResponse {
-  delegate: Delegate!,
+  delegate: Delegate!
   generatedPassword: String
 }
 
@@ -104,10 +97,12 @@ input OrderBy {
 
 type Company {
   approved: Boolean
+  isContract: Boolean!
   uuid: UUID!
   createdAt: String
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
+  delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
   address: Address!
 }
 
@@ -118,8 +113,6 @@ type Address {
   postCode: String!
   country: String!
 }
-
-
 
 interface User {
   uuid: UUID!
@@ -165,7 +158,6 @@ input ManagerFilter {
   telephone: String
 }
 
-
 type AuthToken {
   token: String!
 }
@@ -175,65 +167,42 @@ enum AccessType {
   open
 }
 
-enum StructureElement {
-  module
-  test
-  lesson
+enum CourseType {
+  online
+  classroom
 }
 
-enum ModuleElement {
-  test
-  lesson
-}
-
-type CourseInfo {
-  name: String
+type Course {
+  id: Int!
+  type: CourseType!
+  name: String!
   backgroundCheck: Boolean
-  price: Float
+  accessType: AccessType!
+  price: Float!
   color: String
   excerpt: String
   introduction: String
+  howToComplete: String
+  hoursToComplete: Float
+  whatYouLearn: [String!]
+  requirements: [String!]
   specificTerms: String
   category: Category
+  allowedToBuy: Boolean
+  bannerImageURL: String
 }
 
-input OnlineCourseFilter {
-  courseInfo: CourseInfoFilter
-}
-
-input ClassroomCourseFilter {
-  courseInfo: CourseInfoFilter
-}
-
-type OnlineCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type OnlineCoursePage implements PaginatedQuery {
-  edges: [OnlineCourse]!
+type CoursePage implements PaginatedQuery {
+  edges: [Course]
   pageInfo: PageInfo
 }
 
-type ClassroomCourse {
-  uuid: UUID!
-  info: CourseInfo!
-}
-
-type ClassroomCoursePage implements PaginatedQuery {
-  edges: [ClassroomCourse]!
-  pageInfo: PageInfo
-}
-
-input CourseItem {
-  type: StructureElement!
-  uuid: UUID!
-  items: [ModuleItem!]!
-}
-
-input ModuleItem {
-  type: ModuleElement!
-  uuid: UUID!
+input CoursesFilter {
+  name: String
+  accessType: AccessType
+  backgroundCheck: Boolean
+  price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
 }
 
 type Tag {
@@ -248,3 +217,41 @@ type Category {
   color: String!
 }
 
+enum ActivityType {
+  newCourse
+  activated
+  completedCourse
+  failedCourse
+}
+
+type ActivityPage implements PaginatedQuery {
+  edges: [Activity]
+  pageInfo: PageInfo
+}
+
+type Activity {
+  uuid: UUID!
+  type: ActivityType!
+  createdAt: String!
+  course: Course
+}
+
+# # A course currently being taken by a user
+type ActiveCourse {
+  course: Course!
+  currentAttempt: Int!
+  minutesTracked: Float!
+}
+
+input PurchaseCoursesInput {
+  courses: [Int!]!
+  users: [UUID!]! # List of delegates UUIDs
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
+}

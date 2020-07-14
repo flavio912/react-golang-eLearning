@@ -1370,6 +1370,735 @@ func TestCreateTest(t *testing.T) {
 	})
 }
 
+func TestUpdateLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						name: "Backtracking"
+					}) {
+						uuid
+						name
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"name": "Backtracking"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000003"
+						name: "Jacobian Matrix"
+						text: "{\"space\":\"time\"}"
+						tags: ["00000000-0000-0000-0000-000000000001"]
+					}) {
+						uuid
+						name
+						text
+						tags {
+							uuid
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson" : {
+						"uuid" : "00000000-0000-0000-0000-000000000003",
+						"name": "Jacobian Matrix",
+						"text": "{\"space\":\"time\"}",
+						"tags": [
+							{
+								"uuid": "00000000-0000-0000-0000-000000000001"
+							}
+						]
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Lesson does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateLesson": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: &errors.ErrLessonNotFound,
+					Path:          []interface{}{"updateLesson"},
+				},
+			},
+		},
+	})
+
+	t.Run("Test loaders reset", func(t *testing.T) {
+		prepareTestDatabase()
+
+		gqltest.RunTests(t, []*gqltest.Test{
+			{
+				Name:    "Get lesson into loader ctx",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							name
+							text
+							tags {
+								name
+								uuid
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"lesson": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"tags": [
+								{
+									"name": "Handling cool things",
+									"uuid": "00000000-0000-0000-0000-000000000002",
+									"color": "#123"
+								}
+							],
+							"name": "Eigenvalues and Eigenvectors",
+							"text": "{}"
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Update all fields",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						updateLesson(input: {
+							uuid: "00000000-0000-0000-0000-000000000003"
+							name: "Jacobian Matrix"
+							text: "space time"
+							tags: ["00000000-0000-0000-0000-000000000001"]
+						}) {
+							uuid
+							name
+							text
+							tags {
+								uuid
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"updateLesson" : {
+							"uuid" : "00000000-0000-0000-0000-000000000003",
+							"name": "Jacobian Matrix",
+							"text": "space time",
+							"tags": [
+								{
+									"uuid": "00000000-0000-0000-0000-000000000001"
+								}
+							]
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Check loader has been flushed",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							name
+							text
+							tags {
+								name
+								uuid
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"lesson": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"tags": [
+								{
+									"name": "existing tag",
+									"uuid": "00000000-0000-0000-0000-000000000001",
+									"color": "#123"
+								}
+							],
+							"name": "Jacobian Matrix",
+							"text": "space time"
+						}
+					}
+				`,
+			},
+		})
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateLesson(input: {
+					uuid: "00000000-0000-0000-0000-000000000003"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateLesson"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteLesson(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete lesson",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteLesson(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteLesson": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteLesson(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteLesson"},
+		AdminAllowed:    true,
+		MustAuth:        true,
+		DelegateAllowed: false,
+		ManagerAllowed:  false,
+	})
+}
+
+func TestCreateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Create blog given authorUUID",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: "How NOT to golang"
+						body: "{}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+						authorUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						title
+						body
+						author {
+							firstName
+							lastName
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createBlog":{
+						"title": "How NOT to golang",
+						"body": "{}",
+						"author": {
+							"firstName": "Jim",
+							"lastName": "User"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Create blog with no given authorUUID",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: "How NOT to golang"
+						body: "{}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						author {
+							firstName
+							lastName
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createBlog":{
+						"author": {
+							"firstName": "Jim",
+							"lastName": "User"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should validate input",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createBlog(input: {
+						title: ""
+						body: "not json"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}){
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `{"createBlog":null}`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					Message: helpers.StringPointer("Body: not json does not validate as json"),
+					Path:    []interface{}{"createBlog"},
+				},
+			},
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createBlog(input: {
+					title: "How NOT to golang"
+					body: "{}"
+					categoryUUID: "00000000-0000-0000-0000-000000000001"
+					authorUUID: "00000000-0000-0000-0000-000000000001"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"createBlog"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		DelegateAllowed: false,
+		ManagerAllowed:  false,
+	})
+}
+
+func TestUpdateBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update a field",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						title: "How To Backtrack"
+					}) {
+						uuid
+						title
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"title": "How To Backtrack"
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Update all (non-images) fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid : "00000000-0000-0000-0000-000000000003"
+						title: "How To Do Gaussian Elimination"
+						body: "{\"space\":\"time\"}"
+						categoryUUID: "00000000-0000-0000-0000-000000000001"
+					}) {
+						uuid
+						title
+						body
+						category {
+							name
+							color
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog":{
+						"uuid": "00000000-0000-0000-0000-000000000003",
+						"title": "How To Do Gaussian Elimination",
+						"body": "{\"space\":\"time\"}",
+						"category": {
+							"name": "cat1",
+							"color": "#123"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Blog does not exist",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateBlog(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateBlog": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: errors.ErrBlogNotFound("00000000-0000-0000-0000-000000000000"),
+					Path:          []interface{}{"updateBlog"},
+				},
+			},
+		},
+	})
+
+	t.Run("Test loaders reset", func(t *testing.T) {
+		prepareTestDatabase()
+
+		gqltest.RunTests(t, []*gqltest.Test{
+			{
+				Name:    "Get blog into loader ctx",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							createdAt
+							title
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog": {
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"createdAt": "2020-03-08T13:53:37Z",
+							"title": "How To Build A Custom Autoencoder"
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Update all (non-images) fields",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					mutation {
+						updateBlog(input: {
+							uuid : "00000000-0000-0000-0000-000000000003"
+							title: "How To Do Gaussian Elimination"
+							body: "{\"space\":\"time\"}"
+							categoryUUID: "00000000-0000-0000-0000-000000000001"
+						}) {
+							uuid
+							title
+							body
+							category {
+								name
+								color
+							}
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"updateBlog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}",
+							"category": {
+								"name": "cat1",
+								"color": "#123"
+							}
+						}
+					}
+				`,
+			},
+			{
+				Name:    "Check loader has been flushed",
+				Context: adminContext(),
+				Schema:  schema,
+				Query: `
+					{
+						blog(uuid: "00000000-0000-0000-0000-000000000003") {
+							uuid
+							title
+							body
+						}
+					}
+				`,
+				ExpectedResult: `
+					{
+						"blog":{
+							"uuid": "00000000-0000-0000-0000-000000000003",
+							"title": "How To Do Gaussian Elimination",
+							"body": "{\"space\":\"time\"}"
+						}
+					}
+				`,
+			},
+		})
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateBlog(input: {
+					uuid: "00000000-0000-0000-0000-000000000002"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateBlog"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteTest(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete test",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteTest(input: {
+						uuid: "2a56f8a8-1cd3-4e7b-bd10-c489b519828d"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteTest": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteTest(input: {
+					uuid: "2a56f8a8-1cd3-4e7b-bd10-c489b519828d"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteTest"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteModule(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Delete module",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteModule(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteModule": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteModule(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteModule"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteCourse(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "delete course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteCourse(input: {
+						id: 3
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteCourse": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteCourse(input: {
+					id: 1
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteCourse"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestDeleteQuestion(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Deletes a question",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteQuestion(input: {
+						uuid: "ba070bfb-d3d0-4ff7-a35d-6263180a43f9"
+					})
+				}	
+			`,
+			ExpectedResult: `
+				{
+					"deleteQuestion": true
+				}
+			`,
+		},
+	})
+
+	// this needs to be done, I guess
+	// accessTest(t, schema, accessTestOpts{
+	// 	Query: `
+	// 		mutation {
+	// 			deleteQuestion(input: {
+	// 				uuid: "797efc50-f980-42a2-a008-2991a1162631"
+	// 			})
+	// 		}
+	// 	`,
+	// 	Path:            []interface{}{"deleteQuestion"},
+	// 	MustAuth:        true,
+	// 	AdminAllowed:    true,
+	// 	ManagerAllowed:  false,
+	// 	DelegateAllowed: false,
+	// })
+}
+
 func TestCreateTutor(t *testing.T) {
 	prepareTestDatabase()
 

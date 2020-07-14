@@ -1,27 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import { useMutation } from '@apollo/react-hooks';
 import QuestionPage from './QuestionPage';
-
-const useStyles = makeStyles(theme => ({
-  root: {
-    paddingTop: theme.spacing(3),
-    paddingBottom: theme.spacing(3)
-  },
-  divider: {
-    marginBottom: theme.spacing(3)
-  },
-  tabs: {
-    marginTop: theme.spacing(3)
-  },
-  centerProgress: {
-    position: 'absolute',
-    top: '50%',
-    left: '50%'
-  }
-}));
 
 const CREATE_QUESTION = gql`
   mutation CreateQuestion(
@@ -47,9 +28,7 @@ const CREATE_QUESTION = gql`
 `;
 
 function CreateQuestion({ match, history }) {
-  const classes = useStyles();
-
-  const { tab: currentTab, ident } = match.params;
+  const { tab: currentTab } = match.params;
   const tabs = [{ value: 'overview', label: 'Overview' }];
 
   var initState = {
@@ -60,7 +39,7 @@ function CreateQuestion({ match, history }) {
   };
 
   const [state, setState] = useState(initState);
-  const [createQuestion, { data, error }] = useMutation(CREATE_QUESTION);
+  const [createQuestion, { error }] = useMutation(CREATE_QUESTION);
 
   const updateState = (item, value) => {
     var updatedState = { ...state, [item]: value };

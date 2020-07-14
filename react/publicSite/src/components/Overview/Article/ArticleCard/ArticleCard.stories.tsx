@@ -11,10 +11,9 @@ export const normal = () => {
     const type: string = text("Type", "Dangerous Goods");
     const date: string = text("Date", "20th March 2020");
     const description: string = text("Description", "CANSO makes call to action to ensure the stability of the ATM industry");
+    const article = { type, date, description, imageURL: require("assets/SampleImage_ClassroomCoursesDetail_Feat.png")}
     return <ArticleCard
-        type={type}
-        date={date}
-        description={description}
-        imageURL={require("assets/SampleImage_ClassroomCoursesDetail_Feat.png")}
+        article={article}
+        onClick={() => console.log('Clicked')}
   />;
 };

@@ -1,5 +1,7 @@
 package gentypes
 
+import "github.com/asaskevich/govalidator"
+
 type VideoType string
 
 const (
@@ -54,4 +56,19 @@ type UpdateModuleInput struct {
 	Video                   *Video
 	Tags                    *[]UUID
 	Syllabus                *[]ModuleItem
+}
+
+type DeleteModuleInput struct {
+	UUID UUID `valid:"required"`
+}
+
+func (d *DeleteModuleInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
+	return err
+}
+
+type ModuleFilter struct {
+	UUID        *UUID
+	Name        *string
+	Description *string
 }

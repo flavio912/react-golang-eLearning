@@ -5,11 +5,12 @@ import (
 )
 
 type Company struct {
-	CreatedAt *string `valid:"rfc3339"`
-	Approved  *bool
-	UUID      UUID
-	Name      string
-	AddressID uint
+	CreatedAt  *string `valid:"rfc3339"`
+	IsContract bool
+	Approved   *bool
+	UUID       UUID
+	Name       string
+	AddressID  uint
 }
 
 type CompanyFilter struct {

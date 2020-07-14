@@ -10,7 +10,6 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import BulletRepeater from './BulletRepeater';
 import SideOptions from './SideOptions';
-import EditorCard from 'src/components/EditorCard';
 
 const useStyles = makeStyles(theme => ({
   root: {

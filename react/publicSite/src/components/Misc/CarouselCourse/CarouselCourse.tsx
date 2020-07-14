@@ -11,7 +11,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
   carousel: {},
   containerClass: {
     padding: theme.spacing(1),
-    paddingBottom: 44
+    paddingBottom: 44,
+    maxWidth: '100vw'
   },
   carouselCard: {
     borderRadius: [0, 9, 9, 9],

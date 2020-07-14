@@ -21,12 +21,17 @@ import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
 import AboutUs from 'views/AboutUs';
 import PaymentPage from 'views/PaymentPage';
-import Register from 'views/RegisterStart';
 import RegisterStart from 'views/RegisterStart';
 import RegisterIndividual from 'views/RegisterIndividual';
 import RegisterCompany from 'views/RegisterCompany';
 import Courses from 'views/Courses';
 import Consultancy from 'views/Consultancy';
+import CourseDetailsPage from 'views/CourseDetailsPage';
+import PrivacyPolicy from 'views/PrivacyPolicy';
+import ContactUs from 'views/ContactUs';
+import RegisterCalendar from 'views/RegisterCalendar';
+import ArticleLandingPage from 'views/ArticleLandingPage';
+import Article from 'views/Article';
 
 
 const ExamplePageQuery = graphql`
@@ -60,12 +65,18 @@ const Router = createFarceRouter({
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
         <Route path="/payment" Component={PaymentPage} />
+        <Route path="/course" Component={CourseDetailsPage} />
         <Route path="/courses" Component={Courses} />
         <Route path="/consultancy" Component={Consultancy} />
+        <Route path="/contact" Component={ContactUs} />
+        <Route path="/privacypolicy" Component={PrivacyPolicy} />
+        <Route path="/articles" Component={ArticleLandingPage} />
+        <Route path="/article" Component={Article} />
       </Route>
       <Route path="/register" Component={RegisterStart} />
       <Route path="/register/individual" Component={RegisterIndividual} />
       <Route path="/register/company" Component={RegisterCompany} />
+      <Route path="/register/calendar" Component={RegisterCalendar} />
     </Route>
   ),
   render: createRender({})

@@ -328,3 +328,55 @@ func (q *QueryResolver) Module(ctx context.Context, args struct{ UUID gentypes.U
 		ModuleUUID: &args.UUID,
 	})
 }
+
+func (q *QueryResolver) Blog(ctx context.Context, args struct{ UUID string }) (*BlogResolver, error) {
+	return NewBlogResolver(ctx, NewBlogArgs{
+		UUID: args.UUID,
+	})
+}
+
+func (q *QueryResolver) Blogs(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	OrderBy *gentypes.OrderBy
+}) (*BlogPageResolver, error) {
+	// app := auth.AppFromContext(ctx)
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &BlogPageResolver{}, &errors.ErrUnauthorized
+	}
+
+	blogApp := application.NewBlogApp(grant)
+	blogs, page, err := blogApp.GetBlogs(args.Page, args.OrderBy)
+	var blogsResolvers []*BlogResolver
+	for _, blog := range blogs {
+		blogsResolvers = append(blogsResolvers, &BlogResolver{
+			Blog: blog,
+		})
+	}
+
+	return &BlogPageResolver{
+		edges: &blogsResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Modules(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.ModuleFilter
+		OrderBy *gentypes.OrderBy
+	}) (*ModulePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	modules, pageInfo, err := app.CourseApp.Modules(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &ModulePageResolver{}, err
+	}
+
+	return NewModulePageResolver(ctx, NewModulePageArgs{
+		PageInfo: pageInfo,
+		Modules:  &modules,
+	})
+}

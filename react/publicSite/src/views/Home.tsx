@@ -10,17 +10,12 @@ import { Router } from 'found';
 import CarouselCourse from 'components/Misc/CarouselCourse';
 import { Course } from 'sharedComponents/Overview/CourseCard';
 import Button from 'sharedComponents/core/Input/Button';
+import CarouselWithDemo from 'components/Misc/CarouselCourse/CarouselWithDemo';
+import PageMargin from 'components/core/PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   homeRoot: {
     width: '100%'
-  },
-  centerer: {
-    display: 'flex',
-    justifyContent: 'center'
-  },
-  centered: {
-    width: theme.centerColumnWidth
   },
   whiteSpacer: {
     background: theme.colors.primaryWhite,
@@ -94,79 +89,54 @@ function Home({ router }: Props) {
         }}
         onDemo={() => {}}
       />
-      <div className={classnames(classes.centerer, classes.whiteSpacer)}>
-        <div className={classes.centered}>
-          <FloatingVideo
-            width={560}
-            source={require('assets/Stock_Video.mp4')}
-            author={{
-              name: 'Kristian Durhuus',
-              title: 'Chief Executive Officer',
-              quote:
-                'TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore .'
-            }}
-          />
-        </div>
-      </div>
-      <div className={classnames(classes.centerer)}>
-        <div className={classes.centered}>
-          <div className={classes.explore}>
-            <div className={classes.heading}>Explore our popular courses</div>
-            <CarouselCourse
-              courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
-            />
-            <Spacer vertical spacing={3} />
-            <div className={classes.exploreCont}>
-              <p className={classes.exploreText}>
-                It’s time to remove the headache for you and your team, with TTC
-                you could be logged in and learning in 24 hours.
-              </p>
-              <Spacer vertical spacing={3} />
-              <div className={classes.buttonHolder}>
-                <Button archetype="gradient" className={classes.button}>
-                  Register your Team
-                </Button>
-                <Spacer horizontal spacing={2} />
-                <p>OR</p>
-                <Spacer horizontal spacing={2} />
-                <Button archetype="default" className={classes.button}>
-                  Request Demo
-                </Button>
-              </div>
-            </div>
-            <Spacer vertical spacing={3} />
-          </div>
-        </div>
-      </div>
-      <div className={classnames(classes.centerer, classes.whiteSpacer)}>
-        <div className={classes.centered}>
-          <div className={classes.heading}>What you can do with TTC Hub</div>
-          <ImageWithText
-            title="Online courses"
-            subtitle="Get certified online"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
-            image={require('assets/getCertified.svg')}
-            link={{ title: 'See Online Courses', link: '/' }}
-          />
-          <Spacer spacing={5} vertical />
-          <ImageWithText
-            title="Online courses"
-            subtitle="Get certified online"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
-            image={require('assets/manageTeam.svg')}
-            link={{ title: 'See Online Courses', link: '/' }}
-            textRight
-          />
-          <Spacer spacing={5} vertical />
-          <ImageWithText
-            title="Online courses"
-            subtitle="Get certified online"
-            description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
-            image={require('assets/trackCompliance.svg')}
-            link={{ title: 'See Online Courses', link: '/' }}
-          />
-        </div>
-      </div>
+      <PageMargin centererStyle={classes.whiteSpacer}>
+        <FloatingVideo
+          width={560}
+          source={require('assets/Stock_Video.mp4')}
+          author={{
+            name: 'Kristian Durhuus',
+            title: 'Chief Executive Officer',
+            quote:
+              'TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore .'
+          }}
+        />
+    </PageMargin>
+    <PageMargin>
+      <CarouselWithDemo
+          className={classes.explore}
+          heading="Explore our popular courses"
+          description="It’s time to remove the headache for you and your team, with TTC
+          you could be logged in and learning in 24 hours."
+          courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
+      />
+      </PageMargin>
+      <PageMargin centererStyle={classes.whiteSpacer}>
+        <div className={classes.heading}>What you can do with TTC Hub</div>
+        <ImageWithText
+          title="Online courses"
+          subtitle="Get certified online"
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
+          image={require('assets/getCertified.svg')}
+          link={{ title: 'See Online Courses', link: '/' }}
+        />
+        <Spacer spacing={5} vertical />
+        <ImageWithText
+          title="Online courses"
+          subtitle="Get certified online"
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
+          image={require('assets/manageTeam.svg')}
+          link={{ title: 'See Online Courses', link: '/' }}
+          textRight
+        />
+        <Spacer spacing={5} vertical />
+        <ImageWithText
+          title="Online courses"
+          subtitle="Get certified online"
+          description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean quis tellus at quam aliquam aliquam. Phasellus consequat tincidunt ex nec blandit. Duis et sem lacus. "
+          image={require('assets/trackCompliance.svg')}
+          link={{ title: 'See Online Courses', link: '/' }}
+        />
+      </PageMargin>
     </div>
   );
 }

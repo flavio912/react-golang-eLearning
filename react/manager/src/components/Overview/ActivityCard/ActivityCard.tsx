@@ -1,54 +1,56 @@
-import * as React from "react";
-import Card, { PaddingOptions } from "../../../sharedComponents/core/Cards/Card";
-import Button from "../../../sharedComponents/core/Input/Button";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
-import StatCircle from "./StatCircle";
-import HeaderOptions from "./HeaderOptions";
-import Graph from "./Graph";
-import UserUpdate, { Update } from "./UserUpdate";
+import * as React from 'react';
+import Card, {
+  PaddingOptions
+} from '../../../sharedComponents/core/Cards/Card';
+import Button from '../../../sharedComponents/core/Input/Button';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
+import StatCircle from './StatCircle';
+import HeaderOptions from './HeaderOptions';
+import Graph from './Graph';
+import UserUpdate, { Update } from './UserUpdate';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
-    display: "grid",
-    gridTemplateColumns: "1fr 50px 1fr",
-    background: "white",
+    display: 'grid',
+    gridTemplateColumns: '1fr 50px 1fr',
+    background: 'white'
   },
   root: {
-    display: "flex",
-    flexDirection: "column",
+    display: 'flex',
+    flexDirection: 'column'
   },
   heading: {
     fontSize: theme.fontSizes.small,
-    color: theme.colors.primaryBlack,
+    color: theme.colors.primaryBlack
   },
   row: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-between",
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-between'
   },
   graph: {
-    display: "flex",
-    alignSelf: "center",
-    justifyContent: "center",
-    margin: "30px 0 45px 0",
+    display: 'flex',
+    alignSelf: 'center',
+    justifyContent: 'center',
+    margin: '30px 0 45px 0'
   },
   button: {
-    alignSelf: "center",
-    marginTop: "50px",
+    alignSelf: 'center',
+    marginTop: '50px'
   },
   marginBottom: {
-    margin: "0 0 15px 0",
+    margin: '0 0 15px 0'
   },
   divider: {
     width: 1,
-    background: theme.colors.borderGrey,
+    background: theme.colors.borderGrey
   },
   dividerHolder: {
-    display: "flex",
-    justifyContent: "center",
-  },
+    display: 'flex',
+    justifyContent: 'center'
+  }
 }));
 
 export interface Statistic {
@@ -80,8 +82,8 @@ function ActvityCard({
   updates,
   data,
   onClick,
-  padding = "none",
-  className,
+  padding = 'none',
+  className
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -107,7 +109,7 @@ function ActvityCard({
 
         <Graph
           className={classNames(classes.graph)}
-          heading="Active Delegates"
+          heading="Current certificates"
           outerValue={data.outerRing.value}
           innerValue={data.innerRing.value}
         />
@@ -133,7 +135,7 @@ function ActvityCard({
         </div>
 
         <Button
-          style={{ alignSelf: "center", marginTop: "50px" }}
+          style={{ alignSelf: 'center', marginTop: '50px' }}
           archetype="submit"
           onClick={() => onClick && onClick()}
         >

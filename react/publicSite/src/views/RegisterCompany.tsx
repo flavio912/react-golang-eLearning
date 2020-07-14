@@ -4,13 +4,15 @@ import classnames from 'classnames';
 import { Theme } from 'helpers/theme';
 import RegisterComp from 'components/Overview/Registration/RegisterCompany';
 import { Router } from 'found';
+import RegistrationCarousel from 'components/Overview/Registration/RegistrationCarousel';
+import { Image } from 'components/Misc/CarouselImage';
 const useStyles = createUseStyles((theme: Theme) => ({
   registerRoot: {
     display: 'grid',
     minHeight: '100%',
     background: 'white',
     gridTemplateColumns: '600px 1fr',
-    '@media (max-width: 800px)': {
+    '@media (max-width: 1000px)': {
       gridTemplateColumns: '1fr'
     }
   },
@@ -23,6 +25,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
+const defaultImage: Image = {
+  url: require('assets/carouselImage.svg'),
+  alt: 'Image'
+};
+
 type Props = {
   router: Router;
 };
@@ -30,6 +37,11 @@ type Props = {
 function RegisterCompany({ router }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const images = [1, 2, 3].map((item) => ({
+    ...defaultImage,
+    alt: `${defaultImage.alt} ${item}`
+  }));
 
   return (
     <div className={classes.registerRoot}>
@@ -41,7 +53,12 @@ function RegisterCompany({ router }: Props) {
           }}
         />
       </div>
-      <div className={classes.fancyBackground}></div>
+      <div className={classes.fancyBackground}>
+        <RegistrationCarousel
+          onBook={() => console.log('Book')}
+          images={images}
+        />
+      </div>
     </div>
   );
 }

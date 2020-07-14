@@ -11,6 +11,7 @@ type Delegate {
   company: Company!
   profileImageUrl: String
   activity(page: Page): ActivityPage
+  activeCourses: [ActiveCourse!]
 }
 
 input CreateDelegateInput {
@@ -22,6 +23,18 @@ input CreateDelegateInput {
   telephone: String
   generatePassword: Boolean
   profileImageUploadToken: String
+}
+
+input UpdateDelegateInput {
+  uuid: UUID!
+  companyUUID: UUID
+  firstName: String
+  lastName: String
+  jobTitle: String
+  email: String
+  telephone: String
+  profileImageUploadToken: String
+  newPassword: String
 }
 
 type CreateDelegateResponse {

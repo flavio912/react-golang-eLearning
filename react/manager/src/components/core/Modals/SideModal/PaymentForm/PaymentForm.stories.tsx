@@ -8,5 +8,11 @@ export default {
 };
 
 export const normal = () => {
-  return <PaymentForm />;
+  return (
+    <PaymentForm
+      onPurchase={() => {}}
+      onSuccess={() => {}}
+      onError={() => {}}
+    />
+  );
 };

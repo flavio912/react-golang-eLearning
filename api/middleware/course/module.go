@@ -8,8 +8,48 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
+
+func filterModule(query *gorm.DB, filter *gentypes.ModuleFilter) *gorm.DB {
+	if filter != nil {
+		if filter.UUID != nil {
+			query = query.Where("uuid = ?", *filter.UUID)
+		}
+
+		if filter.Name != nil && *filter.Name != "" {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+
+		if filter.Description != nil && *filter.Description != "" {
+			query = query.Where("description ILIKE ?", "%%"+*filter.Description+"%%")
+		}
+
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error) {
+	var modules []models.Module
+	utils := dbutils.NewDBUtils(c.Logger)
+
+	pageInfo, err := utils.GetPageOf(
+		&models.Module{},
+		&modules,
+		page,
+		orderBy,
+		[]string{"created_at", "name"},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return filterModule(db, filter)
+		},
+	)
+	pageInfo.Given = int32(len(modules))
+
+	return modules, pageInfo, err
+}
 
 type VideoInput struct {
 	Type gentypes.VideoType
@@ -314,4 +354,42 @@ func (c *coursesRepoImpl) UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes
 	}
 
 	return moduleModel, nil
+}
+
+func (c *coursesRepoImpl) DeleteModule(uuid gentypes.UUID) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var course_structure models.CourseStructure
+	if !tx.Model(&models.CourseStructure{}).Where("module_uuid = ?", uuid).Find(&course_structure).RecordNotFound() {
+		err := errors.ErrUnableToDelete("Cannot delete module that is part of a course")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete module")
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.ModuleStructure{}, "module_uuid = ?", uuid).Error; err != nil {
+		err := errors.ErrUnableToDelete("Unable to delete module structure of module")
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete module: %s", uuid)
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.Module{}, "uuid = ?", uuid).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete module: %s", uuid)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }

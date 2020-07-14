@@ -68,6 +68,8 @@ type Query {
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
   lesson(uuid: UUID!): Lesson
   lessons(page: Page, filter: LessonFilter, orderBy: OrderBy): LessonPage
+  blog(uuid: UUID!): Blog
+  blogs(page: Page, orderBy: OrderBy): BlogPage
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   course(id: Int!): Course
   user: User
@@ -76,7 +78,7 @@ type Query {
   question(uuid: UUID!): Question
   tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
   test(uuid: UUID!): Test
-  # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
+  modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   module(uuid: UUID!): Module
 
   # searchSyllabus(page: Page, filter: SyllabusFilter) // Allows searching modules, lessons and tests

@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import {
   Grid,
-  TextField,
   Card,
   CardHeader,
   CardContent,
   Divider,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
   Typography,
   Radio,
   RadioGroup,
@@ -154,6 +149,7 @@ function Overview({ state, setState }) {
                               <img
                                 src={answer.imageURL}
                                 className={classes.previewImage}
+                                alt="preview"
                               />
                             )}
                             <Typography variant="h6">{answer.text}</Typography>

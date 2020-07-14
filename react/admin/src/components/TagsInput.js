@@ -1,14 +1,5 @@
 import React from 'react';
-import {
-  Card,
-  CardHeader,
-  TextField,
-  CardContent,
-  Button,
-  Grid,
-  Chip,
-  Divider
-} from '@material-ui/core';
+import { TextField, Button, Grid, Chip } from '@material-ui/core';
 import { Autocomplete } from '@material-ui/lab';
 import Proptypes from 'prop-types';
 

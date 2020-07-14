@@ -64,7 +64,8 @@ export type IconNames =
   | 'Twitter_Logo'
   | 'Ups'
   | 'Ups_Grey'
-  | 'Volume';
+  | 'Volume'
+  | 'Arrow_Right_Blue';
 
 const iconNameMap = {
   AddDelegateRepeater: require('../../../assets/AddDelegateRepeater.svg'),
@@ -122,13 +123,15 @@ const iconNameMap = {
   Maersk: require('../../../assets/maersk-logo.svg'),
   Maersk_Grey: require('../../../assets/maersk-logo-grey.png'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Nippon_Express: require("../../../assets/nippon-express-logo.png"),
   Payments_Method: require("../../../assets/Payments_Method.svg"),
   Stripe: require("../../../assets/Stripe.svg"),
   Tick: require("../../../assets/Tick.svg"),
   Twitter_Logo: require("../../../assets/Twitter_Logo.png"),
   Ups: require('../../../assets/ups-logo.svg'),
   Ups_Grey: require('../../../assets/ups-logo-grey.png'),
-  Volume: require('../../../assets/Volume.svg')
+  Volume: require('../../../assets/Volume.svg'),
+  Arrow_Right_Blue: require('../../../assets/Arrow_Right_Blue.svg')
 };
 
 type Props = {

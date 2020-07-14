@@ -1,12 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Grid,
-  TextField,
-  Card,
-  CardHeader,
-  CardContent,
-  Typography
-} from '@material-ui/core';
+import { Card, CardContent, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 
 const useStyles = makeStyles(theme => ({
@@ -32,7 +25,7 @@ function ErrorModal({ error }) {
   if (!show) return false;
   if (!error) return false;
   var message = error.message;
-  if (error.graphQLErrors && error.graphQLErrors.length == 1) {
+  if (error.graphQLErrors && error.graphQLErrors.length === 1) {
     message = error.graphQLErrors[0]?.extensions?.message;
   }
 

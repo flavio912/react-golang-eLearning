@@ -3,8 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
-
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 
@@ -110,6 +108,7 @@ func (r *CompanyResolver) Approved(ctx context.Context) *bool {
 	}
 	return nil
 }
+func (r *CompanyResolver) IsContract() bool { return r.company.IsContract }
 func (r *CompanyResolver) Address(ctx context.Context) (gentypes.Address, error) {
 	return loader.LoadAddress(ctx, r.company.AddressID)
 }
@@ -118,14 +117,9 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 	Filter  *gentypes.ManagersFilter
 	OrderBy *gentypes.OrderBy
 }) (*ManagerPageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &ManagerPageResolver{}, &errors.ErrUnauthorized
-	}
-
 	// TODO: N+1 problem - get it to use dataloaders
-	usersApp := users.NewUsersApp(grant)
-	managers, pageInfo, _ := usersApp.GetManagerIDsByCompany(r.company.UUID, args.Page, args.Filter, args.OrderBy)
+	app := auth.AppFromContext(ctx)
+	managers, pageInfo, _ := app.UsersApp.GetManagerIDsByCompany(r.company.UUID, args.Page, args.Filter, args.OrderBy)
 	resolver, err := NewManagerResolvers(ctx, NewManagersArgs{UUIDs: uuidsToStrings(managers)})
 	if err != nil {
 		glog.Info("Unable to resolve a manager: ")
@@ -138,6 +132,22 @@ func (r *CompanyResolver) Managers(ctx context.Context, args struct {
 			pageInfo: &pageInfo,
 		},
 	}, nil
+}
+func (r *CompanyResolver) Delegates(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	Filter  *gentypes.DelegatesFilter
+	OrderBy *gentypes.OrderBy
+}) (*DelegatePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	delegates, pageInfo, err := app.UsersApp.GetDelegates(args.Page, args.Filter, args.OrderBy)
+
+	if err != nil {
+		return &DelegatePageResolver{}, err
+	}
+	return NewDelegatePageResolver(ctx, NewDelegatePageArgs{
+		Delegates: &delegates,
+		PageInfo:  pageInfo,
+	})
 }
 
 type CompanyPageResolver struct {

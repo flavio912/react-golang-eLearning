@@ -11,6 +11,11 @@ export type OrgOverview_manager = {
     readonly createdAt: string | null;
     readonly company: {
         readonly name: string;
+        readonly delegates: {
+            readonly pageInfo: {
+                readonly total: number;
+            } | null;
+        };
     };
     readonly " $refType": "OrgOverview_manager";
 };
@@ -79,10 +84,39 @@ const node: ReaderFragment = ({
                     "name": "name",
                     "args": null,
                     "storageKey": null
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "delegates",
+                    "storageKey": null,
+                    "args": null,
+                    "concreteType": "DelegatePage",
+                    "plural": false,
+                    "selections": [
+                        {
+                            "kind": "LinkedField",
+                            "alias": null,
+                            "name": "pageInfo",
+                            "storageKey": null,
+                            "args": null,
+                            "concreteType": "PageInfo",
+                            "plural": false,
+                            "selections": [
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "total",
+                                    "args": null,
+                                    "storageKey": null
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         }
     ]
 } as any);
-(node as any).hash = '8de4c1250cbe2f9165688141e5964e3a';
+(node as any).hash = '2b05b70b64616f7cdb49e3058abce406';
 export default node;

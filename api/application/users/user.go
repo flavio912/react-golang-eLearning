@@ -3,6 +3,8 @@ package users
 import (
 	"time"
 
+	"github.com/getsentry/sentry-go"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -94,7 +96,48 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
-func (u *usersAppImpl) ActiveCourses() ([]gentypes.ActiveCourse, error) {
+// ActiveCourses gets the activeCourses for a course taker
+func (u *usersAppImpl) ActiveCourses(takerUUID gentypes.UUID) ([]gentypes.ActiveCourse, error) {
+	var authorized = false
+
+	switch {
+	case u.grant.IsAdmin:
+		authorized = true
+	case u.grant.IsManager:
+		ok, err := u.usersRepository.CompanyManagesCourseTakers(u.grant.Claims.Company, []gentypes.UUID{takerUUID})
+		if err != nil {
+			u.grant.Logger.Log(sentry.LevelError, err, "ActiveCourses error checking if company manages takers")
+			return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
+		}
+
+		if ok {
+			authorized = true
+		}
+	case u.grant.IsDelegate:
+		delegate, _ := u.usersRepository.Delegate(u.grant.Claims.UUID)
+		if delegate.CourseTakerUUID == takerUUID {
+			authorized = true
+		}
+	case u.grant.IsIndividual:
+		individual, _ := u.usersRepository.Individual(u.grant.Claims.UUID)
+		if individual.CourseTakerUUID == takerUUID {
+			authorized = true
+		}
+	}
+
+	if authorized {
+		activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
+		if err != nil {
+			return []gentypes.ActiveCourse{}, &errors.ErrWhileHandling
+		}
+
+		return activeCoursesToGentypes(activeCourses), nil
+	}
+
+	return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
+}
+
+func (u *usersAppImpl) MyActiveCourses() ([]gentypes.ActiveCourse, error) {
 	if !u.grant.IsDelegate && !u.grant.IsIndividual {
 		return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
 	}

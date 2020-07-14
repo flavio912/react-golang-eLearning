@@ -22,14 +22,17 @@ import { ResultItem } from 'components/UserSearch';
 
 const items: ResultItem[] = [
   {
+    uuid: '',
     key: 'Jim Smith',
     value: 'uuid-1'
   },
   {
+    uuid: '',
     key: 'Bruce Willis',
     value: 'uuid-2'
   },
   {
+    uuid: '',
     key: 'Tony Stark',
     value: 'uuid-3'
   }
@@ -244,26 +247,12 @@ export const tabList: TabContent[] = [
     component: ({ state }) => (
       <Body>
         <Payment
-          courses={[
-            {
-              id: 1,
-              name:
-                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
-              price: 55,
-              sku: '082739428374',
-              qty: 2,
-              subtotal: 110
-            },
-            {
-              id: 2,
-              name:
-                'Cargo Operative Screener (COS) Recurrent – VC, HS, XRY, ETD',
-              price: 55,
-              sku: '082739428374',
-              qty: 3,
-              subtotal: 165
-            }
-          ]}
+          courses={state.courses}
+          userUUIDs={[]}
+          isContract={false}
+          onPurchase={() => false}
+          onSuccess={() => {}}
+          onError={() => {}}
         />
       </Body>
     )

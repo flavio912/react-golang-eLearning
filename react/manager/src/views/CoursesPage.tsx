@@ -15,8 +15,7 @@ import CircleBorder from 'sharedComponents/core/CircleBorder';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
-import { CoursesPage_onlineCourses } from './__generated__/CoursesPage_onlineCourses.graphql';
-import { CoursesPage_classroomCourses } from './__generated__/CoursesPage_classroomCourses.graphql';
+import { CoursesPage_courses } from './__generated__/CoursesPage_courses.graphql';
 
 const defaultCourse = {
   type: 'DANGEROUS GOODS AIR',
@@ -48,8 +47,7 @@ const defaultOption: DropdownOption = {
 const defaultOptions = [defaultOption, defaultOption, defaultOption];
 
 type Props = {
-  onlineCourses?: CoursesPage_onlineCourses;
-  classroomCourses?: CoursesPage_classroomCourses;
+  courses?: CoursesPage_courses;
 };
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -78,36 +76,41 @@ const useStyles = createUseStyles((theme: Theme) => ({
   filterRow: {
     margin: '30px 0px',
     justifyContent: 'space-between'
+  },
+  courses: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, 298px)',
+    gridGap: 26
   }
 }));
 
-const CoursesPage = ({ onlineCourses, classroomCourses }: Props) => {
+const CoursesPageComp = ({ courses }: Props) => {
+  console.log('COURSES', courses);
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   // Set card size depending on course type
   const isOnline = true;
 
-  let courses: Course[] = [];
+  let _courses: Course[] = [];
 
-  if (onlineCourses) {
-    courses = onlineCourses.edges.map((course: any) => ({
-      id: course.info.id,
-      type: course.info.category.name,
-      colour: course?.info.category.color,
-      url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
-      title: course.info.name,
-      price: course.info.price,
-      description: course.info.excerpt,
+  if (courses && courses.edges) {
+    _courses = courses.edges.map((course: any) => ({
+      id: course.ident,
+      type: course.category.name,
+      colour: course?.category.color,
+      url:
+        course.bannerImageURL ||
+        '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
+      title: course.name,
+      price: course.price,
+      description: course.excerpt,
       assigned: 40,
       expiring: 9,
       modules: 5,
       lessons: 5,
       video_time: 5
     }));
-  }
-  if (classroomCourses) {
-    // Todo
   }
 
   // Dropdown states
@@ -151,11 +154,10 @@ const CoursesPage = ({ onlineCourses, classroomCourses }: Props) => {
           </div>
         </div>
       </div>
-      <div className={classNames(classes.row, classes.spaceEvenly)}>
-        {courses &&
-          courses.map((course) => (
+      <div className={classNames(classes.spaceEvenly, classes.courses)}>
+        {_courses &&
+          _courses.map((course) => (
             <CourseCard
-              className={classes.course}
               course={course}
               onClick={() => console.log('Pressed')}
               size={isOnline ? 'small' : 'large'}
@@ -176,22 +178,20 @@ const CoursesPage = ({ onlineCourses, classroomCourses }: Props) => {
   );
 };
 
-export const OnlineCoursesPage = createFragmentContainer(CoursesPage, {
-  onlineCourses: graphql`
-    fragment CoursesPage_onlineCourses on OnlineCoursePage {
+const CoursesPage = createFragmentContainer(CoursesPageComp, {
+  courses: graphql`
+    fragment CoursesPage_courses on CoursePage {
       edges {
-        uuid
-        info {
-          id
+        ident: id
+        name
+        color
+        excerpt
+        price
+        category {
           name
           color
-          excerpt
-          price
-          category {
-            name
-            color
-          }
         }
+        bannerImageURL
       }
       pageInfo {
         total
@@ -203,18 +203,4 @@ export const OnlineCoursesPage = createFragmentContainer(CoursesPage, {
   `
 });
 
-export const ClassroomCoursesPage = createFragmentContainer(CoursesPage, {
-  classroomCourses: graphql`
-    fragment CoursesPage_classroomCourses on ClassroomCoursePage {
-      edges {
-        uuid
-      }
-      pageInfo {
-        total
-        offset
-        limit
-        given
-      }
-    }
-  `
-});
+export default CoursesPage;
