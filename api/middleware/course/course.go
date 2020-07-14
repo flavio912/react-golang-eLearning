@@ -485,6 +485,10 @@ func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.SqlEx
 		excludeTest   = filter != nil && (filter.ExcludeTest != nil && *filter.ExcludeTest)
 	)
 
+	if excludeModule && excludeLesson && excludeTest {
+		return nil
+	}
+
 	// WARNING: Raw PostgreSQL area, proceed cautiously (18+)
 
 	// Distinct to avoid a syllabus that has name similar to its tag name
@@ -556,6 +560,15 @@ func (c *coursesRepoImpl) SearchSyllabus(
 
 	query := database.GormDB
 	sub := filterSyllabus(query, filter)
+
+	if sub == nil {
+		return results, gentypes.PageInfo{
+			Total:  0,
+			Offset: 0,
+			Limit:  0,
+			Given:  0,
+		}, nil
+	}
 
 	var count int32
 	if err := query.Raw("SELECT count(*) FROM ? as simp", sub).Count(&count).Error; err != nil {

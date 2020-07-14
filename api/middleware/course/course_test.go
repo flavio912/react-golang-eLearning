@@ -311,6 +311,13 @@ func TestSearchSyllabus(t *testing.T) {
 			false,
 			5,
 		},
+		{
+			"none",
+			true,
+			true,
+			true,
+			0,
+		},
 	}
 	for _, test := range tests {
 		t.Run(fmt.Sprintf("Should filter to search for %s only", test.name), func(t *testing.T) {
