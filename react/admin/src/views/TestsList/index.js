@@ -5,7 +5,6 @@ import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
 import Results from './Results';
-import useRouter from 'src/utils/useRouter';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 
