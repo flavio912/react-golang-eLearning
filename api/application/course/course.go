@@ -164,3 +164,15 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 		},
 	}, nil
 }
+
+func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return false, err
+	}
+
+	return c.coursesRepository.DeleteCourse(uint(input.ID))
+}

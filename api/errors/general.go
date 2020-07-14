@@ -165,4 +165,10 @@ var (
 		Type:    "ErrNotEnoughAnswersGiven",
 		Message: "Not enough answers were given to complete the test, please try again",
 	}
+	ErrUnableToDelete = func(message string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrUnableToDelete",
+			Message: message,
+		}
+	}
 )

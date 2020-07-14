@@ -1,5 +1,7 @@
 package gentypes
 
+import "github.com/asaskevich/govalidator"
+
 type AccessType string
 
 const (
@@ -91,4 +93,13 @@ type PurchaseCoursesInput struct {
 type PurchaseCoursesResponse struct {
 	TransactionComplete bool
 	StripeClientSecret  *string
+}
+
+type DeleteCourseInput struct {
+	ID int32 `valid:"required"`
+}
+
+func (d *DeleteCourseInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
+	return err
 }

@@ -548,3 +548,8 @@ func (m *MutationResolver) AnswerImageUploadRequest(
 		SuccessToken: successToken,
 	}, err
 }
+
+func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input gentypes.DeleteCourseInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.DeleteCourse(args.Input)
+}

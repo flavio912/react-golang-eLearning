@@ -1369,3 +1369,42 @@ func TestCreateTest(t *testing.T) {
 		},
 	})
 }
+
+func TestDeleteCourse(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "delete course",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteCourse(input: {
+						id: 3
+					})
+				}
+			`,
+			ExpectedResult: `
+				{
+					"deleteCourse": true
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				deleteCourse(input: {
+					id: 1
+				})
+			}
+		`,
+		Path:            []interface{}{"deleteCourse"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}

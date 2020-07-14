@@ -21,6 +21,7 @@ type CoursesRepository interface {
 	Course(courseID uint) (models.Course, error)
 	Courses(courseIDs []uint) ([]models.Course, error)
 	UpdateCourse(courseID uint, infoChanges CourseInput) (models.Course, error)
+	DeleteCourse(ID uint) (bool, error)
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
 	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
@@ -467,4 +468,36 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 	}
 
 	return []models.CourseStructure{}, nil
+}
+
+func (c *coursesRepoImpl) DeleteCourse(ID uint) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "DeleteCourse: Forced to recover")
+		}
+	}()
+	// if there's an active course, that means a course has courseTaker(s)
+	var active_course models.ActiveCourse
+	if tx.Model(&models.ActiveCourse{}).Where("course_id = ?", ID).Find(&active_course).Error == nil {
+		err := errors.ErrUnableToDelete("Cannot delete an active course")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete course")
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.Course{}, "id = ?", ID).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Cannot delete course: %d", ID)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }
