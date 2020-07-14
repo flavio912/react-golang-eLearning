@@ -13,8 +13,9 @@ import {
   TableHead,
   TableRow,
   Chip,
-  Button
+  Button,
 } from '@material-ui/core';
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -100,13 +101,12 @@ function Results({ className, modules, ...rest }) {
               </TableCell>
               <TableCell>
                 <Button
-                  color="primary"
+                  color="default"
                   component={RouterLink}
                   size="small"
                   to={`/module/${module.uuid}/overview`}
-                  variant="outlined"
                 >
-                  Edit
+                  <CreateOutlinedIcon />
                 </Button>
               </TableCell>
             </TableRow>

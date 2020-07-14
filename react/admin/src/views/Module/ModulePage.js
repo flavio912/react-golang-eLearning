@@ -32,7 +32,8 @@ function ModulePage({
   setState,
   currentTab,
   error,
-  onSave,
+  onSaveDraft,
+  onPublish,
   history,
   title
 }) {
@@ -46,7 +47,7 @@ function ModulePage({
     <Page className={classes.root} title={title}>
       <ErrorModal error={error} />
       <Container maxWidth={false}>
-        <Header onSaveDraft={onSave} title={title} />
+        <Header onSaveDraft={onSaveDraft} onPublish={onPublish} title={title} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -64,10 +65,10 @@ function ModulePage({
             <Overview state={state} setState={setState} />
           )}
           {currentTab === 'audiovideo' && (
-            <AudioVideo />
+            <AudioVideo state={state} setState={setState} />
           )}
           {currentTab === 'modulebuilder' && (
-            <ModuleBuilder />
+            <ModuleBuilder state={state} setState={setState} />
           )}
         </div>
       </Container>

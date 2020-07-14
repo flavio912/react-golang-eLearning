@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   Card,
@@ -22,10 +22,6 @@ const useStyles = makeStyles(theme => ({
 function Overview({ state, setState }) {
   const classes = useStyles();
 
-  const onChange=()=>{};
-  const [name, setName] = React.useState();
-  const [description, setDescription] = React.useState();
-
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -36,24 +32,24 @@ function Overview({ state, setState }) {
                 <CardHeader title="About this Module" />
                 <Divider />
                 <CardContent>
-                    <Grid container spacing={4} direction={'column'}>
+                  <Grid container spacing={4} direction={'column'}>
                     <Grid item>
-                        <TextField
+                      <TextField
                         fullWidth
                         label="Module Name"
                         name="modulename"
                         onChange={inp => {
-                            onChange(inp.target.value);
+                            setState('name', inp.target.value);
                         }}
                         placeholder="e.g. Fire Safety Module 1"
-                        value={name}
+                        value={state.name}
                         variant="outlined"
-                        />
+                      />
                     </Grid>
                     <Grid item>
-                    <TagsInput />
+                      <TagsInput onChange={(tags) => setState('tags', tags)} />
                     </Grid>
-                    </Grid>
+                  </Grid>
                 </CardContent>
                 </Card>
             </Grid>
@@ -67,9 +63,9 @@ function Overview({ state, setState }) {
                     multiline
                     className={classes.shortDescription}
                     rows={5}
-                    value={description}
+                    value={state.description}
                     onChange={inp => {
-                        setDescription(inp.target.value);
+                      setState('description', inp.target.value);
                     }}
                     placeholder="Description"
                     variant="outlined"
@@ -80,24 +76,24 @@ function Overview({ state, setState }) {
             </Grid>
         </Grid>
         <Grid item xs={4}>
-        <Card>
-                <CardHeader title="Module Banner Image" />
-                <Divider />
-                <CardContent>
-                    <TextField
-                    label=""
-                    multiline
-                    className={classes.shortDescription}
-                    rows={5}
-                    value={description}
-                    onChange={inp => {
-                        setDescription(inp.target.value);
-                    }}
-                    placeholder="Description"
-                    variant="outlined"
-                    />
-                </CardContent>
-                </Card>
+          <Card>
+            <CardHeader title="Module Banner Image" />
+            <Divider />
+            <CardContent>
+              <TextField
+                label=""
+                multiline
+                className={classes.shortDescription}
+                rows={5}
+                value={state.bannerImageSuccessToken}
+                onChange={inp => {
+                    setState('bannerImageSuccessToken', inp.target.value);
+                }}
+                placeholder="Description"
+                variant="outlined"
+              />
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </div>

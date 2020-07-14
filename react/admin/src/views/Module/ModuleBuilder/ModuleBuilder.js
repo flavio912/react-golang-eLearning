@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   Card,
@@ -14,7 +14,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function ModuleBuilder({}) {
+function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
   return (

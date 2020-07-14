@@ -4,23 +4,30 @@ import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import ModulePage from './ModulePage';
 
-const CREATE_QUESTION = gql`
-  mutation CreateQuestion(
-    $text: String!
-    $randomise: Boolean!
-    $answers: [CreateBasicAnswerInput!]!
-    $tags: [UUID!]!
+const CREATE_MODULE = gql`
+  mutation PublishModule(
+    $name: String!
+    $tags: [UUID!]
+    $description: String!
+    $transcript: String!
+    $bannerImageSuccessToken: String
+    $voiceoverSuccessToken: String
+    $video: VideoInput
+    $syllabus: [ModuleItem!]
   ) {
-    createQuestion(
+    createModule(
       input: {
-        text: $text
-        randomiseAnswers: $randomise
-        questionType: SINGLE_CHOICE
-        answers: $answers
+        name: $name
         tags: $tags
+        description: $description
+        transcript: $transcript
+        bannerImageSuccessToken: $bannerImageSuccessToken
+        voiceoverSuccessToken: $voiceoverSuccessToken
+        video: $video
+        syllabus: $syllabus
       }
     ) {
-      question {
+      module {
         uuid
       }
     }
@@ -37,39 +44,50 @@ function CreateQuestion({ match, history }) {
 
   var initState = {
     name: '',
-    randomise: false,
-    answers: [],
-    tags: []
+    tags: [],
+    description: '',
+    transcript: '',
+    bannerImageSuccessToken: '',
+    voiceoverSuccessToken: '',
+    video: '',
+    syllabus: []
   };
 
   const [state, setState] = useState(initState);
-  //const [createQuestion, { error }] = useMutation(CREATE_QUESTION);
-  const error = {};
+  const [createModule, { error }] = useMutation(CREATE_MODULE);
   const updateState = (item, value) => {
     var updatedState = { ...state, [item]: value };
     setState(updatedState);
   };
 
-  const onSave = async () => {
-    /*try {
-      const res = await createQuestion({
+  const onSaveDraft = async () => {
+    try {
+      const res = await createModule({
         variables: {
-          text: state.name,
-          randomise: state.randomise,
-          answers: state.answers,
-          tags: state.tags
+          name: this.state.name,
+          tags: this.state.tags,
+          description: this.state.description,
+          transcript: this.state.transcript,
+          bannerImageSuccessToken: this.state.bannerImageSuccessToken,
+          voiceoverSuccessToken: this.state.voiceoverSuccessToken,
+          video: this.state.video,
+          syllabus: this.state.syllabus
         }
       });
-      if (res.data?.createQuestion?.question?.uuid) {
-        history.push(`/question/${res.data?.createQuestion?.question?.uuid}`);
+      if (res.data?.createModule?.module?.uuid) {
+        history.push(`/module/${res.data?.createModule?.module?.uuid}/overview`);
       } else {
         console.warn('Unable to get save params');
       }
-      console.log('REsp', res);
+      console.log('Resp', res);
     } catch ({ graphQLErrors, networkError }) {
       console.log('ERR', graphQLErrors);
-    }*/
+    }
   };
+
+  const onPublish = async () => {
+
+  }
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
@@ -81,7 +99,8 @@ function CreateQuestion({ match, history }) {
       setState={updateState}
       currentTab={currentTab}
       error={error}
-      onSave={onSave}
+      onSaveDraft={onSaveDraft}
+      onPublish={onPublish}
       history={history}
       tabs={tabs}
       title="Create Module"

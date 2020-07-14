@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   Card,
@@ -29,13 +29,8 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function AudioVideo({}) {
+function AudioVideo({ state, setState }) {
   const classes = useStyles();
-  const onChange=()=>{};
-  const [name, setName] = React.useState();
-  const [description, setDescription] = React.useState();
-  const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
-  const [filename, setFilename] = React.useState('temp file name.mp3');
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -47,10 +42,10 @@ function AudioVideo({}) {
                 <CardHeader title="Audio Voiceover" />
                   <Grid item>
                     <Autocomplete
-                      options={categoryOptions}
+                      options={state.tags}
                       getOptionLabel={option => option.title}
                       onChange={(event, newValue) => {
-                          onChange(newValue.value);
+                          setState('voiceoverSuccessToken', newValue.value);
                       }}
                       renderInput={params => (
                           <TextField
@@ -63,16 +58,16 @@ function AudioVideo({}) {
                     />
                     
                   </Grid>
-                  <Grid item spacing={2}>
+                  <Grid item>
                     <Button variant="contained">
                       Upload MP3
                     </Button>
                     <Typography
                       variant="body2"
-                      color="textPrimary"
+                      color="textSecondary"
                       className={classes.filename}
                     >
-                      {filename}
+                      {state.voiceoverSuccessToken}
                     </Typography>
                  </ Grid>
                   <Grid item>
@@ -81,10 +76,10 @@ function AudioVideo({}) {
                   <CardHeader title="Video Source" />
                   <Grid item>
                     <Autocomplete
-                      options={categoryOptions}
+                      options={state.tags}
                       getOptionLabel={option => option.title}
                       onChange={(event, newValue) => {
-                          onChange(newValue.value);
+                          setState('video', newValue.value);
                       }}
                       renderInput={params => (
                           <TextField
@@ -111,10 +106,10 @@ function AudioVideo({}) {
                       label=""
                       name="modulename"
                       onChange={inp => {
-                          onChange(inp.target.value);
+                          setState('voiceoverSuccessToken', inp.target.value);
                       }}
                       placeholder="Enter Wisita Video URL"
-                      value={name}
+                      value={state.voiceoverSuccessToken}
                       variant="outlined"
                     />
                   </Grid>
@@ -132,9 +127,9 @@ function AudioVideo({}) {
                   multiline
                   className={classes.shortDescription}
                   rows={5}
-                  value={description}
+                  value={state.transcript}
                   onChange={inp => {
-                      setDescription(inp.target.value);
+                      setState('transcript', inp.target.value);
                   }}
                   placeholder="Description"
                   variant="outlined"
