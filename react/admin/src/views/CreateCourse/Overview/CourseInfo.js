@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   Card,
   CardHeader,
@@ -8,14 +8,44 @@ import {
   Grid,
   Divider
 } from '@material-ui/core';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { Autocomplete } from '@material-ui/lab';
 import TagsInput from 'src/components/TagsInput';
+import ErrorModal from 'src/components/ErrorModal';
+
+const GET_CATEGORIES = gql`
+  query GetCategories($limit: Int!, $text: String) {
+    categories(page: { limit: $limit }, text: $text) {
+      edges {
+        uuid
+        name
+        color
+      }
+    }
+  }
+`;
 
 function CourseInfo({ state, setState }) {
-  const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
+  let categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
+
+  const { loading, error, data, refetch } = useQuery(GET_CATEGORIES, {
+    variables: {
+      limit: 100
+    },
+    fetchPolicy: 'cache-and-network'
+  });
+
+  if (!loading && !error) {
+    categoryOptions = data.categories.edges.map(category => ({
+      title: category.name,
+      value: category.uuid
+    }));
+  }
 
   return (
     <Card>
+      <ErrorModal error={error} />
       <CardHeader title={'Course Info'} />
       <Divider />
       <CardContent>
@@ -38,6 +68,7 @@ function CourseInfo({ state, setState }) {
               <Grid item xs={11}>
                 <Autocomplete
                   options={categoryOptions}
+                  loading={loading}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
                     setState({ primaryCategory: newValue.value });

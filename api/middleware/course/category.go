@@ -15,7 +15,7 @@ func (c *coursesRepoImpl) Categories(page *gentypes.Page, text *string) ([]model
 		&models.Category{},
 		&categories,
 		page,
-		&gentypes.OrderBy{},
+		nil,
 		[]string{},
 		"created_at DESC",
 		func(db *gorm.DB) *gorm.DB {
