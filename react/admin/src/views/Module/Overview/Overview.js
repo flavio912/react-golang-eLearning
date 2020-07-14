@@ -9,6 +9,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import TagsInput from 'src/components/TagsInput';
+import FilesDropzone from 'src/components/FilesDropzone';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -80,18 +81,7 @@ function Overview({ state, setState }) {
             <CardHeader title="Module Banner Image" />
             <Divider />
             <CardContent>
-              <TextField
-                label=""
-                multiline
-                className={classes.shortDescription}
-                rows={5}
-                value={state.bannerImageSuccessToken}
-                onChange={inp => {
-                    setState('bannerImageSuccessToken', inp.target.value);
-                }}
-                placeholder="Description"
-                variant="outlined"
-              />
+              <FilesDropzone />
             </CardContent>
           </Card>
         </Grid>
