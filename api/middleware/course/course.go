@@ -6,7 +6,6 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
-	"github.com/golang/glog"
 	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -164,7 +163,6 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 
 	if infoChanges.Name != nil {
-		glog.Errorf("GOT name update: %s", *infoChanges.Name)
 		updates["name"] = *infoChanges.Name
 	}
 	if infoChanges.Price != nil {
@@ -447,38 +445,6 @@ func (c *coursesRepoImpl) GetCourses(page *gentypes.Page, filter *gentypes.Cours
 		Limit:  limit,
 		Given:  int32(len(courses)),
 	}, nil
-}
-
-// ManyOnlineCourseStructures maps many given onlineCourseUUID to a slice of their respective course structures
-func (c *coursesRepoImpl) ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error) {
-	var structureItems []models.CourseStructure
-	query := database.GormDB.Where("online_course_uuid IN (?)", onlineCourseUUIDs).Order("online_course_uuid, rank ASC").Find(&structureItems)
-	if query.Error != nil {
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get online course structures")
-		return map[gentypes.UUID][]models.CourseStructure{}, &errors.ErrWhileHandling
-	}
-
-	var syllabuses = make(map[gentypes.UUID][]models.CourseStructure)
-	for _, item := range structureItems {
-		id := item.OnlineCourseUUID
-		syllabuses[id] = append(syllabuses[id], item)
-	}
-
-	return syllabuses, nil
-}
-
-// OnlineCourseStructure gets ordered structure items for a course
-func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error) {
-	structures, err := c.ManyOnlineCourseStructures([]gentypes.UUID{onlineCourseUUID})
-	if err != nil {
-		return []models.CourseStructure{}, err
-	}
-
-	if _, ok := structures[onlineCourseUUID]; ok {
-		return structures[onlineCourseUUID], nil
-	}
-
-	return []models.CourseStructure{}, nil
 }
 
 func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.SqlExpr {
