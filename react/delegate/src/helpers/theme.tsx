@@ -2,7 +2,8 @@ const spacing = {
   0: 5,
   1: 10,
   2: 20,
-  3: 50
+  3: 50,
+  4: 70
 };
 
 export type Theme = {
@@ -34,6 +35,8 @@ export type Theme = {
     approxIron: string;
     approxZircon: string;
     secondaryDanger: string;
+    textNavyBlue: string;
+    textSolitude: string;
   };
   shadows: {
     primary: string;
@@ -82,7 +85,9 @@ const theme: Theme = {
     blueRibbon: '#0E5AF9',
     approxIron: '#CCCDCD',
     approxZircon: '#E9EBEB',
-    secondaryDanger: '#DB5C5D'
+    secondaryDanger: '#DB5C5D',
+    textNavyBlue: '#6BAAE7',
+    textSolitude: '#DFEEFD'
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
