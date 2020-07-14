@@ -1,0 +1,60 @@
+type BlogAuthor {
+  firstName: String!
+  lastName: String!
+  profilePicURL: String
+}
+
+type Blog {
+  createdAt: String!
+  updatedAt: String
+  uuid: UUID!
+  title: String!
+  body: String!
+  category: Category!
+  headerImageURL: String!
+  author: BlogAuthor!
+  blogBodyImages: [BlogImage!]
+}
+
+type BlogImage {
+  jsonID: String!
+  url: String!
+}
+
+type BlogPage implements PaginatedQuery {
+  edges: [Blog]
+  pageInfo: PageInfo
+}
+
+input BlogImageInput {
+  jsonID: String!
+  token: String!
+}
+
+input CreateBlogInput {
+  title: String!
+  body: String!
+  categoryUUID: UUID!
+  headerImageToken: String
+  authorUUID: UUID
+  bodyImages: [BlogImageInput!]
+}
+
+input UpdateBlogImageInput {
+  jsonID: String!
+  token: String
+}
+
+input UpdateBlogInput {
+  uuid: UUID!
+  title: String
+  body: String
+  categoryUUID: UUID
+  headerImageToken: String
+  bodyImages: [UpdateBlogImageInput!]
+}
+
+input UpdateBlogHeaderImageInput {
+  fileSucess: UploadFileSuccess!
+  blogUUID: UUID!
+}

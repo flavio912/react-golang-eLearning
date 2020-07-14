@@ -36,6 +36,8 @@ type CourseApp interface {
 		filter *gentypes.LessonFilter,
 		orderBy *gentypes.OrderBy,
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
+	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
+	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 	Tests(

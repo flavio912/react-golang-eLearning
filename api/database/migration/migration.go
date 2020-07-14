@@ -35,6 +35,8 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
+	database.GormDB.AutoMigrate(&models.Blog{})
+	database.GormDB.AutoMigrate(&models.BlogImage{})
 
 	database.GormDB.Model(&models.OnlineCourse{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
 	database.GormDB.Model(&models.ClassroomCourse{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
