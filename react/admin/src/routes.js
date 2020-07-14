@@ -103,6 +103,21 @@ export default [
         component: lazy(() => import('src/views/OrderManagementDetails'))
       },
       {
+        path: '/admins',
+        exact: true,
+        component: lazy(() => import('src/views/AdminsList'))
+      },
+      {
+        path: '/admins/:id',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
+        path: '/admins/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
         path: '/tutors',
         exact: true,
         component: TutorsView

@@ -51,6 +51,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type ResultItem = {
+  uuid: string;
   value: string;
   key: string;
 };
@@ -114,7 +115,7 @@ function UserSearch({
   };
 
   const onOpenDelegate = () => {
-    router.push('/app/delegates/asda');
+    router.push('/app/delegates/' + selection?.uuid);
   };
   return (
     <div>

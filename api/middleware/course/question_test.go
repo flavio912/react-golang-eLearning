@@ -119,3 +119,30 @@ func TestUpdateQuestion(t *testing.T) {
 		assert.Equal(t, *answerArgs[2].IsCorrect, answers[2].IsCorrect)
 	})
 }
+
+func TestDeleteQuestion(t *testing.T) {
+	t.Run("Should not delete question that is part of a test", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("d8ff8501-4381-4217-a332-8e87a64b968c")
+		b, err := courseRepo.DeleteQuestion(uuid)
+
+		assert.NotNil(t, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Deletes existing question", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("ba070bfb-d3d0-4ff7-a35d-6263180a43f9")
+		b, err := courseRepo.DeleteQuestion(uuid)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		var answers []models.BasicAnswer
+		database.GormDB.Table("basic_answers").Where("question_uuid = ?", uuid).Find(&answers)
+
+		assert.Len(t, answers, 0)
+	})
+}

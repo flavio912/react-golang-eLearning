@@ -39,7 +39,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 const courseRowEmpty = (EmptyComponent: React.ReactElement) => ({
-  key: -1,
+  key: '-1',
   cells: [
     {
       component: () => EmptyComponent,
@@ -96,23 +96,59 @@ const courseRow = (
 
 const defaultFilterCourseOptions: DropdownOption[] = [];
 
+type Course = {
+  title: string;
+  categoryName: string;
+  progress: {
+    total: number;
+    completed: number;
+  };
+  attempt: number;
+  status: {
+    isComplete: boolean;
+    expires?: string;
+  };
+  onClick: () => void;
+};
+
 type Props = {
   EmptyComponent: React.ReactElement;
   bookCourseHandler?: Function;
   className?: string;
   rowClicked: () => void | undefined;
+  courses: Course[];
 };
 
 const CourseTable = ({
   EmptyComponent,
   bookCourseHandler,
   className,
+  courses,
   rowClicked
 }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [filterCourse, setFilterCourse] = React.useState<DropdownOption>();
 
+  let courseRows: TableRow[] = [];
+  if (courses.length > 0) {
+    courseRows = courses.map((course, index) =>
+      courseRow(
+        String(index),
+        course.title,
+        course.onClick,
+        course.categoryName,
+        course.progress.total,
+        course.progress.completed,
+        String(course.attempt),
+        course.status.isComplete,
+        course.status.expires,
+        classes
+      )
+    );
+  } else {
+    courseRows = [courseRowEmpty(EmptyComponent)];
+  }
   return (
     <div className={classnames(classes.root, className)}>
       <div className={classes.sectionTitleWrapper}>
@@ -138,32 +174,7 @@ const CourseTable = ({
           'ATTEMPT',
           'STATUS'
         ]}
-        rows={[
-          courseRow(
-            '1',
-            'Dangerous Goods by Road Awareness',
-            rowClicked,
-            'DANGEROUS GOODS(ROAD)',
-            80,
-            32,
-            '1',
-            false,
-            '',
-            classes
-          ),
-          courseRow(
-            '2',
-            'Dangerous Goods by Road Awareness',
-            rowClicked,
-            'DANGEROUS GOODS(ROAD)',
-            80,
-            32,
-            '1',
-            true,
-            '20/02/2022',
-            classes
-          )
-        ]}
+        rows={courseRows}
       />
       {bookCourseHandler && (
         <div

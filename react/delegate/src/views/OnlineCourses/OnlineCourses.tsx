@@ -7,6 +7,7 @@ import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import CourseCard from 'sharedComponents/Overview/CourseCard';
 import { Course } from 'sharedComponents/Overview/CourseCard/CourseCard';
 import Paginator from 'sharedComponents/Pagination/Paginator';
+import Button from 'sharedComponents/core/Input/Button';
 import { useRouter } from 'found';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { OnlineCourses_user } from './__generated__/OnlineCourses_user.graphql';
@@ -15,8 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   onlineCoursesRoot: {
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1,
-    maxWidth: 1275
+    flexGrow: 1
   },
   mainHeading: {
     gridArea: 'headin'
@@ -42,6 +42,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   page: {
     marginTop: theme.spacing(3)
+  },
+  subFilters: {
+    display: 'flex'
+  },
+  filterButton: {
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -84,19 +90,6 @@ function OnlineCourses({ className, user }: Props) {
 
   const filterOptions = [defaultOption];
 
-  let courses = [defaultCourse, defaultCourse, defaultCourse, defaultCourse];
-
-  if (selectedOption == selectOptions[0]) {
-    courses = [
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse
-    ];
-  }
-
   return (
     <div className={classes.onlineCoursesRoot}>
       <Heading
@@ -118,13 +111,21 @@ function OnlineCourses({ className, user }: Props) {
           }}
           className={classes.selectButton}
         />
-        <Dropdown
-          options={filterOptions}
-          placeholder={'Show Categories'}
-          setSelected={() => {
-            //
-          }}
-        />
+        <div className={classes.subFilters}>
+          <Button
+            archetype={'default'}
+            icon={{ right: 'FilterAdjust' }}
+            children={'Filters'}
+            className={classes.filterButton}
+          />
+          <Dropdown
+            options={filterOptions}
+            placeholder={'Show Categories'}
+            setSelected={() => {
+              //
+            }}
+          />
+        </div>
       </div>
       <div className={classes.courseHolder}>
         {user?.activeCourses?.map((course, index) => (
@@ -136,7 +137,7 @@ function OnlineCourses({ className, user }: Props) {
               type: 'Online Course',
               colour: course.course.color ?? '',
               description: course.course.excerpt ?? '',
-              url: ''
+              url: course.course.bannerImageURL ?? ''
             }}
             onClick={() => {
               router.push('/app/courses/1');
@@ -165,11 +166,12 @@ export default createFragmentContainer(OnlineCourses, {
       firstName
       activeCourses {
         course {
+          ident: id
           name
           excerpt
           color
           type
-          ident: id
+          bannerImageURL
         }
         currentAttempt
       }

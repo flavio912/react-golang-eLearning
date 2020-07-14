@@ -25,10 +25,31 @@ func (l *LessonFilter) Validate() error {
 type CreateLessonInput struct {
 	Name string `valid:"required"`
 	Tags *[]UUID
-	Text string `valid:"json"`
+	Text string
 }
 
 func (c *CreateLessonInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
+	return err
+}
+
+type UpdateLessonInput struct {
+	UUID UUID `valid:"required"`
+	Name *string
+	Text *string
+	Tags *[]UUID
+}
+
+func (u *UpdateLessonInput) Validate() error {
+	_, err := govalidator.ValidateStruct(u)
+	return err
+}
+
+type DeleteLessonInput struct {
+	UUID UUID `valid:"required"`
+}
+
+func (d *DeleteLessonInput) Validate() error {
+	_, err := govalidator.ValidateStruct(d)
 	return err
 }

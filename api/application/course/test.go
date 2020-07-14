@@ -237,3 +237,11 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 // if err != nil {
 // 	return false, &errors.ErrWhileHandling
 // }
+
+func (c *courseAppImpl) DeleteTest(input gentypes.DeleteTestInput) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	return c.coursesRepository.DeleteTest(input.UUID)
+}

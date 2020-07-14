@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 1cd6bfcb53b6e69d68ef8e1b16bc6efd */
+/* @relayHash fc2b0f4a32ac5c0dd6d70c25d78026ea */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -43,6 +43,7 @@ fragment CoursesPage_courses on CoursePage {
       name
       color
     }
+    bannerImageURL
   }
   pageInfo {
     total
@@ -165,6 +166,13 @@ const node: ConcreteRequest = (function () {
                                         (v2 /*: any*/),
                                         (v3 /*: any*/)
                                     ]
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "bannerImageURL",
+                                    "args": null,
+                                    "storageKey": null
                                 }
                             ]
                         },
@@ -215,7 +223,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Courses_Query",
             "id": null,
-            "text": "query App_Courses_Query(\n  $page: Page\n) {\n  courses(page: $page) {\n    ...CoursesPage_courses\n  }\n}\n\nfragment CoursesPage_courses on CoursePage {\n  edges {\n    ident: id\n    name\n    color\n    excerpt\n    price\n    category {\n      name\n      color\n    }\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n",
+            "text": "query App_Courses_Query(\n  $page: Page\n) {\n  courses(page: $page) {\n    ...CoursesPage_courses\n  }\n}\n\nfragment CoursesPage_courses on CoursePage {\n  edges {\n    ident: id\n    name\n    color\n    excerpt\n    price\n    category {\n      name\n      color\n    }\n    bannerImageURL\n  }\n  pageInfo {\n    total\n    offset\n    limit\n    given\n  }\n}\n",
             "metadata": {}
         }
     } as any;

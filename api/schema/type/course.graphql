@@ -47,6 +47,7 @@ type Course {
   category: Category
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
+  bannerImageURL: String
 }
 
 type CoursePage implements PaginatedQuery {
@@ -138,6 +139,10 @@ type PurchaseCoursesResponse {
 type SearchSyllabusResult implements PaginatedQuery {
   edges: [SyllabusItem!]
   pageInfo: PageInfo
+}
+
+input DeleteCourseInput {
+  id: Int!
 }
 
 # [ EXAMPLE COURSE STRUCTURE

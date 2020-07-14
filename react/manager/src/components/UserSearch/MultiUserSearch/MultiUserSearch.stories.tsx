@@ -1,26 +1,29 @@
-import * as React from "react";
-import MultiUserSearch from "./MultiUserSearch";
-import { withKnobs } from "@storybook/addon-knobs";
-import { ResultItem } from "../UserSearch";
+import * as React from 'react';
+import MultiUserSearch from './MultiUserSearch';
+import { withKnobs } from '@storybook/addon-knobs';
+import { ResultItem } from '../UserSearch';
 
 export default {
-  title: "Search/MultiUserSearch",
-  decorators: [withKnobs],
+  title: 'Search/MultiUserSearch',
+  decorators: [withKnobs]
 };
 
 const items: ResultItem[] = [
   {
-    key: "Jim Smith",
-    value: "uuid-1",
+    uuid: '',
+    key: 'Jim Smith',
+    value: 'uuid-1'
   },
   {
-    key: "Bruce Willis",
-    value: "uuid-2",
+    uuid: '',
+    key: 'Bruce Willis',
+    value: 'uuid-2'
   },
   {
-    key: "Tony Stark",
-    value: "uuid-3",
-  },
+    uuid: '',
+    key: 'Tony Stark',
+    value: 'uuid-3'
+  }
 ];
 
 const searchFunc = async (query: string) => {
@@ -30,7 +33,9 @@ const searchFunc = async (query: string) => {
 };
 
 const Wrapper = () => {
-  const [users, setUsers] = React.useState<(ResultItem | undefined)[]>([undefined]);
+  const [users, setUsers] = React.useState<(ResultItem | undefined)[]>([
+    undefined
+  ]);
   return (
     <MultiUserSearch
       searchFunction={searchFunc}

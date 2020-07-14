@@ -27,14 +27,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   questionText: {
     height: 86,
-    width: 682,
     paddingLeft: 20.5,
     paddingRight: 29,
     paddingTop: 24.5,
     paddingBottom: 24.5,
     display: 'flex',
     alignItems: 'center',
-    margin: [24, 0],
+    margin: [12, 0],
     cursor: 'pointer',
     position: 'relative',
     '& span': {
@@ -146,7 +145,7 @@ const OptionTextEle = ({
   <div
     key={index}
     className={classNames(classes.questionItem, classes.questionText, {
-      [classes.questionSelected]: isSelected
+      [classes.optionSelected]: isSelected
     })}
     onClick={onClick}
   >

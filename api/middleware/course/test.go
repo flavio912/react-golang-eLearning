@@ -331,3 +331,41 @@ func (c *coursesRepoImpl) CreateTestMarks(mark models.TestMark) error {
 
 	return nil
 }
+
+func (c *coursesRepoImpl) DeleteTest(uuid gentypes.UUID) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var course_structure models.CourseStructure
+	if !tx.Model(&models.CourseStructure{}).Where("test_uuid = ?", uuid).Find(&course_structure).RecordNotFound() {
+		err := errors.ErrUnableToDelete("Cannot delete test that is part of a course")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete test")
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.ModuleStructure{}, "test_uuid = ?", uuid).Error; err != nil {
+		err := errors.ErrUnableToDelete("Unable to remove test link from module structure")
+		c.Logger.Logf(sentry.LevelWarning, err, "Unable to delete test: %s", uuid)
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.Test{}, "uuid = ?", uuid).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete test: %s", uuid)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
+}

@@ -26,7 +26,7 @@ function CourseInfo({ state, setState }) {
               label="Course Name"
               name="courseName"
               onChange={inp => {
-                setState('name', inp.target.value);
+                setState({ name: inp.target.value });
               }}
               placeholder="e.g Dangerous Goods"
               value={state.name}
@@ -40,7 +40,7 @@ function CourseInfo({ state, setState }) {
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
-                    setState('primaryCategory', newValue.value);
+                    setState({ primaryCategory: newValue.value });
                   }}
                   renderInput={params => (
                     <TextField
@@ -63,7 +63,7 @@ function CourseInfo({ state, setState }) {
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
                   onChange={(event, newValue) => {
-                    setState('secondaryCategory', newValue.value);
+                    setState({ secondaryCategory: newValue.value });
                   }}
                   renderInput={params => (
                     <TextField
@@ -80,7 +80,7 @@ function CourseInfo({ state, setState }) {
             </Grid>
           </Grid>
           <Grid item>
-            <TagsInput onChange={newVal => setState('tags', newVal)} />
+            <TagsInput onChange={newVal => setState({ tags: newVal })} />
           </Grid>
         </Grid>
       </CardContent>

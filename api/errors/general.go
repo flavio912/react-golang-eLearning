@@ -131,6 +131,12 @@ var (
 		Type:    "ErrCSRFTokenInvalid",
 		Message: "The given CSRF token was blank or invalid",
 	}
+	ErrLessonNotFound = FullError{
+		Type:     "ErrLessonNotFound",
+		Message:  "There is no lesson matching the information given",
+		Title:    "Could no find the specified lesson",
+		HelpText: "Oi, this lesson does not exist. Check the details and try again",
+	}
 	ErrUnauthorizedToBook = SimpleError{
 		Type:    "ErrUnauthorized",
 		Message: "You cannot book these courses as you are not authorized",
@@ -164,5 +170,17 @@ var (
 	ErrNotEnoughAnswersGiven = SimpleError{
 		Type:    "ErrNotEnoughAnswersGiven",
 		Message: "Not enough answers were given to complete the test, please try again",
+	}
+	ErrBlogNotFound = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrBlogNotFound",
+			Message: fmt.Sprintf("The given blog does not exist: %s", uuid),
+		}
+	}
+	ErrUnableToDelete = func(message string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrUnableToDelete",
+			Message: message,
+		}
 	}
 )

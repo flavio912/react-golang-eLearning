@@ -108,6 +108,7 @@ func (r *CompanyResolver) Approved(ctx context.Context) *bool {
 	}
 	return nil
 }
+func (r *CompanyResolver) IsContract() bool { return r.company.IsContract }
 func (r *CompanyResolver) Address(ctx context.Context) (gentypes.Address, error) {
 	return loader.LoadAddress(ctx, r.company.AddressID)
 }
