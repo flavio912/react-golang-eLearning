@@ -162,3 +162,67 @@ func TestCreateDelegate(t *testing.T) {
 	})
 
 }
+
+func TestUpdateDelegate(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should validate input", func(t *testing.T) {
+		invalidInput := gentypes.UpdateDelegateInput{
+			Email: helpers.StringPointer("not email"),
+		}
+		d, err := usersRepo.UpdateDelegate(invalidInput, nil, nil)
+
+		assert.Equal(t, invalidInput.Validate(), err)
+		assert.Equal(t, models.Delegate{}, d)
+	})
+
+	uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
+	t.Run("Delegate must exist", func(t *testing.T) {
+		d, err := usersRepo.UpdateDelegate(gentypes.UpdateDelegateInput{UUID: uuidZero}, nil, nil)
+
+		assert.Equal(t, errors.ErrDelegateDoesNotExist(uuidZero.String()), err)
+		assert.Equal(t, models.Delegate{}, d)
+	})
+
+	t.Run("Should fail if company does not exist", func(t *testing.T) {
+		d, err := usersRepo.UpdateDelegate(
+			gentypes.UpdateDelegateInput{
+				UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+				CompanyUUID: helpers.UUIDPointer(uuidZero),
+			}, nil, nil,
+		)
+
+		assert.Equal(t, &errors.ErrCompanyNotFound, err)
+		assert.Equal(t, models.Delegate{}, d)
+	})
+
+	t.Run("Updates existing delegate", func(t *testing.T) {
+		input := gentypes.UpdateDelegateInput{
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			CompanyUUID: helpers.UUIDPointer(gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001")),
+			FirstName:   helpers.StringPointer("Elon"),
+			LastName:    helpers.StringPointer("Musk"),
+			JobTitle:    helpers.StringPointer("SpaceX CEO"),
+			Email:       helpers.StringPointer("elon.musk@spacex.com"),
+			Telephone:   helpers.StringPointer("1000101"),
+		}
+
+		delegate, err := usersRepo.UpdateDelegate(input, nil, nil)
+
+		assert.Nil(t, err)
+		assert.Equal(t, *input.FirstName, delegate.FirstName)
+		assert.Equal(t, *input.LastName, delegate.LastName)
+		assert.Equal(t, *input.JobTitle, delegate.JobTitle)
+		assert.Equal(t, *input.Email, *delegate.Email)
+		assert.Equal(t, *input.Telephone, *delegate.Telephone)
+
+		new_delegate, err := usersRepo.Delegate(input.UUID)
+
+		assert.Nil(t, err)
+		assert.Equal(t, new_delegate.FirstName, delegate.FirstName)
+		assert.Equal(t, new_delegate.LastName, delegate.LastName)
+		assert.Equal(t, new_delegate.JobTitle, delegate.JobTitle)
+		assert.Equal(t, new_delegate.Email, delegate.Email)
+		assert.Equal(t, new_delegate.Telephone, delegate.Telephone)
+	})
+}

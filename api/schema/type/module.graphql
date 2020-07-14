@@ -65,6 +65,9 @@ type UpdateModulePayload {
   module: Module
 }
 
+input DeleteModuleInput {
+  uuid: UUID!
+}
 type ModulePage implements PaginatedQuery {
   edges: [Module]
   pageInfo: PageInfo

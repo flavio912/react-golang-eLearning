@@ -39,3 +39,16 @@ func (m *MutationResolver) CreateDelegate(ctx context.Context, args struct{ Inpu
 	delegate, password, err := usersApp.CreateDelegate(args.Input)
 	return &CreateDelegateResponse{delegate: delegate, generatedPassword: password}, err
 }
+
+func (m *MutationResolver) UpdateDelegate(ctx context.Context, args struct{ Input gentypes.UpdateDelegateInput }) (*DelegateResolver, error) {
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &DelegateResolver{}, &errors.ErrUnauthorized
+	}
+
+	usersApp := users.NewUsersApp(grant)
+	delegate, err := usersApp.UpdateDelegate(args.Input)
+	return &DelegateResolver{
+		delegate: delegate,
+	}, err
+}

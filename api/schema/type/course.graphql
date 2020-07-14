@@ -47,6 +47,7 @@ type Course {
   category: Category
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
+  bannerImageURL: String
 }
 
 type CoursePage implements PaginatedQuery {
@@ -133,6 +134,10 @@ input PurchaseCoursesInput {
 type PurchaseCoursesResponse {
   transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
   stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
+}
+
+input DeleteCourseInput {
+  id: Int!
 }
 
 # [ EXAMPLE COURSE STRUCTURE

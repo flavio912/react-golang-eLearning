@@ -59,6 +59,23 @@ func (m *CreateDelegateInput) Validate() error {
 	return err
 }
 
+type UpdateDelegateInput struct {
+	UUID                    UUID `valid:"required"`
+	CompanyUUID             *UUID
+	FirstName               *string `valid:"alpha"`
+	LastName                *string `valid:"alpha"`
+	JobTitle                *string
+	Email                   *string `valid:"email"`
+	Telephone               *string `valid:"numeric"`
+	ProfileImageUploadToken *string
+	NewPassword             *string
+}
+
+func (u *UpdateDelegateInput) Validate() error {
+	_, err := govalidator.ValidateStruct(u)
+	return err
+}
+
 type DelegateLoginInput struct {
 	TTC_ID   string
 	Password string

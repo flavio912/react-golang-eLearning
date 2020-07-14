@@ -21,6 +21,7 @@ type CoursesRepository interface {
 	Course(courseID uint) (models.Course, error)
 	Courses(courseIDs []uint) ([]models.Course, error)
 	UpdateCourse(courseID uint, infoChanges CourseInput) (models.Course, error)
+	DeleteCourse(ID uint) (bool, error)
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
 	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
@@ -40,6 +41,8 @@ type CoursesRepository interface {
 	CreateLesson(lesson gentypes.CreateLessonInput) (models.Lesson, error)
 	GetLessonByUUID(UUID gentypes.UUID) (models.Lesson, error)
 	GetLessonsByUUID(uuids []string) ([]models.Lesson, error)
+	UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error)
+	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)
 	CreateTag(input gentypes.CreateTagInput) (models.Tag, error)
@@ -50,6 +53,7 @@ type CoursesRepository interface {
 	Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error)
 	CreateModule(input CreateModuleInput) (models.Module, error)
 	UpdateModule(input UpdateModuleInput) (models.Module, error)
+	DeleteModule(uuid gentypes.UUID) (bool, error)
 	GetModuleByUUID(moduleUUID gentypes.UUID) (models.Module, error)
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
@@ -64,6 +68,7 @@ type CoursesRepository interface {
 	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
 	UpdateTest(input UpdateTestInput) (models.Test, error)
+	DeleteTest(uuid gentypes.UUID) (bool, error)
 	TestQuestions(testUUID gentypes.UUID) ([]models.Question, error)
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.BasicAnswer, error)
 
@@ -73,6 +78,7 @@ type CoursesRepository interface {
 	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
+	DeleteQuestion(input gentypes.UUID) (bool, error)
 
 	CreateTestMarks(mark models.TestMark) error
 }
@@ -467,4 +473,36 @@ func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) 
 	}
 
 	return []models.CourseStructure{}, nil
+}
+
+func (c *coursesRepoImpl) DeleteCourse(ID uint) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "DeleteCourse: Forced to recover")
+		}
+	}()
+	// if there's an active course, that means a course has courseTaker(s)
+	var active_course models.ActiveCourse
+	if tx.Model(&models.ActiveCourse{}).Where("course_id = ?", ID).Find(&active_course).Error == nil {
+		err := errors.ErrUnableToDelete("Cannot delete an active course")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete course")
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.Course{}, "id = ?", ID).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Cannot delete course: %d", ID)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }

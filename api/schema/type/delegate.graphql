@@ -25,6 +25,18 @@ input CreateDelegateInput {
   profileImageUploadToken: String
 }
 
+input UpdateDelegateInput {
+  uuid: UUID!
+  companyUUID: UUID
+  firstName: String
+  lastName: String
+  jobTitle: String
+  email: String
+  telephone: String
+  profileImageUploadToken: String
+  newPassword: String
+}
+
 type CreateDelegateResponse {
   delegate: Delegate!
   generatedPassword: String

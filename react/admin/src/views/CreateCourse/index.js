@@ -47,6 +47,7 @@ const SAVE_ONLINE_COURSE = gql`
     $hoursToComplete: Float
     $whatYouLearn: [String!]
     $requirements: [String!]
+    $bannerImageSuccess: String
   ) {
     saveOnlineCourse(
       input: {
@@ -60,6 +61,7 @@ const SAVE_ONLINE_COURSE = gql`
         hoursToComplete: $hoursToComplete
         whatYouLearn: $whatYouLearn
         requirements: $requirements
+        bannerImageSuccess: $bannerImageSuccess
       }
     ) {
       id
@@ -81,9 +83,29 @@ const GET_COURSE = gql`
       hoursToComplete
       whatYouLearn
       requirements
+      bannerImageURL
     }
   }
 `;
+
+var initState = {
+  name: '',
+  primaryCategory: {},
+  secondaryCategory: {},
+  tags: [],
+  excerpt: '',
+  courseType: 'online',
+  accessType: 'open',
+  backgroundCheck: false,
+  howToComplete: '',
+  whatYouLearn: [],
+  requirements: [],
+  hoursToComplete: 0,
+  price: 0,
+  priceType: 'paid',
+  bannerImageURL: undefined,
+  bannerImageSuccess: undefined
+};
 
 function CreateCourse({ match, history }) {
   const classes = useStyles();
@@ -98,23 +120,6 @@ function CreateCourse({ match, history }) {
 
   const handleTabsChange = (event, value) => {
     history.push(value);
-  };
-
-  var initState = {
-    name: '',
-    primaryCategory: {},
-    secondaryCategory: {},
-    tags: [],
-    excerpt: '',
-    courseType: 'online',
-    accessType: 'open',
-    backgroundCheck: false,
-    howToComplete: '',
-    whatYouLearn: [],
-    requirements: [],
-    hoursToComplete: 0,
-    price: 0,
-    priceType: 'paid'
   };
 
   const [state, setState] = useState(initState);
@@ -140,12 +145,13 @@ function CreateCourse({ match, history }) {
       hoursToComplete: data.course.hoursToComplete,
       whatYouLearn: data.course.whatYouLearn,
       requirements: data.course.requirements,
+      bannerImageURL: data.course.bannerImageURL,
       price: data.course.price
     });
-  }, [data, loading, error, initState]);
+  }, [data, loading, error]);
 
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
+  const updateState = stateUpdates => {
+    var updatedState = { ...state, ...stateUpdates };
     setState(updatedState);
   };
 
@@ -168,6 +174,7 @@ function CreateCourse({ match, history }) {
           hoursToComplete: state.hoursToComplete,
           whatYouLearn: state.whatYouLearn,
           requirements: state.requirements,
+          bannerImageSuccess: state.bannerImageSuccess,
           price: state.price
         }
       });
