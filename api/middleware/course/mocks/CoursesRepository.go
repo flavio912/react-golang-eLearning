@@ -290,6 +290,27 @@ func (_m *CoursesRepository) CreateTestMarks(mark models.TestMark) error {
 	return r0
 }
 
+// DeleteQuestion provides a mock function with given fields: input
+func (_m *CoursesRepository) DeleteQuestion(input gentypes.UUID) (bool, error) {
+	ret := _m.Called(input)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) bool); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteCourse provides a mock function with given fields: ID
 func (_m *CoursesRepository) DeleteCourse(ID uint) (bool, error) {
 	ret := _m.Called(ID)

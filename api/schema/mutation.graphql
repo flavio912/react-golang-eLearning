@@ -60,7 +60,7 @@ type Mutation {
   answerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createQuestion(input: CreateQuestionInput!): CreateQuestionPayload
   updateQuestion(input: UpdateQuestionInput!): UpdateQuestionPayload
-  # deleteQuestion
+  deleteQuestion(input: DeleteQuestionInput!): Boolean!
 
   createModule(input: CreateModuleInput!): CreateModulePayload
   updateModule(input: UpdateModuleInput!): UpdateModulePayload

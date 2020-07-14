@@ -74,6 +74,7 @@ type CoursesRepository interface {
 	Questions(page *gentypes.Page, filter *gentypes.QuestionFilter, orderBy *gentypes.OrderBy) ([]models.Question, gentypes.PageInfo, error)
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
+	DeleteQuestion(input gentypes.UUID) (bool, error)
 
 	CreateTestMarks(mark models.TestMark) error
 }

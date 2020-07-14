@@ -1408,3 +1408,43 @@ func TestDeleteCourse(t *testing.T) {
 		DelegateAllowed: false,
 	})
 }
+
+func TestDeleteQuestion(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Deletes a question",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					deleteQuestion(input: {
+						uuid: "ba070bfb-d3d0-4ff7-a35d-6263180a43f9"
+					})
+				}	
+			`,
+			ExpectedResult: `
+				{
+					"deleteQuestion": true
+				}
+			`,
+		},
+	})
+
+	// this needs to be done, I guess
+	// accessTest(t, schema, accessTestOpts{
+	// 	Query: `
+	// 		mutation {
+	// 			deleteQuestion(input: {
+	// 				uuid: "797efc50-f980-42a2-a008-2991a1162631"
+	// 			})
+	// 		}
+	// 	`,
+	// 	Path:            []interface{}{"deleteQuestion"},
+	// 	MustAuth:        true,
+	// 	AdminAllowed:    true,
+	// 	ManagerAllowed:  false,
+	// 	DelegateAllowed: false,
+	// })
+}
