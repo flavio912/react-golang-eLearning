@@ -45,6 +45,7 @@ type Mutation {
   fulfilPendingOrder(clientSecret: String!): Boolean!
   saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
   saveClassroomCourse(input: SaveClassroomCourseInput!): Course # Todo add tutor to course
+  courseBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   deleteCourse(input: DeleteCourseInput!): Boolean!
 
@@ -75,7 +76,7 @@ type Mutation {
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
-  
+
   createBlog(input: CreateBlogInput!): Blog
   updateBlog(input: UpdateBlogInput!): Blog
   blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp

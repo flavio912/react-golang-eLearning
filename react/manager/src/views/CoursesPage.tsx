@@ -99,7 +99,9 @@ const CoursesPageComp = ({ courses }: Props) => {
       id: course.ident,
       type: course.category.name,
       colour: course?.category.color,
-      url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
+      url:
+        course.bannerImageURL ||
+        '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
       title: course.name,
       price: course.price,
       description: course.excerpt,
@@ -189,6 +191,7 @@ const CoursesPage = createFragmentContainer(CoursesPageComp, {
           name
           color
         }
+        bannerImageURL
       }
       pageInfo {
         total

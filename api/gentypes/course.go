@@ -66,6 +66,7 @@ type Course struct {
 	Excerpt         string
 	SpecificTerms   string
 	CategoryUUID    *UUID
+	BannerImageURL  *string
 }
 
 type ActiveCourse struct {
