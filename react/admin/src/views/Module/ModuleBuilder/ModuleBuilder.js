@@ -24,6 +24,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
   },
+  heading: {
+    margin: theme.spacing(2)
+  },
   header: {
     marginBottom: theme.spacing(1)
   },
@@ -35,10 +38,6 @@ const useStyles = makeStyles(theme => ({
   },
   noPadding: {
     paddingBottom: 0
-  },
-  row: {
-    display: 'flex',
-    flexDirection: 'row'
   },
 }));
 
@@ -92,7 +91,7 @@ function ModuleBuilder({ state, setState }) {
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid container spacing={4} direction={'column'}>
-          <Grid item>
+          <Grid item className={classes.heading}>
             <Typography
               variant="h3"
               color="textPrimary"
