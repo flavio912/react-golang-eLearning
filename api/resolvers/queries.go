@@ -380,3 +380,43 @@ func (q *QueryResolver) Modules(
 		Modules:  &modules,
 	})
 }
+
+func (q *QueryResolver) SearchSyllabus(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.SyllabusFilter
+	}) (*SearchSyllabusResultResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	results, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
+
+	var syllabusResolvers []*SyllabusResolver
+
+	for _, res := range results {
+		switch res.Type {
+		case gentypes.ModuleType:
+			m, _ := NewModuleResolver(ctx, NewModuleArgs{
+				ModuleUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{m})
+		case gentypes.LessonType:
+			l, _ := NewLessonResolver(ctx, NewLessonArgs{
+				UUID: res.UUID.String(),
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{l})
+		case gentypes.TestType:
+			t, _ := NewTestResolver(ctx, NewTestArgs{
+				TestUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{t})
+		}
+	}
+
+	return &SearchSyllabusResultResolver{
+		edges: &syllabusResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, err
+}

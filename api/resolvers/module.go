@@ -38,7 +38,7 @@ func (m *ModuleResolver) Video() *gentypes.Video {
 func (m *ModuleResolver) Complete() *bool {
 	return helpers.BoolPointer(false)
 }
-func (m *ModuleResolver) Syllabus(ctx context.Context) (*[]SyllabusResolver, error) {
+func (m *ModuleResolver) Syllabus(ctx context.Context) (*[]*SyllabusResolver, error) {
 	return NewSyllabusResolvers(ctx, NewSyllabusArgs{
 		ModuleUUID: &m.Module.UUID,
 	})

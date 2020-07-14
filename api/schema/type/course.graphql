@@ -136,6 +136,11 @@ type PurchaseCoursesResponse {
   stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
 }
 
+type SearchSyllabusResult implements PaginatedQuery {
+  edges: [SyllabusItem!]
+  pageInfo: PageInfo
+}
+
 input DeleteCourseInput {
   id: Int!
 }

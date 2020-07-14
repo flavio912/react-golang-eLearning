@@ -96,6 +96,13 @@ type PurchaseCoursesResponse struct {
 	StripeClientSecret  *string
 }
 
+type SyllabusFilter struct {
+	Name          *string
+	ExcludeModule *bool
+	ExcludeLesson *bool
+	ExcludeTest   *bool
+}
+
 type DeleteCourseInput struct {
 	ID int32 `valid:"required"`
 }

@@ -173,6 +173,19 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 	}, nil
 }
 
+func (c *courseAppImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CourseItem{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	results, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+
+	return results, pageInfo, err
+}
+
 func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, error) {
 	if !c.grant.IsAdmin {
 		return false, &errors.ErrUnauthorized
