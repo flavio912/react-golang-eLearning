@@ -1,0 +1,54 @@
+import React from 'react';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+
+export default function ReoderableList({ items, setItems }) {
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+  
+    return result;
+  };
+  
+  const onDragEnd = (setItems, items, result) => {
+    // dropped outside the list
+    if (!result.destination) {
+      return;
+    }
+  
+    setItems(reorder(
+      items,
+      result.source.index,
+      result.destination.index
+    ));
+  }
+
+  return (
+    <DragDropContext onDragEnd={(result) => onDragEnd(setItems, items, result)}>
+      <Droppable droppableId="droppable">
+        {(provided) => (
+            <div
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            >
+            {items.map((item, index) => (
+              <Draggable draggableId={`item-${item.id}`} index={index}>
+                {(provided) => (
+                  <div
+                    ref={provided.innerRef}
+                    {...provided.draggableProps}
+                    {...provided.dragHandleProps}
+                  >
+                    {item.component}
+                  </div>
+                )}
+              </Draggable>
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable> 
+    </DragDropContext>
+  );
+}

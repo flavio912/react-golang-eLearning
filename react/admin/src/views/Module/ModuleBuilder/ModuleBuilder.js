@@ -19,6 +19,8 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
+import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
+import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -86,6 +88,14 @@ const lessons = [
 
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
+
+  const onDelete = () => {};
+
+  const [ items, setItems ] = React.useState([
+    {id: 0, component: <ReoderableListItem text="text" onDelete={onDelete} />},
+    {id: 1, component: <ReoderableListItem text="text" onDelete={onDelete} />},
+    {id: 2, component: <ReoderableListItem text="text" onDelete={onDelete} />},
+  ]);
 
   return (
     <div className={classes.root}>
@@ -216,7 +226,7 @@ function ModuleBuilder({ state, setState }) {
               <CardHeader title="Module Structure" />
               <Divider />
               <CardContent>
-                <div>TBA</div>
+                <ReoderableDropdown title="Module 1" items={items} setItems={setItems} />
               </CardContent>
             </Card>
           </Grid>
