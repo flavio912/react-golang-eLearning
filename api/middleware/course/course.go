@@ -28,6 +28,8 @@ type CoursesRepository interface {
 	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
+	Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error)
+
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 
