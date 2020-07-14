@@ -391,7 +391,7 @@ func (q *QueryResolver) SearchSyllabus(
 
 	results, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
 
-	var syllabusResolvers []SyllabusResolver
+	var syllabusResolvers []*SyllabusResolver
 
 	for _, res := range results {
 		switch res.Type {
@@ -399,17 +399,17 @@ func (q *QueryResolver) SearchSyllabus(
 			m, _ := NewModuleResolver(ctx, NewModuleArgs{
 				ModuleUUID: &res.UUID,
 			})
-			syllabusResolvers = append(syllabusResolvers, m)
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{m})
 		case gentypes.LessonType:
 			l, _ := NewLessonResolver(ctx, NewLessonArgs{
 				UUID: res.UUID.String(),
 			})
-			syllabusResolvers = append(syllabusResolvers, l)
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{l})
 		case gentypes.TestType:
 			t, _ := NewTestResolver(ctx, NewTestArgs{
 				TestUUID: &res.UUID,
 			})
-			syllabusResolvers = append(syllabusResolvers, t)
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{t})
 		}
 	}
 
