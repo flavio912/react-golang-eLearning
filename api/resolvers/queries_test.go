@@ -1643,6 +1643,75 @@ func TestSearchSyllabus(t *testing.T) {
 				}
 			`,
 		},
+		{
+			Name:    "Should show fields specific to type",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {
+						name: "ing"
+					}) {
+						edges {
+							__typename
+							... on SyllabusItem {
+								name
+							}
+							... on Lesson {
+								tags {
+									name
+								}
+							}
+							... on Module {
+								description
+							}
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"__typename": "Lesson",
+								"name": "Dynamic Programming",
+								"tags": []
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Lorentz Invariance",
+								"tags": [
+									{"name": "existing tag"},
+									{"name": "Handling cool things"},
+									{"name": "Fancy tag for cool people"}
+								]
+							},
+							{
+								"__typename": "Module",
+								"name":"Module Joe",
+								"description": "Loves pies, don't give him plants"
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Eigenvalues and Eigenvectors",
+								"tags":	[{"name":"Handling cool things"}]
+							}
+						],
+						"pageInfo": {
+							"total": 4,
+							"offset": 0,
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
 	})
 
 	accessTest(t, schema, accessTestOpts{
