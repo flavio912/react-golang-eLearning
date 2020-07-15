@@ -112,9 +112,10 @@ const theme: Theme = {
     tiny: 11
   },
   paperSizes: {
+    // Origin A4 Size: 96ppi(794x1123)
     A4: {
-      width: 794,
-      height: 1043
+      width: 809,
+      height: 1129
     }
   }
 };

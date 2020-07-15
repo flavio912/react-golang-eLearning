@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     flex: 1,
-    width: `calc(${theme.paperSizes.A4.width} - 10px)`,
+    width: `calc(${theme.paperSizes.A4.width}px - 10px)`,
     height: theme.paperSizes.A4.height,
     padding: 20,
     boxSizing: 'border-box',

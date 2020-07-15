@@ -11,9 +11,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   certGeneratorRoot: {
     margin: 0
   },
-  firstPage: {
-    marginBottom: 50
-  },
   logoArea: {
     height: 100,
     display: 'flex',
@@ -196,7 +193,7 @@ function CertGenerator({
 
   return (
     <div className={classes.certGeneratorRoot}>
-      <div className={classes.firstPage}>
+      <div>
         <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
             <img src={CertLogoImg} className={classes.certLogo} />
