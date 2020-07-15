@@ -1,7 +1,15 @@
 import React from 'react';
+import { makeStyles } from '@material-ui/styles';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
+const useStyles = makeStyles(theme => ({
+  padding: {
+    padding: `${theme.spacing(1)}px 0`
+  },
+}));
+
 export default function ReoderableList({ items, setItems }) {
+  const classes = useStyles();
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -36,6 +44,7 @@ export default function ReoderableList({ items, setItems }) {
               <Draggable draggableId={`item-${item.id}`} index={index}>
                 {(provided) => (
                   <div
+                    className={classes.padding}
                     ref={provided.innerRef}
                     {...provided.draggableProps}
                     {...provided.dragHandleProps}

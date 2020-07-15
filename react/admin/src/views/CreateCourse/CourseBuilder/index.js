@@ -12,6 +12,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
+import ReoderableList from 'src/components/ReorderableList/ReorderableList';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
@@ -79,6 +80,12 @@ function CourseBuilder({ state, setState }) {
     {id: 2, component: <ReoderableListItem text="text" onDelete={onDelete} />},
   ]);
 
+  const [ dropdowns, setDropdowns ] = React.useState([
+    {id: 0, component: <ReoderableDropdown title="Module 1" items={items} setItems={setItems} />},
+    {id: 1, component: <ReoderableDropdown title="Module 2" items={items} setItems={setItems} />},
+    {id: 2, component: <ReoderableDropdown title="Module 3" items={items} setItems={setItems} />},
+  ]);
+
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -137,7 +144,10 @@ function CourseBuilder({ state, setState }) {
               <CardHeader title="Course Structure" />
               <Divider />
               <CardContent>
-                <ReoderableDropdown title="Module 1" items={items} setItems={setItems} />
+                <ReoderableList
+                  items={dropdowns}
+                  setItems={setDropdowns}
+                />
               </CardContent>
             </Card>
           </Grid>
