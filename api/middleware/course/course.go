@@ -79,8 +79,6 @@ type CoursesRepository interface {
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 	DeleteQuestion(input gentypes.UUID) (bool, error)
-
-	CreateTestMarks(mark models.TestMark) error
 }
 
 type coursesRepoImpl struct {

@@ -49,7 +49,13 @@ type Activity {
 
 # # A course currently being taken by a user
 type ActiveCourse {
+  status: CourseStatus!
   course: Course!
-  currentAttempt: Int!
   minutesTracked: Float!
+}
+
+enum CourseStatus {
+  passed
+  failed
+  incomplete
 }

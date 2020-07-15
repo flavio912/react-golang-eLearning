@@ -322,16 +322,6 @@ func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.
 	return outputTests, nil
 }
 
-func (c *coursesRepoImpl) CreateTestMarks(mark models.TestMark) error {
-	err := database.GormDB.Create(&mark).Error
-	if err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to create test marks")
-		return &errors.ErrWhileHandling
-	}
-
-	return nil
-}
-
 func (c *coursesRepoImpl) DeleteTest(uuid gentypes.UUID) (bool, error) {
 	tx := database.GormDB.Begin()
 	defer func() {

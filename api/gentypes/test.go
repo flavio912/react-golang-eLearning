@@ -79,7 +79,8 @@ type SubmitTestInput struct {
 }
 
 type SubmitTestPayload struct {
-	Success bool
+	CourseStatus CourseStatus
+	Passed       bool
 }
 
 type DeleteTestInput struct {

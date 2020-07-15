@@ -118,6 +118,25 @@ func (u *usersRepoImpl) TakerHasActiveCourse(courseTaker gentypes.UUID, courseID
 	return false, nil
 }
 
+func (u *usersRepoImpl) TakerActiveCourse(courseTaker gentypes.UUID, courseID uint) (models.ActiveCourse, error) {
+	var activeCourse models.ActiveCourse
+	query := database.GormDB.
+		Model(&models.ActiveCourse{}).
+		Where("course_taker_uuid = ? AND course_id = ?", courseTaker, courseID).
+		Find(&activeCourse)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.ActiveCourse{}, &errors.ErrNotFound
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable get active course")
+		return models.ActiveCourse{}, &errors.ErrWhileHandling
+	}
+
+	return activeCourse, nil
+}
+
 func (u *usersRepoImpl) TakerActiveCourses(courseTaker gentypes.UUID) ([]models.ActiveCourse, error) {
 	var activeCourses []models.ActiveCourse
 	query := database.GormDB.Where("course_taker_uuid = ?", courseTaker).Find(&activeCourses)
@@ -147,4 +166,47 @@ func (u *usersRepoImpl) TakerTestMarks(courseTaker gentypes.UUID, courseID uint)
 	}
 
 	return marks, nil
+}
+
+func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Remove any test marks for this user
+	query := tx.
+		Where("course_taker_uuid = ? AND course_id = ", course.CourseTakerUUID, course.CourseID).
+		Delete(models.TestMark{})
+
+	if query.Error != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, query.Error, "CreateHistoricalCourse: Unable to delete testmarks")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Create(&course).Error; err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "CreateHistoricalCourse: Unable to create historical course")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "CreateHistoricalCourse: Unable to commit historical course")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return course, nil
+}
+
+func (u *usersRepoImpl) SaveTestMarks(mark models.TestMark) error {
+	err := database.GormDB.Save(&mark).Error
+	if err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to save test marks")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
 }

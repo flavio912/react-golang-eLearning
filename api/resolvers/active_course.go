@@ -17,8 +17,8 @@ func (a *ActiveCourseResolver) Course(ctx context.Context) (*CourseResolver, err
 		ID: &a.ActiveCourse.CourseID,
 	})
 }
-func (a *ActiveCourseResolver) CurrentAttempt() int32 {
-	return int32(a.ActiveCourse.CurrentAttempt)
+func (a *ActiveCourseResolver) Status(ctx context.Context) gentypes.CourseStatus {
+	return a.ActiveCourse.Status
 }
 func (a *ActiveCourseResolver) MinutesTracked() float64 {
 	return a.ActiveCourse.MinutesTracked

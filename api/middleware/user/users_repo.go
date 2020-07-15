@@ -55,9 +55,14 @@ type UsersRepository interface {
 	TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)
 	DeleteTakerActivity(activityUUID gentypes.UUID) error
+	TakerActiveCourse(courseTaker gentypes.UUID, courseID uint) (models.ActiveCourse, error)
 	TakerActiveCourses(courseTaker gentypes.UUID) ([]models.ActiveCourse, error)
 	TakerHasActiveCourse(courseTaker gentypes.UUID, courseID uint) (bool, error)
+
+	SaveTestMarks(mark models.TestMark) error
 	TakerTestMarks(courseTaker gentypes.UUID, courseID uint) ([]models.TestMark, error)
+
+	CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error)
 
 	// Returns true if all course takers are part of the company
 	CompanyManagesCourseTakers(companyUUID gentypes.UUID, courseTakerUUIDs []gentypes.UUID) (bool, error)

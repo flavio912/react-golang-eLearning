@@ -9,6 +9,14 @@ const (
 	Open       AccessType = "open"
 )
 
+type CourseStatus string
+
+const (
+	CourseComplete   CourseStatus = "complete"
+	CourseFailed     CourseStatus = "failed"
+	CourseIncomplete CourseStatus = "incomplete"
+)
+
 type CourseElement string
 
 const (
@@ -71,8 +79,8 @@ type Course struct {
 
 type ActiveCourse struct {
 	CourseID       uint
-	CurrentAttempt uint
 	MinutesTracked float64
+	Status         CourseStatus
 }
 
 type CourseFilter struct {

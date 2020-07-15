@@ -117,25 +117,26 @@ func (c *courseAppImpl) Tests(
 	return c.testsToGentypes(tests), pageInfo, nil
 }
 
-func (c *courseAppImpl) takerHasSubmittedTest(courseTaker gentypes.UUID, courseID uint, testUUID gentypes.UUID) (bool, error) {
+func (c *courseAppImpl) takerTestMark(courseTaker gentypes.UUID, courseID uint, testUUID gentypes.UUID) (models.TestMark, error) {
 	marks, err := c.usersRepository.TakerTestMarks(courseTaker, courseID)
 	if err != nil {
-		return false, &errors.ErrWhileHandling
+		return models.TestMark{}, &errors.ErrWhileHandling
 	}
 
 	for _, mark := range marks {
 		if mark.TestUUID == testUUID {
-			return true, nil
+			return mark, nil
 		}
 	}
-	return false, nil
+
+	return models.TestMark{}, &errors.ErrNotFound
 }
 
 // SubmitTest verifies answers given to a test
-func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error) {
+func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentypes.CourseStatus, error) {
 	// Only course takers can submit a test
 	if !c.grant.IsDelegate && !c.grant.IsIndividual {
-		return false, &errors.ErrUnauthorized
+		return false, gentypes.CourseIncomplete, &errors.ErrUnauthorized
 	}
 
 	// Check taker can access this course
@@ -149,27 +150,22 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		courseTakerUUID = individual.CourseTakerUUID
 	}
 
-	success, _ := c.usersRepository.TakerHasActiveCourse(courseTakerUUID, input.CourseID)
-	if !success {
-		return false, &errors.ErrUnauthorized
-	}
-
-	// Check this test's answers haven't already been submitted by this user
-	if taken, _ := c.takerHasSubmittedTest(courseTakerUUID, input.CourseID, input.TestUUID); taken {
-		return false, &errors.ErrAlreadyTakenTest
+	activeCourse, err := c.usersRepository.TakerActiveCourse(courseTakerUUID, input.CourseID)
+	if err != nil {
+		return false, gentypes.CourseIncomplete, &errors.ErrUnauthorized
 	}
 
 	//TODO: Check this test is part of this course
 
 	test, err := c.coursesRepository.Test(input.TestUUID)
 	if err != nil {
-		return false, &errors.ErrWhileHandling
+		return false, activeCourse.Status, &errors.ErrWhileHandling
 	}
 
 	// Check enough answers given to complete test
 	questions, err := c.coursesRepository.TestQuestions(input.TestUUID)
 	if err != nil {
-		return false, &errors.ErrWhileHandling
+		return false, activeCourse.Status, &errors.ErrWhileHandling
 	}
 
 	var acceptedQuestions = make(map[gentypes.UUID]gentypes.QuestionAnswer)
@@ -182,7 +178,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 	}
 
 	if len(acceptedQuestions) < int(test.QuestionsToAnswer) {
-		return false, &errors.ErrNotEnoughAnswersGiven
+		return false, activeCourse.Status, &errors.ErrNotEnoughAnswersGiven
 	}
 
 	// Check how many questions the taker got right
@@ -195,7 +191,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 
 	questionsToAnswers, err := c.coursesRepository.ManyAnswers(acceptedQuestionUUIDs)
 	if err != nil {
-		return false, &errors.ErrWhileHandling
+		return false, activeCourse.Status, &errors.ErrWhileHandling
 	}
 
 	var correct uint = 0
@@ -207,36 +203,124 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, error)
 		}
 	}
 
+	// Check if the user has passed the test or not
+	percentCorrect := (float64(correct) / float64(test.QuestionsToAnswer)) * 100
+	testPassed := percentCorrect > test.PassPercentage
+
+	prevMark, err := c.takerTestMark(courseTakerUUID, input.CourseID, input.TestUUID)
+
+	if err != nil && err != &errors.ErrNotFound {
+		c.grant.Logger.Log(sentry.LevelError, err, "SubmitTest: Unable to get taker test mark")
+		return false, activeCourse.Status, &errors.ErrWhileHandling
+	}
+
+	currentAttempt := uint(1)
+	if err != &errors.ErrNotFound {
+		currentAttempt = prevMark.CurrentAttempt + 1
+	}
+
+	// If this is the last attempt check if it passed
+	if test.AttemptsAllowed == 1 || (err != &errors.ErrNotFound && test.AttemptsAllowed == prevMark.CurrentAttempt) {
+		if !testPassed {
+			err := c.completeCourse(courseTakerUUID, input.CourseID, activeCourse.MinutesTracked, false)
+			if err != nil {
+				c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - fail")
+			}
+			return false, gentypes.CourseFailed, nil
+		}
+	}
+
 	// Save marks into DB
 	marks := models.TestMark{
 		TestUUID:        test.UUID,
 		CourseTakerUUID: courseTakerUUID,
 		CourseID:        input.CourseID,
-		NumCorrect:      correct,
-		Total:           test.QuestionsToAnswer,
+		Passed:          testPassed,
+		CurrentAttempt:  currentAttempt,
 	}
-	err = c.coursesRepository.CreateTestMarks(marks)
+
+	err = c.usersRepository.SaveTestMarks(marks)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to save marks for test")
+		return false, activeCourse.Status, &errors.ErrWhileHandling
+	}
+
+	// If taker has completed the whole course
+	completed, err := c.isOnlineCourseCompleted(courseTakerUUID, input.CourseID)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelFatal, err, "SubmitTest: UNABLE TO CHECK COURSE COMPLETION")
+		return true, activeCourse.Status, &errors.ErrWhileHandling
+	}
+
+	if completed {
+		err := c.completeCourse(courseTakerUUID, input.CourseID, activeCourse.MinutesTracked, true)
+		if err != nil {
+			c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - success")
+		}
+		return true, gentypes.CourseComplete, &errors.ErrWhileHandling
+	}
+
+	return true, gentypes.CourseIncomplete, nil
+}
+
+// completeOnlineCourse completes a course and moves it to historical + generates a certificate if the user passed
+func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, minutesTracked float64, passed bool) error {
+	// Create historical course
+	histCourse, err := c.usersRepository.CreateHistoricalCourse(models.HistoricalCourse{
+		CourseTakerUUID: takerUUID,
+		CourseID:        courseID,
+		MinutesTracked:  minutesTracked,
+		Passed:          passed,
+		CertificateKey:  nil, // No certificate initially while it is generated
+	})
+
+	if err != nil {
+		return err
+	}
+
+	if passed {
+		go c.generateCertificate(histCourse)
+	}
+
+	return nil
+}
+
+func (c *courseAppImpl) isOnlineCourseCompleted(takerUUID gentypes.UUID, courseID uint) (bool, error) {
+	onlineCourse, err := c.coursesRepository.OnlineCourse(courseID)
+	if err != nil {
+		if err == &errors.ErrNotFound {
+			return false, &errors.ErrNotFound
+		}
 		return false, &errors.ErrWhileHandling
 	}
 
-	// TODO: Check if taker has completed course
+	tests, err := c.coursesRepository.CourseTests(onlineCourse.UUID)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to get course tests")
+		return false, &errors.ErrWhileHandling
+	}
+
+	// Get all test marks for a course
+	marks, err := c.usersRepository.TakerTestMarks(takerUUID, courseID)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to get test taker marks")
+		return false, &errors.ErrWhileHandling
+	}
+
+	// Check Taker has taken enough tests to complete course
+	if len(marks) < len(tests) {
+		return false, nil
+	}
+
+	// Check all tests have been passed
+	for _, mark := range marks {
+		if !mark.Passed {
+			return false, nil
+		}
+	}
+
 	return true, nil
 }
-
-// course, err := c.coursesRepository.OnlineCourse(input.CourseID)
-// if err != nil {
-// 	if err == &errors.ErrNotFound {
-// 		return false, &errors.ErrNotFound
-// 	}
-// 	return false, &errors.ErrWhileHandling
-// }
-
-// tests, err := c.coursesRepository.CourseTests(course.UUID)
-// if err != nil {
-// 	return false, &errors.ErrWhileHandling
-// }
 
 func (c *courseAppImpl) DeleteTest(input gentypes.DeleteTestInput) (bool, error) {
 	if !c.grant.IsAdmin {

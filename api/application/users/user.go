@@ -16,8 +16,8 @@ import (
 func activeCourseToGentype(activeCourse models.ActiveCourse) gentypes.ActiveCourse {
 	return gentypes.ActiveCourse{
 		CourseID:       activeCourse.CourseID,
-		CurrentAttempt: activeCourse.CurrentAttempt,
 		MinutesTracked: activeCourse.MinutesTracked,
+		Status:         activeCourse.Status,
 	}
 }
 
