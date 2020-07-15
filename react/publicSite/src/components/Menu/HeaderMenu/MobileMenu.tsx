@@ -169,10 +169,10 @@ function MobileMenu({
                                 {tab.title.toUpperCase()}
                             </div>
                             {tab.options ? (
-                                tab.options.map((option) => (
+                                tab.options.map((option: Tab) => (
                                     <div
                                         className={classes.text}
-                                        onClick={() => onClick(option.link)}
+                                        onClick={() => option.link && onClick(option.link)}
                                     >
                                         {option.title}
                                     </div>
