@@ -16,6 +16,9 @@ import UpdateQuestion from './views/Question/UpdateQuestion';
 import TestsList from './views/TestsList';
 import CreateTest from './views/Test/CreateTest';
 import UpdateTest from './views/Test/UpdateTest';
+import LessonsList from './views/LessonsList';
+import CreateLesson from './views/Lesson/CreateLesson';
+import UpdateLesson from './views/Lesson/UpdateLesson';
 
 export default [
   {
@@ -184,6 +187,21 @@ export default [
         path: '/question/:ident/:tab',
         exact: true,
         component: UpdateQuestion
+      },
+      {
+        path: '/lessons',
+        exact: true,
+        component: LessonsList
+      },
+      {
+        path: '/lessons/create/:tab',
+        exact: true,
+        component: CreateLesson
+      },
+      {
+        path: '/lesson/:ident/:tab',
+        exact: true,
+        component: UpdateLesson
       },
       {
         path: '/settings',
