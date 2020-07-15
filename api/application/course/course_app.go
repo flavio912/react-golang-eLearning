@@ -53,6 +53,7 @@ type CourseApp interface {
 	DeleteTest(input gentypes.DeleteTestInput) (bool, error)
 
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
+	ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error)
 	Modules(
 		page *gentypes.Page,
 		filter *gentypes.ModuleFilter,

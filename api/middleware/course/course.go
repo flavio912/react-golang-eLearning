@@ -52,6 +52,7 @@ type CoursesRepository interface {
 	GetTagsByLessonUUID(uuid string) ([]models.Tag, error)
 
 	Modules(page *gentypes.Page, filter *gentypes.ModuleFilter, orderBy *gentypes.OrderBy) ([]models.Module, gentypes.PageInfo, error)
+	ModulesByUUIDs(uuids []gentypes.UUID) ([]models.Module, error)
 	CreateModule(input CreateModuleInput) (models.Module, error)
 	UpdateModule(input UpdateModuleInput) (models.Module, error)
 	DeleteModule(uuid gentypes.UUID) (bool, error)

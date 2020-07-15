@@ -66,6 +66,15 @@ func (c *courseAppImpl) Modules(
 	return c.modulesToGentypes(modules), pageInfo, nil
 }
 
+func (c *courseAppImpl) ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Module{}, &errors.ErrUnauthorized
+	}
+
+	modules, err := c.coursesRepository.ModulesByUUIDs(uuids)
+	return c.modulesToGentypes(modules), err
+}
+
 func (c *courseAppImpl) Module(uuid gentypes.UUID) (gentypes.Module, error) {
 	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return gentypes.Module{}, &errors.ErrUnauthorized

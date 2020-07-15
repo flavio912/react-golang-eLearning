@@ -755,6 +755,29 @@ func (_m *CoursesRepository) Modules(page *gentypes.Page, filter *gentypes.Modul
 	return r0, r1, r2
 }
 
+// ModulesByUUIDs provides a mock function with given fields: uuids
+func (_m *CoursesRepository) ModulesByUUIDs(uuids []gentypes.UUID) ([]models.Module, error) {
+	ret := _m.Called(uuids)
+
+	var r0 []models.Module
+	if rf, ok := ret.Get(0).(func([]gentypes.UUID) []models.Module); ok {
+		r0 = rf(uuids)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Module)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]gentypes.UUID) error); ok {
+		r1 = rf(uuids)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // OnlineCourse provides a mock function with given fields: courseID
 func (_m *CoursesRepository) OnlineCourse(courseID uint) (models.OnlineCourse, error) {
 	ret := _m.Called(courseID)
