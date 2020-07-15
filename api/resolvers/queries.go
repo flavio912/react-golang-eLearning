@@ -198,14 +198,14 @@ func (q *QueryResolver) User(ctx context.Context) (*UserResolver, error) {
 	})
 }
 
-func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID string }) (*LessonResolver, error) {
+func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID gentypes.UUID }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
 	return NewLessonResolver(ctx, NewLessonArgs{
-		UUID: args.UUID,
+		UUID: &args.UUID,
 	})
 }
 
@@ -402,7 +402,7 @@ func (q *QueryResolver) SearchSyllabus(
 			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{m})
 		case gentypes.LessonType:
 			l, _ := NewLessonResolver(ctx, NewLessonArgs{
-				UUID: res.UUID.String(),
+				UUID: &res.UUID,
 			})
 			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{l})
 		case gentypes.TestType:
