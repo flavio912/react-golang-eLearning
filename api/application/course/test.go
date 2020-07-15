@@ -139,6 +139,10 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 		return false, gentypes.CourseIncomplete, &errors.ErrUnauthorized
 	}
 
+	if err := input.Validate(); err != nil {
+		return false, gentypes.CourseIncomplete, err
+	}
+
 	// Check taker can access this course
 	var courseTakerUUID gentypes.UUID
 	if c.grant.IsDelegate {
@@ -150,7 +154,9 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 		courseTakerUUID = individual.CourseTakerUUID
 	}
 
-	activeCourse, err := c.usersRepository.TakerActiveCourse(courseTakerUUID, input.CourseID)
+	courseID := uint(input.CourseID)
+
+	activeCourse, err := c.usersRepository.TakerActiveCourse(courseTakerUUID, courseID)
 	if err != nil {
 		return false, gentypes.CourseIncomplete, &errors.ErrUnauthorized
 	}
@@ -207,7 +213,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 	percentCorrect := (float64(correct) / float64(test.QuestionsToAnswer)) * 100
 	testPassed := percentCorrect > test.PassPercentage
 
-	prevMark, err := c.takerTestMark(courseTakerUUID, input.CourseID, input.TestUUID)
+	prevMark, err := c.takerTestMark(courseTakerUUID, courseID, input.TestUUID)
 
 	if err != nil && err != &errors.ErrNotFound {
 		c.grant.Logger.Log(sentry.LevelError, err, "SubmitTest: Unable to get taker test mark")
@@ -222,7 +228,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 	// If this is the last attempt check if it passed
 	if test.AttemptsAllowed == 1 || (err != &errors.ErrNotFound && test.AttemptsAllowed == prevMark.CurrentAttempt) {
 		if !testPassed {
-			err := c.completeCourse(courseTakerUUID, input.CourseID, activeCourse.MinutesTracked, false)
+			err := c.completeCourse(courseTakerUUID, courseID, activeCourse.MinutesTracked, false)
 			if err != nil {
 				c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - fail")
 			}
@@ -234,7 +240,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 	marks := models.TestMark{
 		TestUUID:        test.UUID,
 		CourseTakerUUID: courseTakerUUID,
-		CourseID:        input.CourseID,
+		CourseID:        courseID,
 		Passed:          testPassed,
 		CurrentAttempt:  currentAttempt,
 	}
@@ -246,14 +252,14 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 	}
 
 	// If taker has completed the whole course
-	completed, err := c.isOnlineCourseCompleted(courseTakerUUID, input.CourseID)
+	completed, err := c.isOnlineCourseCompleted(courseTakerUUID, courseID)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelFatal, err, "SubmitTest: UNABLE TO CHECK COURSE COMPLETION")
 		return true, activeCourse.Status, &errors.ErrWhileHandling
 	}
 
 	if completed {
-		err := c.completeCourse(courseTakerUUID, input.CourseID, activeCourse.MinutesTracked, true)
+		err := c.completeCourse(courseTakerUUID, courseID, activeCourse.MinutesTracked, true)
 		if err != nil {
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - success")
 		}
