@@ -6,6 +6,7 @@ import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
 import Results from './Results';
+import Filter from 'src/components/Filter';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -14,7 +15,10 @@ const useStyles = makeStyles(theme => ({
   },
   results: {
     marginTop: theme.spacing(3)
-  }
+  },
+  filter: {
+    marginTop: theme.spacing(3)
+  },
 }));
 
 const GET_MODULES = gql`
@@ -63,7 +67,7 @@ function ModulesList({ match, history }) {
         <Header onAdd={() => {
             history.push('/modules/create/overview');
           }}/>
-        <SearchBar onFilter={false} onSearch={handleSearch} />
+        <Filter className={classes.filter} />
         {modules && <Results className={classes.results} modules={modules} />}
       </Container>
     </Page>
