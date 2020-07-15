@@ -189,6 +189,14 @@ func (c *courseAppImpl) UpdateModule(input gentypes.UpdateModuleInput) (gentypes
 	return c.moduleToGentype(module), err
 }
 
+func (c *courseAppImpl) ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.ModuleItem{}, &errors.ErrUnauthorized
+	}
+
+	return c.coursesRepository.GetModuleStructure(uuid)
+}
+
 func getUploadKey(token *string, uploadIdent string) (*string, error) {
 	var uploadKey *string
 	if token != nil {

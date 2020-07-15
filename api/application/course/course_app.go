@@ -60,6 +60,7 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
+	ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error)
 
 	SearchSyllabus(
 		page *gentypes.Page,
