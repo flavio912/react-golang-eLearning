@@ -66,6 +66,7 @@ type CoursesRepository interface {
 		filter *gentypes.TestFilter,
 		orderBy *gentypes.OrderBy,
 	) ([]models.Test, gentypes.PageInfo, error)
+	TestsByUUIDs(testUUIDs []gentypes.UUID) ([]models.Test, error)
 	ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error)
 	CreateTest(input CreateTestInput) (models.Test, error)
 	UpdateTest(input UpdateTestInput) (models.Test, error)

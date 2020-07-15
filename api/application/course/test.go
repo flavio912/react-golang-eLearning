@@ -117,6 +117,15 @@ func (c *courseAppImpl) Tests(
 	return c.testsToGentypes(tests), pageInfo, nil
 }
 
+func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Test{}, &errors.ErrUnauthorized
+	}
+
+	tests, err := c.coursesRepository.TestsByUUIDs(uuids)
+	return c.testsToGentypes(tests), err
+}
+
 func (c *courseAppImpl) takerHasSubmittedTest(courseTaker gentypes.UUID, courseID uint, testUUID gentypes.UUID) (bool, error) {
 	marks, err := c.usersRepository.TakerTestMarks(courseTaker, courseID)
 	if err != nil {

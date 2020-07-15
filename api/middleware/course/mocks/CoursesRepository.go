@@ -290,6 +290,27 @@ func (_m *CoursesRepository) CreateTestMarks(mark models.TestMark) error {
 	return r0
 }
 
+// DeleteCourse provides a mock function with given fields: ID
+func (_m *CoursesRepository) DeleteCourse(ID uint) (bool, error) {
+	ret := _m.Called(ID)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(uint) bool); ok {
+		r0 = rf(ID)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(uint) error); ok {
+		r1 = rf(ID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteLesson provides a mock function with given fields: input
 func (_m *CoursesRepository) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
 	ret := _m.Called(input)
@@ -304,27 +325,6 @@ func (_m *CoursesRepository) DeleteLesson(input gentypes.DeleteLessonInput) (boo
 	var r1 error
 	if rf, ok := ret.Get(1).(func(gentypes.DeleteLessonInput) error); ok {
 		r1 = rf(input)
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// DeleteTest provides a mock function with given fields: uuid
-func (_m *CoursesRepository) DeleteTest(uuid gentypes.UUID) (bool, error) {
-	ret := _m.Called(uuid)
-
-	var r0 bool
-	if rf, ok := ret.Get(0).(func(gentypes.UUID) bool); ok {
-		r0 = rf(uuid)
-	} else {
-		r0 = ret.Get(0).(bool)
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
-		r1 = rf(uuid)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -374,20 +374,20 @@ func (_m *CoursesRepository) DeleteQuestion(input gentypes.UUID) (bool, error) {
 	return r0, r1
 }
 
-// DeleteCourse provides a mock function with given fields: ID
-func (_m *CoursesRepository) DeleteCourse(ID uint) (bool, error) {
-	ret := _m.Called(ID)
+// DeleteTest provides a mock function with given fields: uuid
+func (_m *CoursesRepository) DeleteTest(uuid gentypes.UUID) (bool, error) {
+	ret := _m.Called(uuid)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(uint) bool); ok {
-		r0 = rf(ID)
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) bool); ok {
+		r0 = rf(uuid)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(uint) error); ok {
-		r1 = rf(ID)
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -975,6 +975,29 @@ func (_m *CoursesRepository) Tests(page *gentypes.Page, filter *gentypes.TestFil
 	}
 
 	return r0, r1, r2
+}
+
+// TestsByUUIDs provides a mock function with given fields: testUUIDs
+func (_m *CoursesRepository) TestsByUUIDs(testUUIDs []gentypes.UUID) ([]models.Test, error) {
+	ret := _m.Called(testUUIDs)
+
+	var r0 []models.Test
+	if rf, ok := ret.Get(0).(func([]gentypes.UUID) []models.Test); ok {
+		r0 = rf(testUUIDs)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Test)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]gentypes.UUID) error); ok {
+		r1 = rf(testUUIDs)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
 }
 
 // UpdateClassroomCourse provides a mock function with given fields: courseInfo

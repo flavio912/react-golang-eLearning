@@ -232,20 +232,28 @@ func (c *coursesRepoImpl) Tests(
 	return tests, pageInfo, err
 }
 
-// ManyTests maps testUUIDs to their respective test
-func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error) {
+func (c *coursesRepoImpl) TestsByUUIDs(testUUIDs []gentypes.UUID) ([]models.Test, error) {
 	var tests []models.Test
 	query := database.GormDB.Where("uuid IN (?)", testUUIDs).Find(&tests)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return map[gentypes.UUID]models.Test{}, &errors.ErrNotAllFound
+			return []models.Test{}, &errors.ErrNotAllFound
 		}
 
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get many tests")
-		return map[gentypes.UUID]models.Test{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get tests")
+		return []models.Test{}, &errors.ErrWhileHandling
 	}
 
-	var err error
+	return tests, nil
+}
+
+// ManyTests maps testUUIDs to their respective test
+func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error) {
+	tests, err := c.TestsByUUIDs(testUUIDs)
+	if err != nil {
+		return map[gentypes.UUID]models.Test{}, err
+	}
+
 	if len(tests) < len(testUUIDs) {
 		err = &errors.ErrNotAllFound
 	}
