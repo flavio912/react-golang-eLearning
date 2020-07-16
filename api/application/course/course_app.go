@@ -46,12 +46,14 @@ type CourseApp interface {
 		filter *gentypes.TestFilter,
 		orderBy *gentypes.OrderBy,
 	) ([]gentypes.Test, gentypes.PageInfo, error)
+	TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error)
 	CreateTest(input gentypes.CreateTestInput) (gentypes.Test, error)
 	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
 	SubmitTest(input gentypes.SubmitTestInput) (bool, gentypes.CourseStatus, error)
 	DeleteTest(input gentypes.DeleteTestInput) (bool, error)
 
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
+	ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error)
 	Modules(
 		page *gentypes.Page,
 		filter *gentypes.ModuleFilter,
@@ -60,6 +62,12 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
+	ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error)
+
+	SearchSyllabus(
+		page *gentypes.Page,
+		filter *gentypes.SyllabusFilter,
+	) ([]gentypes.CourseItem, gentypes.PageInfo, error)
 
 	Question(uuid gentypes.UUID) (gentypes.Question, error)
 	Questions(

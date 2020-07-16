@@ -20,7 +20,7 @@ type LessonResolver struct {
 }
 
 type NewLessonArgs struct {
-	UUID   string
+	UUID   *gentypes.UUID
 	Lesson gentypes.Lesson
 }
 
@@ -35,8 +35,8 @@ func NewLessonResolver(ctx context.Context, args NewLessonArgs) (*LessonResolver
 	)
 
 	switch {
-	case args.UUID != "":
-		lesson, err = loader.LoadLesson(ctx, args.UUID)
+	case args.UUID != nil:
+		lesson, err = loader.LoadLesson(ctx, *args.UUID)
 	case args.Lesson.UUID.String() != "":
 		lesson = args.Lesson
 	default:
