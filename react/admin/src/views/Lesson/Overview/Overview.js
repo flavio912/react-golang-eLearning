@@ -8,7 +8,10 @@ import {
   TextField
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { gql } from 'apollo-boost';
+
 import TagsInput from 'src/components/TagsInput';
+import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -16,34 +19,19 @@ const useStyles = makeStyles(theme => ({
   },
   lessonName: {
     marginBottom: 20
-  },
-  buttonText: {
-    color: '#4a4a4a',
-    fontSize: 11,
-    fontWeight: 'weight: 700'
-  },
-  shortDescription: {
-    width: '100%'
-  },
-  answerItem: {
-    border: '1px solid gainsboro',
-    borderRadius: 3,
-    padding: '6px 21px',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    display: 'flex'
-  },
-  formControl: {
-    width: '100%'
-  },
-  previewImage: {
-    width: 200,
-    maxHeight: 200
-  },
-  editItems: {
-    alignItems: 'center'
   }
 }));
+
+const UPLOAD_REQUEST = gql`
+  mutation UploadRequest($fileType: String!, $contentLength: Int!) {
+    answerImageUploadRequest(
+      input: { fileType: $fileType, contentLength: $contentLength }
+    ) {
+      url
+      successToken
+    }
+  }
+`;
 
 function Overview({ state, setState }) {
   const classes = useStyles();
@@ -52,53 +40,63 @@ function Overview({ state, setState }) {
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={2}>
-        <Grid container spacing={4} direction={'column'}>
-          <Grid item>
-            <Card>
-              <CardHeader title={'Lesson Information'} />
-              <Divider />
-              <CardContent>
-                <Grid item className={classes.lessonName}>
-                  <TextField
-                    fullWidth
-                    label="Name"
-                    name="lesson"
-                    value={state.name}
-                    onChange={inp => {
-                      setState('name', inp.target.value);
-                    }}
-                    placeholder="Lesson Name"
-                    variant="outlined"
-                  />
-                </Grid>
-                <TagsInput onChange={handleTags} />
-              </CardContent>
-            </Card>
-          </Grid>
-          <Grid item>
-            <Card>
-              <CardHeader title={'Lesson Description'} />
-              <Divider />
-              <CardContent>
-                <Grid item>
-                  <TextField
-                    fullWidth
-                    multiline
-                    rows={8}
-                    label="Description"
-                    name="description"
-                    value={state.text}
-                    onChange={inp => {
-                      setState('description', inp.target.value);
-                    }}
-                    placeholder="Lesson Description"
-                    variant="outlined"
-                  />
-                </Grid>
-              </CardContent>
-            </Card>
-          </Grid>
+      <Grid container spacing={4}>
+        <Grid item sm={8}>
+          <Card>
+            <CardHeader title={'About this Lesson'} />
+            <Divider />
+            <CardContent>
+              <Grid item className={classes.lessonName}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  name="lesson"
+                  value={state.name}
+                  onChange={inp => {
+                    setState('name', inp.target.value);
+                  }}
+                  placeholder="Lesson Name"
+                  variant="outlined"
+                />
+              </Grid>
+              <TagsInput onChange={handleTags} />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item sm={4}>
+          <Card>
+            <CardHeader title={'Lessons banner Image'} />
+            <Divider />
+            <CardContent>
+              <UploadFile
+                uploadMutation={UPLOAD_REQUEST}
+                onUploaded={(successToken, url) => {}}
+              />
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item sm={8}>
+          <Card>
+            <CardHeader title={'Lesson Description'} />
+            <Divider />
+            <CardContent>
+              <Grid item>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={8}
+                  label="Description"
+                  name="description"
+                  value={state.text}
+                  onChange={inp => {
+                    setState('description', inp.target.value);
+                  }}
+                  placeholder="Lesson Description"
+                  variant="outlined"
+                />
+              </Grid>
+            </CardContent>
+          </Card>
         </Grid>
       </Grid>
     </div>

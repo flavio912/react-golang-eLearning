@@ -16,7 +16,10 @@ const CREATE_LESSON = gql`
 
 function CreateLesson({ match, history }) {
   const { tab: currentTab } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'audioVideo', label: 'Audio/Video' }
+  ];
 
   var initState = {
     name: '',

@@ -4,6 +4,7 @@ import { Container, Tabs, Tab, Divider } from '@material-ui/core';
 import Page from 'src/components/Page';
 import Header from './Header';
 import Overview from './Overview';
+import AudioVideo from './AudioVideo';
 import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
@@ -60,6 +61,9 @@ function LessonPage({
         <div className={classes.content}>
           {currentTab === 'overview' && (
             <Overview state={state} setState={setState} />
+          )}
+          {currentTab === 'audioVideo' && (
+            <AudioVideo state={state} setState={setState} />
           )}
         </div>
       </Container>

@@ -42,7 +42,10 @@ function UpdateLesson({ match, history }) {
   const classes = useStyles();
 
   const { tab: currentTab, ident } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'audioVideo', label: 'Audio/Video' }
+  ];
 
   const { loading, error, data: queryData, refetch } = useQuery(GET_LESSON, {
     variables: {
