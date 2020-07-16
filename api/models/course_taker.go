@@ -33,7 +33,7 @@ type HistoricalCourse struct {
 	CourseID        uint
 	Passed          bool
 	MinutesTracked  float64
-	ExpirationDate  time.Time
+	ExpirationDate  *time.Time
 	CertificateKey  *string
 }
 

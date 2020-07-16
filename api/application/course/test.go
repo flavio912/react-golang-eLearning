@@ -1,6 +1,8 @@
 package course
 
 import (
+	"time"
+
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -271,9 +273,26 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 
 // completeOnlineCourse completes a course and moves it to historical + generates a certificate if the user passed
 func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, minutesTracked float64, passed bool) error {
-	// TODO: Calculate expiration date
-	// course, err := c.coursesRepository.Course(courseID)
-	// course.
+	// Calculate expiration date
+	course, err := c.coursesRepository.Course(courseID)
+	if err != nil {
+		return err
+	}
+
+	var expirationDate *time.Time
+	if passed {
+		expDate := time.Now()
+		if course.ExpirationToEndMonth {
+			currentYear, currentMonth, _ := expDate.Date()
+			currentLocation := expDate.Location()
+
+			firstOfMonth := time.Date(currentYear, currentMonth, 1, 0, 0, 0, 0, currentLocation)
+			expDate = firstOfMonth.AddDate(0, 1, -1)
+		}
+
+		expDate = expDate.AddDate(0, int(course.ExpiresInMonths), 0)
+		expirationDate = &expDate
+	}
 
 	// Create historical course
 	histCourse, err := c.usersRepository.CreateHistoricalCourse(models.HistoricalCourse{
@@ -282,7 +301,7 @@ func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, m
 		MinutesTracked:  minutesTracked,
 		Passed:          passed,
 		CertificateKey:  nil, // No certificate initially while it is generated
-		// ExpirationDate:
+		ExpirationDate:  expirationDate,
 	})
 
 	if err != nil {

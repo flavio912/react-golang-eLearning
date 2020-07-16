@@ -159,7 +159,7 @@ func UploadCertificate(body io.Reader) (string, error) {
 
 	_, err = Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(helpers.Config.AWS.UploadsBucket),
-		Key:    aws.String(str),
+		Key:    aws.String("certificates/" + str + ".pdf"),
 		Body:   body,
 	})
 

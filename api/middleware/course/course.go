@@ -135,6 +135,7 @@ type CourseInput struct {
 	BackgroundCheck   *bool
 	SpecificTerms     *string
 	CourseType        *gentypes.CourseType
+	CertificateType   *gentypes.UUID
 }
 
 // UpdateCourse updates the course for a given courseID
@@ -166,7 +167,10 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 		updates["color"] = *infoChanges.Color
 	}
 	if infoChanges.CategoryUUID != nil {
-		updates["category_uuid"] = infoChanges.CategoryUUID // TODO: Check if exists
+		updates["category_uuid"] = *infoChanges.CategoryUUID // TODO: Check if exists
+	}
+	if infoChanges.CertificateType != nil {
+		updates["certificate_type_uuid"] = *infoChanges.CertificateType
 	}
 	if infoChanges.Excerpt != nil {
 		updates["excerpt"] = *infoChanges.Excerpt
@@ -348,19 +352,20 @@ func (c *coursesRepoImpl) ComposeCourse(courseInfo CourseInput) (models.Course, 
 	}
 
 	info := models.Course{
-		Name:            helpers.NilStringToEmpty(courseInfo.Name),
-		Price:           helpers.NilFloatToZero(courseInfo.Price),
-		Color:           helpers.NilStringToEmpty(courseInfo.Color),
-		Tags:            tags,
-		Excerpt:         helpers.NilStringToEmpty(courseInfo.Excerpt),
-		Introduction:    helpers.NilStringToEmpty(courseInfo.Introduction),
-		HowToComplete:   helpers.NilStringToEmpty(courseInfo.HowToComplete),
-		HoursToComplete: helpers.NilFloatToZero(courseInfo.HoursToComplete),
-		Requirements:    requirements,
-		WhatYouLearn:    whatYouLearn,
-		SpecificTerms:   helpers.NilStringToEmpty(courseInfo.SpecificTerms),
-		CategoryUUID:    courseInfo.CategoryUUID,
-		CourseType:      *courseInfo.CourseType,
+		Name:                helpers.NilStringToEmpty(courseInfo.Name),
+		Price:               helpers.NilFloatToZero(courseInfo.Price),
+		Color:               helpers.NilStringToEmpty(courseInfo.Color),
+		Tags:                tags,
+		Excerpt:             helpers.NilStringToEmpty(courseInfo.Excerpt),
+		Introduction:        helpers.NilStringToEmpty(courseInfo.Introduction),
+		HowToComplete:       helpers.NilStringToEmpty(courseInfo.HowToComplete),
+		HoursToComplete:     helpers.NilFloatToZero(courseInfo.HoursToComplete),
+		Requirements:        requirements,
+		WhatYouLearn:        whatYouLearn,
+		SpecificTerms:       helpers.NilStringToEmpty(courseInfo.SpecificTerms),
+		CategoryUUID:        courseInfo.CategoryUUID,
+		CourseType:          *courseInfo.CourseType,
+		CertificateTypeUUID: courseInfo.CertificateType,
 	}
 
 	if courseInfo.AccessType != nil {

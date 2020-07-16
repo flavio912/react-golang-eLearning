@@ -7,30 +7,32 @@ import (
 )
 
 type Course struct {
-	ID              uint
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
-	Name            string         // The course name/title
-	Price           float64        // 0.00 if free course
-	Color           string         // The primary color for the course
-	Category        Category       // The category that the course belongs to
-	CategoryUUID    *gentypes.UUID // FKEY
-	Tags            []Tag          `gorm:"many2many:course_tags_link;"`
-	Excerpt         string
-	Introduction    string
-	HowToComplete   string
-	HoursToComplete float64
-	WhatYouLearn    []WhatYouLearnBullet
-	Requirements    []RequirementBullet
-	AccessType      gentypes.AccessType // Restricted or Open Access
-	ImageKey        *string             // S3 Key for the course image
-	BackgroundCheck bool                // Is a background check required
-	SpecificTerms   string              // Terms specific to this course
-	Published       bool                // If not published users can't see this course
-	CourseType      gentypes.CourseType // classroom or online course
-	ExpiresInMonths uint                // The number of months before the certificate for the course
-	OnlineCourse    *OnlineCourse
-	ClassroomCourse *ClassroomCourse
+	ID                   uint
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	Name                 string         // The course name/title
+	Price                float64        // 0.00 if free course
+	Color                string         // The primary color for the course
+	Category             Category       // The category that the course belongs to
+	CategoryUUID         *gentypes.UUID // FKEY
+	Tags                 []Tag          `gorm:"many2many:course_tags_link;"`
+	Excerpt              string
+	Introduction         string
+	HowToComplete        string
+	HoursToComplete      float64
+	WhatYouLearn         []WhatYouLearnBullet
+	Requirements         []RequirementBullet
+	AccessType           gentypes.AccessType // Restricted or Open Access
+	ImageKey             *string             // S3 Key for the course image
+	BackgroundCheck      bool                // Is a background check required
+	SpecificTerms        string              // Terms specific to this course
+	Published            bool                // If not published users can't see this course
+	CourseType           gentypes.CourseType // classroom or online course
+	ExpiresInMonths      uint                // The number of months before the certificate for the course
+	ExpirationToEndMonth bool                // If true the expiration date is calculated starting at the end of this month
+	CertificateTypeUUID  *gentypes.UUID      // The type of certificate to use
+	OnlineCourse         *OnlineCourse
+	ClassroomCourse      *ClassroomCourse
 }
 
 type RequirementBullet struct {

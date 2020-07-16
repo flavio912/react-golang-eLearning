@@ -43,6 +43,10 @@ func InitMigrations() {
 
 	database.GormDB.Model(&models.CourseStructure{}).AddForeignKey("online_course_uuid", "online_courses(uuid)", "CASCADE", "RESTRICT")
 
+	// Certificates
+	database.GormDB.AutoMigrate(&models.CAANumber{})
+	database.GormDB.AutoMigrate(&models.CertificateType{})
+
 	// Tests
 	database.GormDB.AutoMigrate(&models.Test{})
 	database.GormDB.AutoMigrate(&models.Question{})

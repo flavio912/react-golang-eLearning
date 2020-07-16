@@ -1,20 +1,23 @@
 package models
 
-// type CertificateNumberType struct {
-// 	UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-// 	Type
-// }
+import (
+	"time"
 
-// type CertificateNumber struct {
-// 	UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-// 	CreatedAt time.Time
-// 	NumberType
-// 	Identifier string
-// }
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+)
 
-// type CertificateType struct {
-// 	UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
-// 	CreatedAt time.Time
-// 	CertificateNumType
-// 	CertificateBodyKey *string
-// }
+type CAANumber struct {
+	UUID       gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt  time.Time
+	Identifier string
+	Used       bool
+}
+
+type CertificateType struct {
+	UUID                    gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt               time.Time
+	CertificateBodyImageKey *string
+	RegulationText          string
+	RequiresCAANo           bool
+	ShowTrainingSection     bool
+}

@@ -49,6 +49,7 @@ type CourseInput struct {
 	Tags               *[]UUID
 	SpecificTerms      *string
 	BannerImageSuccess *string
+	CertificateType    *UUID
 }
 
 type CourseItem struct {

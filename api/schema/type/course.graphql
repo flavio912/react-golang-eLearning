@@ -58,6 +58,7 @@ type CoursePage implements PaginatedQuery {
 input SaveClassroomCourseInput {
   id: Int
   name: String
+  certificateType: UUID
   categoryUUID: UUID
   excerpt: String
   introduction: String
@@ -79,6 +80,7 @@ input SaveOnlineCourseInput {
   id: Int
   name: String
   categoryUUID: UUID
+  certificateType: UUID
   # secondaryCategoryUUID: UUID
   excerpt: String # Short description of course
   introduction: String # 'About this course' section
