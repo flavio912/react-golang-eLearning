@@ -60,24 +60,26 @@ type CourseItem struct {
 }
 
 type Course struct {
-	ID              uint
-	Name            string
-	AccessType      AccessType
-	CourseType      CourseType
-	AllowedToBuy    bool // Helper field, true if current user is allowed to buy this course
-	BackgroundCheck bool
-	Price           float64
-	Tags            []Tag
-	Color           string `valid:"hexcolor"`
-	Introduction    string
-	HowToComplete   string
-	HoursToComplete float64
-	WhatYouLearn    []string
-	Requirements    []string
-	Excerpt         string
-	SpecificTerms   string
-	CategoryUUID    *UUID
-	BannerImageURL  *string
+	ID                   uint
+	Name                 string
+	AccessType           AccessType
+	CourseType           CourseType
+	AllowedToBuy         bool // Helper field, true if current user is allowed to buy this course
+	BackgroundCheck      bool
+	Price                float64
+	Tags                 []Tag
+	Color                string `valid:"hexcolor"`
+	Introduction         string
+	HowToComplete        string
+	HoursToComplete      float64
+	WhatYouLearn         []string
+	Requirements         []string
+	Excerpt              string
+	SpecificTerms        string
+	CategoryUUID         *UUID
+	BannerImageURL       *string
+	ExpiresInMonths      uint
+	ExpirationToEndMonth bool
 }
 
 type ActiveCourse struct {
