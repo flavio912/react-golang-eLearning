@@ -271,6 +271,10 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 
 // completeOnlineCourse completes a course and moves it to historical + generates a certificate if the user passed
 func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, minutesTracked float64, passed bool) error {
+	// TODO: Calculate expiration date
+	// course, err := c.coursesRepository.Course(courseID)
+	// course.
+
 	// Create historical course
 	histCourse, err := c.usersRepository.CreateHistoricalCourse(models.HistoricalCourse{
 		CourseTakerUUID: takerUUID,
@@ -278,6 +282,7 @@ func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, m
 		MinutesTracked:  minutesTracked,
 		Passed:          passed,
 		CertificateKey:  nil, // No certificate initially while it is generated
+		// ExpirationDate:
 	})
 
 	if err != nil {
@@ -285,7 +290,7 @@ func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, m
 	}
 
 	if passed {
-		go c.generateCertificate(histCourse)
+		go c.generateCertificate(histCourse.UUID)
 	}
 
 	return nil

@@ -63,6 +63,7 @@ type UsersRepository interface {
 	TakerTestMarks(courseTaker gentypes.UUID, courseID uint) ([]models.TestMark, error)
 
 	CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error)
+	UpdateHistoricalCourse(input UpdateHistoricalCourseInput) error
 
 	// Returns true if all course takers are part of the company
 	CompanyManagesCourseTakers(companyUUID gentypes.UUID, courseTakerUUIDs []gentypes.UUID) (bool, error)

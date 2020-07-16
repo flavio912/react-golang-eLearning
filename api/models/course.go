@@ -28,6 +28,7 @@ type Course struct {
 	SpecificTerms   string              // Terms specific to this course
 	Published       bool                // If not published users can't see this course
 	CourseType      gentypes.CourseType // classroom or online course
+	ExpiresInMonths uint                // The number of months before the certificate for the course
 	OnlineCourse    *OnlineCourse
 	ClassroomCourse *ClassroomCourse
 }

@@ -201,6 +201,26 @@ func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (
 	return course, nil
 }
 
+type UpdateHistoricalCourseInput struct {
+	UUID           gentypes.UUID
+	CertificateKey *string
+}
+
+func (u *usersRepoImpl) UpdateHistoricalCourse(input UpdateHistoricalCourseInput) error {
+	updates := make(map[string]interface{})
+
+	if input.CertificateKey != nil {
+		updates["certificate_key"] = input.CertificateKey
+	}
+
+	if err := database.GormDB.Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to update historical course")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}
+
 func (u *usersRepoImpl) SaveTestMarks(mark models.TestMark) error {
 	err := database.GormDB.Save(&mark).Error
 	if err != nil {
