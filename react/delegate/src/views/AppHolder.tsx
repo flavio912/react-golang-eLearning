@@ -6,8 +6,10 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import SearchResults from 'components/Search/SearchResults';
 import { Theme } from 'helpers/theme';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
+import environment from 'api/environment';
+import { AppHolderQuery, AppHolderQueryResponse } from './__generated__/AppHolderQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -125,7 +127,46 @@ const AppHolder = ({ children, user }: Props) => {
         {children}
         {isShowSearchModal && (
           <div className={classes.appHolderSearch} onClick={hideSearch}>
-            <SearchResults results={results} />
+            <SearchResults searchFunction={
+              async (text: string) => {
+                const query = graphql`
+                  query AppHolderQuery($name: String!){
+                    courses(filter: { name: $name }, page: {limit: 4}){
+                      edges{
+                        notId: id
+                        name
+                        bannerImageURL
+                        introduction
+                      }
+                    }
+                  }
+                `;
+    
+                const variables = {
+                  name: text
+                };
+
+                const data = (await fetchQuery(
+                  environment,
+                  query,
+                  variables
+                )) as AppHolderQueryResponse;
+                
+                if (!data || !data.courses || !data.courses.edges){
+                  console.error('Could not get data', data);
+                  return [];
+                }
+
+                const results = data.courses.edges.map((course) => ({
+                  id: course?.notId ?? '',
+                  title: course?.name ?? '',
+                  image: course?.bannerImageURL ?? '',
+                  description: course?.introduction ?? ''
+                }));
+
+                return results;
+              }
+            } />
           </div>
         )}
       </div>
@@ -139,5 +180,21 @@ export default createFragmentContainer(AppHolder, {
       firstName
       lastName
     }
-  `
+  `,
+  courses: graphql`
+    fragment AppHolder_courses on CoursePage {
+      edges {
+        notId: id
+        name
+        bannerImageURL
+        introduction
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
+    }
+  `,
 });

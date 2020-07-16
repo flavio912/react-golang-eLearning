@@ -30,15 +30,34 @@ export type ResultItem = {
   description: string;
 };
 type Props = {
-  results: ResultItem[];
+  results?: ResultItem[];
+  searchFunction?: (query: string) => Promise<ResultItem[]>
 };
 
-function SearchResults({ results }: Props) {
+function SearchResults({ results, searchFunction }: Props) {
   const theme = useTheme();
   const classes = useStyles({
     theme
   });
   const [searchText, setSearchText] = React.useState<string>('');
+
+  const [showResults, setShowResults]: [ResultItem[], any] = React.useState(results ? results : []);
+  const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
+
+  const onChange = searchFunction ? (text: string) => {
+    clearTimeout(debouncer);
+    const timeout = setTimeout(async () => {
+      if (text.length === 0 && showResults.length > 0){
+        return;
+      }
+      const res = await searchFunction(text);
+      
+      setSearchText(text);
+      setShowResults(res);
+    });
+    setDebouncer(timeout);
+  } : setSearchText;
+
   return (
     <div
       className={classes.searchRoot}
@@ -48,13 +67,13 @@ function SearchResults({ results }: Props) {
     >
       <SearchInput
         placeholder="Search for Courses..."
-        onChange={setSearchText}
+        onChange={onChange}
         value={searchText}
       />
       {searchText && (
         <>
           <div className={classes.searchList}>
-            {results.map((item, index) => (
+            {showResults.map((item, index) => (
               <SearchResultItem course={item} key={index} onClick={() => {}} />
             ))}
           </div>
