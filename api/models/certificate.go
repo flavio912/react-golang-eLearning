@@ -15,6 +15,7 @@ type CAANumber struct {
 
 type CertificateType struct {
 	UUID                    gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	Name                    string
 	CreatedAt               time.Time
 	CertificateBodyImageKey *string
 	RegulationText          string

@@ -51,6 +51,7 @@ type UsersRepository interface {
 
 	GetAddressesByIDs(ids []uint) ([]models.Address, error)
 
+	UserFromCourseTaker(takerUUID gentypes.UUID) (*models.Delegate, *models.Individual)
 	TakerActivity(courseTaker gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)
@@ -62,6 +63,7 @@ type UsersRepository interface {
 	SaveTestMarks(mark models.TestMark) error
 	TakerTestMarks(courseTaker gentypes.UUID, courseID uint) ([]models.TestMark, error)
 
+	HistoricalCourse(uuid gentypes.UUID) (models.HistoricalCourse, error)
 	CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error)
 	UpdateHistoricalCourse(input UpdateHistoricalCourseInput) error
 

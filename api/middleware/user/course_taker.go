@@ -168,6 +168,21 @@ func (u *usersRepoImpl) TakerTestMarks(courseTaker gentypes.UUID, courseID uint)
 	return marks, nil
 }
 
+func (u *usersRepoImpl) HistoricalCourse(uuid gentypes.UUID) (models.HistoricalCourse, error) {
+	var course models.HistoricalCourse
+	query := database.GormDB.Where("uuid = ?", uuid).Find(&course)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.HistoricalCourse{}, &errors.ErrNotFound
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "HistoricalCourse: Unable to fetch")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return course, nil
+}
+
 func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error) {
 	tx := database.GormDB.Begin()
 	defer func() {
