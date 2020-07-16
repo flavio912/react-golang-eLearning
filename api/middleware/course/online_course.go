@@ -36,19 +36,27 @@ func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 
 	// Get courseInfo model
 	var courseType = gentypes.OnlineCourseType
+	var expMonths *uint
+	if courseInfo.ExpiresInMonths != nil {
+		l := uint(*courseInfo.ExpiresInMonths)
+		expMonths = &l
+	}
+
 	infoModel, err := c.ComposeCourse(CourseInput{
-		Name:            courseInfo.Name,
-		Price:           courseInfo.Price,
-		Color:           courseInfo.Color,
-		Tags:            courseInfo.Tags,
-		Excerpt:         courseInfo.Excerpt,
-		Introduction:    courseInfo.Introduction,
-		HowToComplete:   courseInfo.HowToComplete,
-		HoursToComplete: courseInfo.HoursToComplete,
-		WhatYouLearn:    courseInfo.WhatYouLearn,
-		Requirements:    courseInfo.Requirements,
-		SpecificTerms:   courseInfo.SpecificTerms,
-		CourseType:      &courseType,
+		Name:                 courseInfo.Name,
+		Price:                courseInfo.Price,
+		Color:                courseInfo.Color,
+		Tags:                 courseInfo.Tags,
+		Excerpt:              courseInfo.Excerpt,
+		Introduction:         courseInfo.Introduction,
+		HowToComplete:        courseInfo.HowToComplete,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		WhatYouLearn:         courseInfo.WhatYouLearn,
+		Requirements:         courseInfo.Requirements,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		CourseType:           &courseType,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		ExpiresInMonths:      expMonths,
 	})
 
 	if err != nil {
@@ -91,22 +99,29 @@ func (c *coursesRepoImpl) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 	}
 
 	// TODO: think about putting these two in a transaction
+	var expMonths *uint
+	if courseInfo.ExpiresInMonths != nil {
+		l := uint(*courseInfo.ExpiresInMonths)
+		expMonths = &l
+	}
 	course, err := c.UpdateCourse(uint(*courseInfo.ID), CourseInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
 		CategoryUUID: courseInfo.CategoryUUID,
 		// TAGS
-		Excerpt:           courseInfo.Excerpt,
-		Introduction:      courseInfo.Introduction,
-		HoursToComplete:   courseInfo.HoursToComplete,
-		HowToComplete:     courseInfo.HowToComplete,
-		WhatYouLearn:      courseInfo.WhatYouLearn,
-		Requirements:      courseInfo.Requirements,
-		AccessType:        courseInfo.AccessType,
-		ImageSuccessToken: courseInfo.BannerImageSuccess,
-		BackgroundCheck:   courseInfo.BackgroundCheck,
-		SpecificTerms:     courseInfo.SpecificTerms,
+		Excerpt:              courseInfo.Excerpt,
+		Introduction:         courseInfo.Introduction,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		HowToComplete:        courseInfo.HowToComplete,
+		WhatYouLearn:         courseInfo.WhatYouLearn,
+		Requirements:         courseInfo.Requirements,
+		AccessType:           courseInfo.AccessType,
+		ImageSuccessToken:    courseInfo.BannerImageSuccess,
+		BackgroundCheck:      courseInfo.BackgroundCheck,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		ExpiresInMonths:      expMonths,
 	})
 
 	if err != nil {

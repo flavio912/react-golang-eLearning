@@ -33,23 +33,25 @@ const (
 )
 
 type CourseInput struct {
-	ID                 *int32
-	Name               *string
-	CategoryUUID       *UUID
-	Excerpt            *string
-	Introduction       *string
-	HowToComplete      *string
-	HoursToComplete    *float64
-	WhatYouLearn       *[]string
-	Requirements       *[]string
-	BackgroundCheck    *bool
-	AccessType         *AccessType
-	Price              *float64
-	Color              *string `valid:"hexcolor"`
-	Tags               *[]UUID
-	SpecificTerms      *string
-	BannerImageSuccess *string
-	CertificateType    *UUID
+	ID                   *int32
+	Name                 *string
+	CategoryUUID         *UUID
+	Excerpt              *string
+	Introduction         *string
+	HowToComplete        *string
+	HoursToComplete      *float64
+	WhatYouLearn         *[]string
+	Requirements         *[]string
+	BackgroundCheck      *bool
+	AccessType           *AccessType
+	Price                *float64
+	Color                *string `valid:"hexcolor"`
+	Tags                 *[]UUID
+	SpecificTerms        *string
+	BannerImageSuccess   *string
+	CertificateType      *UUID
+	ExpirationToEndMonth *bool
+	ExpiresInMonths      *int32
 }
 
 type CourseItem struct {

@@ -119,23 +119,25 @@ func (c *coursesRepoImpl) Courses(courseIDs []uint) ([]models.Course, error) {
 }
 
 type CourseInput struct {
-	Name              *string
-	Price             *float64
-	Color             *string `valid:"hexcolor"`
-	CategoryUUID      *gentypes.UUID
-	Tags              *[]gentypes.UUID
-	Excerpt           *string
-	Introduction      *string
-	HowToComplete     *string
-	HoursToComplete   *float64
-	WhatYouLearn      *[]string
-	Requirements      *[]string
-	AccessType        *gentypes.AccessType
-	ImageSuccessToken *string
-	BackgroundCheck   *bool
-	SpecificTerms     *string
-	CourseType        *gentypes.CourseType
-	CertificateType   *gentypes.UUID
+	Name                 *string
+	Price                *float64
+	Color                *string `valid:"hexcolor"`
+	CategoryUUID         *gentypes.UUID
+	Tags                 *[]gentypes.UUID
+	Excerpt              *string
+	Introduction         *string
+	HowToComplete        *string
+	HoursToComplete      *float64
+	WhatYouLearn         *[]string
+	Requirements         *[]string
+	AccessType           *gentypes.AccessType
+	ImageSuccessToken    *string
+	BackgroundCheck      *bool
+	SpecificTerms        *string
+	CourseType           *gentypes.CourseType
+	CertificateType      *gentypes.UUID
+	ExpiresInMonths      *uint
+	ExpirationToEndMonth *bool
 }
 
 // UpdateCourse updates the course for a given courseID
@@ -171,6 +173,12 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 	if infoChanges.CertificateType != nil {
 		updates["certificate_type_uuid"] = *infoChanges.CertificateType
+	}
+	if infoChanges.ExpirationToEndMonth != nil {
+		updates["expiration_to_end_month"] = *infoChanges.ExpirationToEndMonth
+	}
+	if infoChanges.ExpiresInMonths != nil {
+		updates["expires_in_months"] = *infoChanges.ExpiresInMonths
 	}
 	if infoChanges.Excerpt != nil {
 		updates["excerpt"] = *infoChanges.Excerpt
@@ -351,21 +359,33 @@ func (c *coursesRepoImpl) ComposeCourse(courseInfo CourseInput) (models.Course, 
 		return models.Course{}, &errors.ErrWhileHandling
 	}
 
+	expMonths := uint(0)
+	if courseInfo.ExpiresInMonths != nil {
+		expMonths = *courseInfo.ExpiresInMonths
+	}
+
+	expToEnd := false
+	if courseInfo.ExpirationToEndMonth != nil {
+		expToEnd = *courseInfo.ExpirationToEndMonth
+	}
+
 	info := models.Course{
-		Name:                helpers.NilStringToEmpty(courseInfo.Name),
-		Price:               helpers.NilFloatToZero(courseInfo.Price),
-		Color:               helpers.NilStringToEmpty(courseInfo.Color),
-		Tags:                tags,
-		Excerpt:             helpers.NilStringToEmpty(courseInfo.Excerpt),
-		Introduction:        helpers.NilStringToEmpty(courseInfo.Introduction),
-		HowToComplete:       helpers.NilStringToEmpty(courseInfo.HowToComplete),
-		HoursToComplete:     helpers.NilFloatToZero(courseInfo.HoursToComplete),
-		Requirements:        requirements,
-		WhatYouLearn:        whatYouLearn,
-		SpecificTerms:       helpers.NilStringToEmpty(courseInfo.SpecificTerms),
-		CategoryUUID:        courseInfo.CategoryUUID,
-		CourseType:          *courseInfo.CourseType,
-		CertificateTypeUUID: courseInfo.CertificateType,
+		Name:                 helpers.NilStringToEmpty(courseInfo.Name),
+		Price:                helpers.NilFloatToZero(courseInfo.Price),
+		Color:                helpers.NilStringToEmpty(courseInfo.Color),
+		Tags:                 tags,
+		Excerpt:              helpers.NilStringToEmpty(courseInfo.Excerpt),
+		Introduction:         helpers.NilStringToEmpty(courseInfo.Introduction),
+		HowToComplete:        helpers.NilStringToEmpty(courseInfo.HowToComplete),
+		HoursToComplete:      helpers.NilFloatToZero(courseInfo.HoursToComplete),
+		Requirements:         requirements,
+		WhatYouLearn:         whatYouLearn,
+		SpecificTerms:        helpers.NilStringToEmpty(courseInfo.SpecificTerms),
+		CategoryUUID:         courseInfo.CategoryUUID,
+		CourseType:           *courseInfo.CourseType,
+		CertificateTypeUUID:  courseInfo.CertificateType,
+		ExpiresInMonths:      expMonths,
+		ExpirationToEndMonth: expToEnd,
 	}
 
 	if courseInfo.AccessType != nil {
