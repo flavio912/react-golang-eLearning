@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash b4b01656357e4804ff9e509bcda2d9bf */
+/* @relayHash 275e96744e2f5ceb2dfbbc1666372bca */
 
 import { ConcreteRequest } from "relay-runtime";
 export type AppHolderQueryVariables = {
@@ -14,6 +14,12 @@ export type AppHolderQueryResponse = {
             readonly bannerImageURL: string | null;
             readonly introduction: string | null;
         } | null> | null;
+        readonly pageInfo: {
+            readonly total: number;
+            readonly limit: number;
+            readonly offset: number;
+            readonly given: number;
+        } | null;
     } | null;
 };
 export type AppHolderQuery = {
@@ -33,6 +39,12 @@ query AppHolderQuery(
       name
       bannerImageURL
       introduction
+    }
+    pageInfo {
+      total
+      limit
+      offset
+      given
     }
   }
 }
@@ -113,6 +125,45 @@ const node: ConcreteRequest = (function () {
                             "storageKey": null
                         }
                     ]
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "pageInfo",
+                    "storageKey": null,
+                    "args": null,
+                    "concreteType": "PageInfo",
+                    "plural": false,
+                    "selections": [
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "total",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "limit",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "offset",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "given",
+                            "args": null,
+                            "storageKey": null
+                        }
+                    ]
                 }
             ]
         } as any)
@@ -137,10 +188,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "AppHolderQuery",
             "id": null,
-            "text": "query AppHolderQuery(\n  $name: String!\n) {\n  courses(filter: {name: $name}, page: {limit: 4}) {\n    edges {\n      notId: id\n      name\n      bannerImageURL\n      introduction\n    }\n  }\n}\n",
+            "text": "query AppHolderQuery(\n  $name: String!\n) {\n  courses(filter: {name: $name}, page: {limit: 4}) {\n    edges {\n      notId: id\n      name\n      bannerImageURL\n      introduction\n    }\n    pageInfo {\n      total\n      limit\n      offset\n      given\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '9f10a3c6d550cc3712f1857c1b9242f3';
+(node as any).hash = '1e7bd793e674f29d73fb2f6c35e70c90';
 export default node;

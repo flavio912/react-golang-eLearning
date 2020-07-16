@@ -5,6 +5,7 @@ import SearchResultItem from 'components/Search/SearchResultItem';
 import SearchInput from 'components/Search/SearchInput';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { Record } from 'relay-runtime';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   searchRoot: {
@@ -29,34 +30,47 @@ export type ResultItem = {
   image: string;
   description: string;
 };
-type Props = {
-  results?: ResultItem[];
-  searchFunction?: (query: string) => Promise<ResultItem[]>
+export type PageInfo = {
+  totalPages: number;
+  offset: number;
+  limit: number;
+  totalItems: number;
+};
+export type Result = {
+  resultItems: ResultItem[];
+  pageInfo: PageInfo;
 };
 
-function SearchResults({ results, searchFunction }: Props) {
+type Props = {
+  searchFunction: (query: string) => Promise<Result>
+  debounceTime?: number;
+};
+
+function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
   const theme = useTheme();
   const classes = useStyles({
     theme
   });
   const [searchText, setSearchText] = React.useState<string>('');
 
-  const [showResults, setShowResults]: [ResultItem[], any] = React.useState(results ? results : []);
+  const [results, setResults]: [ResultItem[], any] = React.useState([]);
+  const [pageInfo, setPageInfo]: [PageInfo | undefined, any] = React.useState();
   const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
-
-  const onChange = searchFunction ? (text: string) => {
+  
+  const onChange = (text: string) => {
     clearTimeout(debouncer);
     const timeout = setTimeout(async () => {
-      if (text.length === 0 && showResults.length > 0){
+      setSearchText(text);
+      if (text.length === 0 && results.length > 0){
         return;
       }
       const res = await searchFunction(text);
       
-      setSearchText(text);
-      setShowResults(res);
-    });
+      setResults(res.resultItems);
+      setPageInfo(res.pageInfo);
+    }, debounceTime);
     setDebouncer(timeout);
-  } : setSearchText;
+  };
 
   return (
     <div
@@ -73,15 +87,15 @@ function SearchResults({ results, searchFunction }: Props) {
       {searchText && (
         <>
           <div className={classes.searchList}>
-            {showResults.map((item, index) => (
+            {results.map((item, index) => (
               <SearchResultItem course={item} key={index} onClick={() => {}} />
             ))}
           </div>
           <Spacer vertical spacing={2} />
           <Paginator
-            currentPage={1}
+            currentPage={pageInfo?.offset ?? 0}
             updatePage={() => {}}
-            numPages={10}
+            numPages={pageInfo?.totalPages ?? 10}
             itemsPerPage={10}
           />
         </>

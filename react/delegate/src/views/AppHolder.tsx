@@ -138,6 +138,12 @@ const AppHolder = ({ children, user }: Props) => {
                         bannerImageURL
                         introduction
                       }
+                      pageInfo{
+                        total
+                        limit
+                        offset
+                        given
+                      }
                     }
                   }
                 `;
@@ -152,19 +158,39 @@ const AppHolder = ({ children, user }: Props) => {
                   variables
                 )) as AppHolderQueryResponse;
                 
-                if (!data || !data.courses || !data.courses.edges){
+                if (!data || !data.courses || !data.courses.edges || !data.courses.pageInfo){
                   console.error('Could not get data', data);
-                  return [];
+                  return {
+                    resultItems: [],
+                    pageInfo: {
+                      totalPages: 1,
+                      offset: 0,
+                      limit: 4,
+                      totalItems: 0
+                    }
+                  };
                 }
 
-                const results = data.courses.edges.map((course) => ({
+                const resultItems = data.courses.edges.map((course) => ({
                   id: course?.notId ?? '',
                   title: course?.name ?? '',
                   image: course?.bannerImageURL ?? '',
                   description: course?.introduction ?? ''
                 }));
+                
+                const pageInfo = {
+                  totalPages: data.courses.pageInfo?.total,
+                  offset: data.courses.pageInfo.offset,
+                  limit: data.courses.pageInfo.limit,
+                  totalItems: data.courses.pageInfo.given
+                };
 
-                return results;
+                const result = {
+                  resultItems: resultItems,
+                  pageInfo: pageInfo
+                }
+
+                return result;
               }
             } />
           </div>
