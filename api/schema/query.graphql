@@ -92,5 +92,5 @@ type Query {
   # categories(level: Primary || Secondary, text: String) // Get all of the course categories
   # tags(text: String) // searches all of the tags
 
-  # certificateInfo(authToken: String): CertificateInfo
+  certificateInfo(token: String!): CertificateInfo!
 }

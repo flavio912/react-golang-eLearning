@@ -2,6 +2,7 @@ package course
 
 import (
 	"net/http"
+	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 
@@ -84,14 +85,20 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 	}
 
 	var (
-		firstName string
-		lastName  string
+		firstName      string
+		lastName       string
+		companyName    *string
+		caaNo          *string
+		regulationText string
+		certTitle      string
 	)
 	delegate, individual := c.usersRepository.UserFromCourseTaker(historicalCourse.CourseTakerUUID)
 	switch {
 	case delegate != nil:
 		firstName = delegate.FirstName
 		lastName = delegate.LastName
+		comp, _ := c.usersRepository.Company(delegate.CompanyUUID)
+		companyName = helpers.StringPointer(comp.Name)
 	case individual != nil:
 		firstName = individual.FirstName
 		lastName = individual.LastName
@@ -100,11 +107,32 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 		return gentypes.CertficateInfo{}, &errors.ErrUserNotFound
 	}
 
+	if course.CertificateTypeUUID != nil {
+		certType, err := c.coursesRepository.CertificateType(*course.CertificateTypeUUID)
+		if err != nil {
+			c.grant.Logger.Log(sentry.LevelError, err, "CertInfo: Unable to get certtype")
+			return gentypes.CertficateInfo{}, &errors.ErrWhileHandling
+		}
+
+		regulationText = certType.RegulationText
+		certTitle = certType.Name
+	}
+
+	// TODO get caaNo
+
 	return gentypes.CertficateInfo{
-		CourseTitle:    course.Name,
-		ExpiryDate:     *historicalCourse.ExpirationDate,
-		CompletionDate: historicalCourse.CreatedAt,
-		TakerFirstName: firstName,
-		TakerLastName:  lastName,
+		CourseTitle:            course.Name,
+		ExpiryDate:             (*historicalCourse.ExpirationDate).Format(time.RFC3339),
+		CompletionDate:         historicalCourse.CreatedAt.Format(time.RFC3339),
+		CompanyName:            companyName,
+		TakerFirstName:         firstName,
+		TakerLastName:          lastName,
+		CertificateBodyURL:     nil,
+		RegulationText:         regulationText,
+		CAANo:                  caaNo,
+		Title:                  certTitle,
+		InstructorName:         "",
+		InstructorCIN:          "",
+		InstructorSignatureURL: nil,
 	}, nil
 }

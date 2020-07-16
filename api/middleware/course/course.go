@@ -34,6 +34,8 @@ type CoursesRepository interface {
 	CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error)
 	UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error)
 
+	CertificateType(uuid gentypes.UUID) (models.CertificateType, error)
+
 	RequirementBullets(courseID uint) ([]models.RequirementBullet, error)
 	LearnBullets(courseID uint) ([]models.WhatYouLearnBullet, error)
 

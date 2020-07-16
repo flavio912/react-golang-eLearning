@@ -81,6 +81,8 @@ type CourseApp interface {
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
+
+	CertificateInfo(token string) (gentypes.CertficateInfo, error)
 }
 
 type courseAppImpl struct {

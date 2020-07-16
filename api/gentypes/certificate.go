@@ -1,11 +1,9 @@
 package gentypes
 
-import "time"
-
 type CertficateInfo struct {
 	CourseTitle            string
-	ExpiryDate             time.Time
-	CompletionDate         time.Time
+	ExpiryDate             string
+	CompletionDate         string
 	CompanyName            *string
 	TakerFirstName         string
 	TakerLastName          string
@@ -15,5 +13,5 @@ type CertficateInfo struct {
 	Title                  string
 	InstructorName         string
 	InstructorCIN          string
-	InstructorSignatureURL string
+	InstructorSignatureURL *string
 }

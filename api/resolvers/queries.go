@@ -298,6 +298,11 @@ func (q *QueryResolver) Questions(
 	})
 }
 
+func (q *QueryResolver) CertificateInfo(ctx context.Context, args struct{ Token string }) (gentypes.CertficateInfo, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.CertificateInfo(args.Token)
+}
+
 func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
 	return NewTestResolver(ctx, NewTestArgs{
 		TestUUID: &args.UUID,
