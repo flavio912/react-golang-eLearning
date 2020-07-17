@@ -38,5 +38,7 @@ ENV SENTRY_ENVIRONMENT=""
 ENV STRIPE_PUBLISHABLE_KEY=""
 ENV STRIPE_SECRET_KEY=""
 
+ENV PDF_SERVER_URL = "https://aplaceinaworld"
+
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv

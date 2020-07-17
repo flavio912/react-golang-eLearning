@@ -34,7 +34,15 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.Lesson{})
 	database.GormDB.AutoMigrate(&models.WhatYouLearnBullet{})
 	database.GormDB.AutoMigrate(&models.RequirementBullet{})
+
 	database.GormDB.AutoMigrate(&models.ActiveCourse{})
+	database.GormDB.Model(&models.ActiveCourse{}).AddForeignKey("course_taker_uuid", "course_takers(uuid)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.ActiveCourse{}).AddForeignKey("course_id", "courses(id)", "RESTRICT", "RESTRICT")
+
+	database.GormDB.AutoMigrate(&models.HistoricalCourse{})
+	database.GormDB.Model(&models.HistoricalCourse{}).AddForeignKey("course_taker_uuid", "course_takers(uuid)", "CASCADE", "RESTRICT")
+	database.GormDB.Model(&models.HistoricalCourse{}).AddForeignKey("course_id", "courses(id)", "RESTRICT", "RESTRICT")
+
 	database.GormDB.AutoMigrate(&models.Blog{})
 	database.GormDB.AutoMigrate(&models.BlogImage{})
 
@@ -42,6 +50,10 @@ func InitMigrations() {
 	database.GormDB.Model(&models.ClassroomCourse{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
 
 	database.GormDB.Model(&models.CourseStructure{}).AddForeignKey("online_course_uuid", "online_courses(uuid)", "CASCADE", "RESTRICT")
+
+	// Certificates
+	database.GormDB.AutoMigrate(&models.CAANumber{})
+	database.GormDB.AutoMigrate(&models.CertificateType{})
 
 	// Tests
 	database.GormDB.AutoMigrate(&models.Test{})

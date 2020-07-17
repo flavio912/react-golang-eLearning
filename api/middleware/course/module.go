@@ -51,6 +51,21 @@ func (c *coursesRepoImpl) Modules(page *gentypes.Page, filter *gentypes.ModuleFi
 	return modules, pageInfo, err
 }
 
+func (c *coursesRepoImpl) ModulesByUUIDs(uuids []gentypes.UUID) ([]models.Module, error) {
+	var modules []models.Module
+	query := database.GormDB.Where("uuid IN (?)", uuids).Find(&modules)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []models.Module{}, &errors.ErrNotAllFound
+		}
+
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get modules")
+		return []models.Module{}, &errors.ErrWhileHandling
+	}
+
+	return modules, nil
+}
+
 type VideoInput struct {
 	Type gentypes.VideoType
 	URL  string

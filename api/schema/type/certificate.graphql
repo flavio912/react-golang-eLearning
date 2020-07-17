@@ -1,0 +1,15 @@
+type CertificateInfo {
+  courseTitle: String!
+  expiryDate: String!
+  completionDate: String!
+  companyName: String
+  takerFirstName: String!
+  takerLastName: String!
+  certificateBodyURL: String
+  regulationText: String!
+  CAANo: String
+  Title: String!
+  InstructorName: String!
+  InstructorCIN: String!
+  InstructorSignatureURL: String
+}

@@ -105,6 +105,8 @@ func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
 			activeCourses = append(activeCourses, models.ActiveCourse{
 				CourseTakerUUID: courseTaker.UUID,
 				CourseID:        course.ID,
+				Status:          gentypes.CourseIncomplete,
+				MinutesTracked:  0,
 			})
 		}
 
