@@ -10,6 +10,8 @@ import {
   InputAdornment,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
@@ -68,6 +70,25 @@ const lessons = [
   }
 ];
 
+const GET_COURSES = gql`
+      query SearchCourses($name: String!,  $page: Page!){
+        courses(filter: { name: $name }, page: $page){
+          edges{
+            notId: id
+            name
+            bannerImageURL
+            introduction
+          }
+          pageInfo{
+            total
+            limit
+            offset
+            given
+          }
+        }
+      }
+    `;
+
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
@@ -78,6 +99,62 @@ function ModuleBuilder({ state, setState }) {
     {id: 1, component: <ReoderableListItem text="text" onDelete={onDelete} />},
     {id: 2, component: <ReoderableListItem text="text" onDelete={onDelete} />},
   ]);
+
+  const [searchText, setSearchText] = React.useState('');
+  const [results, setResults] = React.useState([]);
+  const [pageInfo, setPageInfo] = React.useState();
+ 
+  // const onSearch = async (text, page) => {
+   
+  //   setSearchText(text);
+  //   if (text.length === 0 && results.length > 0){
+  //     return;
+  //   }
+  
+  //   const { loading, error, data } = useQuery(GET_COURSES, {
+  //       variables: {
+  //         name: text,
+  //         page: page
+  //       }
+  //     });
+    
+  //   if (!data || !data.courses || !data.courses.edges || !data.courses.pageInfo){
+  //     console.error('Could not get data', data);
+  //     return {
+  //       resultItems: [],
+  //       pageInfo: {
+  //         total: 1,
+  //         offset: 0,
+  //         limit: 4,
+  //         given: 0
+  //       }
+  //     };
+  //   }
+  
+  //   setResults(data.courses.edges.map((course) => ({
+  //     id: course?.notId ?? '',
+  //     title: course?.name ?? '',
+  //     image: course?.bannerImageURL ?? '',
+  //     description: course?.introduction ?? ''
+  //   })));
+    
+  //   setPageInfo({
+  //     total: data.courses.pageInfo?.total,
+  //     offset: data.courses.pageInfo.offset,
+  //     limit: data.courses.pageInfo.limit,
+  //     given: data.courses.pageInfo.given
+  //   });
+  // }
+
+  // const onChange = (text) => onSearch(text, {
+  //   limit: pageInfo?.limit ?? 4,
+  //   offset: 0
+  // });
+
+  // const onUpdatePage = (page) => onSearch(searchText, {
+  //   limit: pageInfo?.limit ?? 4,
+  //   offset: (page - 1) * (pageInfo?.limit ?? 4)
+  // })
 
   return (
     <div className={classes.root}>
@@ -109,6 +186,13 @@ function ModuleBuilder({ state, setState }) {
               <Autocomplete
                 freeSolo
                 options={[]}
+                onChange={inp => {
+                  // onSearch(inp.target.value, {
+                  //   total: 4,
+                  //   offset: 0,
+                  //   given: 4,
+                  // });
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
