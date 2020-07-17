@@ -215,6 +215,124 @@ func TestManyOnlineCourseStructures(t *testing.T) {
 	// TODO: Add test for multiple
 }
 
+func TestSearchSyllabus(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should return all modules, lessons and tests", func(t *testing.T) {
+		uuids, _, err := courseRepo.SearchSyllabus(nil, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, uuids, 9)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(4)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+
+		results, pageInfo, err := courseRepo.SearchSyllabus(&page, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, results, int(limit))
+		assert.Equal(t, gentypes.PageInfo{Total: 9, Given: 4, Limit: limit}, pageInfo)
+	})
+
+	t.Run("Should search in all names and tag names", func(t *testing.T) {
+		name := "existing"
+		results, _, err := courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 2)
+
+		name = "to"
+		results, _, err = courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 3)
+
+		name = "i"
+		results, _, err = courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+			Name: &name,
+		})
+
+		assert.Nil(t, err)
+		assert.Len(t, results, 6)
+	})
+
+	tests := []struct {
+		name          string
+		excludeModule bool
+		excludeLesson bool
+		excludeTest   bool
+		wantLen       int
+	}{
+		{
+			"modules",
+			false,
+			true,
+			true,
+			3,
+		},
+		{
+			"lessons",
+			true,
+			false,
+			true,
+			3,
+		},
+		{
+			"tests",
+			true,
+			true,
+			false,
+			3,
+		},
+		{
+			"modules and lesson",
+			false,
+			false,
+			true,
+			6,
+		},
+		{
+			"lessons and tests",
+			true,
+			false,
+			false,
+			6,
+		},
+		{
+			"modules and tests",
+			false,
+			true,
+			false,
+			6,
+		},
+		{
+			"none",
+			true,
+			true,
+			true,
+			0,
+		},
+	}
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Should filter to search for %s only", test.name), func(t *testing.T) {
+			results, _, err := courseRepo.SearchSyllabus(nil, &gentypes.SyllabusFilter{
+				ExcludeModule: &test.excludeModule,
+				ExcludeLesson: &test.excludeLesson,
+				ExcludeTest:   &test.excludeTest,
+			})
+
+			assert.Nil(t, err)
+			assert.Len(t, results, test.wantLen)
+		})
+	}
+}
+
 func TestDeleteCourse(t *testing.T) {
 	t.Run("Should not delete an active course", func(t *testing.T) {
 		prepareTestDatabase()

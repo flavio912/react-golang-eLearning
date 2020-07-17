@@ -418,9 +418,10 @@ func (m *MutationResolver) CreateIndividual(ctx context.Context, args struct {
 func (m *MutationResolver) SubmitTest(ctx context.Context, args struct{ Input gentypes.SubmitTestInput }) (*gentypes.SubmitTestPayload, error) {
 	app := auth.AppFromContext(ctx)
 
-	success, err := app.CourseApp.SubmitTest(args.Input)
+	passed, courseStatus, err := app.CourseApp.SubmitTest(args.Input)
 	return &gentypes.SubmitTestPayload{
-		Success: success,
+		Passed:       passed,
+		CourseStatus: courseStatus,
 	}, err
 }
 

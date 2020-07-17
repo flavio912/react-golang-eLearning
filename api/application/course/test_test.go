@@ -97,7 +97,6 @@ func TestSubmitTest(t *testing.T) {
 		hasActiveCourse bool
 		input           gentypes.SubmitTestInput
 		grant           middleware.Grant
-		correctMarks    uint
 		success         bool
 		err             error
 	}{
@@ -107,7 +106,6 @@ func TestSubmitTest(t *testing.T) {
 			hasActiveCourse: true,
 			input:           input1Correct,
 			grant:           delegateGrant,
-			correctMarks:    1,
 			success:         true,
 		},
 		{
@@ -116,7 +114,6 @@ func TestSubmitTest(t *testing.T) {
 			hasActiveCourse: true,
 			input:           input1Correct,
 			grant:           individualGrant,
-			correctMarks:    1,
 			success:         true,
 		},
 		{
@@ -147,8 +144,8 @@ func TestSubmitTest(t *testing.T) {
 			hasActiveCourse: true,
 			input:           input1Correct,
 			grant:           delegateGrant,
-			success:         false,
-			err:             &errors.ErrAlreadyTakenTest,
+			success:         true,
+			err:             nil,
 		},
 		{
 			name:            "Not enough questions given to complete",
@@ -211,9 +208,8 @@ func TestSubmitTest(t *testing.T) {
 					},
 				},
 			},
-			grant:        delegateGrant,
-			correctMarks: 1,
-			success:      true,
+			grant:   delegateGrant,
+			success: true,
 		},
 		{
 			name:            "Admins can't submit tests",
@@ -221,7 +217,6 @@ func TestSubmitTest(t *testing.T) {
 			hasActiveCourse: true,
 			input:           input1Correct,
 			grant:           adminGrant,
-			correctMarks:    1,
 			success:         false,
 			err:             &errors.ErrUnauthorized,
 		},
@@ -231,7 +226,6 @@ func TestSubmitTest(t *testing.T) {
 			hasActiveCourse: true,
 			input:           input1Correct,
 			grant:           publicGrant,
-			correctMarks:    1,
 			success:         false,
 			err:             &errors.ErrUnauthorized,
 		},
@@ -262,7 +256,6 @@ func TestSubmitTest(t *testing.T) {
 				}, nil)
 			}
 
-			usersRepo.On("TakerHasActiveCourse", takerUUID, testItem.input.CourseID).Return(testItem.hasActiveCourse, nil)
 			usersRepo.On("TakerTestMarks", takerUUID, testItem.input.CourseID).Return(testItem.testMarks, nil)
 
 			// Setup test with two questions and two answers in each
@@ -302,33 +295,63 @@ func TestSubmitTest(t *testing.T) {
 				},
 			}
 
+			if testItem.hasActiveCourse {
+				usersRepo.On("TakerActiveCourse", mock.Anything, mock.Anything).Return(models.ActiveCourse{
+					Status:         gentypes.CourseIncomplete,
+					MinutesTracked: 23,
+				}, nil)
+			} else {
+				usersRepo.On("TakerActiveCourse", mock.Anything, mock.Anything).Return(models.ActiveCourse{}, &errors.ErrNotFound)
+			}
+
 			coursesRepo.On("Test", testItem.input.TestUUID).Return(models.Test{
 				UUID:              testItem.input.TestUUID,
 				QuestionsToAnswer: 2,
+				AttemptsAllowed:   1,
+				PassPercentage:    9,
 			}, nil)
 			coursesRepo.On("ManyAnswers", mock.Anything).Return(questionsToAnswers, nil)
 
-			coursesRepo.On("CreateTestMarks", mock.Anything).Return(nil)
+			onlineCourseUUID := gentypes.MustParseToUUID("1fe014a2-2633-4103-94fa-ceb514141e4b")
+			coursesRepo.On("OnlineCourse", testItem.input.CourseID).Return(models.OnlineCourse{
+				Base: models.Base{
+					UUID: onlineCourseUUID,
+				},
+			}, nil)
+			coursesRepo.On("CourseTests", onlineCourseUUID).Return([]models.Test{
+				models.Test{},
+			}, nil)
+			coursesRepo.On("TakerTestMarks", takerUUID, testItem.input.CourseID).Return([]models.TestMark{
+				models.TestMark{},
+				models.TestMark{},
+			}, nil)
+			usersRepo.On("SaveTestMarks", mock.Anything).Return(nil)
 			marks := models.TestMark{
 				TestUUID:        testItem.input.TestUUID,
 				CourseTakerUUID: takerUUID,
 				CourseID:        testItem.input.CourseID,
-				NumCorrect:      testItem.correctMarks,
-				Total:           2,
+				Passed:          testItem.success,
+				CurrentAttempt:  1,
 			}
 
 			var courseApp = course.NewCourseApp(&testItem.grant)
 			courseApp.SetCoursesRepository(coursesRepo)
 			courseApp.SetUsersRepository(usersRepo)
 
-			success, err := courseApp.SubmitTest(testItem.input)
+			success, stat, err := courseApp.SubmitTest(testItem.input)
 			assert.Equal(t, testItem.success, success)
 			assert.Equal(t, testItem.err, err)
 
-			if testItem.success {
-				coursesRepo.AssertCalled(t, "CreateTestMarks", marks)
+			if !testItem.success && testItem.err == nil {
+				assert.Equal(t, gentypes.CourseFailed, stat)
 			} else {
-				coursesRepo.AssertNotCalled(t, "CreateTestMarks")
+				assert.Equal(t, gentypes.CourseIncomplete, stat)
+			}
+
+			if testItem.success {
+				usersRepo.AssertCalled(t, "SaveTestMarks", marks)
+			} else {
+				usersRepo.AssertNotCalled(t, "SaveTestMarks")
 			}
 		})
 	}

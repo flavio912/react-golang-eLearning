@@ -59,8 +59,8 @@ func (d *DelegateResolver) Activity(ctx context.Context, args struct{ Page *gent
 		CourseTakerUUID: &d.delegate.CourseTakerUUID,
 	}, args.Page)
 }
-func (d *DelegateResolver) ActiveCourses(ctx context.Context) (*[]*ActiveCourseResolver, error) {
-	return NewActiveCoursesResolvers(ctx, NewActiveCourseArgs{
+func (d *DelegateResolver) MyCourses(ctx context.Context) (*[]*MyCourseResolver, error) {
+	return NewMyCoursesResolvers(ctx, NewMyCourseArgs{
 		TakerUUID: &d.delegate.CourseTakerUUID,
 	})
 }

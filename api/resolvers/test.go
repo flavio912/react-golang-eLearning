@@ -5,8 +5,8 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 )
 
 type TestResolver struct {
@@ -39,11 +39,9 @@ type NewTestArgs struct {
 }
 
 func NewTestResolver(ctx context.Context, args NewTestArgs) (*TestResolver, error) {
-	app := auth.AppFromContext(ctx)
-
 	switch {
 	case args.TestUUID != nil:
-		test, err := app.CourseApp.Test(*args.TestUUID)
+		test, err := loader.LoadTest(ctx, *args.TestUUID)
 		if err != nil {
 			return &TestResolver{}, &errors.ErrUnableToResolve
 		}

@@ -102,7 +102,7 @@ type User {
   company: Company
   profileImageUrl: String
   activity(page: Page): ActivityPage
-  activeCourses: [ActiveCourse!]
+  myCourses: [MyCourse!]
   # certificates
   # address: Address
 }
@@ -126,15 +126,16 @@ type Activity {
   course: Course
 }
 
-# type ActiveCoursePage implements PaginatedQuery {
-#   edges: [ActiveCourse]
-#   pageInfo: PageInfo
-# }
+enum CourseStatus {
+  passed
+  failed
+  incomplete
+}
 
 # # A course currently being taken by a user
-type ActiveCourse {
+type MyCourse {
+  status: CourseStatus!
   course: Course!
-  currentAttempt: Int!
   minutesTracked: Float!
 }
 

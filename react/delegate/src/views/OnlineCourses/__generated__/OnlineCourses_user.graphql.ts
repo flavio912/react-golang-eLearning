@@ -3,10 +3,11 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type CourseStatus = "failed" | "incomplete" | "passed" | "%future added value";
 export type CourseType = "classroom" | "online" | "%future added value";
 export type OnlineCourses_user = {
     readonly firstName: string;
-    readonly activeCourses: ReadonlyArray<{
+    readonly myCourses: ReadonlyArray<{
         readonly course: {
             readonly ident: number;
             readonly name: string;
@@ -15,7 +16,7 @@ export type OnlineCourses_user = {
             readonly type: CourseType;
             readonly bannerImageURL: string | null;
         };
-        readonly currentAttempt: number;
+        readonly status: CourseStatus;
     }> | null;
     readonly " $refType": "OnlineCourses_user";
 };
@@ -44,10 +45,10 @@ const node: ReaderFragment = ({
         {
             "kind": "LinkedField",
             "alias": null,
-            "name": "activeCourses",
+            "name": "myCourses",
             "storageKey": null,
             "args": null,
-            "concreteType": "ActiveCourse",
+            "concreteType": "MyCourse",
             "plural": true,
             "selections": [
                 {
@@ -106,7 +107,7 @@ const node: ReaderFragment = ({
                 {
                     "kind": "ScalarField",
                     "alias": null,
-                    "name": "currentAttempt",
+                    "name": "status",
                     "args": null,
                     "storageKey": null
                 }
@@ -114,5 +115,5 @@ const node: ReaderFragment = ({
         }
     ]
 } as any);
-(node as any).hash = 'a24c3866b5792ecbef49e3b425b37e84';
+(node as any).hash = '482aaec30f8d843aac4de3dc1343303b';
 export default node;
