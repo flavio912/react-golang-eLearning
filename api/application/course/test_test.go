@@ -256,7 +256,7 @@ func TestSubmitTest(t *testing.T) {
 				}, nil)
 			}
 
-			usersRepo.On("TakerTestMarks", takerUUID, testItem.input.CourseID).Return(testItem.testMarks, nil)
+			usersRepo.On("TakerTestMarks", takerUUID, uint(testItem.input.CourseID)).Return(testItem.testMarks, nil)
 
 			// Setup test with two questions and two answers in each
 			coursesRepo.On("TestQuestions", testItem.input.TestUUID).Return([]models.Question{
@@ -313,7 +313,7 @@ func TestSubmitTest(t *testing.T) {
 			coursesRepo.On("ManyAnswers", mock.Anything).Return(questionsToAnswers, nil)
 
 			onlineCourseUUID := gentypes.MustParseToUUID("1fe014a2-2633-4103-94fa-ceb514141e4b")
-			coursesRepo.On("OnlineCourse", testItem.input.CourseID).Return(models.OnlineCourse{
+			coursesRepo.On("OnlineCourse", uint(testItem.input.CourseID)).Return(models.OnlineCourse{
 				Base: models.Base{
 					UUID: onlineCourseUUID,
 				},
@@ -321,7 +321,7 @@ func TestSubmitTest(t *testing.T) {
 			coursesRepo.On("CourseTests", onlineCourseUUID).Return([]models.Test{
 				models.Test{},
 			}, nil)
-			coursesRepo.On("TakerTestMarks", takerUUID, testItem.input.CourseID).Return([]models.TestMark{
+			coursesRepo.On("TakerTestMarks", takerUUID, uint(testItem.input.CourseID)).Return([]models.TestMark{
 				models.TestMark{},
 				models.TestMark{},
 			}, nil)
@@ -329,7 +329,7 @@ func TestSubmitTest(t *testing.T) {
 			marks := models.TestMark{
 				TestUUID:        testItem.input.TestUUID,
 				CourseTakerUUID: takerUUID,
-				CourseID:        testItem.input.CourseID,
+				CourseID:        uint(testItem.input.CourseID),
 				Passed:          testItem.success,
 				CurrentAttempt:  1,
 			}
