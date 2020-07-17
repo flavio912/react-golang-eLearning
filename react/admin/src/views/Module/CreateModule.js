@@ -50,7 +50,7 @@ function CreateQuestion({ match, history }) {
     bannerImageSuccessToken: '',
     voiceoverSuccessToken: '',
     video: { type: 'WISTIA', url: ''},
-    syllabus: []
+    syllabus: [{ type: 'test', uuid: '00000000-0000-0000-0000-000000000002' }]
   };
 
   const [state, setState] = useState(initState);
