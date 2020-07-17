@@ -1687,9 +1687,9 @@ func TestSearchSyllabus(t *testing.T) {
 								"__typename": "Lesson",
 								"name": "Lorentz Invariance",
 								"tags": [
-									{"name": "existing tag"},
 									{"name": "Handling cool things"},
-									{"name": "Fancy tag for cool people"}
+									{"name": "Fancy tag for cool people"},
+									{"name": "existing tag"}
 								]
 							},
 							{

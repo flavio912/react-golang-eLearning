@@ -39,6 +39,7 @@ ENV STRIPE_PUBLISHABLE_KEY=""
 ENV STRIPE_SECRET_KEY=""
 
 ENV PDF_SERVER_URL = "https://aplaceinaworld"
+ENV PDF_REQUEST_URL = "https://delegate.ttc.devserver.london/cert-generator"
 
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv

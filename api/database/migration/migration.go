@@ -45,6 +45,7 @@ func InitMigrations() {
 
 	database.GormDB.AutoMigrate(&models.Blog{})
 	database.GormDB.AutoMigrate(&models.BlogImage{})
+	database.GormDB.AutoMigrate(&models.Tutor{})
 
 	database.GormDB.Model(&models.OnlineCourse{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
 	database.GormDB.Model(&models.ClassroomCourse{}).AddForeignKey("course_id", "courses(id)", "CASCADE", "RESTRICT")
@@ -77,4 +78,8 @@ func InitMigrations() {
 	database.GormDB.AutoMigrate(&models.PendingOrder{})
 	database.GormDB.Table("pending_order_course_takers").AddForeignKey("pending_order_uuid", "pending_orders(uuid)", "CASCADE", "RESTRICT")
 	database.GormDB.Table("pending_order_course_takers").AddForeignKey("course_taker_uuid", "course_takers(uuid)", "CASCADE", "RESTRICT")
+
+	// Blogs
+	database.GormDB.AutoMigrate(&models.Blog{})
+	database.GormDB.AutoMigrate(&models.BlogImage{})
 }

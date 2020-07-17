@@ -81,8 +81,11 @@ type CourseApp interface {
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
-
 	CertificateInfo(token string) (gentypes.CertficateInfo, error)
+	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
+	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
+	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+	UpdateTutorSignature(input gentypes.UpdateTutorSignatureInput) (string, error)
 }
 
 type courseAppImpl struct {

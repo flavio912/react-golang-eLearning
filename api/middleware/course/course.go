@@ -88,6 +88,11 @@ type CoursesRepository interface {
 	CreateQuestion(input CreateQuestionArgs) (models.Question, error)
 	UpdateQuestion(input UpdateQuestionArgs) (models.Question, error)
 	DeleteQuestion(input gentypes.UUID) (bool, error)
+
+	CreateTutor(details gentypes.CreateTutorInput) (models.Tutor, error)
+	UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error)
+	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
+	Tutor(uuid gentypes.UUID) (models.Tutor, error)
 }
 
 type coursesRepoImpl struct {

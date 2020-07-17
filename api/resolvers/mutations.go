@@ -639,6 +639,39 @@ func (m *MutationResolver) AnswerImageUploadRequest(
 	}, err
 }
 
+func (m *MutationResolver) CreateTutor(ctx context.Context, args struct{ Input gentypes.CreateTutorInput }) (*TutorResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	tutor, err := app.CourseApp.CreateTutor(args.Input)
+
+	return &TutorResolver{
+		Tutor: tutor,
+	}, err
+}
+
+func (m *MutationResolver) UpdateTutor(ctx context.Context, args struct{ Input gentypes.UpdateTutorInput }) (*TutorResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	tutor, err := app.CourseApp.UpdateTutor(args.Input)
+
+	return &TutorResolver{
+		Tutor: tutor,
+	}, err
+}
+
+func (m *MutationResolver) TutorSignatureImageUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+
+	url, successToken, err := app.CourseApp.TutorSignatureImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
 func (m *MutationResolver) UpdateBlogHeaderImage(
 	ctx context.Context,
 	args struct {
@@ -678,6 +711,18 @@ func (m *MutationResolver) BlogBodyImageUploadRequest(
 		URL:          url,
 		SuccessToken: successToken,
 	}, err
+}
+
+func (m *MutationResolver) UpdateTutorSignature(
+	ctx context.Context,
+	args struct {
+		Input gentypes.UpdateTutorSignatureInput
+	},
+) (*TutorResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	_, err := app.CourseApp.UpdateTutorSignature(args.Input)
+	return &TutorResolver{}, err
 }
 
 func (m *MutationResolver) UpdateBlog(ctx context.Context, args struct{ Input gentypes.UpdateBlogInput }) (*BlogResolver, error) {
