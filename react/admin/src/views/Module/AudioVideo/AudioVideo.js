@@ -79,7 +79,7 @@ function AudioVideo({ state, setState }) {
                       options={state.tags}
                       getOptionLabel={option => option.title}
                       onChange={(event, newValue) => {
-                          setState('video', newValue.value);
+                          setState('video', {type: 'WISTIA', url: newValue.value});
                       }}
                       renderInput={params => (
                           <TextField
