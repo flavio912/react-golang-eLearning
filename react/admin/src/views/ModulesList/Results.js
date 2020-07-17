@@ -87,7 +87,7 @@ function Results({ className, modules, ...rest }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {modules.map(module => (
+          {modules && modules.map(module => (
             <TableRow key={module.uuid}>
               <TableCell className={classes.moduleName}>
                 {module.name}
@@ -95,7 +95,7 @@ function Results({ className, modules, ...rest }) {
               <TableCell>{module.numCoursesUsedIn}</TableCell>
               <TableCell>{module.numLessons}</TableCell>
               <TableCell>
-                {module.tags.map(tag => (
+                {module.tags && module.tags.map(tag => (
                   <Chip color={tag.color} label={tag.name} />
                 ))}
               </TableCell>
@@ -104,7 +104,7 @@ function Results({ className, modules, ...rest }) {
                   color="default"
                   component={RouterLink}
                   size="small"
-                  to={`/module/${module.uuid}/overview`}
+                  to={`/modules/${module.uuid}/overview`}
                 >
                   <CreateOutlinedIcon />
                 </Button>
@@ -130,7 +130,7 @@ function Results({ className, modules, ...rest }) {
 
 Results.propTypes = {
   className: PropTypes.string,
-  modules: PropTypes.object
+  modules: PropTypes.array
 };
 
 export default Results;

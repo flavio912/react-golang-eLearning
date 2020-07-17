@@ -49,7 +49,7 @@ function CreateQuestion({ match, history }) {
     transcript: '',
     bannerImageSuccessToken: '',
     voiceoverSuccessToken: '',
-    video: '',
+    video: { type: 'WISTIA', url: ''},
     syllabus: []
   };
 
@@ -64,14 +64,14 @@ function CreateQuestion({ match, history }) {
     try {
       const res = await createModule({
         variables: {
-          name: this.state.name,
-          tags: this.state.tags,
-          description: this.state.description,
-          transcript: this.state.transcript,
-          bannerImageSuccessToken: this.state.bannerImageSuccessToken,
-          voiceoverSuccessToken: this.state.voiceoverSuccessToken,
-          video: this.state.video,
-          syllabus: this.state.syllabus
+          name: state.name,
+          tags: state.tags,
+          description: state.description,
+          transcript: state.transcript,
+          bannerImageSuccessToken: state.bannerImageSuccessToken,
+          voiceoverSuccessToken: state.voiceoverSuccessToken,
+          video: state.video,
+          syllabus: state.syllabus
         }
       });
       if (res.data?.createModule?.module?.uuid) {

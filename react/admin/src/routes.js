@@ -14,6 +14,7 @@ import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
 import CreateModule from './views/Module/CreateModule';
+import UpdateModule from './views/Module/UpdateModule';
 
 export default [
   {
@@ -157,6 +158,11 @@ export default [
         path: '/modules/create/:tab',
         exact: true,
         component: CreateModule
+      },
+      {
+        path: '/modules/:ident/:tab',
+        exact: true,
+        component: UpdateModule
       },
       {
         path: '/questions',

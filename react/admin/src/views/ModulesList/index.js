@@ -2,8 +2,8 @@ import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import { gql } from 'apollo-boost';
+import { useQuery } from '@apollo/react-hooks';
 import Page from 'src/components/Page';
-import SearchBar from 'src/components/SearchBar';
 import Header from './Header';
 import Results from './Results';
 import Filter from 'src/components/Filter';
@@ -22,19 +22,16 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const GET_MODULES = gql`
-  query GetModules($id: Int!) {
-    modules(id: $id) {
-      id
-      name
-      excerpt
-      price
-      accessType
-      backgroundCheck
-      type
-      howToComplete
-      hoursToComplete
-      whatYouLearn
-      requirements
+  query GetModules($page: Page, $filter: ModuleFilter, $orderBy: OrderBy) {
+    modules(page: $page, filter: $filter, orderBy: $orderBy) {
+      edges {
+        uuid
+        name
+      }
+      pageInfo {
+        given
+        total
+      }
     }
   }
 `;
@@ -44,7 +41,21 @@ function ModulesList({ match, history }) {
 
   // const handleFilter = () => {};
 
-  const handleSearch = () => {};
+  //const handleSearch = () => {};
+  const { loading, error, data } = useQuery(GET_MODULES, {
+    variables: {
+      page: {
+        offset: 0,
+        limit: 100
+      },
+      filter: {},
+      orderBy: {
+        ascending: false,
+        field: 'created_at'
+      }
+    }
+  });
+  console.log(data, error);
 
   const modules = [
     {
@@ -61,6 +72,9 @@ function ModulesList({ match, history }) {
     }
   ];
 
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>{error.message}</div>;
+
   return (
     <Page className={classes.root} title="Modules">
       <Container maxWidth={false}>
@@ -68,7 +82,7 @@ function ModulesList({ match, history }) {
             history.push('/modules/create/overview');
           }}/>
         <Filter className={classes.filter} />
-        {modules && <Results className={classes.results} modules={modules} />}
+        {modules && <Results className={classes.results} modules={data.modules.edges} />}
       </Container>
     </Page>
   );
