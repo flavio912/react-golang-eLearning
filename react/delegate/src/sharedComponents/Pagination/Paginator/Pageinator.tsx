@@ -39,7 +39,7 @@ type Props = {
   showRange?: number;
   numPages: number;
   updatePage: (page: number) => void;
-  itemsPerPage: 10 | 20 | 50; // TODO: Implement this
+  itemsPerPage: number | 10 | 20 | 50; // TODO: Implement this
 };
 
 function Pageinator({

@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { withKnobs, text, number } from '@storybook/addon-knobs';
-import SearchResults, { Result } from './SearchResults';
+import SearchResults, { Result, Page } from './SearchResults';
 
 export default {
   title: 'Search/SearchResults',
@@ -49,14 +49,14 @@ const results = [
 const result = {
   resultItems: results,
   pageInfo: {
-    totalPages: 10,
+    total: 10,
     offset: 1,
     limit: 10,
-    totalItems: 10
+    given: 10
   } 
 };
 
-const searchFunc = async (query : string) => {
+const searchFunc = async (query : string, page: Page) => {
   return await new Promise<Result>((resolve) => {
     setTimeout(() => resolve(result), 500)
   });

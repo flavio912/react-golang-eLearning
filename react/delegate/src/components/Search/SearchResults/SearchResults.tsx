@@ -31,18 +31,23 @@ export type ResultItem = {
   description: string;
 };
 export type PageInfo = {
-  totalPages: number;
+  total: number;
   offset: number;
   limit: number;
-  totalItems: number;
+  given: number;
 };
 export type Result = {
   resultItems: ResultItem[];
   pageInfo: PageInfo;
 };
 
+export type Page = {
+  offset: number;
+  limit: number;
+};
+
 type Props = {
-  searchFunction: (query: string) => Promise<Result>
+  searchFunction: (query: string, page: Page) => Promise<Result>;
   debounceTime?: number;
 };
 
@@ -57,20 +62,31 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
   const [pageInfo, setPageInfo]: [PageInfo | undefined, any] = React.useState();
   const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
   
-  const onChange = (text: string) => {
+  const onSearch = (text: string, page: Page) => {
     clearTimeout(debouncer);
     const timeout = setTimeout(async () => {
       setSearchText(text);
       if (text.length === 0 && results.length > 0){
         return;
       }
-      const res = await searchFunction(text);
+
+      const res = await searchFunction(text, page);
       
       setResults(res.resultItems);
       setPageInfo(res.pageInfo);
     }, debounceTime);
     setDebouncer(timeout);
-  };
+  }
+
+  const onChange = (text: string) => onSearch(text, {
+    limit: pageInfo?.limit ?? 4,
+    offset: 0
+  });
+
+  const onUpdatePage = (page: number) => onSearch(searchText, {
+    limit: pageInfo?.limit ?? 4,
+    offset: (page - 1) * (pageInfo?.limit ?? 4)
+  });
 
   return (
     <div
@@ -94,9 +110,10 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
           <Spacer vertical spacing={2} />
           <Paginator
             currentPage={pageInfo?.offset ?? 0}
-            updatePage={() => {}}
-            numPages={pageInfo?.totalPages ?? 10}
-            itemsPerPage={10}
+            updatePage={onUpdatePage}
+            numPages={(pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4)}
+            itemsPerPage={4}
+            showRange={(pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4) > 4 ? 4 : (pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4)}
           />
         </>
       )}
