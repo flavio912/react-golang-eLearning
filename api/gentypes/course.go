@@ -82,7 +82,7 @@ type Course struct {
 	ExpirationToEndMonth bool
 }
 
-type ActiveCourse struct {
+type MyCourse struct {
 	CourseID       uint
 	MinutesTracked float64
 	Status         CourseStatus

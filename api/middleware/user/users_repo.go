@@ -58,6 +58,7 @@ type UsersRepository interface {
 	DeleteTakerActivity(activityUUID gentypes.UUID) error
 	TakerActiveCourse(courseTaker gentypes.UUID, courseID uint) (models.ActiveCourse, error)
 	TakerActiveCourses(courseTaker gentypes.UUID) ([]models.ActiveCourse, error)
+	TakerHistoricalCourses(courseTaker gentypes.UUID) ([]models.HistoricalCourse, error)
 	TakerHasActiveCourse(courseTaker gentypes.UUID, courseID uint) (bool, error)
 
 	SaveTestMarks(mark models.TestMark) error

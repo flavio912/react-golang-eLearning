@@ -152,6 +152,21 @@ func (u *usersRepoImpl) TakerActiveCourses(courseTaker gentypes.UUID) ([]models.
 	return activeCourses, nil
 }
 
+func (u *usersRepoImpl) TakerHistoricalCourses(courseTaker gentypes.UUID) ([]models.HistoricalCourse, error) {
+	var historicalCourses []models.HistoricalCourse
+	query := database.GormDB.Where("course_taker_uuid = ?", courseTaker).Find(&historicalCourses)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []models.HistoricalCourse{}, nil
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable to get taker historical courses")
+		return []models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return historicalCourses, nil
+}
+
 // TakerHasSubmittedTest gets the testMarks for a particular course and taker
 func (u *usersRepoImpl) TakerTestMarks(courseTaker gentypes.UUID, courseID uint) ([]models.TestMark, error) {
 	var marks []models.TestMark

@@ -13,18 +13,33 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func activeCourseToGentype(activeCourse models.ActiveCourse) gentypes.ActiveCourse {
-	return gentypes.ActiveCourse{
+func activeCourseToMyCourse(activeCourse models.ActiveCourse) gentypes.MyCourse {
+	return gentypes.MyCourse{
 		CourseID:       activeCourse.CourseID,
 		MinutesTracked: activeCourse.MinutesTracked,
-		Status:         activeCourse.Status,
+		Status:         gentypes.CourseIncomplete,
 	}
 }
 
-func activeCoursesToGentypes(activeCourses []models.ActiveCourse) []gentypes.ActiveCourse {
-	var genCourses = make([]gentypes.ActiveCourse, len(activeCourses))
+func historicalCourseToMyCourse(historicalCourse models.HistoricalCourse) gentypes.MyCourse {
+	status := gentypes.CourseFailed
+	if historicalCourse.Passed {
+		status = gentypes.CourseComplete
+	}
+	return gentypes.MyCourse{
+		CourseID:       historicalCourse.CourseID,
+		MinutesTracked: historicalCourse.MinutesTracked,
+		Status:         status,
+	}
+}
+
+func userCoursesToGentypes(activeCourses []models.ActiveCourse, historicalCourses []models.HistoricalCourse) []gentypes.MyCourse {
+	var genCourses = make([]gentypes.MyCourse, len(activeCourses)+len(historicalCourses))
 	for i, course := range activeCourses {
-		genCourses[i] = activeCourseToGentype(course)
+		genCourses[i] = activeCourseToMyCourse(course)
+	}
+	for i, course := range historicalCourses {
+		genCourses[len(activeCourses)+i] = historicalCourseToMyCourse(course)
 	}
 	return genCourses
 }
@@ -96,8 +111,8 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
-// ActiveCourses gets the activeCourses for a course taker
-func (u *usersAppImpl) ActiveCourses(takerUUID gentypes.UUID) ([]gentypes.ActiveCourse, error) {
+// TakerCourses gets the courses for a course taker
+func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool) ([]gentypes.MyCourse, error) {
 	var authorized = false
 
 	switch {
@@ -106,8 +121,8 @@ func (u *usersAppImpl) ActiveCourses(takerUUID gentypes.UUID) ([]gentypes.Active
 	case u.grant.IsManager:
 		ok, err := u.usersRepository.CompanyManagesCourseTakers(u.grant.Claims.Company, []gentypes.UUID{takerUUID})
 		if err != nil {
-			u.grant.Logger.Log(sentry.LevelError, err, "ActiveCourses error checking if company manages takers")
-			return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
+			u.grant.Logger.Log(sentry.LevelError, err, "MyCourses error checking if company manages takers")
+			return []gentypes.MyCourse{}, &errors.ErrUnauthorized
 		}
 
 		if ok {
@@ -128,39 +143,20 @@ func (u *usersAppImpl) ActiveCourses(takerUUID gentypes.UUID) ([]gentypes.Active
 	if authorized {
 		activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
 		if err != nil {
-			return []gentypes.ActiveCourse{}, &errors.ErrWhileHandling
+			return []gentypes.MyCourse{}, &errors.ErrWhileHandling
 		}
 
-		return activeCoursesToGentypes(activeCourses), nil
+		if !showHistorical {
+			return userCoursesToGentypes(activeCourses, []models.HistoricalCourse{}), nil
+		}
+
+		historicalCourses, err := u.usersRepository.TakerHistoricalCourses(takerUUID)
+		if err != nil || err == &errors.ErrNotFound {
+			return []gentypes.MyCourse{}, &errors.ErrWhileHandling
+		}
+
+		return userCoursesToGentypes(activeCourses, historicalCourses), nil
 	}
 
-	return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
-}
-
-func (u *usersAppImpl) MyActiveCourses() ([]gentypes.ActiveCourse, error) {
-	if !u.grant.IsDelegate && !u.grant.IsIndividual {
-		return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
-	}
-
-	var takerUUID gentypes.UUID
-	if u.grant.IsDelegate {
-		delegate, _ := u.usersRepository.Delegate(u.grant.Claims.UUID)
-		takerUUID = delegate.CourseTakerUUID
-	}
-
-	if u.grant.IsIndividual {
-		individual, _ := u.usersRepository.Individual(u.grant.Claims.UUID)
-		takerUUID = individual.CourseTakerUUID
-	}
-
-	if (takerUUID == gentypes.UUID{}) {
-		return []gentypes.ActiveCourse{}, &errors.ErrNotFound
-	}
-
-	activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
-	if err != nil {
-		return []gentypes.ActiveCourse{}, &errors.ErrWhileHandling
-	}
-
-	return activeCoursesToGentypes(activeCourses), nil
+	return []gentypes.MyCourse{}, &errors.ErrUnauthorized
 }
