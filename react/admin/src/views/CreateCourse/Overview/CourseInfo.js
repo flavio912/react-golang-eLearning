@@ -1,10 +1,9 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   Card,
   CardHeader,
   TextField,
   CardContent,
-  Button,
   Grid,
   Divider
 } from '@material-ui/core';
@@ -29,7 +28,7 @@ const GET_CATEGORIES = gql`
 function CourseInfo({ state, setState }) {
   let categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
 
-  const { loading, error, data, refetch } = useQuery(GET_CATEGORIES, {
+  const { loading, error, data } = useQuery(GET_CATEGORIES, {
     variables: {
       limit: 100
     },
