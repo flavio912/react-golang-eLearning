@@ -37,8 +37,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'grid',
     gridGap: 26,
     marginTop: theme.spacing(3),
-    gridTemplateColumns: 'repeat(auto-fit, 298px)',
-    justifyContent: 'space-between'
+    gridTemplateColumns: 'repeat(auto-fit, 298px)'
   },
   page: {
     marginTop: theme.spacing(3)
@@ -128,7 +127,7 @@ function OnlineCourses({ className, user }: Props) {
         </div>
       </div>
       <div className={classes.courseHolder}>
-        {user?.activeCourses?.map((course, index) => (
+        {user?.myCourses?.map((course, index) => (
           <CourseCard
             key={index}
             course={{
@@ -164,7 +163,7 @@ export default createFragmentContainer(OnlineCourses, {
   user: graphql`
     fragment OnlineCourses_user on User {
       firstName
-      activeCourses {
+      myCourses {
         course {
           ident: id
           name
@@ -173,7 +172,7 @@ export default createFragmentContainer(OnlineCourses, {
           type
           bannerImageURL
         }
-        currentAttempt
+        status
       }
     }
   `
