@@ -30,24 +30,19 @@ export type ResultItem = {
   image: string;
   description: string;
 };
+
 export type PageInfo = {
-  total: number;
-  offset: number;
-  limit: number;
-  given: number;
-};
+  currentPage: number;
+  numPages: number;
+}
+
 export type Result = {
   resultItems: ResultItem[];
   pageInfo: PageInfo;
 };
 
-export type Page = {
-  offset: number;
-  limit: number;
-};
-
 type Props = {
-  searchFunction: (query: string, page: Page) => Promise<Result>;
+  searchFunction: (query: string, offset: number) => Promise<Result>;
   debounceTime?: number;
 };
 
@@ -62,7 +57,7 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
   const [pageInfo, setPageInfo]: [PageInfo | undefined, any] = React.useState();
   const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
   
-  const onSearch = (text: string, page: Page) => {
+  const onSearch = (text: string, offset: number) => {
     clearTimeout(debouncer);
     const timeout = setTimeout(async () => {
       setSearchText(text);
@@ -70,7 +65,7 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
         return;
       }
 
-      const res = await searchFunction(text, page);
+      const res = await searchFunction(text, offset);
       
       setResults(res.resultItems);
       setPageInfo(res.pageInfo);
@@ -78,15 +73,9 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
     setDebouncer(timeout);
   }
 
-  const onChange = (text: string) => onSearch(text, {
-    limit: pageInfo?.limit ?? 4,
-    offset: 0
-  });
+  const onChange = (text: string) => onSearch(text, ((pageInfo?.currentPage ?? 1) - 1) * 4);
 
-  const onUpdatePage = (page: number) => onSearch(searchText, {
-    limit: pageInfo?.limit ?? 4,
-    offset: (page - 1) * (pageInfo?.limit ?? 4)
-  });
+  const onUpdatePage = (page: number) => onSearch(searchText, (page - 1) * 4);
 
   return (
     <div
@@ -109,11 +98,12 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
           </div>
           <Spacer vertical spacing={2} />
           <Paginator
-            currentPage={pageInfo?.offset ?? 0}
+            currentPage={pageInfo?.currentPage ?? 1}
             updatePage={onUpdatePage}
-            numPages={(pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4)}
+            numPages={pageInfo?.numPages ?? 1}
             itemsPerPage={4}
-            showRange={(pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4) > 4 ? 4 : (pageInfo?.total ?? 8)/(pageInfo?.limit ?? 4)}
+            showRange={(pageInfo?.numPages ?? 1) > 4 ? 4 : (pageInfo?.numPages ?? 1)}
+            showDropdown={false}
           />
         </>
       )}

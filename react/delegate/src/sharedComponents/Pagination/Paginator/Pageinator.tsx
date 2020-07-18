@@ -40,6 +40,7 @@ type Props = {
   numPages: number;
   updatePage: (page: number) => void;
   itemsPerPage: number | 10 | 20 | 50; // TODO: Implement this
+  showDropdown?: boolean;
 };
 
 function Pageinator({
@@ -47,20 +48,25 @@ function Pageinator({
   numPages,
   showRange = 4,
   updatePage,
+  showDropdown = true,
 }: Props) {
   const classes = useStyles();
+
+  console.log(showRange);
 
   const [itemsPerPage, setItemsPerPage] = React.useState<DropdownOption>();
   return (
     <div className={classes.paginatorRoot}>
-      <div className={classes.pageDropdown}>
-        <Dropdown
-          placeholder="Show 10"
-          options={defaultOptions}
-          selected={itemsPerPage}
-          setSelected={setItemsPerPage}
-        />
-      </div>
+      {showDropdown && (
+        <div className={classes.pageDropdown}>
+          <Dropdown
+            placeholder="Show 10"
+            options={defaultOptions}
+            selected={itemsPerPage}
+            setSelected={setItemsPerPage}
+          />
+        </div>
+      )}
       <PageNumbers
         numberOfPages={numPages}
         range={showRange}

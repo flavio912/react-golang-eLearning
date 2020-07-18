@@ -1,15 +1,11 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 1ace50d4da524aa1f4859031a87a8ce9 */
+/* @relayHash 24c249e5803a4069cfb8cbc5ba0eeec9 */
 
 import { ConcreteRequest } from "relay-runtime";
-export type Page = {
-    offset?: number | null;
-    limit?: number | null;
-};
 export type AppHolderQueryVariables = {
     name: string;
-    page: Page;
+    offset: number;
 };
 export type AppHolderQueryResponse = {
     readonly courses: {
@@ -37,9 +33,9 @@ export type AppHolderQuery = {
 /*
 query AppHolderQuery(
   $name: String!
-  $page: Page!
+  $offset: Int!
 ) {
-  courses(filter: {name: $name}, page: $page) {
+  courses(filter: {name: $name}, page: {limit: 4, offset: $offset}) {
     edges {
       notId: id
       name
@@ -66,8 +62,8 @@ const node: ConcreteRequest = (function () {
         } as any),
         ({
             "kind": "LocalArgument",
-            "name": "page",
-            "type": "Page!",
+            "name": "offset",
+            "type": "Int!",
             "defaultValue": null
         } as any)
     ], v1 = [
@@ -89,9 +85,20 @@ const node: ConcreteRequest = (function () {
                     ]
                 },
                 {
-                    "kind": "Variable",
+                    "kind": "ObjectValue",
                     "name": "page",
-                    "variableName": "page"
+                    "fields": [
+                        {
+                            "kind": "Literal",
+                            "name": "limit",
+                            "value": 4
+                        },
+                        {
+                            "kind": "Variable",
+                            "name": "offset",
+                            "variableName": "offset"
+                        }
+                    ]
                 }
             ],
             "concreteType": "CoursePage",
@@ -198,10 +205,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "AppHolderQuery",
             "id": null,
-            "text": "query AppHolderQuery(\n  $name: String!\n  $page: Page!\n) {\n  courses(filter: {name: $name}, page: $page) {\n    edges {\n      notId: id\n      name\n      bannerImageURL\n      introduction\n    }\n    pageInfo {\n      total\n      limit\n      offset\n      given\n    }\n  }\n}\n",
+            "text": "query AppHolderQuery(\n  $name: String!\n  $offset: Int!\n) {\n  courses(filter: {name: $name}, page: {limit: 4, offset: $offset}) {\n    edges {\n      notId: id\n      name\n      bannerImageURL\n      introduction\n    }\n    pageInfo {\n      total\n      limit\n      offset\n      given\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '2f5ee9bbe193d208d079d7b12a5d1f96';
+(node as any).hash = '94543c2038b4dbed1f61e898a775f6a5';
 export default node;

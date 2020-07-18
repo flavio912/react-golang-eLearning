@@ -10,7 +10,6 @@ import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
 import environment from 'api/environment';
 import { AppHolderQuery, AppHolderQueryResponse } from './__generated__/AppHolderQuery.graphql';
-import { Page } from 'components/Search/SearchResults/SearchResults';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -129,10 +128,13 @@ const AppHolder = ({ children, user }: Props) => {
         {isShowSearchModal && (
           <div className={classes.appHolderSearch} onClick={hideSearch}>
             <SearchResults searchFunction={
-              async (text: string, page: Page) => {
+              async (text: string, offset: number) => {
                 const query = graphql`
-                  query AppHolderQuery($name: String!,  $page: Page!){
-                    courses(filter: { name: $name }, page: $page){
+                  query AppHolderQuery($name: String!,  $offset: Int!){
+                    courses(filter: { name: $name }, page: { 
+                      limit: 4
+                      offset: $offset
+                    }){
                       edges{
                         notId: id
                         name
@@ -151,7 +153,7 @@ const AppHolder = ({ children, user }: Props) => {
     
                 const variables = {
                   name: text,
-                  page: page
+                  offset: offset
                 };
 
                 const data = (await fetchQuery(
@@ -165,10 +167,8 @@ const AppHolder = ({ children, user }: Props) => {
                   return {
                     resultItems: [],
                     pageInfo: {
-                      total: 1,
-                      offset: 0,
-                      limit: 4,
-                      given: 0
+                      currentPage: 1,
+                      numPages: 1
                     }
                   };
                 }
@@ -181,10 +181,8 @@ const AppHolder = ({ children, user }: Props) => {
                 }));
                 
                 const pageInfo = {
-                  total: data.courses.pageInfo?.total,
-                  offset: data.courses.pageInfo.offset,
-                  limit: data.courses.pageInfo.limit,
-                  given: data.courses.pageInfo.given
+                  currentPage: Math.ceil(((data.courses.pageInfo.offset)/ 4) + 1),
+                  numPages: Math.ceil((data.courses.pageInfo.total/4))
                 };
 
                 const result = {
