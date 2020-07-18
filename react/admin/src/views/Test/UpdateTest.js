@@ -4,6 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { CircularProgress } from '@material-ui/core';
 import TestPage from './TestPage';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -12,40 +13,52 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GET_QUESTION = gql`
-  query GetQuestion($uuid: UUID!) {
-    question(uuid: $uuid) {
+const GET_TEST = gql`
+  query GetTest($uuid: UUID!) {
+    test(uuid: $uuid) {
       uuid
-      text
-      randomiseAnswers
-      answers {
+      name
+      tags {
         uuid
-        isCorrect
+        name
+        color
+      }
+      attemptsAllowed
+      passPercentage
+      questionsToAnswer
+      randomiseAnswers
+      questions {
+        uuid
         text
-        imageURL
       }
     }
   }
 `;
 
-const UPDATE_QUESTION = gql`
-  mutation UpdateQuestion(
+const UPDATE_TEST = gql`
+  mutation UpdateTest(
     $uuid: UUID!
-    $text: String
-    $randomise: Boolean
-    $answers: [UpdateBasicAnswerInput!]
+    $name: String!
     $tags: [UUID!]
+    $attemptsAllowed: Int!
+    $passPercentage: Float!
+    $questionsToAnswer: Int!
+    $randomiseAnswers: Boolean!
+    $questions: [UUID!]!
   ) {
-    updateQuestion(
+    updateTest(
       input: {
         uuid: $uuid
-        text: $text
-        randomiseAnswers: $randomise
-        answers: $answers
+        name: $name
         tags: $tags
+        attemptsAllowed: $attemptsAllowed
+        passPercentage: $passPercentage
+        questionsToAnswer: $questionsToAnswer
+        randomiseAnswers: $randomiseAnswers
+        questions: $questions
       }
     ) {
-      question {
+      test {
         uuid
       }
     }
@@ -54,9 +67,13 @@ const UPDATE_QUESTION = gql`
 
 const initState = {
   name: '',
-  randomise: false,
-  answers: [],
-  tags: []
+  tags: [],
+  attemptsAllowed: false,
+  passPercentage: false,
+  questionsToAnswer: false,
+  randomiseAnswers: undefined,
+  randomiseAnswers: false,
+  questions: []
 };
 
 function UpdateTest({ match, history }) {
@@ -65,14 +82,14 @@ function UpdateTest({ match, history }) {
   const { tab: currentTab, ident } = match.params;
   const tabs = [{ value: 'overview', label: 'Overview' }];
 
-  const { loading, error, data: queryData, refetch } = useQuery(GET_QUESTION, {
+  const { loading, error, data: queryData, refetch } = useQuery(GET_TEST, {
     variables: {
       uuid: ident
     },
     fetchPolicy: 'cache-and-network',
     skip: !ident
   });
-  const [updateQuestion, { error: mutationErr }] = useMutation(UPDATE_QUESTION);
+  const [updateTest, { error: mutationErr }] = useMutation(UPDATE_TEST);
 
   const [state, setState] = useState(initState);
 
@@ -86,23 +103,13 @@ function UpdateTest({ match, history }) {
     if (!queryData) return;
     setState({
       ...initState,
-      name: queryData.question.text,
-      randomise: queryData.question.randomiseAnswers,
-      answers: queryData.question.answers.map(ans => {
-        var display = 'TEXT';
-        if (ans.text && ans.imageURL) {
-          display = 'TEXT_IMAGE';
-        } else if (ans.imageURL) {
-          display = 'IMAGE';
-        }
-        return {
-          uuid: ans.uuid,
-          isCorrect: ans.isCorrect,
-          text: ans.text,
-          imageURL: ans.imageURL,
-          answerType: display
-        };
-      })
+      name: queryData.test.name,
+      tags: queryData.test.tags,
+      attemptsAllowed: queryData.test.attemptsAllowed,
+      passPercentage: queryData.test.passPercentage,
+      questionsToAnswer: queryData.test.questionsToAnswer,
+      randomiseAnswers: queryData.test.randomiseAnswers,
+      questions: queryData.test.questions || []
     });
   }, [queryData, loading, error]);
 
@@ -113,18 +120,16 @@ function UpdateTest({ match, history }) {
 
   const onUpdate = async () => {
     try {
-      await updateQuestion({
+      await updateTest({
         variables: {
           uuid: ident,
-          text: state.name,
-          randomise: state.randomise,
-          answers: state.answers.map(ans => ({
-            uuid: ans.uuid || undefined,
-            isCorrect: ans.isCorrect,
-            text: ans.text,
-            imageToken: ans.imageToken || undefined,
-            answerType: ans.answerType
-          }))
+          name: state.name,
+          tags: state.tags,
+          attemptsAllowed: parseInt(state.attemptsAllowed),
+          passPercentage: state.passPercentage,
+          questionsToAnswer: state.questionsToAnswer,
+          randomiseAnswers: state.randomiseAnswers,
+          questions: state.questions
         }
       });
       refetch();
@@ -132,16 +137,19 @@ function UpdateTest({ match, history }) {
   };
 
   return (
-    <TestPage
-      state={state}
-      setState={updateState}
-      currentTab={currentTab}
-      error={error || mutationErr}
-      onSave={onUpdate}
-      history={history}
-      tabs={tabs}
-      title="Edit Test"
-    />
+    <>
+      <ErrorModal error={error || mutationErr} />
+      <TestPage
+        state={state}
+        setState={updateState}
+        currentTab={currentTab}
+        error={error || mutationErr}
+        onSave={onUpdate}
+        history={history}
+        tabs={tabs}
+        title="Edit Test"
+      />
+    </>
   );
 }
 

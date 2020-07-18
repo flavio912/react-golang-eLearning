@@ -5,8 +5,26 @@ import { useMutation } from '@apollo/react-hooks';
 import TestPage from './TestPage';
 
 const CREATE_TEST = gql`
-  mutation CreateTest {
-    createTest(input: {}) {
+  mutation CreateTest(
+    $name: String!
+    $tags: [UUID!]
+    $attemptsAllowed: Int!
+    $passPercentage: Float!
+    $questionsToAnswer: Int!
+    $randomiseAnswers: Boolean!
+    $questions: [UUID!]!
+  ) {
+    createTest(
+      input: {
+        name: $name
+        tags: $tags
+        attemptsAllowed: $attemptsAllowed
+        passPercentage: $passPercentage
+        questionsToAnswer: $questionsToAnswer
+        randomiseAnswers: $randomiseAnswers
+        questions: $questions
+      }
+    ) {
       test {
         uuid
       }
@@ -14,19 +32,23 @@ const CREATE_TEST = gql`
   }
 `;
 
+var initState = {
+  name: '',
+  tags: [],
+  attemptsAllowed: false,
+  passPercentage: false,
+  questionsToAnswer: false,
+  randomiseAnswers: undefined,
+  randomiseAnswers: false,
+  questions: []
+};
+
 function CreateTest({ match, history }) {
   const { tab: currentTab } = match.params;
   const tabs = [
     { value: 'overview', label: 'Overview' },
     { value: 'test-builder', label: 'Test Builder' }
   ];
-
-  var initState = {
-    name: '',
-    randomise: false,
-    answers: [],
-    tags: []
-  };
 
   const [state, setState] = useState(initState);
   const [createTest, { error }] = useMutation(CREATE_TEST);
@@ -43,10 +65,18 @@ function CreateTest({ match, history }) {
   const onSave = async () => {
     try {
       const res = await createTest({
-        variables: {}
+        variables: {
+          name: state.name,
+          tags: state.tags,
+          attemptsAllowed: state.attemptsAllowed,
+          passPercentage: state.passPercentage,
+          questionsToAnswer: state.questionsToAnswer,
+          randomiseAnswers: state.randomiseAnswers,
+          questions: state.questions
+        }
       });
       if (res.data?.createTest?.test?.uuid) {
-        history.push(`/test/${res.data?.createTest?.test?.uuid}`);
+        history.push(`/test/${res.data?.createTest?.test?.uuid}/overview`);
       } else {
         console.warn('Unable to get save params');
       }

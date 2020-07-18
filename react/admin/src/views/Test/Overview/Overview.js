@@ -79,7 +79,12 @@ function Overview({ state, setState }) {
                     fullWidth
                     value={state.passPercentage}
                     onChange={inp => {
-                      setState('passPercentage', inp.target.value);
+                      try {
+                        setState(
+                          'passPercentage',
+                          parseFloat(inp.target.value)
+                        );
+                      } catch (err) {}
                     }}
                     InputProps={{
                       endAdornment: (
@@ -95,9 +100,14 @@ function Overview({ state, setState }) {
                   <TextField
                     label="Num questions to answer"
                     fullWidth
-                    value={state.numToAnswer}
+                    value={state.questionsToAnswer}
                     onChange={inp => {
-                      setState('numToAnswer', inp.target.value);
+                      try {
+                        setState(
+                          'questionsToAnswer',
+                          parseInt(inp.target.value)
+                        );
+                      } catch {}
                     }}
                     type="number"
                     placeholder={'e.g 3'}
