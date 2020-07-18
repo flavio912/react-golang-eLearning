@@ -425,3 +425,21 @@ func (q *QueryResolver) SearchSyllabus(
 		},
 	}, err
 }
+
+func (q *QueryResolver) Categories(
+	ctx context.Context,
+	args struct {
+		Page *gentypes.Page
+		Text *string
+	}) (*CategoryPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	categories, pageInfo, err := app.CourseApp.Categories(args.Page, args.Text)
+	if err != nil {
+		return &CategoryPageResolver{}, err
+	}
+
+	return NewCategoryPageResolver(ctx, NewCategoryPageArgs{
+		PageInfo:   pageInfo,
+		Categories: &categories,
+	})
+}

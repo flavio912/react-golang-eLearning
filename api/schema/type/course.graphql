@@ -153,6 +153,11 @@ input DeleteCourseInput {
   id: Int!
 }
 
+type CategoryPage implements PaginatedQuery {
+  edges: [Category]
+  pageInfo: PageInfo
+}
+
 # [ EXAMPLE COURSE STRUCTURE
 #   {type: "module", uuid: "34343-34343-34343-434343"},
 #   {type: "lesson", uuid: "1212121-2121212-12121-21212"},

@@ -18,6 +18,36 @@ type CoursesRepository struct {
 	mock.Mock
 }
 
+// Categories provides a mock function with given fields: page, text
+func (_m *CoursesRepository) Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error) {
+	ret := _m.Called(page, text)
+
+	var r0 []models.Category
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *string) []models.Category); ok {
+		r0 = rf(page, text)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Category)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *string) gentypes.PageInfo); ok {
+		r1 = rf(page, text)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *string) error); ok {
+		r2 = rf(page, text)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // CertificateType provides a mock function with given fields: uuid
 func (_m *CoursesRepository) CertificateType(uuid gentypes.UUID) (models.CertificateType, error) {
 	ret := _m.Called(uuid)
