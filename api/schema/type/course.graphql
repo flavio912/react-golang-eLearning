@@ -48,6 +48,8 @@ type Course {
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
   bannerImageURL: String
+  expiresInMonths: Int!
+  expirationToEndMonth: Boolean!
 }
 
 type CoursePage implements PaginatedQuery {
@@ -58,6 +60,7 @@ type CoursePage implements PaginatedQuery {
 input SaveClassroomCourseInput {
   id: Int
   name: String
+  certificateType: UUID
   categoryUUID: UUID
   excerpt: String
   introduction: String
@@ -73,12 +76,15 @@ input SaveClassroomCourseInput {
   startDate: Time
   endDate: Time
   location: String
+  expiresInMonths: Int
+  expirationToEndMonth: Boolean
 }
 
 input SaveOnlineCourseInput {
   id: Int
   name: String
   categoryUUID: UUID
+  certificateType: UUID
   # secondaryCategoryUUID: UUID
   excerpt: String # Short description of course
   introduction: String # 'About this course' section
@@ -94,6 +100,8 @@ input SaveOnlineCourseInput {
   specificTerms: String
   bannerImageSuccess: String
   structure: [CourseItem!]
+  expiresInMonths: Int
+  expirationToEndMonth: Boolean
 }
 
 input CourseItem {
@@ -134,6 +142,11 @@ input PurchaseCoursesInput {
 type PurchaseCoursesResponse {
   transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
   stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
+}
+
+type SearchSyllabusResult implements PaginatedQuery {
+  edges: [SyllabusItem!]
+  pageInfo: PageInfo
 }
 
 input DeleteCourseInput {

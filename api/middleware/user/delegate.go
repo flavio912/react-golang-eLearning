@@ -29,6 +29,17 @@ func (u *usersRepoImpl) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
 	return delegate, nil
 }
 
+func (u *usersRepoImpl) UserFromCourseTaker(takerUUID gentypes.UUID) (*models.Delegate, *models.Individual) {
+	var delegate models.Delegate
+	var individual models.Individual
+
+	// Check delegates
+	database.GormDB.Where("course_taker_uuid = ?", takerUUID).Find(&delegate)
+	database.GormDB.Where("course_taker_uuid = ?", takerUUID).Find(&individual)
+
+	return &delegate, &individual
+}
+
 func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
 	if filter != nil {
 		query = middleware.FilterUser(query, &filter.UserFilter)

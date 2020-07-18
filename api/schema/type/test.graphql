@@ -46,7 +46,8 @@ input SubmitTestInput {
 }
 
 type SubmitTestPayload {
-  success: Boolean!
+  courseStatus: CourseStatus!
+  passed: Boolean! # True if the user passed the test
 }
 
 input UpdateTestInput {

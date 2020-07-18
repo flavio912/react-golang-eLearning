@@ -57,9 +57,9 @@ func (l *lessonLoader) loadBatch(ctx context.Context, keys dataloader.Keys) []*d
 }
 
 // LoadLesson loads Lesson via dataloader
-func LoadLesson(ctx context.Context, uuid string) (gentypes.Lesson, error) {
+func LoadLesson(ctx context.Context, uuid gentypes.UUID) (gentypes.Lesson, error) {
 	var lesson gentypes.Lesson
-	data, err := extractAndLoad(ctx, lessonLoaderKey, uuid)
+	data, err := extractAndLoad(ctx, lessonLoaderKey, uuid.String())
 	if err != nil {
 		return lesson, err
 	}

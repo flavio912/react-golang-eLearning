@@ -65,23 +65,25 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 	}
 
 	return gentypes.Course{
-		ID:              courseInfo.ID,
-		Name:            courseInfo.Name,
-		AccessType:      courseInfo.AccessType,
-		BackgroundCheck: courseInfo.BackgroundCheck,
-		Price:           courseInfo.Price,
-		Color:           courseInfo.Color,
-		Introduction:    courseInfo.Introduction,
-		HowToComplete:   courseInfo.HowToComplete,
-		HoursToComplete: courseInfo.HoursToComplete,
-		WhatYouLearn:    learnBullets,
-		Requirements:    requirementBullets,
-		Excerpt:         courseInfo.Excerpt,
-		SpecificTerms:   courseInfo.SpecificTerms,
-		CategoryUUID:    courseInfo.CategoryUUID,
-		AllowedToBuy:    allowedToBuy,
-		CourseType:      courseInfo.CourseType,
-		BannerImageURL:  bannerUrl,
+		ID:                   courseInfo.ID,
+		Name:                 courseInfo.Name,
+		AccessType:           courseInfo.AccessType,
+		BackgroundCheck:      courseInfo.BackgroundCheck,
+		Price:                courseInfo.Price,
+		Color:                courseInfo.Color,
+		Introduction:         courseInfo.Introduction,
+		HowToComplete:        courseInfo.HowToComplete,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		WhatYouLearn:         learnBullets,
+		Requirements:         requirementBullets,
+		Excerpt:              courseInfo.Excerpt,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		CategoryUUID:         courseInfo.CategoryUUID,
+		AllowedToBuy:         allowedToBuy,
+		CourseType:           courseInfo.CourseType,
+		BannerImageURL:       bannerUrl,
+		ExpiresInMonths:      courseInfo.ExpiresInMonths,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 	}
 }
 
@@ -165,12 +167,61 @@ func (c *courseAppImpl) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCou
 }
 
 func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error) {
-	return []gentypes.CourseItem{
-		gentypes.CourseItem{
-			Type: gentypes.TestType,
-			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		},
-	}, nil
+	// TODO: should also allow delegates and individuals
+	if !c.grant.IsAdmin {
+		return []gentypes.CourseItem{}, &errors.ErrUnauthorized
+	}
+
+	// Check that its an online course
+	onlineCourse, err := c.coursesRepository.OnlineCourse(courseID)
+	if err != nil {
+		return []gentypes.CourseItem{}, err
+	}
+
+	structures, structErr := c.coursesRepository.OnlineCourseStructure(onlineCourse.UUID)
+
+	if structErr != nil {
+		return []gentypes.CourseItem{}, structErr
+	}
+
+	courseItems := make([]gentypes.CourseItem, len(structures))
+	for i, structure := range structures {
+		switch {
+		case structure.ModuleUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.ModuleType,
+				UUID: *structure.ModuleUUID,
+			}
+		case structure.LessonUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.LessonType,
+				UUID: *structure.LessonUUID,
+			}
+		case structure.TestUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.TestType,
+				UUID: *structure.TestUUID,
+			}
+		default:
+			c.grant.Logger.LogMessage(sentry.LevelFatal, "Structure element not recognised")
+			return []gentypes.CourseItem{}, &errors.ErrWhileHandling
+		}
+	}
+
+	return courseItems, nil
+}
+
+func (c *courseAppImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CourseItem{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	results, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+
+	return results, pageInfo, err
 }
 
 func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, error) {

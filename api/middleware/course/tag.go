@@ -104,7 +104,9 @@ func (c *coursesRepoImpl) GetTags(page gentypes.Page, filter gentypes.GetTagsFil
 func (c *coursesRepoImpl) GetTagsByLessonUUID(uuid string) ([]models.Tag, error) {
 	var tags []models.Tag
 	query := database.GormDB.Table("tags").
-		Joins("JOIN lesson_tags_link ON lesson_tags_link.tag_uuid = tags.uuid AND lesson_tags_link.lesson_uuid = ?", uuid).Find(&tags)
+		Joins("JOIN lesson_tags_link ON lesson_tags_link.tag_uuid = tags.uuid AND lesson_tags_link.lesson_uuid = ?", uuid).
+		Order("name DESC").
+		Find(&tags)
 
 	if query.Error != nil {
 		if query.RecordNotFound() {
