@@ -18,6 +18,27 @@ type CoursesRepository struct {
 	mock.Mock
 }
 
+// AreInCourses provides a mock function with given fields: courseIDs, uuids, courseElement
+func (_m *CoursesRepository) AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error) {
+	ret := _m.Called(courseIDs, uuids, courseElement)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func([]uint, []gentypes.UUID, gentypes.CourseElement) bool); ok {
+		r0 = rf(courseIDs, uuids, courseElement)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func([]uint, []gentypes.UUID, gentypes.CourseElement) error); ok {
+		r1 = rf(courseIDs, uuids, courseElement)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CheckTagsExist provides a mock function with given fields: tags
 func (_m *CoursesRepository) CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error) {
 	ret := _m.Called(tags)
