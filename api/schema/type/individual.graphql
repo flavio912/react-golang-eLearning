@@ -1,3 +1,14 @@
+type Individual {
+  uuid: UUID!
+  createdAt: String
+  email: String!
+  firstName: String!
+  lastName: String!
+  jobTitle: String
+  telephone: String
+  lastLogin: String!
+}
+
 input CreateIndividualInput {
   firstName: String!
   lastName: String!
