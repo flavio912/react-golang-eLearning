@@ -9,6 +9,11 @@ type Individual {
   lastLogin: String!
 }
 
+type IndividualPage implements PaginatedQuery{
+  edges: [Individual]
+  pageInfo: PageInfo
+}
+
 input CreateIndividualInput {
   firstName: String!
   lastName: String!

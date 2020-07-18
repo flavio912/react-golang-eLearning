@@ -34,6 +34,7 @@ type UsersRepository interface {
 	CreateManager(managerDetails gentypes.CreateManagerInput, companyUUID gentypes.UUID) (models.Manager, error)
 
 	Individual(uuid gentypes.UUID) (models.Individual, error)
+	Individuals(page *gentypes.Page, filter *gentypes.IndividualFilter, orderBy *gentypes.OrderBy) ([]models.Individual, gentypes.PageInfo, error)
 	CreateIndividual(input gentypes.CreateIndividualInput) (models.Individual, error)
 
 	Manager(UUID gentypes.UUID) (models.Manager, error)

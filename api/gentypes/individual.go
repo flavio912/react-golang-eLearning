@@ -19,3 +19,8 @@ type CreateIndividualInput struct {
 	Email     string  `valid:"email"`
 	Password  string
 }
+
+type IndividualFilter struct {
+	UserFilter
+	Email *string `valid:"email"`
+}

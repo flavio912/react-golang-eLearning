@@ -46,3 +46,41 @@ func NewIndividualResolver(ctx context.Context, args NewIndividualArgs) (*Indivi
 		return &IndividualResolver{}, &errors.ErrUnableToResolve
 	}
 }
+
+type IndividualPageResolver struct {
+	edges    *[]*IndividualResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *IndividualPageResolver) PageInfo() *PageInfoResolver   { return r.pageInfo }
+func (r *IndividualPageResolver) Edges() *[]*IndividualResolver { return r.edges }
+
+type NewIndividualPageArgs struct {
+	PageInfo    gentypes.PageInfo
+	Individuals *[]gentypes.Individual
+}
+
+func NewIndividualPageResolver(ctx context.Context, args NewIndividualPageArgs) (*IndividualPageResolver, error) {
+	if args.Individuals == nil {
+		return &IndividualPageResolver{}, &errors.ErrUnableToResolve
+	}
+
+	var resolvers []*IndividualResolver
+	for _, ind := range *args.Individuals {
+		res, err := NewIndividualResolver(ctx, NewIndividualArgs{
+			Individual: &ind,
+		})
+
+		if err != nil {
+			return &IndividualPageResolver{}, err
+		}
+		resolvers = append(resolvers, res)
+	}
+
+	return &IndividualPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &args.PageInfo,
+		},
+	}, nil
+}

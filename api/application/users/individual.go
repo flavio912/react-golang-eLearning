@@ -22,6 +22,14 @@ func (u *usersAppImpl) individualToGentype(ind models.Individual) gentypes.Indiv
 	}
 }
 
+func (u *usersAppImpl) individualsToGentype(inds []models.Individual) []gentypes.Individual {
+	out := make([]gentypes.Individual, len(inds))
+	for i, ind := range inds {
+		out[i] = u.individualToGentype(ind)
+	}
+	return out
+}
+
 func (u *usersAppImpl) CreateIndividual(input gentypes.CreateIndividualInput) (gentypes.User, error) {
 	individual, err := u.usersRepository.CreateIndividual(input)
 	user := u.IndividualToUser(individual)
@@ -31,4 +39,9 @@ func (u *usersAppImpl) CreateIndividual(input gentypes.CreateIndividualInput) (g
 func (u *usersAppImpl) Individual(uuid gentypes.UUID) (gentypes.Individual, error) {
 	individual, err := u.usersRepository.Individual(uuid)
 	return u.individualToGentype(individual), err
+}
+
+func (u *usersAppImpl) Individuals(page *gentypes.Page, filter *gentypes.IndividualFilter, orderBy *gentypes.OrderBy) ([]gentypes.Individual, gentypes.PageInfo, error) {
+	individuals, pageInfo, err := u.usersRepository.Individuals(page, filter, orderBy)
+	return u.individualsToGentype(individuals), pageInfo, err
 }
