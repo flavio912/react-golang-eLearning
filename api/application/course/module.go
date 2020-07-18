@@ -67,8 +67,41 @@ func (c *courseAppImpl) Modules(
 }
 
 func (c *courseAppImpl) ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error) {
-	if !c.grant.IsAdmin {
+	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return []gentypes.Module{}, &errors.ErrUnauthorized
+	}
+
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		// Check user is taking a course with those modules in it
+		var courseTakerID gentypes.UUID
+		if c.grant.IsDelegate {
+			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
+			courseTakerID = delegate.CourseTakerUUID
+		}
+
+		if c.grant.IsIndividual {
+			individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
+			courseTakerID = individual.CourseTakerUUID
+		}
+
+		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
+		if err != nil {
+			return []gentypes.Module{}, &errors.ErrWhileHandling
+		}
+
+		var courseIds = make([]uint, len(activeCourses))
+		for i, activeCourse := range activeCourses {
+			courseIds[i] = activeCourse.CourseID
+		}
+
+		areModsInCourses, err := c.coursesRepository.AreInCourses(courseIds, uuids, gentypes.ModuleType)
+		if err != nil {
+			return []gentypes.Module{}, &errors.ErrWhileHandling
+		}
+
+		if !areModsInCourses {
+			return []gentypes.Module{}, &errors.ErrWhileHandling
+		}
 	}
 
 	modules, err := c.coursesRepository.ModulesByUUIDs(uuids)
