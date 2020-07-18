@@ -9,6 +9,14 @@ const (
 	Open       AccessType = "open"
 )
 
+type CourseStatus string
+
+const (
+	CourseComplete   CourseStatus = "complete"
+	CourseFailed     CourseStatus = "failed"
+	CourseIncomplete CourseStatus = "incomplete"
+)
+
 type CourseElement string
 
 const (
@@ -25,22 +33,25 @@ const (
 )
 
 type CourseInput struct {
-	ID                 *int32
-	Name               *string
-	CategoryUUID       *UUID
-	Excerpt            *string
-	Introduction       *string
-	HowToComplete      *string
-	HoursToComplete    *float64
-	WhatYouLearn       *[]string
-	Requirements       *[]string
-	BackgroundCheck    *bool
-	AccessType         *AccessType
-	Price              *float64
-	Color              *string `valid:"hexcolor"`
-	Tags               *[]UUID
-	SpecificTerms      *string
-	BannerImageSuccess *string
+	ID                   *int32
+	Name                 *string
+	CategoryUUID         *UUID
+	Excerpt              *string
+	Introduction         *string
+	HowToComplete        *string
+	HoursToComplete      *float64
+	WhatYouLearn         *[]string
+	Requirements         *[]string
+	BackgroundCheck      *bool
+	AccessType           *AccessType
+	Price                *float64
+	Color                *string `valid:"hexcolor"`
+	Tags                 *[]UUID
+	SpecificTerms        *string
+	BannerImageSuccess   *string
+	CertificateType      *UUID
+	ExpirationToEndMonth *bool
+	ExpiresInMonths      *int32
 }
 
 type CourseItem struct {
@@ -49,30 +60,32 @@ type CourseItem struct {
 }
 
 type Course struct {
-	ID              uint
-	Name            string
-	AccessType      AccessType
-	CourseType      CourseType
-	AllowedToBuy    bool // Helper field, true if current user is allowed to buy this course
-	BackgroundCheck bool
-	Price           float64
-	Tags            []Tag
-	Color           string `valid:"hexcolor"`
-	Introduction    string
-	HowToComplete   string
-	HoursToComplete float64
-	WhatYouLearn    []string
-	Requirements    []string
-	Excerpt         string
-	SpecificTerms   string
-	CategoryUUID    *UUID
-	BannerImageURL  *string
+	ID                   uint
+	Name                 string
+	AccessType           AccessType
+	CourseType           CourseType
+	AllowedToBuy         bool // Helper field, true if current user is allowed to buy this course
+	BackgroundCheck      bool
+	Price                float64
+	Tags                 []Tag
+	Color                string `valid:"hexcolor"`
+	Introduction         string
+	HowToComplete        string
+	HoursToComplete      float64
+	WhatYouLearn         []string
+	Requirements         []string
+	Excerpt              string
+	SpecificTerms        string
+	CategoryUUID         *UUID
+	BannerImageURL       *string
+	ExpiresInMonths      uint
+	ExpirationToEndMonth bool
 }
 
-type ActiveCourse struct {
+type MyCourse struct {
 	CourseID       uint
-	CurrentAttempt uint
 	MinutesTracked float64
+	Status         CourseStatus
 }
 
 type CourseFilter struct {

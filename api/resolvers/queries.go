@@ -298,6 +298,11 @@ func (q *QueryResolver) Questions(
 	})
 }
 
+func (q *QueryResolver) CertificateInfo(ctx context.Context, args struct{ Token string }) (gentypes.CertficateInfo, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.CertificateInfo(args.Token)
+}
+
 func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
 	return NewTestResolver(ctx, NewTestArgs{
 		TestUUID: &args.UUID,
@@ -419,4 +424,22 @@ func (q *QueryResolver) SearchSyllabus(
 			pageInfo: &pageInfo,
 		},
 	}, err
+}
+
+func (q *QueryResolver) Categories(
+	ctx context.Context,
+	args struct {
+		Page *gentypes.Page
+		Text *string
+	}) (*CategoryPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	categories, pageInfo, err := app.CourseApp.Categories(args.Page, args.Text)
+	if err != nil {
+		return &CategoryPageResolver{}, err
+	}
+
+	return NewCategoryPageResolver(ctx, NewCategoryPageArgs{
+		PageInfo:   pageInfo,
+		Categories: &categories,
+	})
 }

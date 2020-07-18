@@ -2098,3 +2098,101 @@ func TestDeleteQuestion(t *testing.T) {
 	// 	DelegateAllowed: false,
 	// })
 }
+
+func TestCreateTutor(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Creates tutor",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createTutor(input: {
+						name: "Walter White"
+						cin: "420"
+					}) {
+						name
+						cin
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createTutor": {
+						"name": "Walter White",
+						"cin": "420"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createTutor(input: {
+					name: "Savage"
+					cin: "21"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"createTutor"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestUpdateTutor(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update some fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateTutor(input: {
+						uuid: "386bd256-82e0-4d8a-91af-b4a117e0eda8"
+						name: "Richard Feynman"
+						cin: "69"
+					}) {
+						name
+						cin
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateTutor": {
+						"name": "Richard Feynman",
+						"cin": "69"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateTutor(input: {
+					uuid: "386bd256-82e0-4d8a-91af-b4a117e0eda8"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateTutor"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}

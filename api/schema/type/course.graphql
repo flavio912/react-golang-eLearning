@@ -48,6 +48,8 @@ type Course {
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
   bannerImageURL: String
+  expiresInMonths: Int!
+  expirationToEndMonth: Boolean!
 }
 
 type CoursePage implements PaginatedQuery {
@@ -58,6 +60,7 @@ type CoursePage implements PaginatedQuery {
 input SaveClassroomCourseInput {
   id: Int
   name: String
+  certificateType: UUID
   categoryUUID: UUID
   excerpt: String
   introduction: String
@@ -73,12 +76,15 @@ input SaveClassroomCourseInput {
   startDate: Time
   endDate: Time
   location: String
+  expiresInMonths: Int
+  expirationToEndMonth: Boolean
 }
 
 input SaveOnlineCourseInput {
   id: Int
   name: String
   categoryUUID: UUID
+  certificateType: UUID
   # secondaryCategoryUUID: UUID
   excerpt: String # Short description of course
   introduction: String # 'About this course' section
@@ -94,6 +100,8 @@ input SaveOnlineCourseInput {
   specificTerms: String
   bannerImageSuccess: String
   structure: [CourseItem!]
+  expiresInMonths: Int
+  expirationToEndMonth: Boolean
 }
 
 input CourseItem {
@@ -143,6 +151,11 @@ type SearchSyllabusResult implements PaginatedQuery {
 
 input DeleteCourseInput {
   id: Int!
+}
+
+type CategoryPage implements PaginatedQuery {
+  edges: [Category]
+  pageInfo: PageInfo
 }
 
 # [ EXAMPLE COURSE STRUCTURE

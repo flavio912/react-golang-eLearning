@@ -2,6 +2,7 @@ package uploads
 
 import (
 	"fmt"
+	"io"
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
@@ -11,12 +12,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws/awserr"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 )
 
 // Session - AWS session
 var Session *session.Session
+var Uploader *s3manager.Uploader
 
 // Initialize sets up an AWS session
 func Initialize() {
@@ -27,6 +30,9 @@ func Initialize() {
 		glog.Errorf("AWS error: %s", err.Error())
 		panic("Could not setup aws connection")
 	}
+
+	// Create an uploader
+	Uploader = s3manager.NewUploader(sess)
 	Session = sess
 }
 
@@ -141,4 +147,26 @@ func DeleteImageFromKey(key string) error {
 	}
 
 	return nil
+}
+
+func UploadCertificate(body io.Reader) (string, error) {
+	// generate random key
+	str, err := auth.GenerateRandomString(40)
+	if err != nil {
+		glog.Errorf("Unable to generate random string: %s", err.Error())
+		return "", err
+	}
+
+	_, err = Uploader.Upload(&s3manager.UploadInput{
+		Bucket: aws.String(helpers.Config.AWS.UploadsBucket),
+		Key:    aws.String("certificates/" + str + ".pdf"),
+		Body:   body,
+	})
+
+	if err != nil {
+		glog.Errorf("Unable to upload certificate")
+		return "", err
+	}
+
+	return str, nil
 }

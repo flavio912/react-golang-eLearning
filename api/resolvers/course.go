@@ -96,6 +96,12 @@ func (r *CourseResolver) Syllabus(ctx context.Context) (*[]*SyllabusResolver, er
 func (r *CourseResolver) BannerImageURL() *string {
 	return r.Course.BannerImageURL
 }
+func (r *CourseResolver) ExpiresInMonths() int32 {
+	return int32(r.Course.ExpiresInMonths)
+}
+func (r *CourseResolver) ExpirationToEndMonth() bool {
+	return r.Course.ExpirationToEndMonth
+}
 
 type CoursePageResolver struct {
 	edges    *[]*CourseResolver

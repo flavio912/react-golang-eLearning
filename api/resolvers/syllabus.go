@@ -49,16 +49,51 @@ func NewSyllabusResolvers(ctx context.Context, args NewSyllabusArgs) (*[]*Syllab
 		}
 
 		for _, item := range syllabus {
-			if item.Type == gentypes.TestType {
-				res, err := NewTestResolver(ctx, NewTestArgs{TestUUID: &item.UUID})
-				if err != nil {
-					return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
-				}
-				resolvers = append(resolvers, &SyllabusResolver{res})
+			var (
+				res Syllabus
+				err error
+			)
+
+			switch item.Type {
+			case gentypes.TestType:
+				res, err = NewTestResolver(ctx, NewTestArgs{TestUUID: &item.UUID})
+			case gentypes.ModuleType:
+				res, err = NewModuleResolver(ctx, NewModuleArgs{ModuleUUID: &item.UUID})
+			case gentypes.LessonType:
+				uuid := item.UUID
+				res, err = NewLessonResolver(ctx, NewLessonArgs{UUID: &uuid})
 			}
+
+			if err != nil {
+				return &[]*SyllabusResolver{}, err
+			}
+			resolvers = append(resolvers, &SyllabusResolver{res})
 		}
 	case args.ModuleUUID != nil:
-		return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
+		syllabus, err := app.CourseApp.ModuleSyllabus(*args.ModuleUUID)
+		if err != nil {
+			return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
+		}
+
+		for _, item := range syllabus {
+			var (
+				res Syllabus
+				err error
+			)
+
+			switch item.Type {
+			case gentypes.ModuleTest:
+				res, err = NewTestResolver(ctx, NewTestArgs{TestUUID: &item.UUID})
+			case gentypes.ModuleLesson:
+				uuid := item.UUID
+				res, err = NewLessonResolver(ctx, NewLessonArgs{UUID: &uuid})
+			}
+
+			if err != nil {
+				return &[]*SyllabusResolver{}, err
+			}
+			resolvers = append(resolvers, &SyllabusResolver{res})
+		}
 	default:
 		return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
 	}
