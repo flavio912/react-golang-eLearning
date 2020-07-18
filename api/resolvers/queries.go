@@ -443,3 +443,9 @@ func (q *QueryResolver) Categories(
 		Categories: &categories,
 	})
 }
+
+func (q *QueryResolver) Individual(ctx context.Context, args struct{ UUID gentypes.UUID }) (*IndividualResolver, error) {
+	return NewIndividualResolver(ctx, NewIndividualArgs{
+		IndividualUUID: &args.UUID,
+	})
+}

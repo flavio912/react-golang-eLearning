@@ -33,6 +33,7 @@ type UsersApp interface {
 	) ([]gentypes.UUID, gentypes.PageInfo, error)
 
 	CreateIndividual(input gentypes.CreateIndividualInput) (gentypes.User, error)
+	Individual(uuid gentypes.UUID) (gentypes.Individual, error)
 
 	ProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ManagerProfileUploadSuccess(token string) error
