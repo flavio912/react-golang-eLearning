@@ -11,6 +11,7 @@ import (
 type Syllabus interface {
 	Name() string
 	UUID() gentypes.UUID
+	Type() gentypes.CourseElement
 	Complete() *bool
 }
 

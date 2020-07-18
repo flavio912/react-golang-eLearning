@@ -22,6 +22,14 @@ func (c *courseAppImpl) testToGentype(test models.Test) gentypes.Test {
 			RandomiseAnswers:  &test.RandomiseAnswers,
 		}
 	}
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		return gentypes.Test{
+			UUID:              test.UUID,
+			Name:              test.Name,
+			AttemptsAllowed:   &test.AttemptsAllowed,
+			QuestionsToAnswer: &test.QuestionsToAnswer,
+		}
+	}
 	return gentypes.Test{}
 }
 

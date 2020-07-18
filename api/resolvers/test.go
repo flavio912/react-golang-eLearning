@@ -13,8 +13,11 @@ type TestResolver struct {
 	test gentypes.Test
 }
 
-func (t *TestResolver) Name() string          { return t.test.Name }
-func (t *TestResolver) UUID() gentypes.UUID   { return t.test.UUID }
+func (t *TestResolver) Name() string        { return t.test.Name }
+func (t *TestResolver) UUID() gentypes.UUID { return t.test.UUID }
+func (t *TestResolver) Type() gentypes.CourseElement {
+	return gentypes.TestType
+}
 func (t *TestResolver) Complete() *bool       { return helpers.BoolPointer(false) }
 func (t *TestResolver) Tags() *[]*TagResolver { return nil }
 func (t *TestResolver) AttemptsAllowed() *int32 {
