@@ -43,7 +43,7 @@ func NewTestResolver(ctx context.Context, args NewTestArgs) (*TestResolver, erro
 	case args.TestUUID != nil:
 		test, err := loader.LoadTest(ctx, *args.TestUUID)
 		if err != nil {
-			return &TestResolver{}, &errors.ErrUnableToResolve
+			return &TestResolver{}, err
 		}
 		return &TestResolver{
 			test: test,

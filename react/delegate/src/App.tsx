@@ -24,6 +24,7 @@ import OnlineCourses from 'views/OnlineCourses';
 import CertGenerator from 'views/CertGenerator';
 import TrainingProgress from 'views/TrainingProgress';
 import Questions from 'views/Questions';
+import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -71,7 +72,35 @@ const Router = createFarceRouter({
             return <OnlineCourses {...args.props} />;
           }}
         />
-        <Route path="/courses/:id" Component={OnlineCoursePage} />
+        <Route
+          path="/courses/:id"
+          Component={OnlineCoursePage}
+          query={graphql`
+            query App_Course_Query($ident: Int!) {
+              user {
+                myActiveCourse(id: $ident) {
+                  ...OnlineCourse_myActiveCourse
+                }
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { id } = params;
+            return {
+              ident: parseInt(id)
+            };
+          }}
+          render={(args: any) => {
+            return (
+              <ErrorBoundary>
+                <OnlineCoursePage
+                  {...args.props}
+                  myActiveCourse={args.props?.user?.myActiveCourse ?? null}
+                />
+              </ErrorBoundary>
+            );
+          }}
+        />
         <Route path="/progress" Component={TrainingProgress} />
         <Route path="/questions" Component={Questions} />
       </Route>

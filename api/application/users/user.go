@@ -160,3 +160,17 @@ func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool
 
 	return []gentypes.MyCourse{}, &errors.ErrUnauthorized
 }
+
+// TakerCourse gets an active course from the courseID
+func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gentypes.MyCourse, error) {
+	if !(u.grant.IsDelegate || u.grant.IsIndividual) {
+		return gentypes.MyCourse{}, &errors.ErrUnauthorized
+	}
+
+	activeCourse, err := u.usersRepository.TakerActiveCourse(takerUUID, courseID)
+	if err != nil {
+		return gentypes.MyCourse{}, &errors.ErrWhileHandling
+	}
+
+	return activeCourseToMyCourse(activeCourse), nil
+}

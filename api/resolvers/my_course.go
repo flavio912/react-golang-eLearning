@@ -24,11 +24,11 @@ func (a *MyCourseResolver) MinutesTracked() float64 {
 	return a.MyCourse.MinutesTracked
 }
 
-type NewMyCourseArgs struct {
+type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID
 }
 
-func NewMyCoursesResolvers(ctx context.Context, args NewMyCourseArgs) (*[]*MyCourseResolver, error) {
+func NewMyCoursesResolvers(ctx context.Context, args NewMyCoursesArgs) (*[]*MyCourseResolver, error) {
 	app := auth.AppFromContext(ctx)
 
 	var resolvers []*MyCourseResolver

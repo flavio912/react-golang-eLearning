@@ -103,6 +103,7 @@ type User {
   profileImageUrl: String
   activity(page: Page): ActivityPage
   myCourses: [MyCourse!]
+  myActiveCourse(id: Int!): MyCourse # Get my course from courseID
   # certificates
   # address: Address
 }
@@ -162,7 +163,7 @@ enum CourseType {
 interface SyllabusItem {
   name: String!
   uuid: UUID!
-  complete: Boolean
+  complete: Boolean # Only shown for courseTaker users (delegates and individuals)
 }
 
 type Lesson implements SyllabusItem {

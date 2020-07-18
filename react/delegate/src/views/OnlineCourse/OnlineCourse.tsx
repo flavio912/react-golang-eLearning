@@ -2,12 +2,14 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import Button from 'components/core/Input/Button';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { Theme } from 'helpers/theme';
 import PageTitle from 'components/PageTitle';
 import FlatCard from 'components/core/Cards/FlatCard';
 import CourseSyllabusCard from 'components/Overview/CourseSyllabusCard';
 import Icon from 'sharedComponents/core/Icon';
 import { useRouter } from 'found';
+import { OnlineCourse_myActiveCourse } from './__generated__/OnlineCourse_myActiveCourse.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -74,7 +76,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.extraLarge,
     letterSpacing: -0.45,
     lineHeight: `30px`,
-    margin: 0
+    margin: 0,
+    fontWeight: 300
   },
   howToCompleteDescription: {
     '& p': {
@@ -113,23 +116,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginTop: 52
   }
 }));
-export type Course = {
-  id: number;
-  title: string;
-  category: string;
-  percentCompleted: number;
-  enrolled: string | Date;
-  aboutDescription?: string | React.ReactNode;
-  howToCompleteDescription?: string[];
-  keyThings?: string[];
-  estimateTimeComplete?: number;
-};
 
-export type OnlineCourseProps = {
-  course: Course;
-  // onClick: Function;
-  className?: string;
-};
 const howToCompleteDescription = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
@@ -200,16 +187,39 @@ const defaultSyllabus = {
   ]
 };
 
-function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
+export type Course = {
+  id: number;
+  title: string;
+  category: string;
+  percentCompleted: number;
+  enrolled: string | Date;
+  aboutDescription?: string | React.ReactNode;
+  howToCompleteDescription?: string[];
+  keyThings?: string[];
+  estimateTimeComplete?: number;
+};
+
+export type OnlineCourseProps = {
+  course: Course;
+  // onClick: Function;
+  className?: string;
+  myActiveCourse?: OnlineCourse_myActiveCourse;
+};
+
+function OnlineCourse({
+  course = courseFake,
+  myActiveCourse,
+  className
+}: OnlineCourseProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-
+  console.log('course', myActiveCourse);
   return (
     <div className={classes.rootOnlineCourse}>
       <div>
         <PageTitle
-          title={course.title}
+          title={myActiveCourse?.course.name ?? ''}
           backProps={{
             text: 'all Online Courses',
             onClick: () => {
@@ -244,51 +254,48 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
             noWrap
           />
         </FlatCard>
-        {course.estimateTimeComplete && (
-          <div className={classes.courseContent}>
-            <h6 className={classes.courseContentTitle}>
-              About this Course – Estimated time to complete
-              {` ${course.estimateTimeComplete}`} hours
-            </h6>
-            <p className={classes.courseContentText}>
-              {course.aboutDescription}
-            </p>
-          </div>
-        )}
-        {course.howToCompleteDescription && (
+        <div className={classes.courseContent}>
+          <h6 className={classes.courseContentTitle}>
+            About this Course
+            {myActiveCourse?.course.hoursToComplete
+              ? `– Estimated time to complete ${myActiveCourse?.course.hoursToComplete} hours`
+              : ''}
+          </h6>
+          <p className={classes.courseContentText}>
+            {myActiveCourse?.course.excerpt}
+          </p>
+        </div>
+        {myActiveCourse?.course.howToComplete && (
           <div className={classes.courseContent}>
             <h6 className={classes.courseContentTitle}>
               How to complete this Course
             </h6>
             <div className={classes.howToCompleteDescription}>
-              {course.howToCompleteDescription.map((item, index) => (
-                <p className={classes.courseContentText} key={index}>
-                  {course.aboutDescription}
-                </p>
-              ))}
+              {myActiveCourse?.course.howToComplete}
             </div>
           </div>
         )}
-        {course.keyThings && (
-          <div className={classes.courseContent}>
-            <h6 className={classes.courseContentTitle}>
-              Key things to consider
-            </h6>
-            <ul className={classes.keyThings}>
-              {course.keyThings.map((item, index) => (
-                <li
-                  className={classNames(
-                    classes.courseContentText,
-                    classes.keyThingDot
-                  )}
-                  key={index}
-                >
-                  {course.aboutDescription}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {myActiveCourse?.course.whatYouLearn &&
+          myActiveCourse?.course.whatYouLearn.length > 0 && (
+            <div className={classes.courseContent}>
+              <h6 className={classes.courseContentTitle}>
+                Key things to consider
+              </h6>
+              <ul className={classes.keyThings}>
+                {myActiveCourse?.course.whatYouLearn.map((text, index) => (
+                  <li
+                    className={classNames(
+                      classes.courseContentText,
+                      classes.keyThingDot
+                    )}
+                    key={index}
+                  >
+                    {text}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
       </div>
       <div className={classes.courseSyllabus}>
         <CourseSyllabusCard courseSyllabus={defaultSyllabus} />
@@ -297,4 +304,23 @@ function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
   );
 }
 
-export default OnlineCourse;
+export default createFragmentContainer(OnlineCourse, {
+  myActiveCourse: graphql`
+    fragment OnlineCourse_myActiveCourse on MyCourse {
+      status
+      course {
+        name
+        excerpt
+        introduction
+        howToComplete
+        whatYouLearn
+        hoursToComplete
+        syllabus {
+          name
+          uuid
+          complete
+        }
+      }
+    }
+  `
+});

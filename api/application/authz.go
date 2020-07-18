@@ -1,6 +1,7 @@
 package application
 
 import (
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
@@ -60,4 +61,33 @@ func IsAuthorizedToBook(usersRepo *user.UsersRepository, grant *middleware.Grant
 	}
 	return true
 
+}
+
+// GrantCanViewSyllabus checks to see if a user can view a courses syllabus
+func GrantCanViewSyllabus(usersRepo *user.UsersRepository, grant *middleware.Grant, courseID uint) bool {
+	switch {
+	case grant.IsAdmin:
+		return true
+	case grant.IsManager:
+		return false
+	case grant.IsIndividual || grant.IsDelegate:
+		var takerUUID gentypes.UUID
+		if grant.IsIndividual {
+			individual, _ := (*usersRepo).Individual(grant.Claims.UUID)
+			takerUUID = individual.CourseTakerUUID
+		}
+		if grant.IsDelegate {
+			delegate, _ := (*usersRepo).Delegate(grant.Claims.UUID)
+			takerUUID = delegate.CourseTakerUUID
+		}
+		success, err := (*usersRepo).TakerHasActiveCourse(takerUUID, courseID)
+		if err != nil {
+			grant.Logger.LogMessage(sentry.LevelError, "Unable to check if grant can view syllabus")
+			return false
+		}
+
+		return success
+	}
+
+	return false
 }

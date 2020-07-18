@@ -63,22 +63,6 @@ const defaultOption: DropdownOption = {
   component: defaultComponent()
 };
 
-const defaultCourse: Course = {
-  id: 1,
-  type: 'DANGEROUS GOODS AIR',
-  colour: '#8C1CB4',
-  url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
-  title: 'Dangerous goods by air category 7',
-  price: 60,
-  description:
-    'This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage',
-  date: 'MAR 3rd 2020',
-  location: 'TTC at Hilton T4',
-  modules: 5,
-  lessons: 5,
-  videoTime: 5
-};
-
 function OnlineCourses({ className, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -139,7 +123,7 @@ function OnlineCourses({ className, user }: Props) {
               url: course.course.bannerImageURL ?? ''
             }}
             onClick={() => {
-              router.push('/app/courses/1');
+              router.push(`/app/courses/${course.course.ident}`);
             }}
             progress={30}
           />
