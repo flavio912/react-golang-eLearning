@@ -53,7 +53,7 @@ func (u *usersRepoImpl) Individuals(page *gentypes.Page, filter *gentypes.Indivi
 	query := filterIndividual(database.GormDB, filter)
 
 	var count int32
-	if err := query.Model(&models.Individual{}).Limit(&page.Limit).Offset(0).Count(&count).Error; err != nil {
+	if err := query.Model(&models.Individual{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error; err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Unable to count individuals")
 		return individuals, gentypes.PageInfo{}, &errors.ErrWhileHandling
 	}
