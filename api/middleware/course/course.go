@@ -1,6 +1,7 @@
 package course
 
 import (
+	"fmt"
 	"sort"
 	"strings"
 
@@ -28,6 +29,7 @@ type CoursesRepository interface {
 	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
+	AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error)
 	Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error)
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
@@ -554,6 +556,32 @@ func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.SqlEx
 	}
 
 	return query.Raw(sb.String()).SubQuery()
+}
+
+// AreInCourses checks if (module/lesson/test)s are in online courses
+func (c *coursesRepoImpl) AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error) {
+	var count int
+	query := database.GormDB.Table("online_courses").
+		Joins(fmt.Sprintf(`
+			JOIN course_structures
+			ON course_structures.online_course_uuid = online_courses.uuid 
+			AND course_structures.%s_uuid IN (?)
+			AND online_courses.course_id IN (?)`, string(courseElement)),
+			uuids,
+			courseIDs).
+		Count(&count)
+
+	if query.Error != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "%s: Unable to get courses %s is in",
+			strings.ToUpper(string(courseElement)), courseElement)
+		return false, &errors.ErrWhileHandling
+	}
+
+	if count <= 0 {
+		return false, nil
+	}
+
+	return true, nil
 }
 
 // SearchSyllabus searches through modules, lessons and tests on their names and tags

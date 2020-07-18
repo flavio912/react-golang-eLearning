@@ -120,8 +120,41 @@ func (c *courseAppImpl) Tests(
 }
 
 func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
-	if !c.grant.IsAdmin {
+	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return []gentypes.Test{}, &errors.ErrUnauthorized
+	}
+
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		// Check user is taking a course with those tests in it
+		var courseTakerID gentypes.UUID
+		if c.grant.IsDelegate {
+			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
+			courseTakerID = delegate.CourseTakerUUID
+		}
+
+		if c.grant.IsIndividual {
+			individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
+			courseTakerID = individual.CourseTakerUUID
+		}
+
+		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
+		if err != nil {
+			return []gentypes.Test{}, &errors.ErrWhileHandling
+		}
+
+		var courseIds = make([]uint, len(activeCourses))
+		for i, activeCourse := range activeCourses {
+			courseIds[i] = activeCourse.CourseID
+		}
+
+		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, uuids, gentypes.TestType)
+		if err != nil {
+			return []gentypes.Test{}, &errors.ErrWhileHandling
+		}
+
+		if !areTestsInCourses {
+			return []gentypes.Test{}, &errors.ErrWhileHandling
+		}
 	}
 
 	tests, err := c.coursesRepository.TestsByUUIDs(uuids)

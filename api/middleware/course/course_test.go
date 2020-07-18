@@ -215,6 +215,85 @@ func TestManyOnlineCourseStructures(t *testing.T) {
 	// TODO: Add test for multiple
 }
 
+func TestAreInCourses(t *testing.T) {
+	prepareTestDatabase()
+
+	tests := []struct {
+		name          string
+		courseIDs     []uint
+		uuids         []gentypes.UUID
+		courseElement gentypes.CourseElement
+		wantErr       error
+		wantResult    bool
+	}{
+		{
+			name:      "Modules are not in course",
+			courseIDs: []uint{1},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+			},
+			courseElement: gentypes.ModuleType,
+			wantErr:       nil,
+			wantResult:    false,
+		},
+		{
+			name:      "Lessons are not in course",
+			courseIDs: []uint{1},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003"),
+			},
+			courseElement: gentypes.LessonType,
+			wantErr:       nil,
+			wantResult:    false,
+		},
+		{
+			name:      "Tests are not in course",
+			courseIDs: []uint{1},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("2a7e551a-0291-422d-8508-c0ee8ff4c67e"),
+				gentypes.MustParseToUUID("c212859c-ddd3-433c-9bf5-15cdd1db32f9"),
+			},
+			courseElement: gentypes.TestType,
+			wantErr:       nil,
+			wantResult:    false,
+		},
+		{
+			name:      "Some lessons are in some courses and other not",
+			courseIDs: []uint{4, 5},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			},
+			courseElement: gentypes.LessonType,
+			wantErr:       nil,
+			wantResult:    true,
+		},
+		{
+			name:      "Some modules are in some courses and other not",
+			courseIDs: []uint{4, 5},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+				gentypes.MustParseToUUID("e9b02390-3d83-4100-b90e-ac29a68b473f"),
+			},
+			courseElement: gentypes.ModuleType,
+			wantErr:       nil,
+			wantResult:    true,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			b, err := courseRepo.AreInCourses(test.courseIDs, test.uuids, test.courseElement)
+
+			assert.Equal(t, test.wantErr, err)
+			assert.Equal(t, test.wantResult, b)
+		})
+	}
+}
+
 func TestSearchSyllabus(t *testing.T) {
 	prepareTestDatabase()
 
