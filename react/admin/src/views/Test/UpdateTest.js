@@ -71,7 +71,6 @@ const initState = {
   attemptsAllowed: false,
   passPercentage: false,
   questionsToAnswer: false,
-  randomiseAnswers: undefined,
   randomiseAnswers: false,
   questions: []
 };
