@@ -40,20 +40,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center'
   },
-  dotIcon: {
-    width: 14,
-    height: 14,
-    border: `1px solid rgba(151,151,151,0.4)`,
-    backgroundColor: theme.colors.primaryWhite,
-    boxShadow: `0 0 4px 0 rgba(0,0,0,0.17)`,
-    display: 'block',
-    borderRadius: 50,
-    position: 'absolute',
-    top: 'calc(50% - 8px)',
-    zIndex: 2,
-    cursor: 'pointer',
-    left: 0
-  },
   mp3Trail: {
     height: 6,
     opacity: 0.3,
@@ -75,10 +61,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.blueRibbon,
     height: 6,
     borderRadius: 12.5,
-    display: 'block',
+    display: 'flex',
+    alignItems: 'center',
     position: 'absolute',
     top: 0,
-    transition: 'width 0.5s ease-in-out'
+    transition: 'width 0.5s ease-in-out',
+    minWidth: 14,
+    '&:after': {
+      content: "''",
+      display: 'inline-block',
+      width: 14,
+      height: 14,
+      backgroundColor: theme.colors.primaryWhite,
+      border: `1px solid rgba(151,151,151,0.4)`,
+      boxShadow: `0 0 4px 0 rgba(0,0,0,0.17)`,
+      position: 'absolute',
+      borderRadius: 50,
+      right: 0
+    }
   },
   mp3SpeakerMuted: {
     position: 'relative',
@@ -147,15 +147,18 @@ function ModuleMp3({ className, module }: Props) {
         </div>
         <div className={classes.mp3Wrapper}>
           <div className={classes.mp3Icon} onClick={() => setPlaying(!playing)}>
-            <Icon name="Mp3_Pause" pointer={true} />
+            {playing ? (
+              <Icon name="Mp3_Pause" pointer={true} />
+            ) : (
+              <Icon name="Mp3_Play" pointer={true} />
+            )}
           </div>
           <div className={classes.mp3TrailWrapper}>
-            <span className={classes.dotIcon} />
             <div className={classes.mp3Trail} />
             <span
               className={classes.mp3Loaded}
               style={{ width: `${percentLoaded}%` }}
-            />
+            ></span>
           </div>
           <div
             className={classNames(classes.mp3Speaker, {
@@ -176,6 +179,7 @@ function ModuleMp3({ className, module }: Props) {
           onProgress={setProcess}
           height={50}
           width={`100%`}
+          onEnded={() => setPlaying(false)}
         />
       </div>
     </div>

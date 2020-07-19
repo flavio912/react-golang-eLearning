@@ -57,6 +57,7 @@ export type IconNames =
   | 'Maersk_Grey'
   | 'Mp3_Pause'
   | 'Mp3_Speaker'
+  | 'Mp3_Play'
   | 'Nippon_Express'
   | 'Payments_Method'
   | 'Stripe'
@@ -127,6 +128,8 @@ const iconNameMap = {
   Nippon_Express: require('../../../assets/nippon-express-logo.png'),
   Payments_Method: require('../../../assets/Payments_Method.svg'),
   Stripe: require('../../../assets/Stripe.svg'),
+  Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
+  Mp3_Play: require('../../../assets/Mp3_Play.svg'),
   Tick: require('../../../assets/Tick.svg'),
   Twitter_Logo: require('../../../assets/Twitter_Logo.png'),
   Ups: require('../../../assets/ups-logo.svg'),
