@@ -18,6 +18,7 @@ func activeCourseToMyCourse(activeCourse models.ActiveCourse) gentypes.MyCourse 
 		CourseID:       activeCourse.CourseID,
 		MinutesTracked: activeCourse.MinutesTracked,
 		Status:         gentypes.CourseIncomplete,
+		CreatedAt:      activeCourse.CreatedAt.Format(time.RFC3339),
 	}
 }
 

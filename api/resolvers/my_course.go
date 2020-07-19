@@ -23,6 +23,9 @@ func (a *MyCourseResolver) Status(ctx context.Context) gentypes.CourseStatus {
 func (a *MyCourseResolver) MinutesTracked() float64 {
 	return a.MyCourse.MinutesTracked
 }
+func (a *MyCourseResolver) EnrolledAt() string {
+	return a.MyCourse.CreatedAt
+}
 
 type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID

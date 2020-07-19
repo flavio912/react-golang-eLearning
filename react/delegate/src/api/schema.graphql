@@ -138,6 +138,7 @@ type MyCourse {
   status: CourseStatus!
   course: Course!
   minutesTracked: Float!
+  enrolledAt: String!
 }
 
 type AuthToken {
@@ -163,6 +164,7 @@ enum CourseType {
 interface SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean # Only shown for courseTaker users (delegates and individuals)
 }
 
@@ -175,8 +177,53 @@ type Lesson implements SyllabusItem {
   tags: [Tag!]
 }
 
+type Module implements SyllabusItem {
+  uuid: UUID!
+  name: String!
+  type: StructureElement!
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  voiceoverURL: String
+  video: Video
+  syllabus: [SyllabusItem!]
+  complete: Boolean
+}
+
+type Test implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  type: StructureElement!
+  complete: Boolean
+  tags: [Tag!]
+  attemptsAllowed: Int
+  passPercentage: Float
+  questionsToAnswer: Int
+  randomiseAnswers: Boolean
+  questions: [Question!]
+}
+
+type Question {
+  uuid: UUID!
+  text: String!
+  questionType: QuestionType!
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
+}
+
 type Category {
   uuid: UUID
   name: String!
   color: String!
+}
+
+enum VideoType {
+  WISTIA
+}
+
+type Video {
+  type: VideoType!
+  url: String!
 }

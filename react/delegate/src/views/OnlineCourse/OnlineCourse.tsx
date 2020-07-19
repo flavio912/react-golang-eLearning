@@ -10,6 +10,8 @@ import CourseSyllabusCard from 'components/Overview/CourseSyllabusCard';
 import Icon from 'sharedComponents/core/Icon';
 import { useRouter } from 'found';
 import { OnlineCourse_myActiveCourse } from './__generated__/OnlineCourse_myActiveCourse.graphql';
+import moment from 'moment';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -215,6 +217,37 @@ function OnlineCourse({
   const classes = useStyles({ theme });
   const { router } = useRouter();
   console.log('course', myActiveCourse);
+
+  const syllabusSections = (myActiveCourse?.course.syllabus ?? []).map(
+    (courseElement) => {
+      if (courseElement.type == 'module') {
+        return {
+          sections: (courseElement?.syllabus ?? []).map((moduleItem) => {
+            return {
+              name: moduleItem.name ?? '',
+              uuid: moduleItem.uuid ?? '',
+              complete: moduleItem.complete ?? false
+            };
+          })
+        };
+      } else {
+        return {
+          sections: [
+            {
+              name: courseElement.name ?? '',
+              uuid: courseElement.uuid ?? '',
+              complete: courseElement.complete ?? false
+            }
+          ]
+        };
+      }
+    }
+  );
+
+  const syllabus = {
+    completePercentage: 23,
+    modules: syllabusSections
+  };
   return (
     <div className={classes.rootOnlineCourse}>
       <div>
@@ -239,7 +272,9 @@ function OnlineCourse({
           </div>
           <div className={classes.courseHeadItem}>
             <span className={classes.labelBold}>Enrolled:</span>
-            <span className={classes.labelValue}>{course.enrolled}</span>
+            <span className={classes.labelValue}>
+              {moment(myActiveCourse?.enrolledAt).format('DD/MM/YYYY')}
+            </span>
           </div>
         </div>
         <FlatCard shadow padding="large" className={classes.flatCard}>
@@ -265,6 +300,7 @@ function OnlineCourse({
             {myActiveCourse?.course.excerpt}
           </p>
         </div>
+        <Spacer vertical spacing={3} />
         {myActiveCourse?.course.howToComplete && (
           <div className={classes.courseContent}>
             <h6 className={classes.courseContentTitle}>
@@ -298,7 +334,7 @@ function OnlineCourse({
           )}
       </div>
       <div className={classes.courseSyllabus}>
-        <CourseSyllabusCard courseSyllabus={defaultSyllabus} />
+        <CourseSyllabusCard courseSyllabus={syllabus} />
       </div>
     </div>
   );
@@ -308,6 +344,7 @@ export default createFragmentContainer(OnlineCourse, {
   myActiveCourse: graphql`
     fragment OnlineCourse_myActiveCourse on MyCourse {
       status
+      enrolledAt
       course {
         name
         excerpt
@@ -317,8 +354,17 @@ export default createFragmentContainer(OnlineCourse, {
         hoursToComplete
         syllabus {
           name
+          type
           uuid
           complete
+          ... on Module {
+            syllabus {
+              name
+              type
+              uuid
+              complete
+            }
+          }
         }
       }
     }
