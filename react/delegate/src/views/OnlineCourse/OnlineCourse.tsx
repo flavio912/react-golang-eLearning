@@ -12,6 +12,7 @@ import { useRouter } from 'found';
 import { OnlineCourse_myActiveCourse } from './__generated__/OnlineCourse_myActiveCourse.graphql';
 import moment from 'moment';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import Page from 'components/Page';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -249,94 +250,96 @@ function OnlineCourse({
     modules: syllabusSections
   };
   return (
-    <div className={classes.rootOnlineCourse}>
-      <div>
-        <PageTitle
-          title={myActiveCourse?.course.name ?? ''}
-          backProps={{
-            text: 'all Online Courses',
-            onClick: () => {
-              router.push('/app/courses');
-            }
-          }}
-        />
-        <div className={classes.courseHead}>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>Category: </span>
-            <span className={classes.labelValue}>{course.category}</span>
-          </div>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>
-              {course.percentCompleted}% Completed
-            </span>
-          </div>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>Enrolled:</span>
-            <span className={classes.labelValue}>
-              {moment(myActiveCourse?.enrolledAt).format('DD/MM/YYYY')}
-            </span>
-          </div>
-        </div>
-        <FlatCard shadow padding="large" className={classes.flatCard}>
-          <Icon name="Volume" size={51} />
-          <p className={classes.flatCardText}>
-            Make sure your speakers are turned on before you start this course
-          </p>
-          <Button
-            title="Begin Course"
-            onClick={() => {}}
-            padding="massive"
-            noWrap
+    <Page>
+      <div className={classes.rootOnlineCourse}>
+        <div>
+          <PageTitle
+            title={myActiveCourse?.course.name ?? ''}
+            backProps={{
+              text: 'all Online Courses',
+              onClick: () => {
+                router.push('/app/courses');
+              }
+            }}
           />
-        </FlatCard>
-        <div className={classes.courseContent}>
-          <h6 className={classes.courseContentTitle}>
-            About this Course
-            {myActiveCourse?.course.hoursToComplete
-              ? `– Estimated time to complete ${myActiveCourse?.course.hoursToComplete} hours`
-              : ''}
-          </h6>
-          <p className={classes.courseContentText}>
-            {myActiveCourse?.course.excerpt}
-          </p>
-        </div>
-        <Spacer vertical spacing={3} />
-        {myActiveCourse?.course.howToComplete && (
+          <div className={classes.courseHead}>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>Category: </span>
+              <span className={classes.labelValue}>{course.category}</span>
+            </div>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>
+                {course.percentCompleted}% Completed
+              </span>
+            </div>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>Enrolled:</span>
+              <span className={classes.labelValue}>
+                {moment(myActiveCourse?.enrolledAt).format('DD/MM/YYYY')}
+              </span>
+            </div>
+          </div>
+          <FlatCard shadow padding="large" className={classes.flatCard}>
+            <Icon name="Volume" size={51} />
+            <p className={classes.flatCardText}>
+              Make sure your speakers are turned on before you start this course
+            </p>
+            <Button
+              title="Begin Course"
+              onClick={() => {}}
+              padding="massive"
+              noWrap
+            />
+          </FlatCard>
           <div className={classes.courseContent}>
             <h6 className={classes.courseContentTitle}>
-              How to complete this Course
+              About this Course
+              {myActiveCourse?.course.hoursToComplete
+                ? `– Estimated time to complete ${myActiveCourse?.course.hoursToComplete} hours`
+                : ''}
             </h6>
-            <div className={classes.howToCompleteDescription}>
-              {myActiveCourse?.course.howToComplete}
-            </div>
+            <p className={classes.courseContentText}>
+              {myActiveCourse?.course.excerpt}
+            </p>
           </div>
-        )}
-        {myActiveCourse?.course.whatYouLearn &&
-          myActiveCourse?.course.whatYouLearn.length > 0 && (
+          <Spacer vertical spacing={3} />
+          {myActiveCourse?.course.howToComplete && (
             <div className={classes.courseContent}>
               <h6 className={classes.courseContentTitle}>
-                Key things to consider
+                How to complete this Course
               </h6>
-              <ul className={classes.keyThings}>
-                {myActiveCourse?.course.whatYouLearn.map((text, index) => (
-                  <li
-                    className={classNames(
-                      classes.courseContentText,
-                      classes.keyThingDot
-                    )}
-                    key={index}
-                  >
-                    {text}
-                  </li>
-                ))}
-              </ul>
+              <div className={classes.howToCompleteDescription}>
+                {myActiveCourse?.course.howToComplete}
+              </div>
             </div>
           )}
+          {myActiveCourse?.course.whatYouLearn &&
+            myActiveCourse?.course.whatYouLearn.length > 0 && (
+              <div className={classes.courseContent}>
+                <h6 className={classes.courseContentTitle}>
+                  Key things to consider
+                </h6>
+                <ul className={classes.keyThings}>
+                  {myActiveCourse?.course.whatYouLearn.map((text, index) => (
+                    <li
+                      className={classNames(
+                        classes.courseContentText,
+                        classes.keyThingDot
+                      )}
+                      key={index}
+                    >
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+        </div>
+        <div className={classes.courseSyllabus}>
+          <CourseSyllabusCard courseSyllabus={syllabus} />
+        </div>
       </div>
-      <div className={classes.courseSyllabus}>
-        <CourseSyllabusCard courseSyllabus={syllabus} />
-      </div>
-    </div>
+    </Page>
   );
 }
 

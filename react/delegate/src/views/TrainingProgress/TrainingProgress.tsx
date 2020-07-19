@@ -5,6 +5,7 @@ import { useRouter } from 'found';
 import Heading from 'components/core/Heading';
 import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/ActivityTable/ActivityTable';
+import Page from 'components/Page';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   progressRoot: {
@@ -35,36 +36,38 @@ function Progress({}: Props) {
 
   const userName = 'James';
   return (
-    <div className={classes.progressRoot}>
-      <div className={classes.header}>
-        <Heading
-          text="Training Progress"
-          size={'large'}
-          className={classes.heading}
-        />
-        <div className={classes.headingDescription}>
+    <Page>
+      <div className={classes.progressRoot}>
+        <div className={classes.header}>
           <Heading
-            text={`${userName}, here you can see your training progress,`}
-            size={'medium'}
-            className={classes.subHeading}
+            text="Training Progress"
+            size={'large'}
+            className={classes.heading}
           />
-          <Heading
-            text={`and keep up to date with your daily activity.`}
-            size={'medium'}
-            className={classes.subHeading}
-          />
+          <div className={classes.headingDescription}>
+            <Heading
+              text={`${userName}, here you can see your training progress,`}
+              size={'medium'}
+              className={classes.subHeading}
+            />
+            <Heading
+              text={`and keep up to date with your daily activity.`}
+              size={'medium'}
+              className={classes.subHeading}
+            />
+          </div>
         </div>
+        <CourseTable
+          EmptyComponent={<div>No Courses to show</div>}
+          className={classes.courseTable}
+          courses={[]}
+          rowClicked={() => {
+            router.push('/app/courses/1');
+          }}
+        />
+        <ActivityTable className={classes.activeTable} />
       </div>
-      <CourseTable
-        EmptyComponent={<div>No Courses to show</div>}
-        className={classes.courseTable}
-        courses={[]}
-        rowClicked={() => {
-          router.push('/app/courses/1');
-        }}
-      />
-      <ActivityTable className={classes.activeTable} />
-    </div>
+    </Page>
   );
 }
 

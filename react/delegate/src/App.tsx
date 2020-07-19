@@ -25,6 +25,7 @@ import CertGenerator from 'views/CertGenerator';
 import TrainingProgress from 'views/TrainingProgress';
 import Questions from 'views/Questions';
 import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
+import Module from 'views/Module';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -100,6 +101,10 @@ const Router = createFarceRouter({
               </ErrorBoundary>
             );
           }}
+        />
+        <Route
+          path="/courses/:courseId/module/:moduleUUID"
+          Component={Module}
         />
         <Route path="/progress" Component={TrainingProgress} />
         <Route path="/questions" Component={Questions} />

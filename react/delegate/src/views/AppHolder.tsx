@@ -12,7 +12,6 @@ import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
     display: 'flex',
-    padding: '42px 60px',
     justifyContent: 'center',
     position: 'relative'
   },
