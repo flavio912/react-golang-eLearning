@@ -127,9 +127,9 @@ func (c *courseAppImpl) Tests(
 	return c.testsToGentypes(tests), pageInfo, nil
 }
 
-func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
+func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.UUID) bool {
 	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
-		return []gentypes.Test{}, &errors.ErrUnauthorized
+		return false
 	}
 
 	if c.grant.IsDelegate || c.grant.IsIndividual {
@@ -147,7 +147,7 @@ func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, er
 
 		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
 		if err != nil {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
 
 		var courseIds = make([]uint, len(activeCourses))
@@ -155,14 +155,22 @@ func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, er
 			courseIds[i] = activeCourse.CourseID
 		}
 
-		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, uuids, gentypes.TestType)
+		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, courseElementUUIDs, gentypes.TestType)
 		if err != nil {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
 
 		if !areTestsInCourses {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
+	}
+
+	return true
+}
+
+func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
+	if !c.grantCanViewSyllabusItems(uuids) {
+		return []gentypes.Test{}, &errors.ErrWhileHandling
 	}
 
 	tests, err := c.coursesRepository.TestsByUUIDs(uuids)

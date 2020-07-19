@@ -256,6 +256,19 @@ func (c *courseAppImpl) DeleteQuestion(input gentypes.DeleteQuestionInput) (bool
 	return c.coursesRepository.DeleteQuestion(input.UUID)
 }
 
+func (c *courseAppImpl) TestQuestions(testUUID gentypes.UUID) ([]gentypes.Question, error) {
+	if !c.grantCanViewSyllabusItems([]gentypes.UUID{testUUID}) {
+		return []gentypes.Question{}, &errors.ErrUnauthorized
+	}
+
+	questions, err := c.coursesRepository.TestQuestions(testUUID)
+	if err != nil {
+		return []gentypes.Question{}, &errors.ErrWhileHandling
+	}
+
+	return c.questionsToGentypes(questions), nil
+}
+
 // AnswerImageUploadRequest generates a link that lets users upload a profile image to S3 directly
 // Used by all user types
 func (c *courseAppImpl) AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {

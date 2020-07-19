@@ -208,6 +208,14 @@ type Question {
   uuid: UUID!
   text: String!
   questionType: QuestionType!
+  answers: [Answer!]
+}
+
+type Answer {
+  uuid: UUID!
+  isCorrect: Boolean
+  text: String
+  imageURL: String
 }
 
 enum QuestionType {

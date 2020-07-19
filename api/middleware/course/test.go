@@ -275,6 +275,7 @@ func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Questi
 		Find(&questions)
 
 	if query.Error != nil && !query.RecordNotFound() {
+		c.Logger.Log(sentry.LevelError, query.Error, "TestQuestions: Unable to fetch")
 		return []models.Question{}, &errors.ErrWhileHandling
 	}
 

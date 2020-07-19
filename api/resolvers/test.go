@@ -3,6 +3,8 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
@@ -33,8 +35,27 @@ func (t *TestResolver) QuestionsToAnswer() *int32 {
 	}
 	return nil
 }
-func (t *TestResolver) RandomiseAnswers() *bool         { return t.test.RandomiseAnswers }
-func (t *TestResolver) Questions() *[]*QuestionResolver { return nil }
+func (t *TestResolver) RandomiseAnswers() *bool { return t.test.RandomiseAnswers }
+func (t *TestResolver) Questions(ctx context.Context) (*[]*QuestionResolver, error) {
+	app := auth.AppFromContext(ctx)
+	questions, err := app.CourseApp.TestQuestions(t.test.UUID)
+	if err != nil {
+		return &([]*QuestionResolver{}), err
+	}
+
+	var resolvers = make([]*QuestionResolver, len(questions))
+	for i, question := range questions {
+		res, err := NewQuestionResolver(ctx, NewQuestionArgs{
+			Question: &question,
+		})
+		if err != nil {
+			return &([]*QuestionResolver{}), err
+		}
+		resolvers[i] = res
+	}
+
+	return &resolvers, nil
+}
 
 type NewTestArgs struct {
 	Test     *gentypes.Test
