@@ -11,6 +11,11 @@ export type Test_test = {
         readonly uuid: string;
         readonly text: string;
         readonly questionType: QuestionType;
+        readonly answers: ReadonlyArray<{
+            readonly uuid: string;
+            readonly text: string | null;
+            readonly imageURL: string | null;
+        }> | null;
     }> | null;
     readonly " $refType": "Test_test";
 };
@@ -27,6 +32,12 @@ const node: ReaderFragment = (function () {
         "kind": "ScalarField",
         "alias": null,
         "name": "uuid",
+        "args": null,
+        "storageKey": null
+    } as any), v1 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "text",
         "args": null,
         "storageKey": null
     } as any);
@@ -55,24 +66,38 @@ const node: ReaderFragment = (function () {
                 "plural": true,
                 "selections": [
                     (v0 /*: any*/),
-                    {
-                        "kind": "ScalarField",
-                        "alias": null,
-                        "name": "text",
-                        "args": null,
-                        "storageKey": null
-                    },
+                    (v1 /*: any*/),
                     {
                         "kind": "ScalarField",
                         "alias": null,
                         "name": "questionType",
                         "args": null,
                         "storageKey": null
+                    },
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "name": "answers",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Answer",
+                        "plural": true,
+                        "selections": [
+                            (v0 /*: any*/),
+                            (v1 /*: any*/),
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "imageURL",
+                                "args": null,
+                                "storageKey": null
+                            }
+                        ]
                     }
                 ]
             }
         ]
     } as any;
 })();
-(node as any).hash = '2c5027a6acb90aad4fa3d6fdd553f8f0';
+(node as any).hash = 'bb19957fbe11770eb893646548e89b4d';
 export default node;

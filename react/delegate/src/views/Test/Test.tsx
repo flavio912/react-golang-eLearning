@@ -164,6 +164,11 @@ export default createFragmentContainer(Test, {
         uuid
         text
         questionType
+        answers {
+          uuid
+          text
+          imageURL
+        }
       }
     }
   `
