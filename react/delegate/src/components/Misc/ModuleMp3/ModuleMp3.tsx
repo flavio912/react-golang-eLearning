@@ -100,27 +100,22 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    span: {
-      fontSize: 12,
-      fontWeight: 300,
-      letterSpacing: -0.3,
-      color: theme.colors.secondaryBlack
-    }
+    fontSize: 12,
+    fontWeight: 300,
+    letterSpacing: -0.3,
+    color: theme.colors.secondaryBlack
   }
 }));
-export type Module = {
+
+type Props = {
+  className?: string;
   mp3Url: string;
   name: string;
   subTitle: string;
 };
-type Props = {
-  className?: string;
-  module: Module;
-};
 const convertSecondToHHSS = (second: number): string =>
   new Date(second * 1000).toISOString().substr(14, 5);
-function ModuleMp3({ className, module }: Props) {
-  const { name, subTitle, mp3Url } = module;
+function ModuleMp3({ className, name, subTitle, mp3Url }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [process, setProcess] = React.useState<ReactPlayerProps>({

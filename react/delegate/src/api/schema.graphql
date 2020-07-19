@@ -8,6 +8,9 @@ schema {
 type Query {
   info: String!
   user: User
+  module(uuid: UUID!): Module
+  test(uuid: UUID!): Test
+  lesson(uuid: UUID!): Lesson
 }
 
 type Mutation {
@@ -174,7 +177,6 @@ type Lesson implements SyllabusItem {
   complete: Boolean
   mp3URL: String
   text: String!
-  tags: [Tag!]
 }
 
 type Module implements SyllabusItem {
@@ -195,7 +197,6 @@ type Test implements SyllabusItem {
   uuid: UUID!
   type: StructureElement!
   complete: Boolean
-  tags: [Tag!]
   attemptsAllowed: Int
   passPercentage: Float
   questionsToAnswer: Int

@@ -13,6 +13,7 @@ import { OnlineCourse_myActiveCourse } from './__generated__/OnlineCourse_myActi
 import moment from 'moment';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import Page from 'components/Page';
+import CourseSyllabusCardFrag from 'components/Overview/CourseSyllabusCard/CourseSyllabusCardFrag';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -218,37 +219,6 @@ function OnlineCourse({
   const classes = useStyles({ theme });
   const { router } = useRouter();
   console.log('course', myActiveCourse);
-
-  const syllabusSections = (myActiveCourse?.course.syllabus ?? []).map(
-    (courseElement) => {
-      if (courseElement.type == 'module') {
-        return {
-          sections: (courseElement?.syllabus ?? []).map((moduleItem) => {
-            return {
-              name: moduleItem.name ?? '',
-              uuid: moduleItem.uuid ?? '',
-              complete: moduleItem.complete ?? false
-            };
-          })
-        };
-      } else {
-        return {
-          sections: [
-            {
-              name: courseElement.name ?? '',
-              uuid: courseElement.uuid ?? '',
-              complete: courseElement.complete ?? false
-            }
-          ]
-        };
-      }
-    }
-  );
-
-  const syllabus = {
-    completePercentage: 23,
-    modules: syllabusSections
-  };
   return (
     <Page>
       <div className={classes.rootOnlineCourse}>
@@ -336,7 +306,7 @@ function OnlineCourse({
             )}
         </div>
         <div className={classes.courseSyllabus}>
-          <CourseSyllabusCard courseSyllabus={syllabus} />
+          <CourseSyllabusCardFrag course={myActiveCourse?.course} />
         </div>
       </div>
     </Page>
@@ -355,20 +325,7 @@ export default createFragmentContainer(OnlineCourse, {
         howToComplete
         whatYouLearn
         hoursToComplete
-        syllabus {
-          name
-          type
-          uuid
-          complete
-          ... on Module {
-            syllabus {
-              name
-              type
-              uuid
-              complete
-            }
-          }
-        }
+        ...CourseSyllabusCardFrag_course
       }
     }
   `

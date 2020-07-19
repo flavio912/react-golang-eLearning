@@ -8,7 +8,8 @@ import {
   Route,
   RouteRenderArgs,
   RenderErrorArgs,
-  RedirectException
+  RedirectException,
+  Redirect
 } from 'found';
 //@ts-ignore
 import { Resolver } from 'found-relay';
@@ -23,9 +24,9 @@ import TrainingZone from 'views/TrainingZone/TrainingZone';
 import OnlineCourses from 'views/OnlineCourses';
 import CertGenerator from 'views/CertGenerator';
 import TrainingProgress from 'views/TrainingProgress';
-import Questions from 'views/Questions';
 import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
+import Test from 'views/Test/Test';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -103,11 +104,79 @@ const Router = createFarceRouter({
           }}
         />
         <Route
-          path="/courses/:courseId/module/:moduleUUID"
+          path="/courses/:courseID/module/:moduleUUID"
           Component={Module}
+          query={graphql`
+            query App_Module_Query($id: Int!, $uuid: UUID!) {
+              user {
+                myActiveCourse(id: $id) {
+                  ...Module_myActiveCourse
+                }
+              }
+              module(uuid: $uuid) {
+                ...Module_module
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { courseID, moduleUUID } = params;
+            return {
+              id: parseInt(courseID),
+              uuid: moduleUUID
+            };
+          }}
+          render={(args: any) => {
+            console.log('args', args);
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            return (
+              <ErrorBoundary>
+                <Module
+                  {...args.props}
+                  myActiveCourse={args.props?.user?.myActiveCourse}
+                />
+              </ErrorBoundary>
+            );
+          }}
         />
         <Route path="/progress" Component={TrainingProgress} />
-        <Route path="/questions" Component={Questions} />
+        <Route
+          path="/courses/:courseID/test/:testUUID"
+          Component={Test}
+          query={graphql`
+            query App_Test_Query($id: Int!, $uuid: UUID!) {
+              user {
+                myActiveCourse(id: $id) {
+                  ...Test_myActiveCourse
+                }
+              }
+              test(uuid: $uuid) {
+                ...Test_test
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { courseID, testUUID } = params;
+            return {
+              id: parseInt(courseID),
+              uuid: testUUID
+            };
+          }}
+          render={(args: any) => {
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            return (
+              <ErrorBoundary>
+                <Test
+                  {...args.props}
+                  myActiveCourse={args.props?.user?.myActiveCourse}
+                />
+              </ErrorBoundary>
+            );
+          }}
+        />
       </Route>
       <Route path="/cert-generator" Component={CertGenerator} />
     </Route>

@@ -1,34 +1,42 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 2f37d7b142e6deece5dfad390c96c159 */
+/* @relayHash 3f48faf6c62a8e5b69115e532f6950f6 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type App_Course_QueryVariables = {
-    ident: number;
+export type App_Test_QueryVariables = {
+    id: number;
+    uuid: string;
 };
-export type App_Course_QueryResponse = {
+export type App_Test_QueryResponse = {
     readonly user: {
         readonly myActiveCourse: {
-            readonly " $fragmentRefs": FragmentRefs<"OnlineCourse_myActiveCourse">;
+            readonly " $fragmentRefs": FragmentRefs<"Test_myActiveCourse">;
         } | null;
     } | null;
+    readonly test: {
+        readonly " $fragmentRefs": FragmentRefs<"Test_test">;
+    } | null;
 };
-export type App_Course_Query = {
-    readonly response: App_Course_QueryResponse;
-    readonly variables: App_Course_QueryVariables;
+export type App_Test_Query = {
+    readonly response: App_Test_QueryResponse;
+    readonly variables: App_Test_QueryVariables;
 };
 
 
 
 /*
-query App_Course_Query(
-  $ident: Int!
+query App_Test_Query(
+  $id: Int!
+  $uuid: UUID!
 ) {
   user {
-    myActiveCourse(id: $ident) {
-      ...OnlineCourse_myActiveCourse
+    myActiveCourse(id: $id) {
+      ...Test_myActiveCourse
     }
+  }
+  test(uuid: $uuid) {
+    ...Test_test
   }
 }
 
@@ -51,17 +59,19 @@ fragment CourseSyllabusCardFrag_course on Course {
   }
 }
 
-fragment OnlineCourse_myActiveCourse on MyCourse {
-  status
-  enrolledAt
+fragment Test_myActiveCourse on MyCourse {
   course {
-    name
-    excerpt
-    introduction
-    howToComplete
-    whatYouLearn
-    hoursToComplete
     ...CourseSyllabusCardFrag_course
+  }
+}
+
+fragment Test_test on Test {
+  name
+  uuid
+  questions {
+    uuid
+    text
+    questionType
   }
 }
 */
@@ -70,23 +80,29 @@ const node: ConcreteRequest = (function () {
     var v0 = [
         ({
             "kind": "LocalArgument",
-            "name": "ident",
+            "name": "id",
             "type": "Int!",
+            "defaultValue": null
+        } as any),
+        ({
+            "kind": "LocalArgument",
+            "name": "uuid",
+            "type": "UUID!",
             "defaultValue": null
         } as any)
     ], v1 = [
         ({
             "kind": "Variable",
             "name": "id",
-            "variableName": "ident"
+            "variableName": "id"
         } as any)
-    ], v2 = ({
-        "kind": "ScalarField",
-        "alias": null,
-        "name": "name",
-        "args": null,
-        "storageKey": null
-    } as any), v3 = ({
+    ], v2 = [
+        ({
+            "kind": "Variable",
+            "name": "uuid",
+            "variableName": "uuid"
+        } as any)
+    ], v3 = ({
         "kind": "ScalarField",
         "alias": null,
         "name": "__typename",
@@ -95,16 +111,22 @@ const node: ConcreteRequest = (function () {
     } as any), v4 = ({
         "kind": "ScalarField",
         "alias": null,
-        "name": "type",
+        "name": "name",
         "args": null,
         "storageKey": null
     } as any), v5 = ({
         "kind": "ScalarField",
         "alias": null,
-        "name": "uuid",
+        "name": "type",
         "args": null,
         "storageKey": null
     } as any), v6 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "uuid",
+        "args": null,
+        "storageKey": null
+    } as any), v7 = ({
         "kind": "ScalarField",
         "alias": null,
         "name": "complete",
@@ -115,7 +137,7 @@ const node: ConcreteRequest = (function () {
         "kind": "Request",
         "fragment": {
             "kind": "Fragment",
-            "name": "App_Course_Query",
+            "name": "App_Test_Query",
             "type": "Query",
             "metadata": null,
             "argumentDefinitions": (v0 /*: any*/),
@@ -140,10 +162,26 @@ const node: ConcreteRequest = (function () {
                             "selections": [
                                 {
                                     "kind": "FragmentSpread",
-                                    "name": "OnlineCourse_myActiveCourse",
+                                    "name": "Test_myActiveCourse",
                                     "args": null
                                 }
                             ]
+                        }
+                    ]
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "test",
+                    "storageKey": null,
+                    "args": (v2 /*: any*/),
+                    "concreteType": "Test",
+                    "plural": false,
+                    "selections": [
+                        {
+                            "kind": "FragmentSpread",
+                            "name": "Test_test",
+                            "args": null
                         }
                     ]
                 }
@@ -151,7 +189,7 @@ const node: ConcreteRequest = (function () {
         },
         "operation": {
             "kind": "Operation",
-            "name": "App_Course_Query",
+            "name": "App_Test_Query",
             "argumentDefinitions": (v0 /*: any*/),
             "selections": [
                 {
@@ -173,20 +211,6 @@ const node: ConcreteRequest = (function () {
                             "plural": false,
                             "selections": [
                                 {
-                                    "kind": "ScalarField",
-                                    "alias": null,
-                                    "name": "status",
-                                    "args": null,
-                                    "storageKey": null
-                                },
-                                {
-                                    "kind": "ScalarField",
-                                    "alias": null,
-                                    "name": "enrolledAt",
-                                    "args": null,
-                                    "storageKey": null
-                                },
-                                {
                                     "kind": "LinkedField",
                                     "alias": null,
                                     "name": "course",
@@ -195,42 +219,6 @@ const node: ConcreteRequest = (function () {
                                     "concreteType": "Course",
                                     "plural": false,
                                     "selections": [
-                                        (v2 /*: any*/),
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "excerpt",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "introduction",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "howToComplete",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "whatYouLearn",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
-                                        {
-                                            "kind": "ScalarField",
-                                            "alias": null,
-                                            "name": "hoursToComplete",
-                                            "args": null,
-                                            "storageKey": null
-                                        },
                                         {
                                             "kind": "LinkedField",
                                             "alias": null,
@@ -241,10 +229,10 @@ const node: ConcreteRequest = (function () {
                                             "plural": true,
                                             "selections": [
                                                 (v3 /*: any*/),
-                                                (v2 /*: any*/),
                                                 (v4 /*: any*/),
                                                 (v5 /*: any*/),
                                                 (v6 /*: any*/),
+                                                (v7 /*: any*/),
                                                 {
                                                     "kind": "InlineFragment",
                                                     "type": "Module",
@@ -259,10 +247,10 @@ const node: ConcreteRequest = (function () {
                                                             "plural": true,
                                                             "selections": [
                                                                 (v3 /*: any*/),
-                                                                (v2 /*: any*/),
                                                                 (v4 /*: any*/),
                                                                 (v5 /*: any*/),
-                                                                (v6 /*: any*/)
+                                                                (v6 /*: any*/),
+                                                                (v7 /*: any*/)
                                                             ]
                                                         }
                                                     ]
@@ -274,17 +262,56 @@ const node: ConcreteRequest = (function () {
                             ]
                         }
                     ]
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "test",
+                    "storageKey": null,
+                    "args": (v2 /*: any*/),
+                    "concreteType": "Test",
+                    "plural": false,
+                    "selections": [
+                        (v4 /*: any*/),
+                        (v6 /*: any*/),
+                        {
+                            "kind": "LinkedField",
+                            "alias": null,
+                            "name": "questions",
+                            "storageKey": null,
+                            "args": null,
+                            "concreteType": "Question",
+                            "plural": true,
+                            "selections": [
+                                (v6 /*: any*/),
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "text",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "questionType",
+                                    "args": null,
+                                    "storageKey": null
+                                }
+                            ]
+                        }
+                    ]
                 }
             ]
         },
         "params": {
             "operationKind": "query",
-            "name": "App_Course_Query",
+            "name": "App_Test_Query",
             "id": null,
-            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  course {\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
+            "text": "query App_Test_Query(\n  $id: Int!\n  $uuid: UUID!\n) {\n  user {\n    myActiveCourse(id: $id) {\n      ...Test_myActiveCourse\n    }\n  }\n  test(uuid: $uuid) {\n    ...Test_test\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment Test_myActiveCourse on MyCourse {\n  course {\n    ...CourseSyllabusCardFrag_course\n  }\n}\n\nfragment Test_test on Test {\n  name\n  uuid\n  questions {\n    uuid\n    text\n    questionType\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '9af72eeb279e1a5e923760216eba6bc2';
+(node as any).hash = '06b614ac00a6c2c6e42c25d8edfd2307';
 export default node;
