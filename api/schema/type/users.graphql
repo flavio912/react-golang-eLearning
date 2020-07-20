@@ -52,7 +52,7 @@ type MyCourse {
 }
 
 enum CourseStatus {
-  passed
+  complete
   failed
   incomplete
 }

@@ -24,7 +24,6 @@ type ActiveCourse struct {
 }
 
 type HistoricalCourse struct {
-	Status          gentypes.CourseStatus
 	UUID            gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	CreatedAt       time.Time
 	CourseTaker     CourseTaker

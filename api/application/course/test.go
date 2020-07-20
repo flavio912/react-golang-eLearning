@@ -323,7 +323,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 		if err != nil {
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - success")
 		}
-		return true, gentypes.CourseComplete, &errors.ErrWhileHandling
+		return true, gentypes.CourseComplete, nil
 	}
 
 	return true, gentypes.CourseIncomplete, nil
