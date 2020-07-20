@@ -21,6 +21,11 @@ export type OnlineCourse_myActiveCourse = {
             readonly name: string;
             readonly type: StructureElement;
             readonly uuid: string;
+            readonly syllabus?: ReadonlyArray<{
+                readonly name: string;
+                readonly uuid: string;
+                readonly type: StructureElement;
+            }> | null;
         }> | null;
         readonly " $fragmentRefs": FragmentRefs<"CourseSyllabusCardFrag_course">;
     };
@@ -39,6 +44,18 @@ const node: ReaderFragment = (function () {
         "kind": "ScalarField",
         "alias": null,
         "name": "name",
+        "args": null,
+        "storageKey": null
+    } as any), v1 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "type",
+        "args": null,
+        "storageKey": null
+    } as any), v2 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "uuid",
         "args": null,
         "storageKey": null
     } as any);
@@ -132,19 +149,27 @@ const node: ReaderFragment = (function () {
                         "plural": true,
                         "selections": [
                             (v0 /*: any*/),
+                            (v1 /*: any*/),
+                            (v2 /*: any*/),
                             {
-                                "kind": "ScalarField",
-                                "alias": null,
-                                "name": "type",
-                                "args": null,
-                                "storageKey": null
-                            },
-                            {
-                                "kind": "ScalarField",
-                                "alias": null,
-                                "name": "uuid",
-                                "args": null,
-                                "storageKey": null
+                                "kind": "InlineFragment",
+                                "type": "Module",
+                                "selections": [
+                                    {
+                                        "kind": "LinkedField",
+                                        "alias": null,
+                                        "name": "syllabus",
+                                        "storageKey": null,
+                                        "args": null,
+                                        "concreteType": null,
+                                        "plural": true,
+                                        "selections": [
+                                            (v0 /*: any*/),
+                                            (v2 /*: any*/),
+                                            (v1 /*: any*/)
+                                        ]
+                                    }
+                                ]
                             }
                         ]
                     },
@@ -158,5 +183,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = '301698d3cb50c59c5742acc4c4ba50a2';
+(node as any).hash = 'faeb533c3d8639f512ecdb1bf152f23a';
 export default node;

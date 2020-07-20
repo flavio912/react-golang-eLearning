@@ -13,6 +13,7 @@ import CourseSyllabusCardFrag from 'components/Overview/CourseSyllabusCard/Cours
 import SelectButton from 'components/core/Input/SelectButton';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import Button from 'components/core/Input/Button';
+import { goToNextURL } from 'views/helpers';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   moduleRoot: {
@@ -55,7 +56,8 @@ type Props = {
 const Module = ({ myActiveCourse, module }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const { router } = useRouter();
+  const { router, match } = useRouter();
+  const { courseID, moduleUUID } = match.params;
 
   const selectOptions = ['Description', 'Transcript'];
   const [selectedOption, setSelectedOption] = useState(selectOptions[0]);
@@ -90,7 +92,19 @@ const Module = ({ myActiveCourse, module }: Props) => {
               </div>
               <Spacer vertical spacing={3} />
               <div className={classes.nextQuestionWrap}>
-                <Button title={'Continue'} padding="large" onClick={() => {}} />
+                <Button
+                  title={'Continue'}
+                  padding="large"
+                  onClick={() => {
+                    router.push(
+                      goToNextURL(
+                        parseInt(courseID),
+                        myActiveCourse.course.syllabus,
+                        module?.uuid
+                      )
+                    );
+                  }}
+                />
               </div>
             </div>
             <div>
@@ -110,6 +124,18 @@ export default createFragmentContainer(Module, {
   myActiveCourse: graphql`
     fragment Module_myActiveCourse on MyCourse {
       course {
+        syllabus {
+          name
+          type
+          uuid
+          ... on Module {
+            syllabus {
+              name
+              uuid
+              type
+            }
+          }
+        }
         ...CourseSyllabusCardFrag_course
       }
       upTo

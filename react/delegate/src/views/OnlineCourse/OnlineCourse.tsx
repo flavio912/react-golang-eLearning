@@ -14,6 +14,7 @@ import moment from 'moment';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import Page from 'components/Page';
 import CourseSyllabusCardFrag from 'components/Overview/CourseSyllabusCard/CourseSyllabusCardFrag';
+import { goToNextURL } from 'views/helpers';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -258,16 +259,19 @@ function OnlineCourse({
               title="Begin Course"
               onClick={() => {
                 if (
-                  !myActiveCourse?.upTo &&
-                  myActiveCourse?.course.syllabus &&
-                  myActiveCourse?.course.syllabus.length > 0
+                  !myActiveCourse?.course.syllabus ||
+                  myActiveCourse?.course.syllabus.length == 0
                 ) {
-                  const type = myActiveCourse?.course.syllabus[0].type;
-                  const uuid = myActiveCourse?.course.syllabus[0].uuid;
-                  router.push(
-                    `/app/courses/${myActiveCourse?.course.ident}/${type}/${uuid}`
-                  );
+                  return;
                 }
+
+                router.push(
+                  goToNextURL(
+                    myActiveCourse?.course.ident,
+                    myActiveCourse?.course.syllabus,
+                    myActiveCourse.upTo ?? undefined
+                  )
+                );
               }}
               padding="massive"
               noWrap
@@ -346,6 +350,13 @@ export default createFragmentContainer(OnlineCourse, {
           name
           type
           uuid
+          ... on Module {
+            syllabus {
+              name
+              uuid
+              type
+            }
+          }
         }
         ...CourseSyllabusCardFrag_course
       }

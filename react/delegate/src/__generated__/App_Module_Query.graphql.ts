@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 79347bdac0d92c0aed4e7b3f2d2c081c */
+/* @relayHash 86dd1b6e4a9d40c7e3a6fdb48de3bf4e */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -69,6 +69,20 @@ fragment Module_module on Module {
 
 fragment Module_myActiveCourse on MyCourse {
   course {
+    syllabus {
+      __typename
+      name
+      type
+      uuid
+      ... on Module {
+        syllabus {
+          __typename
+          name
+          uuid
+          type
+        }
+      }
+    }
     ...CourseSyllabusCardFrag_course
   }
   upTo
@@ -247,8 +261,8 @@ const node: ConcreteRequest = (function () {
                                                             "selections": [
                                                                 (v3 /*: any*/),
                                                                 (v4 /*: any*/),
-                                                                (v5 /*: any*/),
                                                                 (v6 /*: any*/),
+                                                                (v5 /*: any*/),
                                                                 (v7 /*: any*/)
                                                             ]
                                                         }
@@ -309,7 +323,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Module_Query",
             "id": null,
-            "text": "query App_Module_Query(\n  $id: Int!\n  $uuid: UUID!\n) {\n  user {\n    myActiveCourse(id: $id) {\n      ...Module_myActiveCourse\n    }\n  }\n  module(uuid: $uuid) {\n    ...Module_module\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment Module_module on Module {\n  name\n  uuid\n  voiceoverURL\n  description\n  transcript\n}\n\nfragment Module_myActiveCourse on MyCourse {\n  course {\n    ...CourseSyllabusCardFrag_course\n  }\n  upTo\n}\n",
+            "text": "query App_Module_Query(\n  $id: Int!\n  $uuid: UUID!\n) {\n  user {\n    myActiveCourse(id: $id) {\n      ...Module_myActiveCourse\n    }\n  }\n  module(uuid: $uuid) {\n    ...Module_module\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment Module_module on Module {\n  name\n  uuid\n  voiceoverURL\n  description\n  transcript\n}\n\nfragment Module_myActiveCourse on MyCourse {\n  course {\n    syllabus {\n      __typename\n      name\n      type\n      uuid\n      ... on Module {\n        syllabus {\n          __typename\n          name\n          uuid\n          type\n        }\n      }\n    }\n    ...CourseSyllabusCardFrag_course\n  }\n  upTo\n}\n",
             "metadata": {}
         }
     } as any;

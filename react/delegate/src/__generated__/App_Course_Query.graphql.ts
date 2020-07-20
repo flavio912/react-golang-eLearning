@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 86821b12887d03f259d7d1c05065f3b5 */
+/* @relayHash 69c27049fdf0d590c266f5029b15b446 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -68,6 +68,14 @@ fragment OnlineCourse_myActiveCourse on MyCourse {
       name
       type
       uuid
+      ... on Module {
+        syllabus {
+          __typename
+          name
+          uuid
+          type
+        }
+      }
     }
     ...CourseSyllabusCardFrag_course
   }
@@ -282,8 +290,8 @@ const node: ConcreteRequest = (function () {
                                                             "selections": [
                                                                 (v3 /*: any*/),
                                                                 (v2 /*: any*/),
-                                                                (v4 /*: any*/),
                                                                 (v5 /*: any*/),
+                                                                (v4 /*: any*/),
                                                                 (v6 /*: any*/)
                                                             ]
                                                         }
@@ -303,7 +311,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Course_Query",
             "id": null,
-            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  upTo\n  course {\n    ident: id\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    syllabus {\n      __typename\n      name\n      type\n      uuid\n    }\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
+            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  upTo\n  course {\n    ident: id\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    syllabus {\n      __typename\n      name\n      type\n      uuid\n      ... on Module {\n        syllabus {\n          __typename\n          name\n          uuid\n          type\n        }\n      }\n    }\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
             "metadata": {}
         }
     } as any;

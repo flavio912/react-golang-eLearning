@@ -18,6 +18,7 @@ import {
   Test_SubmitAnswersMutationResponse
 } from './__generated__/Test_SubmitAnswersMutation.graphql';
 import { Match } from 'found';
+import { goToNextURL } from 'views/helpers';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   questionsRoot: {
@@ -111,7 +112,7 @@ const submitAnswers = (
 type Props = {
   className?: string;
   test?: Test_test;
-  myActiveCourse?: Test_myActiveCourse;
+  myActiveCourse: Test_myActiveCourse;
   match: Match;
 };
 
@@ -156,6 +157,11 @@ function Test({ className, test, myActiveCourse, match }: Props) {
         );
 
         if (resp.submitTest?.passed) {
+          goToNextURL(
+            parseInt(courseID),
+            myActiveCourse.course.syllabus,
+            testUUID
+          );
         }
         setAnswers({});
       } catch (err) {
@@ -213,6 +219,18 @@ export default createFragmentContainer(Test, {
   myActiveCourse: graphql`
     fragment Test_myActiveCourse on MyCourse {
       course {
+        syllabus {
+          name
+          type
+          uuid
+          ... on Module {
+            syllabus {
+              name
+              uuid
+              type
+            }
+          }
+        }
         ...CourseSyllabusCardFrag_course
       }
     }
