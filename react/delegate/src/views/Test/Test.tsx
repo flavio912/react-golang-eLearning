@@ -13,7 +13,10 @@ import { stringify } from 'querystring';
 import environment from 'api/environment';
 import { GraphError } from 'types/general';
 import CourseSlider from 'components/Overview/CourseSlider';
-import { Test_SubmitAnswersMutationVariables } from './__generated__/Test_SubmitAnswersMutation.graphql';
+import {
+  Test_SubmitAnswersMutationVariables,
+  Test_SubmitAnswersMutationResponse
+} from './__generated__/Test_SubmitAnswersMutation.graphql';
 import { Match } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -82,12 +85,12 @@ const submitAnswers = (
     answers
   };
 
-  return new Promise((resolve, reject) => {
+  return new Promise<Test_SubmitAnswersMutationResponse>((resolve, reject) => {
     commitMutation(environment, {
       mutation,
       variables,
       onCompleted: (
-        response: { delegateLogin: { token: string } },
+        response: Test_SubmitAnswersMutationResponse,
         errors: GraphError[]
       ) => {
         if (errors) {
@@ -151,7 +154,9 @@ function Test({ className, test, myActiveCourse, match }: Props) {
           testUUID,
           normalisedAnswers
         );
-        console.log('RESP', resp);
+
+        if (resp.submitTest?.passed) {
+        }
         setAnswers({});
       } catch (err) {
         console.error('Unable to submit answers', err);
