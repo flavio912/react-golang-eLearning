@@ -25,7 +25,10 @@ const GET_MODULE = gql`
           type
           url
       }
-      syllabus
+      syllabus {
+        name
+        uuid
+      }
       complete
     }
   }
@@ -34,25 +37,26 @@ const GET_MODULE = gql`
 const UPDATE_MODULE = gql`
   mutation UpdateModule(
     $uuid: UUID!
+    $tags: [UUID!]
     $name: String!
-    $bannerImageURL: String
     $description: String!
     $transcript: String!
-    $voiceoverURL: String
-    $video: Video
-    $syllabus: [SyllabusItem!]
-    $complete: Boolean
+    $bannerImageSuccessToken: String
+    $voiceoverSuccessToken: String
+    $video: VideoInput
+    $syllabus: [ModuleItem!]
   ) {
-    createModule(
+    updateModule(
       input: {
+        uuid: $uuid
+        tags: $tags
         name: $name
-        bannerImageURL: $bannerImageURL
+        bannerImageSuccessToken: $bannerImageSuccessToken
         description: $description
         transcript: $transcript
-        voiceoverURL: $voiceoverURL
+        voiceoverSuccessToken: $voiceoverSuccessToken
         video: $video
         syllabus: $syllabus
-        complete: $complete
       }
     ) {
       module {
@@ -64,13 +68,12 @@ const UPDATE_MODULE = gql`
 
 const initState = {
     name: '',
-    tags: [],
-    bannerImageURL: '',
+    bannerImageSuccessToken: undefined,
     description: '',
     transcript: '',
-    voiceoverURL: '',
+    voiceoverSuccessToken: undefined,
     video: { type: 'WISTIA', url: ''},
-    syllabus: [],
+    syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }],
     complete: false,
   };
 
@@ -106,10 +109,10 @@ function UpdateModule({ match, history }) {
     setState({
       ...initState,
       name: queryData.module.name,
-      bannerImageURL: queryData.module.bannerImageURL,
+      bannerImageSuccessToken: queryData.module.bannerImageSuccessToken,
       description: queryData.module.description,
       transcript: queryData.module.transcript,
-      voiceoverURL: queryData.module.voiceoverURL,
+      voiceoverSuccessToken: queryData.module.voiceoverSuccessToken,
       video: queryData.module.video,
       syllabus: queryData.module.syllabus,
       complete: queryData.module.complete,
@@ -127,20 +130,20 @@ function UpdateModule({ match, history }) {
         variables: {
           uuid: ident,
           name: state.name,
-          tags: state.tags,
           description: state.description,
           transcript: state.transcript,
-          bannerImageSuccessToken: state.bannerImageSuccessToken,
-          voiceoverSuccessToken: state.voiceoverSuccessToken,
+          bannerImageURL: state.bannerImageURL,
+          voiceoverURL: state.voiceoverURL,
           video: state.video,
-          syllabus: state.syllabus
+          syllabus: state.syllabus.map(({ uuid }) => ({ type: 'lesson', uuid })),
+          complete: state.complete,
         }
       });
       refetch();
     } catch (err) {}
   };
 
-  const onSaveDraft = () => {};
+  const onPublish = () => {};
 
   return (
     <ModulePage
@@ -148,8 +151,8 @@ function UpdateModule({ match, history }) {
       setState={updateState}
       currentTab={currentTab}
       error={error || mutationErr}
-      onSaveDraft={onSaveDraft}
-      onPublish={onUpdate}
+      onSaveDraft={onUpdate}
+      onPublish={onPublish}
       history={history}
       tabs={tabs}
       title="Edit Module"

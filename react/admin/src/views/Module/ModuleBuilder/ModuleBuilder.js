@@ -11,6 +11,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
 import { useQuery } from '@apollo/react-hooks'
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
@@ -36,48 +37,50 @@ const lessons = [
     tags: [
       {
         name: 'FIRE SAFETY',
-        color: '#123'
+        color: 'default'
       },
       {
         name: 'HEALTH & SAFETY',
-        color: '#123'
+        color: 'default'
       }
     ]
   },
   {
-    uuid: '1231231231',
+    uuid: '1231231232',
     name: 'Firesafety Module 1 - Lesson 2',
     numCoursesUsedIn: 3,
     type: 'Lesson',
     tags: [
       {
         name: 'FIRE SAFETY',
-        color: '#123'
+        color: 'default'
       }
     ]
   },
   {
-    uuid: '1231231231',
+    uuid: '1231231233',
     name: 'Firesafety Module 1 - Lesson 3',
     numCoursesUsedIn: 3,
     type: 'Lesson',
     tags: [
       {
         name: 'FIRE SAFETY',
-        color: '#123'
+        color: 'default'
       }
     ]
   }
 ];
 
-const GET_COURSES = gql`
-      query SearchCourses($name: String!,  $page: Page!){
-        courses(filter: { name: $name }, page: $page){
+const GET_LESSONS = gql`
+      query SearchLessons($name: String!,  $page: Page!){
+        lessons(filter: { name: $name }, page: $page){
           edges{
-            notId: id
+            uuid
             name
-            bannerImageURL
-            introduction
+            text
+            tags {
+              uuid
+            }
           }
           pageInfo{
             total
@@ -89,72 +92,59 @@ const GET_COURSES = gql`
       }
     `;
 
+function useSearchQuery(text, page) {
+  const { error, data } = useQuery(GET_LESSONS, {
+    variables: {
+      name: text,
+      page: page
+    }
+  });
+
+  if (!data || !data.lessons || !data.lessons.edges || !data.lessons.pageInfo){
+    console.error('Could not get data', data, error);
+    return {
+      resultItems: [],
+      pageInfo: {
+        total: 1,
+        offset: 0,
+        limit: 4,
+        given: 0
+      }
+    };
+  }
+
+  console.log(data);
+
+  const resultItems = data.lessons.edges.map((lesson) => ({
+    uuid: lesson?.uuid ?? '',
+    name: lesson?.name ?? '',
+    text: lesson?.text ?? '',
+    tags: lesson?.tags ?? ''
+  }));
+
+  const pageInfo = {
+    total: data.lessons.pageInfo?.total,
+    offset: data.lessons.pageInfo.offset,
+    limit: data.lessons.pageInfo.limit,
+    given: data.lessons.pageInfo.given
+  };
+
+  return { resultItems, pageInfo };
+}
+
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
-  const onDelete = () => {};
-
-  const [ items, setItems ] = React.useState([
-    {id: 0, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-    {id: 1, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-    {id: 2, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-  ]);
-
   const [searchText, setSearchText] = React.useState('');
-  const [results, setResults] = React.useState([]);
-  const [pageInfo, setPageInfo] = React.useState();
- 
-  // const onSearch = async (text, page) => {
-   
-  //   setSearchText(text);
-  //   if (text.length === 0 && results.length > 0){
-  //     return;
-  //   }
-  
-  //   const { loading, error, data } = useQuery(GET_COURSES, {
-  //       variables: {
-  //         name: text,
-  //         page: page
-  //       }
-  //     });
-    
-  //   if (!data || !data.courses || !data.courses.edges || !data.courses.pageInfo){
-  //     console.error('Could not get data', data);
-  //     return {
-  //       resultItems: [],
-  //       pageInfo: {
-  //         total: 1,
-  //         offset: 0,
-  //         limit: 4,
-  //         given: 0
-  //       }
-  //     };
-  //   }
-  
-  //   setResults(data.courses.edges.map((course) => ({
-  //     id: course?.notId ?? '',
-  //     title: course?.name ?? '',
-  //     image: course?.bannerImageURL ?? '',
-  //     description: course?.introduction ?? ''
-  //   })));
-    
-  //   setPageInfo({
-  //     total: data.courses.pageInfo?.total,
-  //     offset: data.courses.pageInfo.offset,
-  //     limit: data.courses.pageInfo.limit,
-  //     given: data.courses.pageInfo.given
-  //   });
-  // }
+  const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
+  const searchResults = useSearchQuery(searchText, page);
 
-  // const onChange = (text) => onSearch(text, {
-  //   limit: pageInfo?.limit ?? 4,
-  //   offset: 0
-  // });
+  const onDelete = (uuid) => {
+    setState('syllabus',
+      state.syllabus.filter((item) => item.uuid !== uuid));
+  };
 
-  // const onUpdatePage = (page) => onSearch(searchText, {
-  //   limit: pageInfo?.limit ?? 4,
-  //   offset: (page - 1) * (pageInfo?.limit ?? 4)
-  // })
+  console.log(state.syllabus)
 
   return (
     <div className={classes.root}>
@@ -185,19 +175,24 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
               <Autocomplete
                 freeSolo
-                options={[]}
-                onChange={inp => {
-                  // onSearch(inp.target.value, {
-                  //   total: 4,
-                  //   offset: 0,
-                  //   given: 4,
-                  // });
-                }}
+                options={searchResults.resultItems}
+                getOptionLabel={(option) => option.name}
+                onChange={(_, { uuid, name }) => (
+                  setState(
+                    'syllabus',
+                    [...state.syllabus,
+                    { uuid, name }
+                    ])
+                )}
                 renderInput={(params) => (
                   <TextField
                     {...params}
                     placeholder="Search Lessons or Tests"
+                    onChange={inp => {
+                      setSearchText(inp.target.value);
+                    }}
                     InputProps={{
+                      ...params.InputProps,
                       startAdornment: (
                       <InputAdornment position="start">
                         <SearchIcon />
@@ -213,7 +208,12 @@ function ModuleBuilder({ state, setState }) {
           <Grid item>
             <SuggestedTable
               title="Suggested Lessons based on Tags"
-              lessons={lessons}
+              lessons={searchResults.resultItems.slice(0, 3)}
+              onAdd={({ uuid, name }) => setState(
+                'syllabus',
+                [...state.syllabus,
+                { uuid, name }
+                ])}
             />
           </Grid>
           <Grid item>
@@ -221,7 +221,19 @@ function ModuleBuilder({ state, setState }) {
               <CardHeader title="Module Structure" />
               <Divider />
               <CardContent>
-                <ReoderableDropdown title="Module 1" items={items} setItems={setItems} />
+                <ReoderableDropdown
+                  title="Module 1"
+                  items={state.syllabus.map(({name, uuid}) => ({
+                    id: uuid,
+                    component:
+                      <ReoderableListItem
+                        uuid={uuid}
+                        text={name}
+                        onDelete={onDelete}
+                      />
+                  }))}
+                  setItems={setState}
+                />
               </CardContent>
             </Card>
           </Grid>

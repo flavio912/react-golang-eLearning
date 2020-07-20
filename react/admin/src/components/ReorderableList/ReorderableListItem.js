@@ -16,7 +16,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ReoderableListItem({ text, onDelete  }) {
+export default function ReoderableListItem({ uuid, text, onDelete  }) {
   const classes = useStyles();
 
   return (
@@ -36,8 +36,11 @@ export default function ReoderableListItem({ text, onDelete  }) {
         }
       />
       <ListItemIcon>
-        <IconButton edge="end" aria-label="delete">
-          <DeleteIcon onClick={onDelete} color="disabled" />
+        <IconButton
+          onClick={() => onDelete(uuid)}
+          edge="end"
+        >
+          <DeleteIcon color="disabled" />
         </IconButton>
       </ListItemIcon>
     </ListItem>

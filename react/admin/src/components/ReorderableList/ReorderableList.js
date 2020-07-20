@@ -41,7 +41,11 @@ export default function ReoderableList({ items, setItems }) {
             ref={provided.innerRef}
             >
             {items.map((item, index) => (
-              <Draggable draggableId={`item-${item.id}`} index={index}>
+              <Draggable
+                draggableId={`item-${item.id}`}
+                index={index}
+                key={item.id}
+              >
                 {(provided) => (
                   <div
                     className={classes.padding}

@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import {
   Card,
   CardHeader,
@@ -28,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SuggestedTable({ title, lessons }) {
+function SuggestedTable({ title, lessons, onAdd }) {
   const classes = useStyles();
 
   return (
@@ -39,71 +38,68 @@ function SuggestedTable({ title, lessons }) {
       />
       <CardContent>
         <Table>
-            <TableBody>
+          <TableBody>
             {lessons.map(lesson => (
-                <TableRow key={lesson.uuid}>
+              <TableRow key={lesson.uuid}>
                 <TableCell>
                 <Typography
-                    className={classes.bold}
-                    variant="subtitle2"
-                    color="textPrimary"
+                  className={classes.bold}
+                  variant="subtitle2"
+                  color="textPrimary"
                 >
-                    {lesson.name}
+                  {lesson.name}
                 </Typography>
                 <Typography
-                    className={classes.bold}
-                    variant="body2"
-                    color="textSecondary"
+                  className={classes.bold}
+                  variant="body2"
+                  color="textSecondary"
                 >
-                    Used in {lesson.numCoursesUsedIn} other Courses
+                  Used in {lesson.numCoursesUsedIn} other Courses
                 </Typography>
                 </TableCell>
                 <TableCell>
-                    <Typography
+                  <Typography
                     className={classes.heavy}
                     variant="subtitle2"
                     color="textSecondary"
                     >
                     Type: 
-                    </Typography>
+                  </Typography>
                 </TableCell>
                 <TableCell>
-                    <Typography
+                  <Typography
                     className={classes.bold}
                     variant="body2"
                     color="textPrimary"
                     >
                     {lesson.type}
-                    </Typography>
+                  </Typography>
                 </TableCell>
                 <TableCell>
-                    <Typography
+                  <Typography
                     className={classes.heavy}
                     variant="subtitle2"
                     color="textSecondary"
-                    >
+                  >
                     Tags: 
-                    </Typography>
+                  </Typography>
                 </TableCell>
                 <TableCell>
-                    {lesson.tags.map(tag => (
-                    <Chip color={tag.color} label={tag.name} />
-                    ))}
+                  {lesson.tags.map(tag => (
+                    <Chip key={tag.name} color={tag.color} label={tag.name} />
+                  ))}
                 </TableCell>
                 <TableCell>
-                    <Button
+                  <Button
                     color="default"
-                    component={RouterLink}
-                    size="small"
-                    variant="contained"
-                    to={`/module/${lesson.uuid}/overview`}
+                    onClick={() => onAdd(lesson)}
                     >
                     + ADD
-                    </Button>
-                    </TableCell>
-                </TableRow>
+                  </Button>
+                </TableCell>
+              </TableRow>
             ))}
-            </TableBody>
+          </TableBody>
         </Table>
        </CardContent>
     </Card>

@@ -6,11 +6,12 @@ import {
   CardContent,
   Divider,
   TextField,
-  Button,
   Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Autocomplete } from '@material-ui/lab';
+import { gql } from 'apollo-boost';
+import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -29,8 +30,21 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const UPLOAD_REQUEST = gql`
+  mutation UploadRequest($fileType: String!, $contentLength: Int!) {
+    answerImageUploadRequest(
+      input: { fileType: $fileType, contentLength: $contentLength }
+    ) {
+      url
+      successToken
+    }
+  }
+`;
+
 function AudioVideo({ state, setState }) {
   const classes = useStyles();
+  const [voiceOver, setVoiceOver] = React.useState('');
+  const [wistiaUrl, setWistiaUrl] = React.useState('');
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -45,7 +59,7 @@ function AudioVideo({ state, setState }) {
                       options={state.tags}
                       getOptionLabel={option => option.title}
                       onChange={(event, newValue) => {
-                          setState('voiceoverSuccessToken', newValue.value);
+                          setVoiceOver(newValue.value);
                       }}
                       renderInput={params => (
                           <TextField
@@ -59,15 +73,16 @@ function AudioVideo({ state, setState }) {
                     
                   </Grid>
                   <Grid item>
-                    <Button variant="contained">
-                      Upload MP3
-                    </Button>
+                    <UploadFile
+                      uploadMutation={UPLOAD_REQUEST}
+                      onUploaded={(successToken, url) => setState('voiceoverSuccessToken', successToken)}
+                    />
                     <Typography
                       variant="body2"
                       color="textSecondary"
                       className={classes.filename}
                     >
-                      {state.voiceoverSuccessToken}
+                      {voiceOver}
                     </Typography>
                  </ Grid>
                   <Grid item>
@@ -106,10 +121,10 @@ function AudioVideo({ state, setState }) {
                       label=""
                       name="modulename"
                       onChange={inp => {
-                          setState('voiceoverSuccessToken', inp.target.value);
+                          setWistiaUrl(inp.target.value);
                       }}
                       placeholder="Enter Wisita Video URL"
-                      value={state.voiceoverSuccessToken}
+                      value={wistiaUrl}
                       variant="outlined"
                     />
                   </Grid>

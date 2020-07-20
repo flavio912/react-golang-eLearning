@@ -47,10 +47,10 @@ function CreateQuestion({ match, history }) {
     tags: [],
     description: '',
     transcript: '',
-    bannerImageSuccessToken: '',
-    voiceoverSuccessToken: '',
+    bannerImageSuccessToken: undefined,
+    voiceoverSuccessToken: undefined,
     video: { type: 'WISTIA', url: ''},
-    syllabus: [{ type: 'test', uuid: '00000000-0000-0000-0000-000000000002' }]
+    syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }]
   };
 
   const [state, setState] = useState(initState);
@@ -71,7 +71,7 @@ function CreateQuestion({ match, history }) {
           bannerImageSuccessToken: state.bannerImageSuccessToken,
           voiceoverSuccessToken: state.voiceoverSuccessToken,
           video: state.video,
-          syllabus: state.syllabus
+          syllabus: state.syllabus.map(({ uuid }) => ({ type: 'lesson', uuid }))
         }
       });
       if (res.data?.createModule?.module?.uuid) {
