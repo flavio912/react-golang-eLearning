@@ -118,6 +118,21 @@ export default [
         component: lazy(() => import('src/views/AdminDetails'))
       },
       {
+        path: '/delegates',
+        exact: true,
+        component: lazy(() => import('src/views/DelegatesList'))
+      },
+      // {
+      //   path: '/delegates/:id',
+      //   exact: true,
+      //   component: lazy(() => import('src/views/DelegateDetails'))
+      // },
+      // {
+      //   path: '/delegates/:id/:tab',
+      //   exact: true,
+      //   component: lazy(() => import('src/views/DelegateDetails'))
+      // },
+      {
         path: '/tutors',
         exact: true,
         component: TutorsView
