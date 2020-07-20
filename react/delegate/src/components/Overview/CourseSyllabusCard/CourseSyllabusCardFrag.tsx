@@ -5,19 +5,27 @@ import { CourseSyllabusCardFrag_course } from './__generated__/CourseSyllabusCar
 
 type Props = {
   course?: CourseSyllabusCardFrag_course;
+  upTo?: String;
 };
 
-function SyllabusCard({ course }: Props) {
+function SyllabusCard({ course, upTo }: Props) {
   const syllabusSections = (course?.syllabus ?? []).map((courseElement) => {
     if (courseElement.type == 'module') {
       return {
-        sections: (courseElement?.syllabus ?? []).map((moduleItem) => {
-          return {
-            name: moduleItem.name ?? '',
-            uuid: moduleItem.uuid ?? '',
-            complete: moduleItem.complete ?? false
-          };
-        })
+        sections: [
+          {
+            name: courseElement.name ?? '',
+            uuid: courseElement.uuid ?? '',
+            complete: false
+          },
+          ...(courseElement?.syllabus ?? []).map((moduleItem) => {
+            return {
+              name: moduleItem.name ?? '',
+              uuid: moduleItem.uuid ?? '',
+              complete: false
+            };
+          })
+        ]
       };
     } else {
       return {
@@ -25,16 +33,32 @@ function SyllabusCard({ course }: Props) {
           {
             name: courseElement.name ?? '',
             uuid: courseElement.uuid ?? '',
-            complete: courseElement.complete ?? false
+            complete: false
           }
         ]
       };
     }
   });
 
+  var revSyllabus = syllabusSections.reverse();
+  var found = false;
+  for (const i in revSyllabus) {
+    var revSections = syllabusSections[i].sections.reverse();
+    for (const item in revSections) {
+      if (revSections[item].uuid == upTo) {
+        found = true;
+      }
+      if (found) {
+        revSections[item] = { ...revSections[item], complete: true };
+      }
+    }
+    revSyllabus[i].sections = revSections.reverse();
+  }
+
+  const syllabus = revSyllabus.reverse();
   const syllabusProp = {
     completePercentage: 23,
-    modules: syllabusSections
+    modules: syllabus
   };
   return <CourseSyllabusCard courseSyllabus={syllabusProp} />;
 }

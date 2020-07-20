@@ -26,6 +26,9 @@ func (a *MyCourseResolver) MinutesTracked() float64 {
 func (a *MyCourseResolver) EnrolledAt() string {
 	return a.MyCourse.CreatedAt
 }
+func (a *MyCourseResolver) UpTo() *gentypes.UUID {
+	return a.MyCourse.UpTo
+}
 
 type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID

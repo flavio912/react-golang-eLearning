@@ -7,6 +7,7 @@ export type CourseStatus = "failed" | "incomplete" | "passed" | "%future added v
 export type OnlineCourse_myActiveCourse = {
     readonly status: CourseStatus;
     readonly enrolledAt: string;
+    readonly upTo: string | null;
     readonly course: {
         readonly name: string;
         readonly excerpt: string | null;
@@ -44,6 +45,13 @@ const node: ReaderFragment = ({
             "kind": "ScalarField",
             "alias": null,
             "name": "enrolledAt",
+            "args": null,
+            "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "upTo",
             "args": null,
             "storageKey": null
         },
@@ -107,5 +115,5 @@ const node: ReaderFragment = ({
         }
     ]
 } as any);
-(node as any).hash = '5836f94c222aec11b34ee4b8596616ee';
+(node as any).hash = '66f975b9620ec0cfa2fd9e52482c344a';
 export default node;

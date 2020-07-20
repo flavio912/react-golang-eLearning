@@ -271,7 +271,7 @@ func (c *courseAppImpl) DeleteQuestion(input gentypes.DeleteQuestionInput) (bool
 }
 
 func (c *courseAppImpl) TestQuestions(testUUID gentypes.UUID) ([]gentypes.Question, error) {
-	if !c.grantCanViewSyllabusItems([]gentypes.UUID{testUUID}) {
+	if !c.grantCanViewSyllabusItems([]gentypes.UUID{testUUID}, gentypes.TestType) {
 		return []gentypes.Question{}, &errors.ErrUnauthorized
 	}
 

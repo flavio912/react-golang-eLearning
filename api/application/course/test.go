@@ -127,7 +127,7 @@ func (c *courseAppImpl) Tests(
 	return c.testsToGentypes(tests), pageInfo, nil
 }
 
-func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.UUID) bool {
+func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.UUID, elementType gentypes.CourseElement) bool {
 	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return false
 	}
@@ -155,7 +155,7 @@ func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.
 			courseIds[i] = activeCourse.CourseID
 		}
 
-		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, courseElementUUIDs, gentypes.TestType)
+		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, courseElementUUIDs, elementType)
 		if err != nil {
 			return false
 		}
@@ -169,7 +169,7 @@ func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.
 }
 
 func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
-	if !c.grantCanViewSyllabusItems(uuids) {
+	if !c.grantCanViewSyllabusItems(uuids, gentypes.TestType) {
 		return []gentypes.Test{}, &errors.ErrWhileHandling
 	}
 

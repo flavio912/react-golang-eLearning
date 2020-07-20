@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 2f37d7b142e6deece5dfad390c96c159 */
+/* @relayHash 1bb3e18beb78e7639a1293bdd3f5dd99 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -54,6 +54,7 @@ fragment CourseSyllabusCardFrag_course on Course {
 fragment OnlineCourse_myActiveCourse on MyCourse {
   status
   enrolledAt
+  upTo
   course {
     name
     excerpt
@@ -187,6 +188,13 @@ const node: ConcreteRequest = (function () {
                                     "storageKey": null
                                 },
                                 {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "upTo",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
                                     "kind": "LinkedField",
                                     "alias": null,
                                     "name": "course",
@@ -281,7 +289,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Course_Query",
             "id": null,
-            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  course {\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
+            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  upTo\n  course {\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
             "metadata": {}
         }
     } as any;

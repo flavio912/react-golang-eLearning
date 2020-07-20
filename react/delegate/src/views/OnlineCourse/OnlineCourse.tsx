@@ -306,7 +306,10 @@ function OnlineCourse({
             )}
         </div>
         <div className={classes.courseSyllabus}>
-          <CourseSyllabusCardFrag course={myActiveCourse?.course} />
+          <CourseSyllabusCardFrag
+            course={myActiveCourse?.course}
+            upTo={myActiveCourse?.upTo ?? undefined}
+          />
         </div>
       </div>
     </Page>
@@ -318,6 +321,7 @@ export default createFragmentContainer(OnlineCourse, {
     fragment OnlineCourse_myActiveCourse on MyCourse {
       status
       enrolledAt
+      upTo
       course {
         name
         excerpt

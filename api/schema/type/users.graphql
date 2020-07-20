@@ -48,6 +48,7 @@ type MyCourse {
   course: Course!
   minutesTracked: Float!
   enrolledAt: String!
+  upTo: UUID
 }
 
 enum CourseStatus {
