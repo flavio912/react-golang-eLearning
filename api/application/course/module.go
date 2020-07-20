@@ -72,7 +72,7 @@ func (c *courseAppImpl) ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module
 	}
 
 	if c.grant.IsDelegate || c.grant.IsIndividual {
-		// Check user is taking a course with this module in it
+		// Check user is taking a course with those modules in it
 		var courseTakerID gentypes.UUID
 		if c.grant.IsDelegate {
 			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
@@ -94,18 +94,14 @@ func (c *courseAppImpl) ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module
 			courseIds[i] = activeCourse.CourseID
 		}
 
-		//TODO:: n + 1 problem? replace with AreModulesInCourses?
-		for _, uuid := range uuids {
-			moduleInCourses, err := c.coursesRepository.IsModuleInCourses(courseIds, uuid)
-			if err != nil {
-				return []gentypes.Module{}, &errors.ErrWhileHandling
-			}
-
-			if !moduleInCourses {
-				return []gentypes.Module{}, &errors.ErrUnauthorized
-			}
+		areModsInCourses, err := c.coursesRepository.AreInCourses(courseIds, uuids, gentypes.ModuleType)
+		if err != nil {
+			return []gentypes.Module{}, &errors.ErrWhileHandling
 		}
 
+		if !areModsInCourses {
+			return []gentypes.Module{}, &errors.ErrWhileHandling
+		}
 	}
 
 	modules, err := c.coursesRepository.ModulesByUUIDs(uuids)

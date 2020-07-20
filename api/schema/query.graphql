@@ -89,8 +89,8 @@ type Query {
   module(uuid: UUID!): Module
 
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
-  # categories(level: Primary || Secondary, text: String) // Get all of the course categories
   # tags(text: String) // searches all of the tags
-
   certificateInfo(token: String!): CertificateInfo!
+  categories(page: Page, text: String): CategoryPage
+  # secondaryCategories(page: Page, text: String): CategoryPage
 }

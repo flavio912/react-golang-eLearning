@@ -48,6 +48,7 @@ const SAVE_ONLINE_COURSE = gql`
     $whatYouLearn: [String!]
     $requirements: [String!]
     $bannerImageSuccess: String
+    $categoryUUID: UUID
   ) {
     saveOnlineCourse(
       input: {
@@ -62,6 +63,7 @@ const SAVE_ONLINE_COURSE = gql`
         whatYouLearn: $whatYouLearn
         requirements: $requirements
         bannerImageSuccess: $bannerImageSuccess
+        categoryUUID: $categoryUUID
       }
     ) {
       id
@@ -84,13 +86,17 @@ const GET_COURSE = gql`
       whatYouLearn
       requirements
       bannerImageURL
+      category {
+        name
+        uuid
+      }
     }
   }
 `;
 
 var initState = {
   name: '',
-  primaryCategory: {},
+  category: {},
   secondaryCategory: {},
   tags: [],
   excerpt: '',
@@ -104,7 +110,8 @@ var initState = {
   price: 0,
   priceType: 'paid',
   bannerImageURL: undefined,
-  bannerImageSuccess: undefined
+  bannerImageSuccess: undefined,
+  categoryUUID: undefined
 };
 
 function CreateCourse({ match, history }) {
@@ -146,7 +153,8 @@ function CreateCourse({ match, history }) {
       whatYouLearn: data.course.whatYouLearn,
       requirements: data.course.requirements,
       bannerImageURL: data.course.bannerImageURL,
-      price: data.course.price
+      price: data.course.price,
+      categoryUUID: data.course.categoryUUID
     });
   }, [data, loading, error]);
 

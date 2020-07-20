@@ -12,10 +12,10 @@ func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
 		tags = tagsToGentypes(lesson.Tags)
 	}
 	return gentypes.Lesson{
-		UUID:  lesson.UUID,
+		UUID: lesson.UUID,
 		Name: lesson.Name,
-		Tags:  tags,
-		Text:  lesson.Text,
+		Tags: tags,
+		Text: lesson.Text,
 	}
 }
 
@@ -27,12 +27,50 @@ func (c *courseAppImpl) lessonsToGentype(lessons []models.Lesson) []gentypes.Les
 	return genLessons
 }
 
-func (c *courseAppImpl) GetLessonsByUUID(uuid []string) ([]gentypes.Lesson, error) {
-	if !c.grant.IsAdmin {
+func (c *courseAppImpl) GetLessonsByUUID(uuids []string) ([]gentypes.Lesson, error) {
+	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
 		return []gentypes.Lesson{}, &errors.ErrUnauthorized
 	}
 
-	lessons, err := c.coursesRepository.GetLessonsByUUID(uuid)
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		// Check user is taking a course with those lessons in it
+		var courseTakerID gentypes.UUID
+		if c.grant.IsDelegate {
+			delegate, _ := c.usersRepository.Delegate(c.grant.Claims.UUID)
+			courseTakerID = delegate.CourseTakerUUID
+		}
+
+		if c.grant.IsIndividual {
+			individual, _ := c.usersRepository.Individual(c.grant.Claims.UUID)
+			courseTakerID = individual.CourseTakerUUID
+		}
+
+		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
+		if err != nil {
+			return []gentypes.Lesson{}, &errors.ErrWhileHandling
+		}
+
+		var courseIds = make([]uint, len(activeCourses))
+		for i, activeCourse := range activeCourses {
+			courseIds[i] = activeCourse.CourseID
+		}
+
+		var gen_uuids = make([]gentypes.UUID, len(uuids))
+		for i, uuid := range uuids {
+			gen_uuids[i] = gentypes.MustParseToUUID(uuid)
+		}
+
+		areLessonsInCourses, err := c.coursesRepository.AreInCourses(courseIds, gen_uuids, gentypes.LessonType)
+		if err != nil {
+			return []gentypes.Lesson{}, &errors.ErrWhileHandling
+		}
+
+		if !areLessonsInCourses {
+			return []gentypes.Lesson{}, &errors.ErrWhileHandling
+		}
+	}
+
+	lessons, err := c.coursesRepository.GetLessonsByUUID(uuids)
 	return c.lessonsToGentype(lessons), err
 }
 
