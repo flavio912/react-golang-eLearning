@@ -105,7 +105,6 @@ const Router = createFarceRouter({
         />
         <Route
           path="/courses/:courseID/module/:moduleUUID"
-          Component={Module}
           query={graphql`
             query App_Module_Query($id: Int!, $uuid: UUID!) {
               user {
@@ -129,6 +128,9 @@ const Router = createFarceRouter({
             console.log('args', args);
             if (args.error) {
               args.match.router.push('/app');
+            }
+            if (!args.props) {
+              <div></div>;
             }
             return (
               <ErrorBoundary>

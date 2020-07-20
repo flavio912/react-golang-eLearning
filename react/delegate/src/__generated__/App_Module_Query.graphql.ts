@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 257ca53a1543349c605d8e048d5a6ac6 */
+/* @relayHash 79347bdac0d92c0aed4e7b3f2d2c081c */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -62,12 +62,16 @@ fragment CourseSyllabusCardFrag_course on Course {
 fragment Module_module on Module {
   name
   uuid
+  voiceoverURL
+  description
+  transcript
 }
 
 fragment Module_myActiveCourse on MyCourse {
   course {
     ...CourseSyllabusCardFrag_course
   }
+  upTo
 }
 */
 
@@ -253,6 +257,13 @@ const node: ConcreteRequest = (function () {
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "upTo",
+                                    "args": null,
+                                    "storageKey": null
                                 }
                             ]
                         }
@@ -268,7 +279,28 @@ const node: ConcreteRequest = (function () {
                     "plural": false,
                     "selections": [
                         (v4 /*: any*/),
-                        (v6 /*: any*/)
+                        (v6 /*: any*/),
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "voiceoverURL",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "description",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "transcript",
+                            "args": null,
+                            "storageKey": null
+                        }
                     ]
                 }
             ]
@@ -277,7 +309,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Module_Query",
             "id": null,
-            "text": "query App_Module_Query(\n  $id: Int!\n  $uuid: UUID!\n) {\n  user {\n    myActiveCourse(id: $id) {\n      ...Module_myActiveCourse\n    }\n  }\n  module(uuid: $uuid) {\n    ...Module_module\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment Module_module on Module {\n  name\n  uuid\n}\n\nfragment Module_myActiveCourse on MyCourse {\n  course {\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
+            "text": "query App_Module_Query(\n  $id: Int!\n  $uuid: UUID!\n) {\n  user {\n    myActiveCourse(id: $id) {\n      ...Module_myActiveCourse\n    }\n  }\n  module(uuid: $uuid) {\n    ...Module_module\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment Module_module on Module {\n  name\n  uuid\n  voiceoverURL\n  description\n  transcript\n}\n\nfragment Module_myActiveCourse on MyCourse {\n  course {\n    ...CourseSyllabusCardFrag_course\n  }\n  upTo\n}\n",
             "metadata": {}
         }
     } as any;

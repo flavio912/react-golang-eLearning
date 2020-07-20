@@ -256,7 +256,19 @@ function OnlineCourse({
             </p>
             <Button
               title="Begin Course"
-              onClick={() => {}}
+              onClick={() => {
+                if (
+                  !myActiveCourse?.upTo &&
+                  myActiveCourse?.course.syllabus &&
+                  myActiveCourse?.course.syllabus.length > 0
+                ) {
+                  const type = myActiveCourse?.course.syllabus[0].type;
+                  const uuid = myActiveCourse?.course.syllabus[0].uuid;
+                  router.push(
+                    `/app/courses/${myActiveCourse?.course.ident}/${type}/${uuid}`
+                  );
+                }
+              }}
               padding="massive"
               noWrap
             />
@@ -323,12 +335,18 @@ export default createFragmentContainer(OnlineCourse, {
       enrolledAt
       upTo
       course {
+        ident: id
         name
         excerpt
         introduction
         howToComplete
         whatYouLearn
         hoursToComplete
+        syllabus {
+          name
+          type
+          uuid
+        }
         ...CourseSyllabusCardFrag_course
       }
     }

@@ -6,6 +6,9 @@ import { FragmentRefs } from "relay-runtime";
 export type Module_module = {
     readonly name: string;
     readonly uuid: string;
+    readonly voiceoverURL: string | null;
+    readonly description: string;
+    readonly transcript: string;
     readonly " $refType": "Module_module";
 };
 export type Module_module$data = Module_module;
@@ -36,8 +39,29 @@ const node: ReaderFragment = ({
             "name": "uuid",
             "args": null,
             "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "voiceoverURL",
+            "args": null,
+            "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "description",
+            "args": null,
+            "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "transcript",
+            "args": null,
+            "storageKey": null
         }
     ]
 } as any);
-(node as any).hash = 'f44909eaa4c3c9b89669bcec523b082e';
+(node as any).hash = '6a5f20da6dd5241ee1ab2092f56a76c8';
 export default node;

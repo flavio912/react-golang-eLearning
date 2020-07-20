@@ -7,6 +7,7 @@ export type Module_myActiveCourse = {
     readonly course: {
         readonly " $fragmentRefs": FragmentRefs<"CourseSyllabusCardFrag_course">;
     };
+    readonly upTo: string | null;
     readonly " $refType": "Module_myActiveCourse";
 };
 export type Module_myActiveCourse$data = Module_myActiveCourse;
@@ -39,8 +40,15 @@ const node: ReaderFragment = ({
                     "args": null
                 }
             ]
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "upTo",
+            "args": null,
+            "storageKey": null
         }
     ]
 } as any);
-(node as any).hash = 'bf3ef7c5a2886bdf0b29382ecf5f0c74';
+(node as any).hash = 'e752c6c7b7cb22088373ed23019d1cc7';
 export default node;
