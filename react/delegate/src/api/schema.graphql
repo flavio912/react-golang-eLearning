@@ -15,6 +15,23 @@ type Query {
 
 type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
+  submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+}
+
+input QuestionAnswer {
+  questionUUID: UUID! # UUID of the question being answered
+  answerUUID: UUID! # UUID of the selected answer
+}
+
+input SubmitTestInput {
+  courseID: Int! # ID of the course the user is taking the test in
+  testUUID: UUID! # UUID of the test you are answering
+  answers: [QuestionAnswer!]! # Your answers to the test
+}
+
+type SubmitTestPayload {
+  courseStatus: CourseStatus!
+  passed: Boolean! # True if the user passed the test
 }
 
 type PageInfo {

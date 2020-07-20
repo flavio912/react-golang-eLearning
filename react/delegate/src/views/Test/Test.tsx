@@ -6,9 +6,14 @@ import Heading from 'components/core/Heading';
 import Question from 'components/Misc/Question';
 import Button from 'components/core/Input/Button';
 import Page from 'components/Page';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { createFragmentContainer, graphql, commitMutation } from 'react-relay';
 import { Test_test } from './__generated__/Test_test.graphql';
 import { Test_myActiveCourse } from './__generated__/Test_myActiveCourse.graphql';
+import { stringify } from 'querystring';
+import environment from 'api/environment';
+import { GraphError } from 'types/general';
+import CourseSlider from 'components/Overview/CourseSlider';
+import { Test_SubmitAnswersMutationVariables } from './__generated__/Test_SubmitAnswersMutation.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   questionsRoot: {
@@ -50,46 +55,50 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-const QUESTIONS = [
-  {
-    id: 0,
-    type: 'text',
-    head: 'Module 1 - General Philosophy Test Question 1',
-    title:
-      'What is the authority with responsibility for the transport of dangerous goods by air in the UK?',
-    options: [
-      {
-        id: 1,
-        title: 'The Department for Transport (DfT)',
-        index: 'A'
-      },
-      {
-        id: 2,
-        title: 'The Ministry of Justice (MoJ)',
-        index: 'B'
-      }
-    ]
-  },
-  {
-    id: 1,
-    type: 'image',
-    head: 'Module 2 - Dangerous Goods Test Question 2',
-    title:
-      'Which of the following items is NOT classified as suspcious or dangerous cargo',
-    options: [
-      {
-        id: 1,
-        image:
-          'https://media.istockphoto.com/photos/chef-knife-picture-id874095794'
-      },
-      {
-        id: 2,
-        image:
-          'https://media.istockphoto.com/photos/traditional-chefs-knife-isolated-on-a-white-background-picture-id832724072'
-      }
-    ]
+const mutation = graphql`
+  mutation Test_SubmitAnswersMutation(
+    $courseID: Int!
+    $testUUID: UUID!
+    $answers: [QuestionAnswer!]!
+  ) {
+    submitTest(
+      input: { courseID: $courseID, testUUID: $testUUID, answers: $answers }
+    ) {
+      courseStatus
+      passed
+    }
   }
-];
+`;
+
+const SubmitAnswers = (
+  courseID: Test_SubmitAnswersMutationVariables['courseID'],
+  testUUID: Test_SubmitAnswersMutationVariables['testUUID'],
+  answers: Test_SubmitAnswersMutationVariables['answers'],
+  errorCallback: (err: string) => void
+) => {
+  const variables: Test_SubmitAnswersMutationVariables = {
+    courseID,
+    testUUID,
+    answers
+  };
+
+  commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted: (
+      response: { delegateLogin: { token: string } },
+      errors: GraphError[]
+    ) => {
+      if (errors) {
+        // Display error
+        errorCallback(`${errors[0]?.extensions?.message}`);
+        return;
+      }
+      console.log('Response received from server.', response, errors);
+    },
+    onError: (err) => console.error(err)
+  });
+};
 
 type Props = {
   className?: string;
@@ -98,13 +107,36 @@ type Props = {
 };
 
 function Test({ className, test, myActiveCourse }: Props) {
+  const questions = (test?.questions ?? []).map((question, index) => {
+    return {
+      id: index,
+      type: 'text',
+      head: '',
+      title: question.text,
+      options: (question.answers ?? []).map((answer, index) => {
+        return {
+          id: answer.uuid,
+          title: answer.text ?? '',
+          image: answer.imageURL ?? undefined,
+          index: String(index)
+        };
+      })
+    };
+  });
+
   const theme = useTheme();
   const classes = useStyles({ theme });
-  const [curQuestion, setCurQuestion] = useState(QUESTIONS[0]);
-  console.log('TEST', test);
+  const [curQuestion, setCurQuestion] = useState(questions[0]);
+  const [curSelection, setCurSelection] = useState<String | undefined>();
   const handleNextQuestion = () => {
-    if (curQuestion.id >= QUESTIONS.length - 1) return;
-    setCurQuestion(QUESTIONS[curQuestion.id + 1]);
+    if (curQuestion.id >= questions.length - 1) {
+      // Submit answers
+
+      return;
+    }
+
+    setCurQuestion(questions[curQuestion.id + 1]);
+    setCurSelection(undefined);
   };
 
   return (
@@ -116,22 +148,20 @@ function Test({ className, test, myActiveCourse }: Props) {
             size={'large'}
             className={classes.mainHeading}
           />
-          {curQuestion.type === 'text' ? (
-            <Question
-              question={curQuestion}
-              type="text"
-              onSelected={() => {}}
-            />
-          ) : (
-            <Question
-              question={curQuestion}
-              type="image"
-              onSelected={() => {}}
-            />
-          )}
+          <Question
+            question={curQuestion}
+            type="text"
+            onSelected={(option) => {
+              setCurSelection(option.id);
+            }}
+          />
           <div className={classes.nextQuestionWrap}>
             <Button
-              title={'Next Question'}
+              title={
+                curQuestion.id >= questions.length - 1
+                  ? 'Submit Answers'
+                  : 'Next Question'
+              }
               padding="large"
               onClick={handleNextQuestion}
             />
@@ -140,7 +170,7 @@ function Test({ className, test, myActiveCourse }: Props) {
         <div className={classes.infoPanel}>
           <span className={classes.infoHeading}>Question</span>
           <h1 className={classes.questionStep}>
-            {curQuestion.id + 1} / {QUESTIONS.length}
+            {curQuestion.id + 1} / {test?.questions?.length}
           </h1>
         </div>
       </div>

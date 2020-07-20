@@ -164,9 +164,13 @@ const Router = createFarceRouter({
             };
           }}
           render={(args: any) => {
-            // if (args.error) {
-            //   args.match.router.push('/app');
-            // }
+            console.log('args', args);
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            if (!args.props) {
+              return <div></div>;
+            }
             return (
               <ErrorBoundary>
                 <Test
