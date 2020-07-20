@@ -14,6 +14,7 @@ import environment from 'api/environment';
 import { GraphError } from 'types/general';
 import CourseSlider from 'components/Overview/CourseSlider';
 import { Test_SubmitAnswersMutationVariables } from './__generated__/Test_SubmitAnswersMutation.graphql';
+import { Match } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   questionsRoot: {
@@ -70,11 +71,10 @@ const mutation = graphql`
   }
 `;
 
-const SubmitAnswers = (
+const submitAnswers = (
   courseID: Test_SubmitAnswersMutationVariables['courseID'],
   testUUID: Test_SubmitAnswersMutationVariables['testUUID'],
-  answers: Test_SubmitAnswersMutationVariables['answers'],
-  errorCallback: (err: string) => void
+  answers: Test_SubmitAnswersMutationVariables['answers']
 ) => {
   const variables: Test_SubmitAnswersMutationVariables = {
     courseID,
@@ -82,21 +82,26 @@ const SubmitAnswers = (
     answers
   };
 
-  commitMutation(environment, {
-    mutation,
-    variables,
-    onCompleted: (
-      response: { delegateLogin: { token: string } },
-      errors: GraphError[]
-    ) => {
-      if (errors) {
-        // Display error
-        errorCallback(`${errors[0]?.extensions?.message}`);
-        return;
+  return new Promise((resolve, reject) => {
+    commitMutation(environment, {
+      mutation,
+      variables,
+      onCompleted: (
+        response: { delegateLogin: { token: string } },
+        errors: GraphError[]
+      ) => {
+        if (errors) {
+          // Display error
+          reject(`${errors[0]?.extensions?.message}`);
+          return;
+        }
+        console.log('Response received from server.', response, errors);
+        resolve(response);
+      },
+      onError: (err) => {
+        reject(err);
       }
-      console.log('Response received from server.', response, errors);
-    },
-    onError: (err) => console.error(err)
+    });
   });
 };
 
@@ -104,12 +109,16 @@ type Props = {
   className?: string;
   test?: Test_test;
   myActiveCourse?: Test_myActiveCourse;
+  match: Match;
 };
 
-function Test({ className, test, myActiveCourse }: Props) {
+function Test({ className, test, myActiveCourse, match }: Props) {
+  const { courseID, testUUID } = match.params;
+
   const questions = (test?.questions ?? []).map((question, index) => {
     return {
       id: index,
+      uuid: question.uuid,
       type: 'text',
       head: '',
       title: question.text,
@@ -127,16 +136,30 @@ function Test({ className, test, myActiveCourse }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [curQuestion, setCurQuestion] = useState(questions[0]);
-  const [curSelection, setCurSelection] = useState<String | undefined>();
-  const handleNextQuestion = () => {
+  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const handleNextQuestion = async () => {
     if (curQuestion.id >= questions.length - 1) {
       // Submit answers
+      const normalisedAnswers = Object.keys(answers).map((key) => ({
+        questionUUID: key,
+        answerUUID: answers[key]
+      }));
 
+      try {
+        const resp = await submitAnswers(
+          parseInt(courseID),
+          testUUID,
+          normalisedAnswers
+        );
+        console.log('RESP', resp);
+        setAnswers({});
+      } catch (err) {
+        console.error('Unable to submit answers', err);
+      }
       return;
     }
 
     setCurQuestion(questions[curQuestion.id + 1]);
-    setCurSelection(undefined);
   };
 
   return (
@@ -152,7 +175,10 @@ function Test({ className, test, myActiveCourse }: Props) {
             question={curQuestion}
             type="text"
             onSelected={(option) => {
-              setCurSelection(option.id);
+              setAnswers({
+                ...answers,
+                [curQuestion.uuid]: option.id
+              });
             }}
           />
           <div className={classes.nextQuestionWrap}>
