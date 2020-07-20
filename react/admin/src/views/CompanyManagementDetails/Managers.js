@@ -196,8 +196,9 @@ function Managers({ className, company, ...rest }) {
       </Card>
       <AddUser
         open={addUserModalOpen}
-        onClose={onAddUserModalClose}
+        onClose={values => onAddUserModalClose(values)}
         company={company}
+        userType="manager"
       />
     </div>
   );
