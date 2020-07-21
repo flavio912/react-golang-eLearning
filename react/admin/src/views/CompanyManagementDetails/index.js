@@ -102,7 +102,7 @@ function CompanyManagementDetails({ match, history }) {
   return (
     <Page className={classes.root} title="Company Management Details">
       <Container maxWidth={false}>
-        <Header />
+        <Header companyName={data.company.name} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
