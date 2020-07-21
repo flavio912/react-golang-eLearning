@@ -282,6 +282,16 @@ func TestAreInCourses(t *testing.T) {
 			wantErr:       nil,
 			wantResult:    true,
 		},
+		{
+			name:      "Lessons are not in courses but inside a module in courses",
+			courseIDs: []uint{5},
+			uuids: []gentypes.UUID{
+				gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003"),
+			},
+			courseElement: gentypes.LessonType,
+			wantErr:       nil,
+			wantResult:    true,
+		},
 	}
 
 	for _, test := range tests {
