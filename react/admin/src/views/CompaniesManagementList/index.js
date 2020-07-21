@@ -25,6 +25,7 @@ const GET_COMPANIES = gql`
       edges {
         uuid
         name
+        isContract
         managers {
           edges {
             email
@@ -62,9 +63,9 @@ function CompaniesManagementList() {
     name: comp.name,
     email: comp.managers?.edges[0]?.email,
     logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
-    noDelegates: 40,
+    noDelegates: comp.delegates?.pageInfo?.total,
     noManagers: comp.managers?.pageInfo?.total,
-    paymentType: 'Contract'
+    paymentType: comp.isContract ? 'Contract' : 'Pay as you go'
   }));
 
   return (
