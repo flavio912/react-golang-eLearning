@@ -11,6 +11,7 @@ type Query {
   module(uuid: UUID!): Module
   test(uuid: UUID!): Test
   lesson(uuid: UUID!): Lesson
+  courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
 }
 
 type Mutation {
@@ -100,6 +101,14 @@ type Course {
 type CoursePage implements PaginatedQuery {
   edges: [Course]
   pageInfo: PageInfo
+}
+
+input CoursesFilter {
+  name: String
+  accessType: AccessType
+  backgroundCheck: Boolean
+  price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
 }
 
 enum UserType {

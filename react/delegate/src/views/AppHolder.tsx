@@ -6,8 +6,13 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import SearchResults from 'components/Search/SearchResults';
 import { Theme } from 'helpers/theme';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
+import environment from 'api/environment';
+import {
+  AppHolderQuery,
+  AppHolderQueryResponse
+} from './__generated__/AppHolderQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -124,7 +129,75 @@ const AppHolder = ({ children, user }: Props) => {
         {children}
         {isShowSearchModal && (
           <div className={classes.appHolderSearch} onClick={hideSearch}>
-            <SearchResults results={results} />
+            <SearchResults
+              searchFunction={async (text: string, offset: number) => {
+                const query = graphql`
+                  query AppHolderQuery($name: String!, $offset: Int!) {
+                    courses(
+                      filter: { name: $name }
+                      page: { limit: 4, offset: $offset }
+                    ) {
+                      edges {
+                        notId: id
+                        name
+                        bannerImageURL
+                        introduction
+                      }
+                      pageInfo {
+                        total
+                        limit
+                        offset
+                        given
+                      }
+                    }
+                  }
+                `;
+
+                const variables = {
+                  name: text,
+                  offset: offset
+                };
+
+                const data = (await fetchQuery(
+                  environment,
+                  query,
+                  variables
+                )) as AppHolderQueryResponse;
+                if (
+                  !data ||
+                  !data.courses ||
+                  !data.courses.edges ||
+                  !data.courses.pageInfo
+                ) {
+                  console.error('Could not get data', data);
+                  return {
+                    resultItems: [],
+                    pageInfo: {
+                      currentPage: 1,
+                      numPages: 1
+                    }
+                  };
+                }
+
+                const resultItems = data.courses.edges.map((course) => ({
+                  id: course?.notId ?? '',
+                  title: course?.name ?? '',
+                  image: course?.bannerImageURL ?? '',
+                  description: course?.introduction ?? ''
+                }));
+
+                const pageInfo = {
+                  currentPage: Math.ceil(data.courses.pageInfo.offset / 4 + 1),
+                  numPages: Math.ceil(data.courses.pageInfo.total / 4)
+                };
+                const result = {
+                  resultItems: resultItems,
+                  pageInfo: pageInfo
+                };
+
+                return result;
+              }}
+            />
           </div>
         )}
       </div>
@@ -137,6 +210,22 @@ export default createFragmentContainer(AppHolder, {
     fragment AppHolder_user on User {
       firstName
       lastName
+    }
+  `,
+  courses: graphql`
+    fragment AppHolder_courses on CoursePage {
+      edges {
+        notId: id
+        name
+        bannerImageURL
+        introduction
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
     }
   `
 });
