@@ -1,9 +1,9 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 679154bccc5b30192721b786023f53d4 */
+/* @relayHash 622fbf96ff4b35e5f19c60a11c2082bf */
 
 import { ConcreteRequest } from "relay-runtime";
-export type CourseStatus = "failed" | "incomplete" | "passed" | "%future added value";
+export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added value";
 export type QuestionAnswer = {
     questionUUID: string;
     answerUUID: string;

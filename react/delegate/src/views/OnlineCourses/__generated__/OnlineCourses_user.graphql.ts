@@ -3,7 +3,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type CourseStatus = "failed" | "incomplete" | "passed" | "%future added value";
+export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added value";
 export type CourseType = "classroom" | "online" | "%future added value";
 export type OnlineCourses_user = {
     readonly firstName: string;

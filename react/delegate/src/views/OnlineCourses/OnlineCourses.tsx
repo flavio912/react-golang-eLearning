@@ -113,23 +113,29 @@ function OnlineCourses({ className, user }: Props) {
           </div>
         </div>
         <div className={classes.courseHolder}>
-          {user?.myCourses?.map((course, index) => (
-            <CourseCard
-              key={index}
-              course={{
-                title: course.course.name,
-                id: course.course.ident,
-                type: 'Online Course',
-                colour: course.course.color ?? '',
-                description: course.course.excerpt ?? '',
-                url: course.course.bannerImageURL ?? ''
-              }}
-              onClick={() => {
-                router.push(`/app/courses/${course.course.ident}`);
-              }}
-              progress={30}
-            />
-          ))}
+          {user?.myCourses
+            ?.filter((course) =>
+              selectedOption == selectOptions[0]
+                ? course.status != 'complete'
+                : course.status == 'complete'
+            )
+            .map((course, index) => (
+              <CourseCard
+                key={index}
+                course={{
+                  title: course.course.name,
+                  id: course.course.ident,
+                  type: 'Online Course',
+                  colour: course.course.color ?? '',
+                  description: course.course.excerpt ?? '',
+                  url: course.course.bannerImageURL ?? ''
+                }}
+                onClick={() => {
+                  router.push(`/app/courses/${course.course.ident}`);
+                }}
+                progress={course.status == 'complete' ? 100 : 30}
+              />
+            ))}
         </div>
         <div className={classes.page}>
           <Paginator
