@@ -16,18 +16,20 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
 
-func (c *courseAppImpl) GeneratePdfFromURL(url string) (io.Reader, error) {
+func GeneratePdfFromURL(url string) (io.Reader, error) {
 	client := &http.Client{}
 
 	// TODO: Make key an envvar
 	var payload = []byte(
-		fmt.Sprintf(`{"url":"%s", "direct": true, "key": "dea9fe3bc2b5981dbb46001bac2e7aa324971384235861a0d9666c70110a0162"}`, url),
+		fmt.Sprintf(`{"url":"%s", "direct": true, "key": "dea9fe3bc2b5981dbb46001bac2e7aa324971384235861a0d9666c70110a016224971384235861a0d9666c70110a0162"}`, url),
 	)
 
+	glog.Error(helpers.Config.PDF.ServerURL)
 	req, err := http.NewRequest("POST", helpers.Config.PDF.ServerURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
@@ -55,7 +57,7 @@ func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) 
 
 	htmlPageURL := helpers.Config.PDF.RequestURL + "%3Ftoken=" + token
 
-	pdf, err := c.GeneratePdfFromURL(htmlPageURL)
+	pdf, err := GeneratePdfFromURL(htmlPageURL)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to make request to PDF generator - UUID: "+historicalCourseUUID.String())
 		return
