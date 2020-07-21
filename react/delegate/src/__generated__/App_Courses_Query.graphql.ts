@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash d5f89110a919422c2e509ea3162e02c4 */
+/* @relayHash 7c88f5bb451a133bbe2000bfae76a464 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -31,7 +31,9 @@ fragment OnlineCourses_user on User {
       ident: id
       name
       excerpt
-      color
+      category {
+        color
+      }
       type
       bannerImageURL
     }
@@ -128,11 +130,22 @@ const node: ConcreteRequest = ({
                                         "storageKey": null
                                     },
                                     {
-                                        "kind": "ScalarField",
+                                        "kind": "LinkedField",
                                         "alias": null,
-                                        "name": "color",
+                                        "name": "category",
+                                        "storageKey": null,
                                         "args": null,
-                                        "storageKey": null
+                                        "concreteType": "Category",
+                                        "plural": false,
+                                        "selections": [
+                                            {
+                                                "kind": "ScalarField",
+                                                "alias": null,
+                                                "name": "color",
+                                                "args": null,
+                                                "storageKey": null
+                                            }
+                                        ]
                                     },
                                     {
                                         "kind": "ScalarField",
@@ -167,7 +180,7 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_Courses_Query",
         "id": null,
-        "text": "query App_Courses_Query {\n  user {\n    ...OnlineCourses_user\n  }\n}\n\nfragment OnlineCourses_user on User {\n  firstName\n  myCourses {\n    course {\n      ident: id\n      name\n      excerpt\n      color\n      type\n      bannerImageURL\n    }\n    status\n  }\n}\n",
+        "text": "query App_Courses_Query {\n  user {\n    ...OnlineCourses_user\n  }\n}\n\nfragment OnlineCourses_user on User {\n  firstName\n  myCourses {\n    course {\n      ident: id\n      name\n      excerpt\n      category {\n        color\n      }\n      type\n      bannerImageURL\n    }\n    status\n  }\n}\n",
         "metadata": {}
     }
 } as any);
