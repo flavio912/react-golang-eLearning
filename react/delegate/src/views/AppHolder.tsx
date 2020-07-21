@@ -9,7 +9,10 @@ import { Theme } from 'helpers/theme';
 import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
 import environment from 'api/environment';
-import { AppHolderQuery, AppHolderQueryResponse } from './__generated__/AppHolderQuery.graphql';
+import {
+  AppHolderQuery,
+  AppHolderQueryResponse
+} from './__generated__/AppHolderQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -127,21 +130,21 @@ const AppHolder = ({ children, user }: Props) => {
         {children}
         {isShowSearchModal && (
           <div className={classes.appHolderSearch} onClick={hideSearch}>
-            <SearchResults searchFunction={
-              async (text: string, offset: number) => {
+            <SearchResults
+              searchFunction={async (text: string, offset: number) => {
                 const query = graphql`
-                  query AppHolderQuery($name: String!,  $offset: Int!){
-                    courses(filter: { name: $name }, page: { 
-                      limit: 4
-                      offset: $offset
-                    }){
-                      edges{
+                  query AppHolderQuery($name: String!, $offset: Int!) {
+                    courses(
+                      filter: { name: $name }
+                      page: { limit: 4, offset: $offset }
+                    ) {
+                      edges {
                         notId: id
                         name
                         bannerImageURL
                         introduction
                       }
-                      pageInfo{
+                      pageInfo {
                         total
                         limit
                         offset
@@ -150,7 +153,7 @@ const AppHolder = ({ children, user }: Props) => {
                     }
                   }
                 `;
-    
+
                 const variables = {
                   name: text,
                   offset: offset
@@ -161,8 +164,12 @@ const AppHolder = ({ children, user }: Props) => {
                   query,
                   variables
                 )) as AppHolderQueryResponse;
-                
-                if (!data || !data.courses || !data.courses.edges || !data.courses.pageInfo){
+                if (
+                  !data ||
+                  !data.courses ||
+                  !data.courses.edges ||
+                  !data.courses.pageInfo
+                ) {
                   console.error('Could not get data', data);
                   return {
                     resultItems: [],
@@ -179,20 +186,19 @@ const AppHolder = ({ children, user }: Props) => {
                   image: course?.bannerImageURL ?? '',
                   description: course?.introduction ?? ''
                 }));
-                
-                const pageInfo = {
-                  currentPage: Math.ceil(((data.courses.pageInfo.offset)/ 4) + 1),
-                  numPages: Math.ceil((data.courses.pageInfo.total/4))
-                };
 
+                const pageInfo = {
+                  currentPage: Math.ceil(data.courses.pageInfo.offset / 4 + 1),
+                  numPages: Math.ceil(data.courses.pageInfo.total / 4)
+                };
                 const result = {
                   resultItems: resultItems,
                   pageInfo: pageInfo
-                }
+                };
 
                 return result;
-              }
-            } />
+              }}
+            />
           </div>
         )}
       </div>
@@ -222,5 +228,5 @@ export default createFragmentContainer(AppHolder, {
         given
       }
     }
-  `,
+  `
 });
