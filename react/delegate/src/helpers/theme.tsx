@@ -12,6 +12,7 @@ export type Theme = {
   secondaryBorderRadius: number;
   buttonBorderRadius: number;
   primaryGradient: string;
+  verticalGradient: string;
   loginBackgroundGradient: string;
   searchBackground: string;
   colors: {
@@ -35,6 +36,7 @@ export type Theme = {
     approxIron: string;
     approxZircon: string;
     secondaryDanger: string;
+    certBackgroundGrey: string;
     textNavyBlue: string;
     textSolitude: string;
   };
@@ -55,6 +57,12 @@ export type Theme = {
     xSmall: number;
     tiny: number;
   };
+  paperSizes: {
+    A4: {
+      width: number;
+      height: number;
+    };
+  };
 };
 
 const theme: Theme = {
@@ -63,6 +71,7 @@ const theme: Theme = {
   secondaryBorderRadius: 10,
   buttonBorderRadius: 4,
   primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
+  verticalGradient: 'linear-gradient(to bottom left, #16C225 0%,#0b57ff 100%)',
   loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
   searchBackground: 'rgba(7,67,121,0.75)',
   colors: {
@@ -86,6 +95,7 @@ const theme: Theme = {
     approxIron: '#CCCDCD',
     approxZircon: '#E9EBEB',
     secondaryDanger: '#DB5C5D',
+    certBackgroundGrey: '#F5F5FE',
     textNavyBlue: '#6BAAE7',
     textSolitude: '#DFEEFD'
   },
@@ -105,6 +115,13 @@ const theme: Theme = {
     small: 13,
     xSmall: 12,
     tiny: 11
+  },
+  paperSizes: {
+    // Origin A4 Size: 96ppi(794x1123)
+    A4: {
+      width: 809,
+      height: 1129
+    }
   }
 };
 

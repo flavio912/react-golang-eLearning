@@ -21,6 +21,7 @@ import AppHolder from 'views/AppHolder';
 import OnlineCoursePage from 'views/OnlineCourse';
 import TrainingZone from 'views/TrainingZone/TrainingZone';
 import OnlineCourses from 'views/OnlineCourses';
+import CertGenerator from 'views/CertGenerator';
 import TrainingProgress from 'views/TrainingProgress';
 import Questions from 'views/Questions';
 
@@ -74,6 +75,7 @@ const Router = createFarceRouter({
         <Route path="/progress" Component={TrainingProgress} />
         <Route path="/questions" Component={Questions} />
       </Route>
+      <Route path="/cert-generator" Component={CertGenerator} />
     </Route>
   ),
   render: createRender({})

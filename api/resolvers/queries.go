@@ -198,14 +198,14 @@ func (q *QueryResolver) User(ctx context.Context) (*UserResolver, error) {
 	})
 }
 
-func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID string }) (*LessonResolver, error) {
+func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID gentypes.UUID }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
 	return NewLessonResolver(ctx, NewLessonArgs{
-		UUID: args.UUID,
+		UUID: &args.UUID,
 	})
 }
 
@@ -298,6 +298,11 @@ func (q *QueryResolver) Questions(
 	})
 }
 
+func (q *QueryResolver) CertificateInfo(ctx context.Context, args struct{ Token string }) (gentypes.CertficateInfo, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.CertificateInfo(args.Token)
+}
+
 func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
 	return NewTestResolver(ctx, NewTestArgs{
 		TestUUID: &args.UUID,
@@ -378,5 +383,63 @@ func (q *QueryResolver) Modules(
 	return NewModulePageResolver(ctx, NewModulePageArgs{
 		PageInfo: pageInfo,
 		Modules:  &modules,
+	})
+}
+
+func (q *QueryResolver) SearchSyllabus(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.SyllabusFilter
+	}) (*SearchSyllabusResultResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	results, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
+
+	var syllabusResolvers []*SyllabusResolver
+
+	for _, res := range results {
+		switch res.Type {
+		case gentypes.ModuleType:
+			m, _ := NewModuleResolver(ctx, NewModuleArgs{
+				ModuleUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{m})
+		case gentypes.LessonType:
+			l, _ := NewLessonResolver(ctx, NewLessonArgs{
+				UUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{l})
+		case gentypes.TestType:
+			t, _ := NewTestResolver(ctx, NewTestArgs{
+				TestUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{t})
+		}
+	}
+
+	return &SearchSyllabusResultResolver{
+		edges: &syllabusResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Categories(
+	ctx context.Context,
+	args struct {
+		Page *gentypes.Page
+		Text *string
+	}) (*CategoryPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	categories, pageInfo, err := app.CourseApp.Categories(args.Page, args.Text)
+	if err != nil {
+		return &CategoryPageResolver{}, err
+	}
+
+	return NewCategoryPageResolver(ctx, NewCategoryPageArgs{
+		PageInfo:   pageInfo,
+		Categories: &categories,
 	})
 }

@@ -50,3 +50,43 @@ func NewCategoryResolver(ctx context.Context, args NewCategoryResolverArgs) (*Ca
 func (t *CategoryResolver) UUID() *gentypes.UUID { return helpers.UUIDPointer(t.Category.UUID) }
 func (t *CategoryResolver) Name() string         { return t.Category.Name }
 func (t *CategoryResolver) Color() string        { return t.Category.Color }
+
+type CategoryPageResolver struct {
+	edges    *[]*CategoryResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *CategoryPageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }
+func (r *CategoryPageResolver) Edges() *[]*CategoryResolver { return r.edges }
+
+type NewCategoryPageArgs struct {
+	Categories *[]gentypes.Category
+	PageInfo   gentypes.PageInfo
+}
+
+func NewCategoryPageResolver(ctx context.Context, args NewCategoryPageArgs) (*CategoryPageResolver, error) {
+	var resolvers []*CategoryResolver
+
+	switch {
+	case args.Categories != nil:
+		for _, category := range *args.Categories {
+			res, err := NewCategoryResolver(ctx, NewCategoryResolverArgs{
+				Category: category,
+			})
+
+			if err != nil {
+				return &CategoryPageResolver{}, err
+			}
+			resolvers = append(resolvers, res)
+		}
+	default:
+		return &CategoryPageResolver{}, &errors.ErrUnableToResolve
+	}
+
+	return &CategoryPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &args.PageInfo,
+		},
+	}, nil
+}

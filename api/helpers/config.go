@@ -49,6 +49,11 @@ type Stripe struct {
 	SecretKey      string `yaml:"secretKey"`
 }
 
+type PDF struct {
+	ServerURL  string `yaml:"serverUrl"`
+	RequestURL string `yaml:"requestUrl"`
+}
+
 type yamlConfig struct {
 	IsTesting    bool     `yaml:"isTesting"`
 	IsDev        bool     `yaml:"isDev"`
@@ -60,6 +65,7 @@ type yamlConfig struct {
 	Imgix        Imgix    `yaml:"imgix"`
 	Sentry       Sentry   `yaml:"sentry"`
 	Stripe       Stripe   `yaml:"stripe"`
+	PDF          PDF      `yaml:"pdf"`
 }
 
 // Config - The config variable can be used by other packages to get config data
@@ -118,6 +124,10 @@ func LoadConfig() error {
 		Stripe: Stripe{
 			PublishableKey: getStringEnv("STRIPE_PUBLISHABLE_KEY"),
 			SecretKey:      getStringEnv("STRIPE_SECRET_KEY"),
+		},
+		PDF: PDF{
+			ServerURL:  getStringEnv("PDF_SERVER_URL"),
+			RequestURL: getStringEnv("PDF_REQUEST_URL"),
 		},
 	}
 

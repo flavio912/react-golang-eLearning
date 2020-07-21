@@ -90,11 +90,17 @@ func (r *CourseResolver) Category(ctx context.Context) (*CategoryResolver, error
 func (r *CourseResolver) AllowedToBuy() *bool {
 	return helpers.BoolPointer(r.Course.AllowedToBuy)
 }
-func (r *CourseResolver) Syllabus(ctx context.Context) (*[]SyllabusResolver, error) {
+func (r *CourseResolver) Syllabus(ctx context.Context) (*[]*SyllabusResolver, error) {
 	return NewSyllabusResolvers(ctx, NewSyllabusArgs{CourseID: &r.Course.ID})
 }
 func (r *CourseResolver) BannerImageURL() *string {
 	return r.Course.BannerImageURL
+}
+func (r *CourseResolver) ExpiresInMonths() int32 {
+	return int32(r.Course.ExpiresInMonths)
+}
+func (r *CourseResolver) ExpirationToEndMonth() bool {
+	return r.Course.ExpirationToEndMonth
 }
 
 type CoursePageResolver struct {

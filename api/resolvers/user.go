@@ -55,8 +55,8 @@ func (u *UserResolver) Activity(ctx context.Context, args struct{ Page *gentypes
 		CourseTakerUUID: u.user.CourseTakerUUID,
 	}, args.Page)
 }
-func (u *UserResolver) ActiveCourses(ctx context.Context) (*[]*ActiveCourseResolver, error) {
-	return NewActiveCoursesResolvers(ctx, NewActiveCourseArgs{
+func (u *UserResolver) MyCourses(ctx context.Context) (*[]*MyCourseResolver, error) {
+	return NewMyCoursesResolvers(ctx, NewMyCourseArgs{
 		TakerUUID: u.user.CourseTakerUUID,
 	})
 }
