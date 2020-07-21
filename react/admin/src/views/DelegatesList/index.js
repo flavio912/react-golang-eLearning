@@ -27,6 +27,12 @@ const GET_DELEGATES = gql`
         email
         firstName
         lastName
+        jobTitle
+        telephone
+        company {
+          uuid
+          name
+        }
       }
       pageInfo {
         total
@@ -48,6 +54,7 @@ function DelegatesList() {
   const delegates = data?.delegates?.edges;
 
   const handleSearch = () => {};
+  const handleFilter = () => {};
 
   const handleNewDelegate = data => {
     if (!data.createDelegate) return;
@@ -59,7 +66,7 @@ function DelegatesList() {
     <Page className={classes.root} title="Delegates">
       <Container maxWidth={false}>
         <Header onCreate={handleNewDelegate} />
-        <SearchBar onFilter={false} onSearch={handleSearch} />
+        <SearchBar onFilter={handleFilter} onSearch={handleSearch} />
         <Results className={classes.results} delegates={delegates} />
       </Container>
     </Page>

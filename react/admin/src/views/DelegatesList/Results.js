@@ -78,8 +78,9 @@ function Results({ delegates, className, ...rest }) {
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
+            <TableCell>Job Title</TableCell>
+            <TableCell>Telephone</TableCell>
+            <TableCell>Company</TableCell>
             <TableCell>Created At</TableCell>
           </TableRow>
         </TableHead>
@@ -89,20 +90,25 @@ function Results({ delegates, className, ...rest }) {
               <TableCell>
                 <div className={classes.nameCell}>
                   <Avatar className={classes.avatar} src={delegate.logo}>
-                    {/* {getInitials(delegate.fullName)} */}
+                    {delegate.firstName.charAt(0).toUpperCase()}
+                    {delegate.lastName.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Link
-                    color="inherit"
-                    component={RouterLink}
-                    to={`/delegates/${delegate.uuid}/overview`}
-                    variant="h6"
-                  >
-                    {delegate.email}
-                  </Link>
+                  <div>
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      to={`/delegates/${delegate.uuid}/overview`}
+                      variant="h6"
+                    >
+                      {delegate.firstName} {delegate.lastName}
+                    </Link>
+                    <div>{delegate.email}</div>
+                  </div>
                 </div>
               </TableCell>
-              <TableCell>{delegate.firstName}</TableCell>
-              <TableCell>{delegate.lastName}</TableCell>
+              <TableCell>{delegate.jobTitle}</TableCell>
+              <TableCell>{delegate.telephone}</TableCell>
+              <TableCell>{delegate.company.name}</TableCell>
               <TableCell>{moment(delegate.createdAt).format('LLL')}</TableCell>
             </TableRow>
           ))}
@@ -124,8 +130,7 @@ function Results({ delegates, className, ...rest }) {
 }
 
 Results.propTypes = {
-  className: PropTypes.string,
-  avatars: PropTypes.array.isRequired
+  className: PropTypes.string
 };
 
 export default Results;

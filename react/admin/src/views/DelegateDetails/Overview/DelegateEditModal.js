@@ -19,9 +19,9 @@ import {
   Select,
   MenuItem
 } from '@material-ui/core';
-import gql from 'graphql-tag';
-import { useQuery, useMutation } from '@apollo/react-hooks';
 import validate from 'validate.js';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -41,46 +41,26 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const CREATE_DELEGATE = gql`
-  mutation CreateDelegate(
-    $firstName: String!
-    $lastName: String!
-    $jobTitle: String!
-    $telephone: String
-    $email: String
-    $profileImageUrl: String
-    $companyUUID: UUID
-    $generatePassword: Boolean
-  ) {
-    createDelegate(
-      input: {
-        firstName: $firstName
-        lastName: $lastName
-        jobTitle: $jobTitle
-        telephone: $telephone
-        email: $email
-        profileImageUploadToken: $profileImageUrl
-        companyUUID: $companyUUID
-        generatePassword: $generatePassword
-      }
-    ) {
-      delegate {
-        uuid
-        firstName
-        lastName
-        jobTitle
-        telephone
-        email
-        profileImageUrl
-        company {
-          uuid
-          name
-        }
-      }
-      generatedPassword
+const schema = {
+  firstName: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 32
+    }
+  },
+  lastName: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 32
+    }
+  },
+  jobTitle: {
+    presence: { allowEmpty: false, message: 'is required' },
+    length: {
+      maximum: 32
     }
   }
-`;
+};
 
 const GET_COMPANIES = gql`
   query GetCompanies {
@@ -109,56 +89,57 @@ const GET_COMPANIES = gql`
   }
 `;
 
-const schema = {
-  firstName: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
-    }
-  },
-  lastName: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
-    }
-  },
-  jobTitle: {
-    presence: { allowEmpty: false, message: 'is required' },
-    length: {
-      maximum: 32
-    }
-  }
-};
-
-function DelegateCreateModal({ open, onClose, className, ...rest }) {
+function DelegateEditModal({ open, onClose, delegate, className, ...rest }) {
   const classes = useStyles();
   const [formState, setFormState] = useState({
     isValid: false,
-    values: {},
+    values: { ...delegate },
     touched: {},
     errors: {}
   });
-  const [createDelegate] = useMutation(CREATE_DELEGATE);
   const [companies, setCompanies] = useState([]);
   const { loading, error, data } = useQuery(GET_COMPANIES);
-
-  useEffect(() => {
-    if (loading || error || !data) return;
-
-    setCompanies(data?.companies?.edges);
-  }, [loading, error, data]);
 
   const hasError = field =>
     !!(formState.touched[field] && formState.errors[field]);
 
   useEffect(() => {
     const errors = validate(formState.values, schema);
+
     setFormState(prevFormState => ({
       ...prevFormState,
       isValid: !errors,
       errors: errors || {}
     }));
   }, [formState.values]);
+
+  useEffect(() => {
+    if (!delegate.isValid && delegate.errorMsg) {
+      setFormState(prevFormState => ({
+        ...prevFormState,
+        isValid: false,
+        errors: {
+          email: [delegate.errorMsg]
+        },
+        touched: {
+          ...prevFormState.touched,
+          email: true
+        }
+      }));
+      console.warn(delegate.errorMsg);
+    } else {
+      setFormState(prevFormState => ({
+        ...prevFormState,
+        values: { ...delegate }
+      }));
+    }
+  }, [delegate]);
+
+  useEffect(() => {
+    if (loading || error || !data) return;
+
+    setCompanies(data?.companies?.edges);
+  }, [loading, error, data]);
 
   const handleFieldChange = event => {
     event.persist();
@@ -179,49 +160,15 @@ function DelegateCreateModal({ open, onClose, className, ...rest }) {
     }));
   };
 
-  useEffect(() => {
-    if (!open) return;
-
-    setFormState({
-      isValid: false,
-      values: {},
-      touched: {},
-      errors: {}
-    });
-  }, [open]);
-
-  const handleCreateDelegate = async event => {
-    event.preventDefault();
-    try {
-      const resp = await createDelegate({
-        variables: {
-          firstName: formState.values.firstName,
-          lastName: formState.values.lastName,
-          jobTitle: formState.values.jobTitle,
-          telephone: formState.values.telephone,
-          email: formState.values.email,
-          companyUUID: formState.values.company,
-          generatePassword: formState.values.generatePassword
-        }
-      });
-      onClose(resp.data);
-    } catch (err) {
-      setFormState(prevFormState => ({
-        ...prevFormState,
-        isValid: false,
-        errors: {
-          email: [err?.graphQLErrors[0]?.message]
-        }
-      }));
-      console.warn(err);
-    }
-  };
+  if (!open) {
+    return null;
+  }
 
   return (
-    <Modal onClose={onClose} open={open}>
+    <Modal onClose={() => onClose(null)} open={open}>
       <Card {...rest} className={clsx(classes.root, className)}>
         <form>
-          <CardHeader title="Create Delegate" />
+          <CardHeader title="Edit Delegate" />
           <Divider />
           <CardContent>
             <Grid container spacing={3}>
@@ -308,7 +255,7 @@ function DelegateCreateModal({ open, onClose, className, ...rest }) {
                     labelId="demo-simple-select-outlined-label"
                     id="demo-simple-select-outlined"
                     onChange={handleFieldChange}
-                    value={formState.values.company || ''}
+                    value={formState.values.company.uuid || ''}
                     name="company"
                     label="Company"
                   >
@@ -324,24 +271,28 @@ function DelegateCreateModal({ open, onClose, className, ...rest }) {
                 </FormControl>
               </Grid>
               <Grid item md={6} xs={12}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      onChange={handleFieldChange}
-                      name="generatePassword"
-                    />
+                <TextField
+                  error={hasError('password')}
+                  fullWidth
+                  helperText={
+                    hasError('password') ? formState.errors.password[0] : null
                   }
-                  label="Generate Password"
+                  label="New Password"
+                  name="password"
+                  onChange={handleFieldChange}
+                  type="password"
+                  value={formState.values.password || ''}
+                  variant="outlined"
                 />
               </Grid>
             </Grid>
           </CardContent>
           <Divider />
           <CardActions className={classes.actions}>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={() => onClose(null)}>Close</Button>
             <Button
               color="primary"
-              onClick={handleCreateDelegate}
+              onClick={() => onClose(formState.values)}
               variant="contained"
             >
               Save
@@ -353,15 +304,16 @@ function DelegateCreateModal({ open, onClose, className, ...rest }) {
   );
 }
 
-DelegateCreateModal.propTypes = {
+DelegateEditModal.propTypes = {
   className: PropTypes.string,
+  delegate: PropTypes.any,
   onClose: PropTypes.func,
   open: PropTypes.bool
 };
 
-DelegateCreateModal.defaultProps = {
+DelegateEditModal.defaultProps = {
   open: false,
   onClose: () => {}
 };
 
-export default DelegateCreateModal;
+export default DelegateEditModal;
