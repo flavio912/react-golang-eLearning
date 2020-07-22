@@ -57,6 +57,8 @@ type Mutation {
   deleteLesson(input: DeleteLessonInput!): Boolean!
 
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  updateIndividual(input: UpdateIndividualInput!): UpdateIndividualResponse
+
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   updateTest(input: UpdateTestInput!): UpdateTestPayload

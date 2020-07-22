@@ -36,6 +36,12 @@ func (u *usersAppImpl) CreateIndividual(input gentypes.CreateIndividualInput) (g
 	return user, err
 }
 
+func (u *usersAppImpl) UpdateIndividual(input gentypes.UpdateIndividualInput) (gentypes.User, error) {
+	ind, err := u.usersRepository.UpdateIndividual(input)
+	user := u.IndividualToUser(ind)
+	return user, err
+}
+
 func (u *usersAppImpl) Individual(uuid gentypes.UUID) (gentypes.Individual, error) {
 	individual, err := u.usersRepository.Individual(uuid)
 	return u.individualToGentype(individual), err

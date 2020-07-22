@@ -748,3 +748,26 @@ func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input 
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteCourse(args.Input)
 }
+
+type UpdateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) UpdateIndividual(ctx context.Context, args struct {
+	Input gentypes.UpdateIndividualInput
+}) (*UpdateIndividualResponse, error) {
+	app := auth.AppFromContext(ctx)
+	user, err := app.UsersApp.UpdateIndividual(args.Input)
+
+	if err != nil {
+		return &UpdateIndividualResponse{}, err
+	}
+
+	user_res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &UpdateIndividualResponse{
+		User: user_res,
+	}, err
+}

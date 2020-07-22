@@ -26,3 +26,17 @@ input CreateIndividualInput {
 type CreateIndividualResponse {
   user: User
 }
+
+input UpdateIndividualInput {
+  uuid: UUID!
+  firstName: String
+  lastName: String
+  jobTitle: String
+  telephone: String
+  email: String
+  password: String
+}
+
+type UpdateIndividualResponse {
+  user: User
+}

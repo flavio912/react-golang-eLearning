@@ -812,6 +812,27 @@ func (_m *UsersRepository) UpdateHistoricalCourse(input user.UpdateHistoricalCou
 	return r0
 }
 
+// UpdateIndividual provides a mock function with given fields: input
+func (_m *UsersRepository) UpdateIndividual(input gentypes.UpdateIndividualInput) (models.Individual, error) {
+	ret := _m.Called(input)
+
+	var r0 models.Individual
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateIndividualInput) models.Individual); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.Individual)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateIndividualInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateManager provides a mock function with given fields: input
 func (_m *UsersRepository) UpdateManager(input gentypes.UpdateManagerInput) (models.Manager, error) {
 	ret := _m.Called(input)

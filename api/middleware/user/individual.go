@@ -104,3 +104,57 @@ func (u *usersRepoImpl) CreateIndividual(input gentypes.CreateIndividualInput) (
 
 	return newIndividual, nil
 }
+
+func (u *usersRepoImpl) UpdateIndividual(input gentypes.UpdateIndividualInput) (models.Individual, error) {
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return models.Individual{}, err
+	}
+
+	updates := make(map[string]interface{})
+
+	if input.FirstName != nil {
+		updates["first_name"] = *input.FirstName
+	}
+	if input.LastName != nil {
+		updates["last_name"] = *input.LastName
+	}
+	if input.JobTitle != nil {
+		updates["job_title"] = *input.JobTitle
+	}
+	if input.Telephone != nil {
+		updates["telephone"] = *input.Telephone
+	}
+	if input.Email != nil {
+		updates["email"] = *input.Email
+	}
+	if input.Password != nil {
+		updates["password"] = *input.Password
+	}
+
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			u.Logger.LogMessage(sentry.LevelFatal, "UpdateIndividual: Forced to recover")
+		}
+	}()
+
+	if err := tx.Model(&models.Individual{}).Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
+		u.Logger.Logf(sentry.LevelError, err, "Unable to update individual: %s", input.UUID)
+		tx.Rollback()
+		return models.Individual{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return models.Individual{}, &errors.ErrWhileHandling
+	}
+
+	ind, err := u.Individual(input.UUID)
+	if err != nil {
+		return models.Individual{}, err
+	}
+
+	return ind, nil
+}
