@@ -40,7 +40,7 @@ func TestIndividuals(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Len(t, inds, 1)
-		assert.Equal(t, gentypes.PageInfo{Total: 2, Given: 2, Limit: limit}, pageInfo)
+		assert.Equal(t, gentypes.PageInfo{Total: 2, Given: 1, Limit: limit}, pageInfo)
 	})
 
 	t.Run("Should order", func(t *testing.T) {
@@ -55,7 +55,7 @@ func TestIndividuals(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		individual := gentypes.Individual{
-			UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000012"),
 			FirstName: "Nice",
 			LastName:  "Sharron",
 			Email:     "individual@individual.com",
