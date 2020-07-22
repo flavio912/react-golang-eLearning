@@ -32,8 +32,7 @@ function ModulePage({
   setState,
   currentTab,
   error,
-  onSaveDraft,
-  onPublish,
+  onSave,
   history,
   title
 }) {
@@ -47,7 +46,7 @@ function ModulePage({
     <Page className={classes.root} title={title}>
       <ErrorModal error={error} />
       <Container maxWidth={false}>
-        <Header onSaveDraft={onSaveDraft} onPublish={onPublish} title={title} />
+        <Header onSave={onSave} title={title} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}

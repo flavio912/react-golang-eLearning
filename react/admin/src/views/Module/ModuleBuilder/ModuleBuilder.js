@@ -7,12 +7,12 @@ import {
   Divider,
   Typography,
   TextField,
-  InputAdornment,
+  InputAdornment
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
-import { useQuery } from '@apollo/react-hooks'
+import { useQuery } from '@apollo/react-hooks';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
@@ -25,7 +25,7 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
-  },
+  }
 }));
 
 const lessons = [
@@ -72,25 +72,25 @@ const lessons = [
 ];
 
 const GET_LESSONS = gql`
-      query SearchLessons($name: String!,  $page: Page!){
-        lessons(filter: { name: $name }, page: $page){
-          edges{
-            uuid
-            name
-            text
-            tags {
-              uuid
-            }
-          }
-          pageInfo{
-            total
-            limit
-            offset
-            given
-          }
+  query SearchLessons($name: String!, $page: Page!) {
+    lessons(filter: { name: $name }, page: $page) {
+      edges {
+        uuid
+        name
+        text
+        tags {
+          uuid
         }
       }
-    `;
+      pageInfo {
+        total
+        limit
+        offset
+        given
+      }
+    }
+  }
+`;
 
 function useSearchQuery(text, page) {
   const { error, data } = useQuery(GET_LESSONS, {
@@ -100,7 +100,7 @@ function useSearchQuery(text, page) {
     }
   });
 
-  if (!data || !data.lessons || !data.lessons.edges || !data.lessons.pageInfo){
+  if (!data || !data.lessons || !data.lessons.edges || !data.lessons.pageInfo) {
     console.error('Could not get data', data, error);
     return {
       resultItems: [],
@@ -115,7 +115,7 @@ function useSearchQuery(text, page) {
 
   console.log(data);
 
-  const resultItems = data.lessons.edges.map((lesson) => ({
+  const resultItems = data.lessons.edges.map(lesson => ({
     uuid: lesson?.uuid ?? '',
     name: lesson?.name ?? '',
     text: lesson?.text ?? '',
@@ -139,12 +139,13 @@ function ModuleBuilder({ state, setState }) {
   const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
   const searchResults = useSearchQuery(searchText, page);
 
-  const onDelete = (uuid) => {
-    setState('syllabus',
-      state.syllabus.filter((item) => item.uuid !== uuid));
+  const onDelete = uuid => {
+    setState({
+      syllabus: state.syllabus.filter(item => item.uuid !== uuid)
+    });
   };
 
-  console.log(state.syllabus)
+  console.log(state.syllabus);
 
   return (
     <div className={classes.root}>
@@ -158,11 +159,10 @@ function ModuleBuilder({ state, setState }) {
             >
               Build this Module
             </Typography>
-            <Typography
-              variant="body1"
-              color="textPrimary"
-            >
-              All modules are comprised of <strong>Lessons</strong> and <strong>Tests</strong><br />
+            <Typography variant="body1" color="textPrimary">
+              All modules are comprised of <strong>Lessons</strong> and{' '}
+              <strong>Tests</strong>
+              <br />
               Add your first lesson to get started
             </Typography>
           </Grid>
@@ -173,35 +173,33 @@ function ModuleBuilder({ state, setState }) {
                 className={classes.noPadding}
               />
               <CardContent>
-              <Autocomplete
-                freeSolo
-                options={searchResults.resultItems}
-                getOptionLabel={(option) => option.name}
-                onChange={(_, { uuid, name }) => (
-                  setState(
-                    'syllabus',
-                    [...state.syllabus,
-                    { uuid, name }
-                    ])
-                )}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Search Lessons or Tests"
-                    onChange={inp => {
-                      setSearchText(inp.target.value);
-                    }}
-                    InputProps={{
-                      ...params.InputProps,
-                      startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                      )
-                    }}
-                  /> 
-                )}
-              />
+                <Autocomplete
+                  freeSolo
+                  options={searchResults.resultItems}
+                  getOptionLabel={option => option.name}
+                  onChange={(_, { uuid, name }) =>
+                    setState({
+                      syllabus: [...state.syllabus, { uuid, name }]
+                    })
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      placeholder="Search Lessons or Tests"
+                      onChange={inp => {
+                        setSearchText(inp.target.value);
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  )}
+                />
               </CardContent>
             </Card>
           </Grid>
@@ -209,11 +207,9 @@ function ModuleBuilder({ state, setState }) {
             <SuggestedTable
               title="Suggested Lessons based on Tags"
               lessons={searchResults.resultItems.slice(0, 3)}
-              onAdd={({ uuid, name }) => setState(
-                'syllabus',
-                [...state.syllabus,
-                { uuid, name }
-                ])}
+              onAdd={({ uuid, name }) =>
+                setState({ syllabus: [...state.syllabus, { uuid, name }] })
+              }
             />
           </Grid>
           <Grid item>
@@ -223,14 +219,15 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
                 <ReoderableDropdown
                   title="Module 1"
-                  items={state.syllabus.map(({name, uuid}) => ({
+                  items={state.syllabus.map(({ name, uuid }) => ({
                     id: uuid,
-                    component:
+                    component: (
                       <ReoderableListItem
                         uuid={uuid}
                         text={name}
                         onDelete={onDelete}
                       />
+                    )
                   }))}
                   setItems={setState}
                 />

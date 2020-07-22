@@ -289,7 +289,7 @@ func (c *courseAppImpl) VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta
 	url, successToken, err := uploads.GenerateUploadURL(
 		imageMeta.FileType,      // The actual file type
 		imageMeta.ContentLength, // The actual file content length
-		[]string{"jpg", "png"},  // Allowed file types
+		[]string{"mp3"},         // Allowed file types
 		int32(20000000),         // Max file size = 20MB
 		"voiceoverUploads",      // Save files in this s3 directory
 		"voiceoverUploads",      // Unique identifier for this type of upload request

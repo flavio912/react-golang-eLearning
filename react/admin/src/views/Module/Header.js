@@ -11,7 +11,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Header({ className, onSaveDraft, onPublish, title, ...rest }) {
+function Header({ className, onSave, title, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -23,16 +23,8 @@ function Header({ className, onSaveDraft, onPublish, title, ...rest }) {
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained" onClick={onSaveDraft}>
-            Save Draft
-          </Button>
-          <Button
-            onClick={onPublish}
-            color="secondary"
-            variant="contained"
-            className={classes.publish}
-          >
-            Publish
+          <Button color="primary" variant="contained" onClick={onSave}>
+            Save
           </Button>
         </Grid>
       </Grid>

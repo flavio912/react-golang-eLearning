@@ -4,6 +4,7 @@ import { gql } from 'apollo-boost';
 import { useMutation, useQuery } from '@apollo/react-hooks';
 import { CircularProgress } from '@material-ui/core';
 import ModulePage from './ModulePage';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -27,8 +28,8 @@ const GET_MODULE = gql`
         color
       }
       video {
-          type
-          url
+        type
+        url
       }
       syllabus {
         name
@@ -72,16 +73,17 @@ const UPDATE_MODULE = gql`
 `;
 
 const initState = {
-    name: '',
-    tags: [],
-    bannerImageSuccessToken: undefined,
-    description: '',
-    transcript: '',
-    voiceoverSuccessToken: undefined,
-    video: { type: 'WISTIA', url: ''},
-    syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }],
-    complete: false,
-  };
+  name: '',
+  tags: [],
+  bannerImageSuccessToken: undefined,
+  bannerImageURL: false,
+  description: '',
+  transcript: '',
+  voiceoverSuccessToken: undefined,
+  video: { type: 'WISTIA', url: '' },
+  syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }],
+  complete: false
+};
 
 function UpdateModule({ match, history }) {
   const classes = useStyles();
@@ -104,8 +106,8 @@ function UpdateModule({ match, history }) {
 
   const [state, setState] = useState(initState);
 
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
+  const updateState = stateUpdate => {
+    var updatedState = { ...state, ...stateUpdate };
     setState(updatedState);
   };
 
@@ -122,7 +124,7 @@ function UpdateModule({ match, history }) {
       voiceoverSuccessToken: queryData.module.voiceoverSuccessToken,
       video: queryData.module.video,
       syllabus: queryData.module.syllabus,
-      complete: queryData.module.complete,
+      complete: queryData.module.complete
     });
   }, [queryData, loading, error]);
 
@@ -132,7 +134,7 @@ function UpdateModule({ match, history }) {
   }
 
   const onUpdate = async () => {
-    console.log(state.tags)
+    console.log(state.tags);
     try {
       await updateModule({
         variables: {
@@ -141,11 +143,14 @@ function UpdateModule({ match, history }) {
           tags: state.tags,
           description: state.description,
           transcript: state.transcript,
-          bannerImageURL: state.bannerImageURL,
-          voiceoverURL: state.voiceoverURL,
+          bannerImageSuccessToken: state.bannerImageSuccessToken,
+          voiceoverSuccessToken: state.voiceoverSuccessToken,
           video: state.video,
-          syllabus: state.syllabus.map(({ uuid }) => ({ type: 'lesson', uuid })),
-          complete: state.complete,
+          syllabus: state.syllabus.map(({ uuid }) => ({
+            type: 'lesson',
+            uuid
+          })),
+          complete: state.complete
         }
       });
       refetch();
@@ -155,17 +160,19 @@ function UpdateModule({ match, history }) {
   const onPublish = () => {};
 
   return (
-    <ModulePage
-      state={state}
-      setState={updateState}
-      currentTab={currentTab}
-      error={error || mutationErr}
-      onSaveDraft={onUpdate}
-      onPublish={onPublish}
-      history={history}
-      tabs={tabs}
-      title="Edit Module"
-    />
+    <>
+      <ErrorModal error={mutationErr} />
+      <ModulePage
+        state={state}
+        setState={updateState}
+        currentTab={currentTab}
+        error={error || mutationErr}
+        onSave={onUpdate}
+        history={history}
+        tabs={tabs}
+        title="Edit Module"
+      />
+    </>
   );
 }
 

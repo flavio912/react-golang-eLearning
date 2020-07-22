@@ -49,7 +49,7 @@ function CreateQuestion({ match, history }) {
     transcript: '',
     bannerImageSuccessToken: undefined,
     voiceoverSuccessToken: undefined,
-    video: { type: 'WISTIA', url: ''},
+    video: { type: 'WISTIA', url: '' },
     syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }]
   };
 
@@ -60,7 +60,7 @@ function CreateQuestion({ match, history }) {
     setState(updatedState);
   };
 
-  const onSaveDraft = async () => {
+  const onSave = async () => {
     try {
       const res = await createModule({
         variables: {
@@ -75,7 +75,9 @@ function CreateQuestion({ match, history }) {
         }
       });
       if (res.data?.createModule?.module?.uuid) {
-        history.push(`/module/${res.data?.createModule?.module?.uuid}/overview`);
+        history.push(
+          `/module/${res.data?.createModule?.module?.uuid}/overview`
+        );
       } else {
         console.warn('Unable to get save params');
       }
@@ -84,10 +86,6 @@ function CreateQuestion({ match, history }) {
       console.log('ERR', graphQLErrors);
     }
   };
-
-  const onPublish = async () => {
-
-  }
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
@@ -99,8 +97,7 @@ function CreateQuestion({ match, history }) {
       setState={updateState}
       currentTab={currentTab}
       error={error}
-      onSaveDraft={onSaveDraft}
-      onPublish={onPublish}
+      onSave={onSave}
       history={history}
       tabs={tabs}
       title="Create Module"
