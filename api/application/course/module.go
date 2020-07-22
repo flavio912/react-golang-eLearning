@@ -243,7 +243,7 @@ func (c *courseAppImpl) ModuleSyllabus(moduleUUID gentypes.UUID) ([]gentypes.Mod
 func getUploadKey(token *string, uploadIdent string) (*string, error) {
 	var uploadKey *string
 	if token != nil {
-		key, err := uploads.VerifyUploadSuccess(*token, "moduleImage")
+		key, err := uploads.VerifyUploadSuccess(*token, uploadIdent)
 		if err != nil {
 			return nil, &errors.ErrUploadTokenInvalid
 		}

@@ -118,10 +118,10 @@ function UpdateModule({ match, history }) {
       ...initState,
       name: queryData.module.name,
       tags: queryData.module.tags,
-      bannerImageSuccessToken: queryData.module.bannerImageSuccessToken,
+      bannerImageURL: queryData.module.bannerImageURL,
       description: queryData.module.description,
       transcript: queryData.module.transcript,
-      voiceoverSuccessToken: queryData.module.voiceoverSuccessToken,
+      voiceoverURL: queryData.module.voiceoverURL,
       video: queryData.module.video,
       syllabus: queryData.module.syllabus,
       complete: queryData.module.complete
@@ -134,7 +134,7 @@ function UpdateModule({ match, history }) {
   }
 
   const onUpdate = async () => {
-    console.log(state.tags);
+    console.log(state);
     try {
       await updateModule({
         variables: {
