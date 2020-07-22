@@ -1,6 +1,7 @@
 package course
 
 import (
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
@@ -261,4 +262,52 @@ func (c *courseAppImpl) DeleteModule(input gentypes.DeleteModuleInput) (bool, er
 	}
 
 	return c.coursesRepository.DeleteModule(input.UUID)
+}
+
+func (c *courseAppImpl) ModuleBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"moduleImages",          // Save files in this s3 directory
+		"moduleImages",          // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
+}
+
+func (c *courseAppImpl) VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"voiceoverUploads",      // Save files in this s3 directory
+		"voiceoverUploads",      // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
+}
+
+func (c *courseAppImpl) ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Tag, error) {
+	modulesToTags, err := c.coursesRepository.ManyModuleTags(moduleUUIDs)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelWarning, err, "ManyModuleTags: Unable to get tags")
+		return map[gentypes.UUID][]gentypes.Tag{}, &errors.ErrWhileHandling
+	}
+
+	var genTags = map[gentypes.UUID][]gentypes.Tag{}
+	for key, element := range modulesToTags {
+		genTags[key] = tagsToGentypes(element)
+	}
+	return genTags, nil
 }
