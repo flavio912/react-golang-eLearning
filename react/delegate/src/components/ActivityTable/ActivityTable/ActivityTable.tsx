@@ -92,9 +92,6 @@ const activityRow = (
         <ActiveType icon={activeType.icon} text={activeType.text} />
       )
     },
-    {
-      component: () => <TimeSpent timeSpent={timeSpent} />
-    },
     { component: () => null },
     {
       component: () => null
@@ -125,7 +122,7 @@ const ActivityTable = ({ activity, className }: Props) => {
         </div>
       </div>
       <Table
-        header={['ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', 'TIME SPENT', '', '']}
+        header={['ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', '', '']}
         rows={(activity.edges ?? []).map((activity, index) => {
           if (!activity) return;
 
@@ -137,8 +134,8 @@ const ActivityTable = ({ activity, className }: Props) => {
           };
 
           var iconMap = {
-            completedCourse: 'CourseComplete',
-            newCourse: 'CourseNewCourse',
+            completedCourse: 'CourseStatus_Completed',
+            newCourse: 'CourseNewCourseGreen',
             activated: 'CourseStatus_NotStarted',
             failedCourse: 'CourseFailed'
           };

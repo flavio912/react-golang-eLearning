@@ -151,6 +151,7 @@ const Router = createFarceRouter({
                 activity(page: { offset: $offset, limit: $limit }) {
                   ...TrainingProgress_activity
                 }
+                ...TrainingProgress_user
               }
             }
           `}
@@ -173,6 +174,7 @@ const Router = createFarceRouter({
                 <TrainingProgress
                   {...args.props}
                   activity={args.props?.user?.activity}
+                  myCourses={args.props?.user?.myCourses}
                 />
               </ErrorBoundary>
             );

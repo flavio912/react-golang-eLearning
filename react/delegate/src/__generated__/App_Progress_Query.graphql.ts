@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 4a6f3586f28b44b76e35ded9b0277453 */
+/* @relayHash edc83173d694731bd36dfe30df8be2e7 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -13,6 +13,7 @@ export type App_Progress_QueryResponse = {
         readonly activity: {
             readonly " $fragmentRefs": FragmentRefs<"TrainingProgress_activity">;
         } | null;
+        readonly " $fragmentRefs": FragmentRefs<"TrainingProgress_user">;
     } | null;
 };
 export type App_Progress_Query = {
@@ -31,6 +32,7 @@ query App_Progress_Query(
     activity(page: {offset: $offset, limit: $limit}) {
       ...TrainingProgress_activity
     }
+    ...TrainingProgress_user
   }
 }
 
@@ -50,6 +52,19 @@ fragment ActivityTable_activity on ActivityPage {
 
 fragment TrainingProgress_activity on ActivityPage {
   ...ActivityTable_activity
+}
+
+fragment TrainingProgress_user on User {
+  firstName
+  myCourses {
+    status
+    course {
+      name
+      category {
+        name
+      }
+    }
+  }
 }
 */
 
@@ -84,7 +99,13 @@ const node: ConcreteRequest = (function () {
                 }
             ]
         } as any)
-    ];
+    ], v2 = ({
+        "kind": "ScalarField",
+        "alias": null,
+        "name": "name",
+        "args": null,
+        "storageKey": null
+    } as any);
     return {
         "kind": "Request",
         "fragment": {
@@ -118,6 +139,11 @@ const node: ConcreteRequest = (function () {
                                     "args": null
                                 }
                             ]
+                        },
+                        {
+                            "kind": "FragmentSpread",
+                            "name": "TrainingProgress_user",
+                            "args": null
                         }
                     ]
                 }
@@ -185,13 +211,7 @@ const node: ConcreteRequest = (function () {
                                                     "args": null,
                                                     "storageKey": null
                                                 },
-                                                {
-                                                    "kind": "ScalarField",
-                                                    "alias": null,
-                                                    "name": "name",
-                                                    "args": null,
-                                                    "storageKey": null
-                                                }
+                                                (v2 /*: any*/)
                                             ]
                                         }
                                     ]
@@ -215,6 +235,55 @@ const node: ConcreteRequest = (function () {
                                     ]
                                 }
                             ]
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "firstName",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "LinkedField",
+                            "alias": null,
+                            "name": "myCourses",
+                            "storageKey": null,
+                            "args": null,
+                            "concreteType": "MyCourse",
+                            "plural": true,
+                            "selections": [
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "status",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
+                                    "kind": "LinkedField",
+                                    "alias": null,
+                                    "name": "course",
+                                    "storageKey": null,
+                                    "args": null,
+                                    "concreteType": "Course",
+                                    "plural": false,
+                                    "selections": [
+                                        (v2 /*: any*/),
+                                        {
+                                            "kind": "LinkedField",
+                                            "alias": null,
+                                            "name": "category",
+                                            "storageKey": null,
+                                            "args": null,
+                                            "concreteType": "Category",
+                                            "plural": false,
+                                            "selections": [
+                                                (v2 /*: any*/)
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
                     ]
                 }
@@ -224,10 +293,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Progress_Query",
             "id": null,
-            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n",
+            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n    ...TrainingProgress_user\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n\nfragment TrainingProgress_user on User {\n  firstName\n  myCourses {\n    status\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '5791ba32cd9ca0d2e45a9a13abfed66b';
+(node as any).hash = '77975e85570e873e96330c7108f6a0ca';
 export default node;

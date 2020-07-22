@@ -17,7 +17,7 @@ import {
   Test_SubmitAnswersMutationVariables,
   Test_SubmitAnswersMutationResponse
 } from './__generated__/Test_SubmitAnswersMutation.graphql';
-import { Match } from 'found';
+import { Match, useRouter } from 'found';
 import { goToNextURL } from 'views/helpers';
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -118,7 +118,7 @@ type Props = {
 
 function Test({ className, test, myActiveCourse, match }: Props) {
   const { courseID, testUUID } = match.params;
-
+  const { router } = useRouter();
   const questions = (test?.questions ?? []).map((question, index) => {
     return {
       id: index,
@@ -157,11 +157,17 @@ function Test({ className, test, myActiveCourse, match }: Props) {
         );
 
         if (resp.submitTest?.passed) {
-          goToNextURL(
-            parseInt(courseID),
-            myActiveCourse.course.syllabus,
-            testUUID
+          router.push(
+            goToNextURL(
+              parseInt(courseID),
+              myActiveCourse.course.syllabus,
+              testUUID
+            )
           );
+        } else if (resp.submitTest?.courseStatus === 'incomplete') {
+          alert('Failed test please try again');
+        } else if (resp.submitTest?.courseStatus === 'failed') {
+          alert('Failed course');
         }
         setAnswers({});
       } catch (err) {

@@ -8,6 +8,7 @@ import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/ActivityTable/ActivityTable';
 import Page from 'components/Page';
 import { TrainingProgress_activity } from './__generated__/TrainingProgress_activity.graphql';
+import { TrainingProgress_user } from './__generated__/TrainingProgress_user.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   progressRoot: {
@@ -31,13 +32,29 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   activity: TrainingProgress_activity;
+  user: TrainingProgress_user;
 };
 
-function Progress({ activity }: Props) {
+function Progress({ activity, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-  const userName = 'James';
+
+  const myCourses =
+    user?.myCourses?.map((myCourse) => ({
+      title: myCourse.course.name,
+      categoryName: myCourse.course.category?.name ?? '',
+      progress: {
+        total: 100,
+        completed: myCourse.status === 'complete' ? 100 : 0
+      },
+      attempt: 1,
+      status: {
+        isComplete: myCourse.status === 'complete'
+      },
+      onClick: () => {}
+    })) ?? [];
+
   return (
     <Page>
       <div className={classes.progressRoot}>
@@ -49,7 +66,7 @@ function Progress({ activity }: Props) {
           />
           <div className={classes.headingDescription}>
             <Heading
-              text={`${userName}, here you can see your training progress,`}
+              text={`${user.firstName}, here you can see your training progress,`}
               size={'medium'}
               className={classes.subHeading}
             />
@@ -63,7 +80,7 @@ function Progress({ activity }: Props) {
         <CourseTable
           EmptyComponent={<div>No Courses to show</div>}
           className={classes.courseTable}
-          courses={[]}
+          courses={myCourses}
           rowClicked={() => {
             router.push('/app/courses/1');
           }}
@@ -78,6 +95,20 @@ export default createFragmentContainer(Progress, {
   activity: graphql`
     fragment TrainingProgress_activity on ActivityPage {
       ...ActivityTable_activity
+    }
+  `,
+  user: graphql`
+    fragment TrainingProgress_user on User {
+      firstName
+      myCourses {
+        status
+        course {
+          name
+          category {
+            name
+          }
+        }
+      }
     }
   `
 });
