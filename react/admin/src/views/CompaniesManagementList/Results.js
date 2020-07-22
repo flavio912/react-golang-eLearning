@@ -153,7 +153,7 @@ function Results({ className, companies, ...rest }) {
                             <Link
                               color="inherit"
                               component={RouterLink}
-                              to="/companies/1"
+                              to={`/companies/${company.id}`}
                               variant="h6"
                             >
                               {company.name}
@@ -174,7 +174,7 @@ function Results({ className, companies, ...rest }) {
                           color="primary"
                           component={RouterLink}
                           size="small"
-                          to="/companies/1"
+                          to={`/companies/${company.id}`}
                           variant="outlined"
                         >
                           View

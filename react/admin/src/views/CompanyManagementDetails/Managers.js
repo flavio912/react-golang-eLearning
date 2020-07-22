@@ -145,8 +145,6 @@ function Managers({ className, company, ...rest }) {
           <TableHead>
             <TableRow>
               <TableCell>User</TableCell>
-              <TableCell>Valid Certificates</TableCell>
-              <TableCell>Expiring Certificates</TableCell>
               <TableCell>Last Login</TableCell>
               <TableCell>Created At</TableCell>
             </TableRow>
@@ -172,8 +170,6 @@ function Managers({ className, company, ...rest }) {
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{user.noValidCerts}</TableCell>
-                <TableCell>{user.noExpiringCerts}</TableCell>
                 <TableCell>
                   {moment(user.lastLogin.date).format('LLL')}
                 </TableCell>
@@ -196,8 +192,9 @@ function Managers({ className, company, ...rest }) {
       </Card>
       <AddUser
         open={addUserModalOpen}
-        onClose={onAddUserModalClose}
+        onClose={values => onAddUserModalClose(values)}
         company={company}
+        userType="manager"
       />
     </div>
   );
