@@ -31,6 +31,11 @@ const GET_MODULES = gql`
               name
               uuid
             }
+            tags {
+              uuid
+              name
+              color
+            }
           }
           pageInfo{
             total

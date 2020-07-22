@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
 
 const UPLOAD_REQUEST = gql`
   mutation UploadRequest($fileType: String!, $contentLength: Int!) {
-    answerImageUploadRequest(
+    voiceoverUploadRequest(
       input: { fileType: $fileType, contentLength: $contentLength }
     ) {
       url
@@ -49,10 +49,17 @@ const UPLOAD_REQUEST = gql`
   }
 `;
 
+const voiceoverOptions = [
+  { title: 'Upload Voiceover' }
+];
+
+const videoOptions = [
+  { title: 'Wistia URL' }
+];
+
 function AudioVideo({ state, setState }) {
   const classes = useStyles();
-  const [voiceOver, setVoiceOver] = React.useState('');
-  const [wistiaUrl, setWistiaUrl] = React.useState('');
+  const [ voicever, setVoiceover ] = React.useState('');
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -63,11 +70,8 @@ function AudioVideo({ state, setState }) {
                 <Grid container spacing={2} direction={'column'} className={classes.padding}>
                   <Grid item>
                     <Autocomplete
-                      options={state.tags}
+                      options={voiceoverOptions}
                       getOptionLabel={option => option.title}
-                      onChange={(_, newValue) => {
-                          setVoiceOver(newValue.value);
-                      }}
                       renderInput={params => (
                           <TextField
                               {...params}
@@ -80,14 +84,18 @@ function AudioVideo({ state, setState }) {
                   </Grid>
                   <Grid item>
                     <UploadFile
+                      title="Upload MP3"
                       uploadMutation={UPLOAD_REQUEST}
-                      onUploaded={(successToken, url) => setState('voiceoverSuccessToken', successToken)}
+                      onUploaded={(successToken, url) => {
+                        setState('voiceoverSuccessToken', successToken);
+                        setVoiceover(url);
+                      }}
                     />
                     <Typography
                       color="textSecondary"
                       className={classes.filename}
                     >
-                      {voiceOver}
+                      {voicever}
                     </Typography>
                  </Grid>
                 </Grid>
@@ -96,11 +104,8 @@ function AudioVideo({ state, setState }) {
                 <Grid container spacing={2} direction={'column'} className={classes.padding}>
                   <Grid item>
                     <Autocomplete
-                      options={state.tags}
+                      options={videoOptions}
                       getOptionLabel={option => option.title}
-                      onChange={(_, newValue) => {
-                          setState('video', {type: 'WISTIA', url: newValue.value});
-                      }}
                       renderInput={params => (
                           <TextField
                               {...params}
@@ -126,10 +131,10 @@ function AudioVideo({ state, setState }) {
                       label=""
                       name="modulename"
                       onChange={inp => {
-                          setWistiaUrl(inp.target.value);
+                          setState('video', {type: 'WISTIA', url: inp.target.value});
                       }}
                       placeholder="Enter Wisita Video URL"
-                      value={wistiaUrl}
+                      value={state.video.url}
                       variant="outlined"
                     />
                   </Grid>

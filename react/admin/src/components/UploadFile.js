@@ -9,11 +9,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function UploadFile({ uploadMutation, onUploaded }) {
+export default function UploadFile({ title = 'Upload Image', uploadMutation, onUploaded }) {
   const classes = useStyles();
 
   const [uploadRequest] = useMutation(uploadMutation);
-  const [uploadText, setUploadText] = useState('Upload Image');
+  const [uploadText, setUploadText] = useState(title);
 
   const mutationName =
     uploadMutation?.definitions[0].selectionSet?.selections[0].name?.value;

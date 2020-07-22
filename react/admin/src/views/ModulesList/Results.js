@@ -96,7 +96,7 @@ function Results({ className, modules, ...rest }) {
               <TableCell>{module.syllabus.length}</TableCell>
               <TableCell>
                 {module.tags && module.tags.map(tag => (
-                  <Chip color={tag.color} label={tag.name} />
+                  <Chip style={{ backgroundColor: tag.color }} label={tag.name} />
                 ))}
               </TableCell>
               <TableCell>

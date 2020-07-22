@@ -8,6 +8,8 @@ import {
   TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
 import TagsInput from 'src/components/TagsInput';
 import FilesDropzone from 'src/components/FilesDropzone';
 
@@ -20,8 +22,58 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const UPLOAD_REQUEST = gql`
+  mutation UploadRequest($fileType: String!, $contentLength: Int!) {
+    moduleBannerImageUploadRequest(
+      input: { fileType: $fileType, contentLength: $contentLength }
+    ) {
+      successToken
+    }
+  }
+`;
+
 function Overview({ state, setState }) {
   const classes = useStyles();
+
+  const [uploadRequest] = useMutation(UPLOAD_REQUEST);
+
+  const mutationName =
+    UPLOAD_REQUEST?.definitions[0].selectionSet?.selections[0].name?.value;
+  if (!mutationName) {
+    console.error('UploadFile: Could not find mutation name');
+    return null;
+  }
+
+  const onUpload = async (files) => {
+    // Attempt to get upload request
+    console.log(files)
+    const file = files[0];
+    const fType = file.type.replace('image/', '');
+
+    try {
+      const resp = await uploadRequest({
+        variables: {
+          fileType: fType,
+          contentLength: file.size
+        }
+      });
+
+      const data = resp.data[mutationName];
+      // Upload to S3
+      const uploadResp = await fetch(data.url, {
+        method: 'PUT',
+        body: file
+      });
+
+      if (uploadResp.status !== 200) {
+        console.log('Unable to upload');
+      }
+
+      setState('bannerImageSuccessToken', data.successToken);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <div className={classes.root}>
@@ -48,7 +100,10 @@ function Overview({ state, setState }) {
                       />
                     </Grid>
                     <Grid item>
-                      <TagsInput onChange={(tags) => setState('tags', tags)} />
+                      <TagsInput
+                        allowNew
+                        onChange={(tags) => setState('tags', tags)}
+                      />
                     </Grid>
                   </Grid>
                 </CardContent>
@@ -81,7 +136,10 @@ function Overview({ state, setState }) {
             <CardHeader title="Module Banner Image" />
             <Divider />
             <CardContent>
-              <FilesDropzone onUpload={(files) => console.log(files)}/>
+              <FilesDropzone
+                onUpload={onUpload}
+                limit={1}
+              />
             </CardContent>
           </Card>
         </Grid>

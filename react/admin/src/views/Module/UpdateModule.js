@@ -21,6 +21,11 @@ const GET_MODULE = gql`
       description
       transcript
       voiceoverURL
+      tags {
+        uuid
+        name
+        color
+      }
       video {
           type
           url
@@ -110,6 +115,7 @@ function UpdateModule({ match, history }) {
     setState({
       ...initState,
       name: queryData.module.name,
+      tags: queryData.module.tags,
       bannerImageSuccessToken: queryData.module.bannerImageSuccessToken,
       description: queryData.module.description,
       transcript: queryData.module.transcript,
@@ -126,11 +132,13 @@ function UpdateModule({ match, history }) {
   }
 
   const onUpdate = async () => {
+    console.log(state.tags)
     try {
       await updateModule({
         variables: {
           uuid: ident,
           name: state.name,
+          tags: state.tags,
           description: state.description,
           transcript: state.transcript,
           bannerImageURL: state.bannerImageURL,
