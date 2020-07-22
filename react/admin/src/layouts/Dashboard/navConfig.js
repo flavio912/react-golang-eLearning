@@ -26,6 +26,11 @@ export default [
         title: 'Admins',
         href: '/admins',
         icon: AssignmentInd
+      },
+      {
+        title: 'Individuals',
+        href: '/individuals',
+        icon: AssignmentInd
       }
     ]
   },
