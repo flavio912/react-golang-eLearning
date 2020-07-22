@@ -68,6 +68,7 @@ const UPDATE_MODULE = gql`
 
 const initState = {
     name: '',
+    tags: [],
     bannerImageSuccessToken: undefined,
     description: '',
     transcript: '',

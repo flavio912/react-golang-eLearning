@@ -17,6 +17,13 @@ const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
   },
+  padding: {
+    padding: theme.spacing(3),
+    paddingTop: 0,
+  },
+  margin: {
+    margin: `0 ${theme.spacing(3)}px`,
+  },
   thinInput: {
     width: '30%'
   },
@@ -25,8 +32,9 @@ const useStyles = makeStyles(theme => ({
   },
   filename: {
     display: 'inline',
-    fontWeight: '600',
-    marginLeft: theme.spacing(2)
+    fontWeight: '400',
+    fontStyle: 'italic',
+    marginLeft: theme.spacing(1)
   }
 }));
 
@@ -51,14 +59,13 @@ function AudioVideo({ state, setState }) {
         <Grid container spacing={4} direction={'column'}>
           <Grid item>
             <Card>
-              <CardContent>
-                <Grid container spacing={2} direction={'column'}>
-                <CardHeader title="Audio Voiceover" />
+            <CardHeader title="Audio Voiceover" />
+                <Grid container spacing={2} direction={'column'} className={classes.padding}>
                   <Grid item>
                     <Autocomplete
                       options={state.tags}
                       getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
+                      onChange={(_, newValue) => {
                           setVoiceOver(newValue.value);
                       }}
                       renderInput={params => (
@@ -70,7 +77,6 @@ function AudioVideo({ state, setState }) {
                           />
                       )}
                     />
-                    
                   </Grid>
                   <Grid item>
                     <UploadFile
@@ -78,22 +84,21 @@ function AudioVideo({ state, setState }) {
                       onUploaded={(successToken, url) => setState('voiceoverSuccessToken', successToken)}
                     />
                     <Typography
-                      variant="body2"
                       color="textSecondary"
                       className={classes.filename}
                     >
                       {voiceOver}
                     </Typography>
-                 </ Grid>
-                  <Grid item>
-                    <Divider />
-                  </Grid>
-                  <CardHeader title="Video Source" />
+                 </Grid>
+                </Grid>
+                <Divider className={classes.margin}/>
+                <CardHeader title="Video Source" />
+                <Grid container spacing={2} direction={'column'} className={classes.padding}>
                   <Grid item>
                     <Autocomplete
                       options={state.tags}
                       getOptionLabel={option => option.title}
-                      onChange={(event, newValue) => {
+                      onChange={(_, newValue) => {
                           setState('video', {type: 'WISTIA', url: newValue.value});
                       }}
                       renderInput={params => (
@@ -107,9 +112,9 @@ function AudioVideo({ state, setState }) {
                     />
                   </Grid>
                   <Grid item>
-                  <Typography
+                    <Typography
                       variant="body2"
-                      color="textSecondary"
+                      color="textPrimary"
                       className={classes.filename}
                     >
                       Select your preferred video type (.mp4, Youtube Viemo, etc). Note when adding a video both the Audio Player + Module Banner Image will be hidden
@@ -129,7 +134,7 @@ function AudioVideo({ state, setState }) {
                     />
                   </Grid>
                 </Grid>
-              </CardContent>
+              
             </Card>
           </Grid>
           <Grid item>
