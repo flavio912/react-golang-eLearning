@@ -5,6 +5,7 @@ import SearchResultItem from 'components/Search/SearchResultItem';
 import SearchInput from 'components/Search/SearchInput';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { Record } from 'relay-runtime';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   searchRoot: {
@@ -29,16 +30,53 @@ export type ResultItem = {
   image: string;
   description: string;
 };
-type Props = {
-  results: ResultItem[];
+
+export type PageInfo = {
+  currentPage: number;
+  numPages: number;
+}
+
+export type Result = {
+  resultItems: ResultItem[];
+  pageInfo: PageInfo;
 };
 
-function SearchResults({ results }: Props) {
+type Props = {
+  searchFunction: (query: string, offset: number) => Promise<Result>;
+  debounceTime?: number;
+};
+
+function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
   const theme = useTheme();
   const classes = useStyles({
     theme
   });
   const [searchText, setSearchText] = React.useState<string>('');
+
+  const [results, setResults]: [ResultItem[], any] = React.useState([]);
+  const [pageInfo, setPageInfo]: [PageInfo | undefined, any] = React.useState();
+  const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
+  
+  const onSearch = (text: string, offset: number) => {
+    clearTimeout(debouncer);
+    const timeout = setTimeout(async () => {
+      setSearchText(text);
+      if (text.length === 0 && results.length > 0){
+        return;
+      }
+
+      const res = await searchFunction(text, offset);
+      
+      setResults(res.resultItems);
+      setPageInfo(res.pageInfo);
+    }, debounceTime);
+    setDebouncer(timeout);
+  }
+
+  const onChange = (text: string) => onSearch(text, ((pageInfo?.currentPage ?? 1) - 1) * 4);
+
+  const onUpdatePage = (page: number) => onSearch(searchText, (page - 1) * 4);
+
   return (
     <div
       className={classes.searchRoot}
@@ -48,7 +86,7 @@ function SearchResults({ results }: Props) {
     >
       <SearchInput
         placeholder="Search for Courses..."
-        onChange={setSearchText}
+        onChange={onChange}
         value={searchText}
       />
       {searchText && (
@@ -60,10 +98,12 @@ function SearchResults({ results }: Props) {
           </div>
           <Spacer vertical spacing={2} />
           <Paginator
-            currentPage={1}
-            updatePage={() => {}}
-            numPages={10}
-            itemsPerPage={10}
+            currentPage={pageInfo?.currentPage ?? 1}
+            updatePage={onUpdatePage}
+            numPages={pageInfo?.numPages ?? 1}
+            itemsPerPage={4}
+            showRange={(pageInfo?.numPages ?? 1) > 4 ? 4 : (pageInfo?.numPages ?? 1)}
+            showDropdown={false}
           />
         </>
       )}

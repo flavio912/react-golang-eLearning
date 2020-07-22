@@ -22,6 +22,8 @@ import {
   TableRow
 } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
+import gql from 'graphql-tag';
+import { useMutation } from '@apollo/react-hooks';
 import AddUser from './AddUser';
 
 const useStyles = makeStyles(theme => ({
@@ -71,87 +73,43 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Delegates({ className, company, ...rest }) {
+const CREATE_DELEGATE = gql`
+  mutation CreateDelegate(
+    $firstName: String!
+    $lastName: String!
+    $jobTitle: String!
+    $email: String
+    $companyUUID: UUID
+    $generatePassword: Boolean
+  ) {
+    createDelegate(
+      input: {
+        firstName: $firstName
+        lastName: $lastName
+        jobTitle: $jobTitle
+        email: $email
+        companyUUID: $companyUUID
+        generatePassword: $generatePassword
+      }
+    ) {
+      delegate {
+        uuid
+        firstName
+        lastName
+        jobTitle
+        email
+      }
+    }
+  }
+`;
+
+function Delegates({ className, company, onUpdateCompany, ...rest }) {
   const classes = useStyles();
 
   const [page, setPage] = useState(0);
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
-
-  const exampleUsers = [
-    {
-      fullName: 'Tom Emmerson',
-      userId: 'tom_emmerson',
-      roles: ['Manager'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    }
-  ];
+  const [createDelegate] = useMutation(CREATE_DELEGATE);
 
   const handleChangePage = (event, page) => {
     setPage(page);
@@ -161,8 +119,21 @@ function Delegates({ className, company, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
-  const onAddUserModalClose = () => {
+  const onAddUserModalClose = async values => {
     setAddUserModalOpen(false);
+    if (!values) return;
+
+    await createDelegate({
+      variables: {
+        firstName: values.firstName,
+        lastName: values.lastName,
+        email: values.email,
+        jobTitle: 'delegate',
+        companyUUID: company.uuid,
+        generatePassword: true
+      }
+    });
+    onUpdateCompany();
   };
 
   const openAddUserModal = () => {
@@ -201,40 +172,42 @@ function Delegates({ className, company, ...rest }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {exampleUsers.map(user => (
-              <TableRow key={user.userId}>
-                <TableCell>
-                  <div className={classes.nameCell}>
-                    <Avatar className={classes.avatar} src={user.logo}>
-                      {getInitials(user.fullName)}
-                    </Avatar>
-                    <div>
-                      <Link
-                        color="inherit"
-                        component={RouterLink}
-                        to="/users/1"
-                        variant="h6"
-                      >
-                        {user.fullName}
-                      </Link>
-                      <div>{user.email}</div>
+            {company?.delegates?.edges &&
+              company?.delegates?.edges.length > 0 &&
+              company?.delegates?.edges.map(user => (
+                <TableRow key={user.uuid}>
+                  <TableCell>
+                    <div className={classes.nameCell}>
+                      <Avatar className={classes.avatar} src={user.logo}>
+                        {getInitials(user.fullName)}
+                      </Avatar>
+                      <div>
+                        <Link
+                          color="inherit"
+                          component={RouterLink}
+                          to={`/users/${user.uuid}`}
+                          variant="h6"
+                        >
+                          {user.firstName} {user.lastName}
+                        </Link>
+                        <div>{user.email}</div>
+                      </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>{user.noValidCerts}</TableCell>
-                <TableCell>{user.noExpiringCerts}</TableCell>
-                <TableCell>
-                  {moment(user.lastLogin.date).format('LLL')}
-                </TableCell>
-                <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
-              </TableRow>
-            ))}
+                  </TableCell>
+                  <TableCell>{user.noValidCerts}</TableCell>
+                  <TableCell>{user.noExpiringCerts}</TableCell>
+                  <TableCell>
+                    {moment(user.lastLogin.date).format('LLL')}
+                  </TableCell>
+                  <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
         <CardActions className={classes.actions}>
           <TablePagination
             component="div"
-            count={exampleUsers.length}
+            count={company?.delegates?.edges.length}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
             page={page}
@@ -245,15 +218,18 @@ function Delegates({ className, company, ...rest }) {
       </Card>
       <AddUser
         open={addUserModalOpen}
-        onClose={onAddUserModalClose}
+        onClose={values => onAddUserModalClose(values)}
         company={company}
+        userType="delegate"
       />
     </div>
   );
 }
 
 Delegates.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  company: PropTypes.object,
+  onUpdateCompany: PropTypes.func
 };
 
 export default Delegates;

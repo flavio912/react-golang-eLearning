@@ -24,8 +24,7 @@ type ActiveCourse struct {
 }
 
 type HistoricalCourse struct {
-	Status          gentypes.CourseStatus
-	UUID            gentypes.UUID `gorm:"primary_key;type:uuid;"`
+	UUID            gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	CreatedAt       time.Time
 	CourseTaker     CourseTaker
 	CourseTakerUUID gentypes.UUID
@@ -46,7 +45,7 @@ type CourseTakerActivity struct {
 	Course          Course
 }
 
-// TestMark Stores a mark for a user on a test
+// TestMark stores a mark for a user on a test
 type TestMark struct {
 	CreatedAt       time.Time
 	TestUUID        gentypes.UUID `gorm:"primary_key;type:uuid;"`

@@ -2,12 +2,19 @@ import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import classNames from 'classnames';
 import Button from 'components/core/Input/Button';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { Theme } from 'helpers/theme';
 import PageTitle from 'components/PageTitle';
 import FlatCard from 'components/core/Cards/FlatCard';
 import CourseSyllabusCard from 'components/Overview/CourseSyllabusCard';
 import Icon from 'sharedComponents/core/Icon';
 import { useRouter } from 'found';
+import { OnlineCourse_myActiveCourse } from './__generated__/OnlineCourse_myActiveCourse.graphql';
+import moment from 'moment';
+import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import Page from 'components/Page';
+import CourseSyllabusCardFrag from 'components/Overview/CourseSyllabusCard/CourseSyllabusCardFrag';
+import { goToNextURL } from 'views/helpers';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootOnlineCourse: {
@@ -74,7 +81,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.extraLarge,
     letterSpacing: -0.45,
     lineHeight: `30px`,
-    margin: 0
+    margin: 0,
+    fontWeight: 300
   },
   howToCompleteDescription: {
     '& p': {
@@ -113,23 +121,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginTop: 52
   }
 }));
-export type Course = {
-  id: number;
-  title: string;
-  category: string;
-  percentCompleted: number;
-  enrolled: string | Date;
-  aboutDescription?: string | React.ReactNode;
-  howToCompleteDescription?: string[];
-  keyThings?: string[];
-  estimateTimeComplete?: number;
-};
 
-export type OnlineCourseProps = {
-  course: Course;
-  // onClick: Function;
-  className?: string;
-};
 const howToCompleteDescription = [
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
   'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
@@ -200,101 +192,174 @@ const defaultSyllabus = {
   ]
 };
 
-function OnlineCourse({ course = courseFake, className }: OnlineCourseProps) {
+export type Course = {
+  id: number;
+  title: string;
+  category: string;
+  percentCompleted: number;
+  enrolled: string | Date;
+  aboutDescription?: string | React.ReactNode;
+  howToCompleteDescription?: string[];
+  keyThings?: string[];
+  estimateTimeComplete?: number;
+};
+
+export type OnlineCourseProps = {
+  course: Course;
+  // onClick: Function;
+  className?: string;
+  myActiveCourse?: OnlineCourse_myActiveCourse;
+};
+
+function OnlineCourse({
+  course = courseFake,
+  myActiveCourse,
+  className
+}: OnlineCourseProps) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-
+  console.log('course', myActiveCourse);
   return (
-    <div className={classes.rootOnlineCourse}>
-      <div>
-        <PageTitle
-          title={course.title}
-          backProps={{
-            text: 'all Online Courses',
-            onClick: () => {
-              router.push('/app/courses');
-            }
-          }}
-        />
-        <div className={classes.courseHead}>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>Category: </span>
-            <span className={classes.labelValue}>{course.category}</span>
-          </div>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>
-              {course.percentCompleted}% Completed
-            </span>
-          </div>
-          <div className={classes.courseHeadItem}>
-            <span className={classes.labelBold}>Enrolled:</span>
-            <span className={classes.labelValue}>{course.enrolled}</span>
-          </div>
-        </div>
-        <FlatCard shadow padding="large" className={classes.flatCard}>
-          <Icon name="Volume" size={51} />
-          <p className={classes.flatCardText}>
-            Make sure your speakers are turned on before you start this course
-          </p>
-          <Button
-            title="Begin Course"
-            onClick={() => {}}
-            padding="massive"
-            noWrap
+    <Page>
+      <div className={classes.rootOnlineCourse}>
+        <div>
+          <PageTitle
+            title={myActiveCourse?.course.name ?? ''}
+            backProps={{
+              text: 'all Online Courses',
+              onClick: () => {
+                router.push('/app/courses');
+              }
+            }}
           />
-        </FlatCard>
-        {course.estimateTimeComplete && (
-          <div className={classes.courseContent}>
-            <h6 className={classes.courseContentTitle}>
-              About this Course – Estimated time to complete
-              {` ${course.estimateTimeComplete}`} hours
-            </h6>
-            <p className={classes.courseContentText}>
-              {course.aboutDescription}
-            </p>
-          </div>
-        )}
-        {course.howToCompleteDescription && (
-          <div className={classes.courseContent}>
-            <h6 className={classes.courseContentTitle}>
-              How to complete this Course
-            </h6>
-            <div className={classes.howToCompleteDescription}>
-              {course.howToCompleteDescription.map((item, index) => (
-                <p className={classes.courseContentText} key={index}>
-                  {course.aboutDescription}
-                </p>
-              ))}
+          <div className={classes.courseHead}>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>Category: </span>
+              <span className={classes.labelValue}>{course.category}</span>
+            </div>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>
+                {course.percentCompleted}% Completed
+              </span>
+            </div>
+            <div className={classes.courseHeadItem}>
+              <span className={classes.labelBold}>Enrolled:</span>
+              <span className={classes.labelValue}>
+                {moment(myActiveCourse?.enrolledAt).format('DD/MM/YYYY')}
+              </span>
             </div>
           </div>
-        )}
-        {course.keyThings && (
+          <FlatCard shadow padding="large" className={classes.flatCard}>
+            <Icon name="Volume" size={51} />
+            <p className={classes.flatCardText}>
+              Make sure your speakers are turned on before you start this course
+            </p>
+            <Button
+              title="Begin Course"
+              onClick={() => {
+                if (
+                  !myActiveCourse?.course.syllabus ||
+                  myActiveCourse?.course.syllabus.length == 0
+                ) {
+                  return;
+                }
+
+                router.push(
+                  goToNextURL(
+                    myActiveCourse?.course.ident,
+                    myActiveCourse?.course.syllabus,
+                    myActiveCourse.upTo ?? undefined
+                  )
+                );
+              }}
+              padding="massive"
+              noWrap
+            />
+          </FlatCard>
           <div className={classes.courseContent}>
             <h6 className={classes.courseContentTitle}>
-              Key things to consider
+              About this Course
+              {myActiveCourse?.course.hoursToComplete
+                ? `– Estimated time to complete ${myActiveCourse?.course.hoursToComplete} hours`
+                : ''}
             </h6>
-            <ul className={classes.keyThings}>
-              {course.keyThings.map((item, index) => (
-                <li
-                  className={classNames(
-                    classes.courseContentText,
-                    classes.keyThingDot
-                  )}
-                  key={index}
-                >
-                  {course.aboutDescription}
-                </li>
-              ))}
-            </ul>
+            <p className={classes.courseContentText}>
+              {myActiveCourse?.course.excerpt}
+            </p>
           </div>
-        )}
+          <Spacer vertical spacing={3} />
+          {myActiveCourse?.course.howToComplete && (
+            <div className={classes.courseContent}>
+              <h6 className={classes.courseContentTitle}>
+                How to complete this Course
+              </h6>
+              <div className={classes.howToCompleteDescription}>
+                {myActiveCourse?.course.howToComplete}
+              </div>
+            </div>
+          )}
+          {myActiveCourse?.course.whatYouLearn &&
+            myActiveCourse?.course.whatYouLearn.length > 0 && (
+              <div className={classes.courseContent}>
+                <h6 className={classes.courseContentTitle}>
+                  Key things to consider
+                </h6>
+                <ul className={classes.keyThings}>
+                  {myActiveCourse?.course.whatYouLearn.map((text, index) => (
+                    <li
+                      className={classNames(
+                        classes.courseContentText,
+                        classes.keyThingDot
+                      )}
+                      key={index}
+                    >
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+        </div>
+        <div className={classes.courseSyllabus}>
+          <CourseSyllabusCardFrag
+            course={myActiveCourse?.course}
+            upTo={myActiveCourse?.upTo ?? undefined}
+          />
+        </div>
       </div>
-      <div className={classes.courseSyllabus}>
-        <CourseSyllabusCard courseSyllabus={defaultSyllabus} />
-      </div>
-    </div>
+    </Page>
   );
 }
 
-export default OnlineCourse;
+export default createFragmentContainer(OnlineCourse, {
+  myActiveCourse: graphql`
+    fragment OnlineCourse_myActiveCourse on MyCourse {
+      status
+      enrolledAt
+      upTo
+      course {
+        ident: id
+        name
+        excerpt
+        introduction
+        howToComplete
+        whatYouLearn
+        hoursToComplete
+        syllabus {
+          name
+          type
+          uuid
+          ... on Module {
+            syllabus {
+              name
+              uuid
+              type
+            }
+          }
+        }
+        ...CourseSyllabusCardFrag_course
+      }
+    }
+  `
+});
