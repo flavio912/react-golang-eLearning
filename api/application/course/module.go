@@ -262,3 +262,37 @@ func (c *courseAppImpl) DeleteModule(input gentypes.DeleteModuleInput) (bool, er
 
 	return c.coursesRepository.DeleteModule(input.UUID)
 }
+
+func (c *courseAppImpl) ModuleBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"moduleImages",          // Save files in this s3 directory
+		"moduleImages",          // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
+}
+
+func (c *courseAppImpl) VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,      // The actual file type
+		imageMeta.ContentLength, // The actual file content length
+		[]string{"jpg", "png"},  // Allowed file types
+		int32(20000000),         // Max file size = 20MB
+		"voiceoverUploads",      // Save files in this s3 directory
+		"voiceoverUploads",      // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
+}
