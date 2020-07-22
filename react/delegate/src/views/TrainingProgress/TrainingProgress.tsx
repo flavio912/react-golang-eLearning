@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { useRouter } from 'found';
 import Heading from 'components/core/Heading';
 import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/ActivityTable/ActivityTable';
 import Page from 'components/Page';
+import { TrainingProgress_activity } from './__generated__/TrainingProgress_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   progressRoot: {
@@ -27,13 +29,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
   activeTable: {}
 }));
 
-type Props = {};
+type Props = {
+  activity: TrainingProgress_activity;
+};
 
-function Progress({}: Props) {
+function Progress({ activity }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-
+  console.log('Activity', activity);
   const userName = 'James';
   return (
     <Page>
@@ -71,4 +75,19 @@ function Progress({}: Props) {
   );
 }
 
-export default Progress;
+export default createFragmentContainer(Progress, {
+  activity: graphql`
+    fragment TrainingProgress_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          name
+        }
+      }
+      pageInfo {
+        total
+      }
+    }
+  `
+});

@@ -142,7 +142,42 @@ const Router = createFarceRouter({
             );
           }}
         />
-        <Route path="/progress" Component={TrainingProgress} />
+        <Route
+          path="/progress"
+          Component={TrainingProgress}
+          query={graphql`
+            query App_Progress_Query($offset: Int, $limit: Int) {
+              user {
+                activity(page: { offset: $offset, limit: $limit }) {
+                  ...TrainingProgress_activity
+                }
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { pageNum } = location.query;
+            return {
+              offset: pageNum ?? 0,
+              limit: 10
+            };
+          }}
+          render={(args: any) => {
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            if (!args.props) {
+              return <div></div>;
+            }
+            return (
+              <ErrorBoundary>
+                <TrainingProgress
+                  {...args.props}
+                  activity={args.props?.user?.activity}
+                />
+              </ErrorBoundary>
+            );
+          }}
+        />
         <Route
           path="/courses/:courseID/test/:testUUID"
           Component={Test}
