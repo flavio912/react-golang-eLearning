@@ -15,3 +15,13 @@ type CertficateInfo struct {
 	InstructorCIN          string
 	InstructorSignatureURL *string
 }
+
+type CertificateType struct {
+	UUID                    UUID
+	Name                    string
+	CreatedAt               string
+	CertificateBodyImageURL *string
+	RegulationText          string
+	RequiresCAANo           bool
+	ShowTrainingSection     bool
+}

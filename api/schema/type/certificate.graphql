@@ -13,3 +13,13 @@ type CertificateInfo {
   InstructorCIN: String!
   InstructorSignatureURL: String
 }
+
+type CertificateType {
+  uuid: UUID!
+  name: String!
+  createdAt: String!
+  certificateBodyImageURL: String
+  regulationText: String!
+  requiresCAANo: Boolean!
+  showTrainingSection: Boolean!
+}
