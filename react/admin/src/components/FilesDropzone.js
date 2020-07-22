@@ -60,7 +60,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function FilesDropzone({ className, ...rest }) {
+function FilesDropzone({ className,onUpload, ...rest }) {
   const classes = useStyles();
   const [files, setFiles] = useState([]);
 
@@ -153,6 +153,7 @@ function FilesDropzone({ className, ...rest }) {
               color="secondary"
               size="small"
               variant="contained"
+              onClick={() => onUpload(files)}
             >
               Upload files
             </Button>

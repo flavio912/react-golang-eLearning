@@ -49,7 +49,7 @@ const selects = [
   }
 ];
 
-function Filter({ className, ...rest }) {
+function Filter({ className, onChange, ...rest }) {
   const classes = useStyles();
   const [inputValue, setInputValue] = useState('');
   const [chips, setChips] = useState([]);
@@ -57,6 +57,7 @@ function Filter({ className, ...rest }) {
   const handleInputChange = event => {
     event.persist();
     setInputValue(event.target.value);
+    onChange && onChange(event.target.value);
   };
 
   const handleInputKeyup = event => {

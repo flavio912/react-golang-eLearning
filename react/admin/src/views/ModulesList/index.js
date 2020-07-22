@@ -22,58 +22,73 @@ const useStyles = makeStyles(theme => ({
 }));
 
 const GET_MODULES = gql`
-  query GetModules($page: Page, $filter: ModuleFilter, $orderBy: OrderBy) {
-    modules(page: $page, filter: $filter, orderBy: $orderBy) {
-      edges {
-        uuid
-        name
+      query SearchModules($name: String!,  $page: Page!){
+        modules(filter: { name: $name }, page: $page){
+          edges{
+            uuid
+            name
+            syllabus {
+              name
+              uuid
+            }
+          }
+          pageInfo{
+            total
+            limit
+            offset
+            given
+          }
+        }
       }
-      pageInfo {
-        given
-        total
-      }
+    `;
+
+function useSearchQuery(text, page) {
+  const { error, data } = useQuery(GET_MODULES, {
+    variables: {
+      name: text,
+      page: page
     }
+  });
+
+  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo){
+    console.error('Could not get data', data, error);
+    return {
+      resultItems: [],
+      pageInfo: {
+        total: 1,
+        offset: 0,
+        limit: 4,
+        given: 0
+      }
+    };
   }
-`;
+
+  console.log(data);
+
+  const resultItems = data.modules.edges.map((module) => ({
+    uuid: module?.uuid ?? '',
+    name: module?.name ?? '',
+    syllabus: module?.syllabus ?? ''
+  }));
+
+  const pageInfo = {
+    total: data.modules.pageInfo?.total,
+    offset: data.modules.pageInfo.offset,
+    limit: data.modules.pageInfo.limit,
+    given: data.modules.pageInfo.given
+  };
+
+  return { resultItems, pageInfo };
+}
 
 function ModulesList({ match, history }) {
   const classes = useStyles();
 
-  // const handleFilter = () => {};
+  const [searchText, setSearchText] = React.useState('');
+  const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
+  const searchResults = useSearchQuery(searchText, page);
 
-  //const handleSearch = () => {};
-  const { loading, error, data } = useQuery(GET_MODULES, {
-    variables: {
-      page: {
-        offset: 0,
-        limit: 100
-      },
-      filter: {},
-      orderBy: {
-        ascending: false,
-        field: 'created_at'
-      }
-    }
-  });
-  console.log(data, error);
-
-  const modules = [
-    {
-      uuid: '1231231231',
-      name: 'test module',
-      numCoursesUsedIn: 3,
-      numLessons: 5,
-      tags: [
-        {
-          name: 'cool tag',
-          color: '#123'
-        }
-      ]
-    }
-  ];
-
-  if (loading) return <div>Loading</div>;
-  if (error) return <div>{error.message}</div>;
+  console.log(searchResults);
 
   return (
     <Page className={classes.root} title="Modules">
@@ -81,8 +96,8 @@ function ModulesList({ match, history }) {
         <Header onAdd={() => {
             history.push('/modules/create/overview');
           }}/>
-        <Filter className={classes.filter} />
-        {modules && <Results className={classes.results} modules={data.modules.edges} />}
+        <Filter className={classes.filter} onChange={(text) => setSearchText(text)}/>
+        {searchResults && <Results className={classes.results} modules={searchResults.resultItems} />}
       </Container>
     </Page>
   );

@@ -93,7 +93,7 @@ function Results({ className, modules, ...rest }) {
                 {module.name}
               </TableCell>
               <TableCell>{module.numCoursesUsedIn}</TableCell>
-              <TableCell>{module.numLessons}</TableCell>
+              <TableCell>{module.syllabus.length}</TableCell>
               <TableCell>
                 {module.tags && module.tags.map(tag => (
                   <Chip color={tag.color} label={tag.name} />

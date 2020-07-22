@@ -81,7 +81,7 @@ function Overview({ state, setState }) {
             <CardHeader title="Module Banner Image" />
             <Divider />
             <CardContent>
-              <FilesDropzone />
+              <FilesDropzone onUpload={(files) => console.log(files)}/>
             </CardContent>
           </Card>
         </Grid>
