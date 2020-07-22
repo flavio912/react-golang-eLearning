@@ -125,7 +125,7 @@ function OnlineCourses({ className, user }: Props) {
                 course={{
                   title: course.course.name,
                   id: course.course.ident,
-                  type: 'Online Course',
+                  type: course.course.category?.name ?? 'Online Course',
                   colour: course.course.category?.color ?? '',
                   description: course.course.excerpt ?? '',
                   url: course.course.bannerImageURL ?? ''
@@ -163,6 +163,7 @@ export default createFragmentContainer(OnlineCourses, {
           excerpt
           category {
             color
+            name
           }
           type
           bannerImageURL

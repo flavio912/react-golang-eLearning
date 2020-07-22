@@ -9,8 +9,7 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import CheckboxSingle from 'components/core/Input/CheckboxSingle';
 import TimeSpent from 'components/Delegate/TimeSpent';
 import ActivityName from 'components/Delegate/ActivityName';
-
-type Props = {};
+import { createFragmentContainer, graphql } from 'react-relay';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   sectionTitleWrapper: {
@@ -98,7 +97,11 @@ const activityRow = (
   onClick: () => {}
 });
 
-const ActivityTable = (props: any) => {
+type Props = {
+  activity: any;
+};
+
+const ActivityTable = ({ activity }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   return (
@@ -197,4 +200,20 @@ const ActivityTable = (props: any) => {
   );
 };
 
-export default ActivityTable;
+export default createFragmentContainer(ActivityTable, {
+  activity: graphql`
+    fragment ActivityTable_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+      }
+    }
+  `
+});

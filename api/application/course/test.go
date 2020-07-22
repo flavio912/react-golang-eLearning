@@ -366,6 +366,16 @@ func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, m
 		return err
 	}
 
+	// Generate activity
+	activityType := gentypes.ActivityFailed
+	if passed {
+		activityType = gentypes.ActivityCompleted
+	}
+	_, err = c.usersRepository.CreateTakerActivity(takerUUID, activityType, &courseID)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelWarning, err, "completeCourse: Unable to create activity")
+	}
+
 	if passed {
 		go c.generateCertificate(histCourse.UUID)
 	}

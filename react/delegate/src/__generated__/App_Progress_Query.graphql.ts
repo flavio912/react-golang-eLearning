@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 773ca8ebe9506dca4619d51a0aad592c */
+/* @relayHash 4a6f3586f28b44b76e35ded9b0277453 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -34,17 +34,22 @@ query App_Progress_Query(
   }
 }
 
-fragment TrainingProgress_activity on ActivityPage {
+fragment ActivityTable_activity on ActivityPage {
   edges {
     type
     createdAt
     course {
+      ident: id
       name
     }
   }
   pageInfo {
     total
   }
+}
+
+fragment TrainingProgress_activity on ActivityPage {
+  ...ActivityTable_activity
 }
 */
 
@@ -175,6 +180,13 @@ const node: ConcreteRequest = (function () {
                                             "selections": [
                                                 {
                                                     "kind": "ScalarField",
+                                                    "alias": "ident",
+                                                    "name": "id",
+                                                    "args": null,
+                                                    "storageKey": null
+                                                },
+                                                {
+                                                    "kind": "ScalarField",
                                                     "alias": null,
                                                     "name": "name",
                                                     "args": null,
@@ -212,7 +224,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Progress_Query",
             "id": null,
-            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      name\n    }\n  }\n  pageInfo {\n    total\n  }\n}\n",
+            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n",
             "metadata": {}
         }
     } as any;

@@ -37,7 +37,6 @@ function Progress({ activity }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-  console.log('Activity', activity);
   const userName = 'James';
   return (
     <Page>
@@ -69,7 +68,7 @@ function Progress({ activity }: Props) {
             router.push('/app/courses/1');
           }}
         />
-        <ActivityTable className={classes.activeTable} />
+        <ActivityTable className={classes.activeTable} activity={activity} />
       </div>
     </Page>
   );
@@ -78,16 +77,7 @@ function Progress({ activity }: Props) {
 export default createFragmentContainer(Progress, {
   activity: graphql`
     fragment TrainingProgress_activity on ActivityPage {
-      edges {
-        type
-        createdAt
-        course {
-          name
-        }
-      }
-      pageInfo {
-        total
-      }
+      ...ActivityTable_activity
     }
   `
 });
