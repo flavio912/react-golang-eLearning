@@ -3,6 +3,7 @@ package users
 import (
 	"time"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -37,6 +38,14 @@ func (u *usersAppImpl) CreateIndividual(input gentypes.CreateIndividualInput) (g
 }
 
 func (u *usersAppImpl) UpdateIndividual(input gentypes.UpdateIndividualInput) (gentypes.User, error) {
+	if !u.grant.IsAdmin && !u.grant.IsIndividual {
+		return gentypes.User{}, &errors.ErrUnauthorized
+	}
+
+	if u.grant.IsIndividual && u.grant.Claims.UUID != input.UUID {
+		return gentypes.User{}, &errors.ErrUnauthorized
+	}
+
 	ind, err := u.usersRepository.UpdateIndividual(input)
 	user := u.IndividualToUser(ind)
 	return user, err
