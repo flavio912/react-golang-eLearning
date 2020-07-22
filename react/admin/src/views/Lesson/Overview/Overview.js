@@ -38,6 +38,10 @@ function Overview({ state, setState }) {
 
   const handleTags = () => {};
 
+  const handleUploadImage = (successToken, url) => {
+    console.log(successToken, url);
+  };
+
   return (
     <div className={classes.root}>
       <Grid container spacing={4}>
@@ -70,7 +74,9 @@ function Overview({ state, setState }) {
             <CardContent>
               <UploadFile
                 uploadMutation={UPLOAD_REQUEST}
-                onUploaded={(successToken, url) => {}}
+                onUploaded={(successToken, url) =>
+                  handleUploadImage(successToken, url)
+                }
               />
             </CardContent>
           </Card>
@@ -89,7 +95,7 @@ function Overview({ state, setState }) {
                   name="description"
                   value={state.text}
                   onChange={inp => {
-                    setState('description', inp.target.value);
+                    setState('text', inp.target.value);
                   }}
                   placeholder="Lesson Description"
                   variant="outlined"

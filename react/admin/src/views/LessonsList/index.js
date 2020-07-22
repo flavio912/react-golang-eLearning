@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import Page from 'src/components/Page';
@@ -40,7 +40,7 @@ function LessonsList({ match, history }) {
   const handleFilter = () => {};
   const handleSearch = () => {};
 
-  const { loading, error, data } = useQuery(GET_LESSONS, {
+  const { loading, error, data, refetch } = useQuery(GET_LESSONS, {
     variables: {
       page: {
         offset: 0,
@@ -50,8 +50,11 @@ function LessonsList({ match, history }) {
     }
   });
 
-  if (loading) return <div>Loading</div>;
-  if (error) return <div>{error.message}</div>;
+  useEffect(() => {
+    if (!data || loading || error) return;
+
+    refetch();
+  }, [data]);
 
   return (
     <Page className={classes.root} title="Lessons">
@@ -62,7 +65,7 @@ function LessonsList({ match, history }) {
           }}
         />
         <SearchBar onFilter={handleFilter} onSearch={handleSearch} />
-        {data.lessons && (
+        {data?.lessons && (
           <Results className={classes.results} lessons={data.lessons.edges} />
         )}
       </Container>

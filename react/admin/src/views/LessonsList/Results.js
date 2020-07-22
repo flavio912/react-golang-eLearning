@@ -132,7 +132,7 @@ function Results({ className, lessons, ...rest }) {
 
 Results.propTypes = {
   className: PropTypes.string,
-  lessons: PropTypes.object
+  lessons: PropTypes.array
 };
 
 export default Results;
