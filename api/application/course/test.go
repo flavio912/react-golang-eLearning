@@ -22,6 +22,14 @@ func (c *courseAppImpl) testToGentype(test models.Test) gentypes.Test {
 			RandomiseAnswers:  &test.RandomiseAnswers,
 		}
 	}
+	if c.grant.IsDelegate || c.grant.IsIndividual {
+		return gentypes.Test{
+			UUID:              test.UUID,
+			Name:              test.Name,
+			AttemptsAllowed:   &test.AttemptsAllowed,
+			QuestionsToAnswer: &test.QuestionsToAnswer,
+		}
+	}
 	return gentypes.Test{}
 }
 
@@ -119,9 +127,9 @@ func (c *courseAppImpl) Tests(
 	return c.testsToGentypes(tests), pageInfo, nil
 }
 
-func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
+func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.UUID, elementType gentypes.CourseElement) bool {
 	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
-		return []gentypes.Test{}, &errors.ErrUnauthorized
+		return false
 	}
 
 	if c.grant.IsDelegate || c.grant.IsIndividual {
@@ -139,7 +147,7 @@ func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, er
 
 		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
 		if err != nil {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
 
 		var courseIds = make([]uint, len(activeCourses))
@@ -147,14 +155,22 @@ func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, er
 			courseIds[i] = activeCourse.CourseID
 		}
 
-		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, uuids, gentypes.TestType)
+		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, courseElementUUIDs, elementType)
 		if err != nil {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
 
 		if !areTestsInCourses {
-			return []gentypes.Test{}, &errors.ErrWhileHandling
+			return false
 		}
+	}
+
+	return true
+}
+
+func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
+	if !c.grantCanViewSyllabusItems(uuids, gentypes.TestType) {
+		return []gentypes.Test{}, &errors.ErrWhileHandling
 	}
 
 	tests, err := c.coursesRepository.TestsByUUIDs(uuids)
@@ -307,7 +323,7 @@ func (c *courseAppImpl) SubmitTest(input gentypes.SubmitTestInput) (bool, gentyp
 		if err != nil {
 			c.grant.Logger.Log(sentry.LevelError, err, "Unable to complete course - success")
 		}
-		return true, gentypes.CourseComplete, &errors.ErrWhileHandling
+		return true, gentypes.CourseComplete, nil
 	}
 
 	return true, gentypes.CourseIncomplete, nil
@@ -348,6 +364,16 @@ func (c *courseAppImpl) completeCourse(takerUUID gentypes.UUID, courseID uint, m
 
 	if err != nil {
 		return err
+	}
+
+	// Generate activity
+	activityType := gentypes.ActivityFailed
+	if passed {
+		activityType = gentypes.ActivityCompleted
+	}
+	_, err = c.usersRepository.CreateTakerActivity(takerUUID, activityType, &courseID)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelWarning, err, "completeCourse: Unable to create activity")
 	}
 
 	if passed {

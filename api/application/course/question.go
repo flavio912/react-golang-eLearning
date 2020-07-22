@@ -157,14 +157,14 @@ func (c *courseAppImpl) answersToGentypes(answers []models.BasicAnswer) []gentyp
 }
 
 func (c *courseAppImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error) {
-	// Admins can get anything
-	if !c.grant.IsAdmin {
-		return map[gentypes.UUID][]gentypes.Answer{}, &errors.ErrUnauthorized
+	outputAns := make(map[gentypes.UUID][]gentypes.Answer)
+
+	if !c.grantIsAllowedToViewQuestions(questionUUIDs) {
+		return outputAns, &errors.ErrUnauthorized
 	}
 
 	ansMap, err := c.coursesRepository.ManyAnswers(questionUUIDs)
 
-	outputAns := make(map[gentypes.UUID][]gentypes.Answer)
 	for key, val := range ansMap {
 		outputAns[key] = c.answersToGentypes(val)
 	}
@@ -172,12 +172,11 @@ func (c *courseAppImpl) ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes
 	return outputAns, err
 }
 
-func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) {
-	if !c.grant.IsAdmin && !c.grant.IsDelegate && !c.grant.IsIndividual {
-		return gentypes.Question{}, &errors.ErrUnauthorized
+func (c *courseAppImpl) grantIsAllowedToViewQuestions(questionUUIDs []gentypes.UUID) bool {
+	if c.grant.IsAdmin {
+		return true
 	}
 
-	// Check if courseTaker is taking a course with this question in
 	if c.grant.IsDelegate || c.grant.IsIndividual {
 		var takerId gentypes.UUID
 		if c.grant.IsDelegate {
@@ -193,14 +192,22 @@ func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) 
 		activeCourses, _ := c.usersRepository.TakerActiveCourses(takerId)
 
 		// TODO: Replace this with a big join
+		// TODO: FIX This stipulates that all questions must be part of the same test
 		allowed := false
 		for _, activeCourse := range activeCourses {
 			course, _ := c.coursesRepository.OnlineCourse(activeCourse.CourseID)
 			tests, _ := c.coursesRepository.CourseTests(course.UUID)
+
 			for _, test := range tests {
 				questions, _ := c.coursesRepository.TestQuestions(test.UUID)
-				for _, question := range questions {
-					if question.UUID == uuid {
+				for _, uuid := range questionUUIDs {
+					found := false
+					for _, question := range questions {
+						if question.UUID == uuid {
+							found = true
+						}
+					}
+					if found {
 						allowed = true
 						break
 					}
@@ -216,9 +223,16 @@ func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) 
 			}
 		}
 
-		if !allowed {
-			return gentypes.Question{}, &errors.ErrUnauthorized
+		if allowed {
+			return true
 		}
+	}
+	return false
+}
+
+func (c *courseAppImpl) Question(uuid gentypes.UUID) (gentypes.Question, error) {
+	if !c.grantIsAllowedToViewQuestions([]gentypes.UUID{uuid}) {
+		return gentypes.Question{}, &errors.ErrUnauthorized
 	}
 
 	// Check user is assigned course with this question in
@@ -254,6 +268,19 @@ func (c *courseAppImpl) DeleteQuestion(input gentypes.DeleteQuestionInput) (bool
 	}
 
 	return c.coursesRepository.DeleteQuestion(input.UUID)
+}
+
+func (c *courseAppImpl) TestQuestions(testUUID gentypes.UUID) ([]gentypes.Question, error) {
+	if !c.grantCanViewSyllabusItems([]gentypes.UUID{testUUID}, gentypes.TestType) {
+		return []gentypes.Question{}, &errors.ErrUnauthorized
+	}
+
+	questions, err := c.coursesRepository.TestQuestions(testUUID)
+	if err != nil {
+		return []gentypes.Question{}, &errors.ErrWhileHandling
+	}
+
+	return c.questionsToGentypes(questions), nil
 }
 
 // AnswerImageUploadRequest generates a link that lets users upload a profile image to S3 directly

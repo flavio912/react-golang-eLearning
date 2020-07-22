@@ -231,12 +231,12 @@ func (c *courseAppImpl) UpdateModule(input gentypes.UpdateModuleInput) (gentypes
 	return c.moduleToGentype(module), err
 }
 
-func (c *courseAppImpl) ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error) {
-	if !c.grant.IsAdmin {
+func (c *courseAppImpl) ModuleSyllabus(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error) {
+	if !c.grantCanViewSyllabusItems([]gentypes.UUID{moduleUUID}, gentypes.ModuleType) {
 		return []gentypes.ModuleItem{}, &errors.ErrUnauthorized
 	}
 
-	return c.coursesRepository.GetModuleStructure(uuid)
+	return c.coursesRepository.GetModuleStructure(moduleUUID)
 }
 
 func getUploadKey(token *string, uploadIdent string) (*string, error) {

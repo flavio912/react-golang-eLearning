@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import Button from 'sharedComponents/core/Input/Button';
+import { createFragmentContainer, graphql } from 'react-relay';
 import ActiveType from 'components/ActivityTable/ActiveType';
 import theme, { Theme } from 'helpers/theme';
 import Table from 'sharedComponents/core/Table';
@@ -9,9 +10,8 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import TimeSpent from 'components/ActivityTable/TimeSpent';
 import ActivityName from 'components/ActivityTable/ActivityName';
 import classnames from 'classnames';
-type Props = {
-  className?: string;
-};
+import { ActivityTable_activity } from './__generated__/ActivityTable_activity.graphql';
+import moment from 'moment';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootActivityTable: {},
@@ -92,9 +92,6 @@ const activityRow = (
         <ActiveType icon={activeType.icon} text={activeType.text} />
       )
     },
-    {
-      component: () => <TimeSpent timeSpent={timeSpent} />
-    },
     { component: () => null },
     {
       component: () => null
@@ -102,11 +99,18 @@ const activityRow = (
   ],
   onClick: () => {}
 });
-const ActivityTable = (props: any) => {
+
+type Props = {
+  className?: string;
+  activity: ActivityTable_activity;
+};
+
+const ActivityTable = ({ activity, className }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
+  console.log('asda', activity);
   return (
-    <div className={classnames(props.className, classes.rootActivityTable)}>
+    <div className={classnames(className, classes.rootActivityTable)}>
       <div className={classes.sectionTitleWrapper}>
         <h2>Your activity</h2>
         <div className={classes.courseDropdown}>
@@ -118,54 +122,42 @@ const ActivityTable = (props: any) => {
         </div>
       </div>
       <Table
-        header={['ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', 'TIME SPENT', '', '']}
-        rows={[
-          activityRow(
-            1,
+        header={['ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', '', '']}
+        rows={(activity.edges ?? []).map((activity, index) => {
+          if (!activity) return;
+
+          var nameMap = {
+            completedCourse: 'Completed',
+            newCourse: 'Started',
+            activated: 'Account was created',
+            failedCourse: 'Failed'
+          };
+
+          var iconMap = {
+            completedCourse: 'CourseStatus_Completed',
+            newCourse: 'CourseNewCourseGreen',
+            activated: 'CourseStatus_NotStarted',
+            failedCourse: 'CourseFailed'
+          };
+
+          var iconTextMap = {
+            completedCourse: 'Completed Course',
+            newCourse: 'Started Course',
+            activated: 'Account Activated',
+            failedCourse: 'Failed course'
+          };
+          return activityRow(
+            index,
             {
-              time: '10:29',
-              date: '01/02/2020'
+              time: moment(activity?.createdAt).format('hh:mm'),
+              date: moment(activity?.createdAt).format('DD/MM/YY')
             },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
+            activity?.course
+              ? `${nameMap[activity.type]} the ${activity?.course?.name} Course`
+              : nameMap[activity?.type],
             {
-              icon: 'CourseFailed',
-              text: 'Failed Course'
-            },
-            {
-              h: 3,
-              m: 15
-            },
-            'https://picsum.photos/id/1/200/300',
-            classes
-          ),
-          activityRow(
-            2,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseNewCourse',
-              text: 'New Course'
-            },
-            {
-              h: 3,
-              m: 15
-            },
-            'https://picsum.photos/id/1/200/300',
-            classes
-          ),
-          activityRow(
-            3,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseCertificates',
-              text: 'New New certificate!'
+              icon: iconMap[activity.type],
+              text: iconTextMap[activity.type]
             },
             {
               h: 3,
@@ -173,23 +165,8 @@ const ActivityTable = (props: any) => {
             },
             'https://picsum.photos/id/1/200/300',
             classes
-          ),
-          activityRow(
-            4,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseAccountActivated',
-              text: 'Account active'
-            },
-            'n/a',
-            'https://picsum.photos/id/1/200/300',
-            classes
-          )
-        ]}
+          );
+        })}
       />
       <div className={classes.pagination}>
         <Paginator
@@ -203,4 +180,20 @@ const ActivityTable = (props: any) => {
   );
 };
 
-export default ActivityTable;
+export default createFragmentContainer(ActivityTable, {
+  activity: graphql`
+    fragment ActivityTable_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+      }
+    }
+  `
+});

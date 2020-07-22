@@ -8,6 +8,7 @@ import QuickInfo from 'components/Overview/QuickInfo';
 import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';
+import Page from 'components/Page';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -62,51 +63,53 @@ function TrainingZone({}: Props) {
 
   const userName = 'James';
   return (
-    <div className={classes.trainingZoneRoot}>
-      <div className={classes.trainingHeader}>
-        <Heading text="Training Zone" size={'large'} />
-        <Heading
-          text={`You're doing great ${userName}, keep up the good work so you don't loose your momentum`}
-          size={'medium'}
-        />
-      </div>
-      <TopInfo className={classes.topInfo} />
-      <CardItem
-        className={classes.card1}
-        title={'All Courses'}
-        description={
-          'Find all of the online courses you have been enrolled on here'
-        }
-        buttonProps={{
-          title: 'View Courses',
-          onClick: () => {
-            router.push('/app/courses');
+    <Page>
+      <div className={classes.trainingZoneRoot}>
+        <div className={classes.trainingHeader}>
+          <Heading text="Training Zone" size={'large'} />
+          <Heading
+            text={`You're doing great ${userName}, keep up the good work so you don't loose your momentum`}
+            size={'medium'}
+          />
+        </div>
+        <TopInfo className={classes.topInfo} />
+        <CardItem
+          className={classes.card1}
+          title={'All Courses'}
+          description={
+            'Find all of the online courses you have been enrolled on here'
           }
-        }}
-      />
-      <CardItem
-        className={classes.card2}
-        title={'Expiring Soon'}
-        description={
-          'See your previously completed courses that are due to expire'
-        }
-        buttonProps={{ title: 'Expiring Certificates', onClick: () => {} }}
-      />
-      <CardItem
-        className={classes.card3}
-        title={'Training Progress'}
-        description={'Review your progress of all Courses in real time'}
-        buttonProps={{ title: 'See Help Guides', onClick: () => {} }}
-      />
-      <div className={classes.jumpHeader}>
-        <Heading text="Jump back in" size={'large'} />
-        <Heading
-          text={`${userName}, you have some unfinished courses,
-          jump back in to continue learning now.`}
-          size={'medium'}
+          buttonProps={{
+            title: 'View Courses',
+            onClick: () => {
+              router.push('/app/courses');
+            }
+          }}
         />
+        <CardItem
+          className={classes.card2}
+          title={'Expiring Soon'}
+          description={
+            'See your previously completed courses that are due to expire'
+          }
+          buttonProps={{ title: 'Expiring Certificates', onClick: () => {} }}
+        />
+        <CardItem
+          className={classes.card3}
+          title={'Training Progress'}
+          description={'Review your progress of all Courses in real time'}
+          buttonProps={{ title: 'See Help Guides', onClick: () => {} }}
+        />
+        <div className={classes.jumpHeader}>
+          <Heading text="Jump back in" size={'large'} />
+          <Heading
+            text={`${userName}, you have some unfinished courses,
+          jump back in to continue learning now.`}
+            size={'medium'}
+          />
+        </div>
       </div>
-    </div>
+    </Page>
   );
 }
 

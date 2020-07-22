@@ -19,6 +19,7 @@ type User {
   profileImageUrl: String
   activity(page: Page): ActivityPage
   myCourses: [MyCourse!]
+  myActiveCourse(id: Int!): MyCourse # Get my course from courseID
   # address: Address
 }
 
@@ -41,20 +42,17 @@ type Activity {
   course: Course
 }
 
-# type ActiveCoursePage implements PaginatedQuery {
-#   edges: [ActiveCourse]
-#   pageInfo: PageInfo
-# }
-
 # # A course currently being taken by a user
 type MyCourse {
   status: CourseStatus!
   course: Course!
   minutesTracked: Float!
+  enrolledAt: String!
+  upTo: UUID
 }
 
 enum CourseStatus {
-  passed
+  complete
   failed
   incomplete
 }

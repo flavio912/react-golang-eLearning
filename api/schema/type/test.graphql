@@ -1,6 +1,7 @@
 type Test implements SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
   tags: [Tag!]
   attemptsAllowed: Int
