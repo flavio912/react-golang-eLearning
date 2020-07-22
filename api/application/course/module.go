@@ -1,6 +1,7 @@
 package course
 
 import (
+	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
@@ -295,4 +296,18 @@ func (c *courseAppImpl) VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta
 	)
 
 	return url, successToken, err
+}
+
+func (c *courseAppImpl) ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Tag, error) {
+	modulesToTags, err := c.coursesRepository.ManyModuleTags(moduleUUIDs)
+	if err != nil {
+		c.grant.Logger.Log(sentry.LevelWarning, err, "ManyModuleTags: Unable to get tags")
+		return map[gentypes.UUID][]gentypes.Tag{}, &errors.ErrWhileHandling
+	}
+
+	var genTags = map[gentypes.UUID][]gentypes.Tag{}
+	for key, element := range modulesToTags {
+		genTags[key] = tagsToGentypes(element)
+	}
+	return genTags, nil
 }
