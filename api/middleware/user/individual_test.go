@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"testing"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -95,5 +98,52 @@ func TestIndividuals(t *testing.T) {
 			assert.Nil(t, err)
 			require.Len(t, inds, 2)
 		})
+	})
+}
+
+func TestUpdateIndividual(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Must validate input", func(t *testing.T) {
+		input := gentypes.UpdateIndividualInput{
+			Email: helpers.StringPointer("not an email"),
+		}
+
+		ind, err := usersRepo.UpdateIndividual(input)
+		ok, val_err := govalidator.ValidateStruct(input)
+
+		assert.False(t, ok)
+		assert.Equal(t, val_err, err)
+		assert.Equal(t, models.Individual{}, ind)
+	})
+
+	t.Run("Cannot update non-existant individual", func(t *testing.T) {
+		ind, err := usersRepo.UpdateIndividual(gentypes.UpdateIndividualInput{
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
+		})
+
+		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, models.Individual{}, ind)
+	})
+
+	t.Run("Updates an individual", func(t *testing.T) {
+		input := gentypes.UpdateIndividualInput{
+			UUID:      gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000012"),
+			FirstName: helpers.StringPointer("Elon"),
+			LastName:  helpers.StringPointer("Musk"),
+			JobTitle:  helpers.StringPointer("CEO of SpaceX"),
+			Telephone: helpers.StringPointer("07912935269"),
+			Email:     helpers.StringPointer("elon.musk@spacex.com"),
+			Password:  helpers.StringPointer("iamironman"),
+		}
+
+		ind, err := usersRepo.UpdateIndividual(input)
+
+		assert.Nil(t, err)
+		assert.Equal(t, *input.FirstName, ind.FirstName)
+		assert.Equal(t, *input.LastName, ind.LastName)
+		assert.Equal(t, *input.JobTitle, *ind.JobTitle)
+		assert.Equal(t, *input.Telephone, *ind.Telephone)
+		assert.Equal(t, *input.Email, ind.Email)
 	})
 }
