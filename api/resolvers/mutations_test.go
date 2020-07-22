@@ -1361,7 +1361,7 @@ func TestCreateTest(t *testing.T) {
                 "passPercentage": 30,
                 "questionsToAnswer": 7,
                 "randomiseAnswers": false,
-                "questions": null
+                "questions": []
             }
         	}
 				}

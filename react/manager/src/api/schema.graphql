@@ -237,7 +237,7 @@ type Activity {
 }
 
 enum CourseStatus {
-  passed
+  complete
   failed
   incomplete
 }

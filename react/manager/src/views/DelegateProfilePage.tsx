@@ -70,11 +70,11 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
       categoryName: myCourse.course.category?.name ?? '',
       progress: {
         total: 100,
-        completed: 0
+        completed: myCourse.status === 'complete' ? 100 : 0
       },
       attempt: 1,
       status: {
-        isComplete: myCourse.status === 'passed'
+        isComplete: myCourse.status === 'complete'
       },
       onClick: () => {}
     })) ?? [];

@@ -11,6 +11,7 @@ import (
 type Syllabus interface {
 	Name() string
 	UUID() gentypes.UUID
+	Type() gentypes.CourseElement
 	Complete() *bool
 }
 
@@ -45,7 +46,7 @@ func NewSyllabusResolvers(ctx context.Context, args NewSyllabusArgs) (*[]*Syllab
 	case args.CourseID != nil:
 		syllabus, err := app.CourseApp.CourseSyllabus(*args.CourseID)
 		if err != nil {
-			return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
+			return &[]*SyllabusResolver{}, err
 		}
 
 		for _, item := range syllabus {
@@ -72,7 +73,7 @@ func NewSyllabusResolvers(ctx context.Context, args NewSyllabusArgs) (*[]*Syllab
 	case args.ModuleUUID != nil:
 		syllabus, err := app.CourseApp.ModuleSyllabus(*args.ModuleUUID)
 		if err != nil {
-			return &[]*SyllabusResolver{}, &errors.ErrUnableToResolve
+			return &[]*SyllabusResolver{}, err
 		}
 
 		for _, item := range syllabus {

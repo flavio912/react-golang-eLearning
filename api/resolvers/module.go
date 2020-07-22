@@ -16,6 +16,9 @@ type ModuleResolver struct {
 func (m *ModuleResolver) UUID() gentypes.UUID {
 	return m.Module.UUID
 }
+func (m *ModuleResolver) Type() gentypes.CourseElement {
+	return gentypes.ModuleType
+}
 func (m *ModuleResolver) Name() string {
 	return m.Module.Name
 }

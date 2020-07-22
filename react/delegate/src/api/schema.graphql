@@ -8,10 +8,31 @@ schema {
 type Query {
   info: String!
   user: User
+  module(uuid: UUID!): Module
+  test(uuid: UUID!): Test
+  lesson(uuid: UUID!): Lesson
+  courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
 }
 
 type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
+  submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+}
+
+input QuestionAnswer {
+  questionUUID: UUID! # UUID of the question being answered
+  answerUUID: UUID! # UUID of the selected answer
+}
+
+input SubmitTestInput {
+  courseID: Int! # ID of the course the user is taking the test in
+  testUUID: UUID! # UUID of the test you are answering
+  answers: [QuestionAnswer!]! # Your answers to the test
+}
+
+type SubmitTestPayload {
+  courseStatus: CourseStatus!
+  passed: Boolean! # True if the user passed the test
 }
 
 type PageInfo {
@@ -82,6 +103,14 @@ type CoursePage implements PaginatedQuery {
   pageInfo: PageInfo
 }
 
+input CoursesFilter {
+  name: String
+  accessType: AccessType
+  backgroundCheck: Boolean
+  price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
+}
+
 enum UserType {
   manager
   individual
@@ -103,6 +132,7 @@ type User {
   profileImageUrl: String
   activity(page: Page): ActivityPage
   myCourses: [MyCourse!]
+  myActiveCourse(id: Int!): MyCourse # Get my course from courseID
   # certificates
   # address: Address
 }
@@ -127,7 +157,7 @@ type Activity {
 }
 
 enum CourseStatus {
-  passed
+  complete
   failed
   incomplete
 }
@@ -137,6 +167,8 @@ type MyCourse {
   status: CourseStatus!
   course: Course!
   minutesTracked: Float!
+  enrolledAt: String!
+  upTo: UUID
 }
 
 type AuthToken {
@@ -162,7 +194,8 @@ enum CourseType {
 interface SyllabusItem {
   name: String!
   uuid: UUID!
-  complete: Boolean
+  type: StructureElement!
+  complete: Boolean # Only shown for courseTaker users (delegates and individuals)
 }
 
 type Lesson implements SyllabusItem {
@@ -171,11 +204,62 @@ type Lesson implements SyllabusItem {
   complete: Boolean
   mp3URL: String
   text: String!
-  tags: [Tag!]
+}
+
+type Module implements SyllabusItem {
+  uuid: UUID!
+  name: String!
+  type: StructureElement!
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  voiceoverURL: String
+  video: Video
+  syllabus: [SyllabusItem!]
+  complete: Boolean
+}
+
+type Test implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  type: StructureElement!
+  complete: Boolean
+  attemptsAllowed: Int
+  passPercentage: Float
+  questionsToAnswer: Int
+  randomiseAnswers: Boolean
+  questions: [Question!]
+}
+
+type Question {
+  uuid: UUID!
+  text: String!
+  questionType: QuestionType!
+  answers: [Answer!]
+}
+
+type Answer {
+  uuid: UUID!
+  isCorrect: Boolean
+  text: String
+  imageURL: String
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
 }
 
 type Category {
   uuid: UUID
   name: String!
   color: String!
+}
+
+enum VideoType {
+  WISTIA
+}
+
+type Video {
+  type: VideoType!
+  url: String!
 }
