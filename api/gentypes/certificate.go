@@ -1,5 +1,7 @@
 package gentypes
 
+import "github.com/asaskevich/govalidator"
+
 type CertficateInfo struct {
 	CourseTitle            string
 	ExpiryDate             string
@@ -24,4 +26,17 @@ type CertificateType struct {
 	RegulationText          string
 	RequiresCAANo           bool
 	ShowTrainingSection     bool
+}
+
+type CreateCertificateTypeInput struct {
+	Name                 string `valid:"required"`
+	RegulationText       string `valid:"required"`
+	RequiresCAANo        *bool
+	ShowTrainingSection  *bool
+	CertificateBodyToken *string
+}
+
+func (c *CreateCertificateTypeInput) Validate() error {
+	_, err := govalidator.ValidateStruct(c)
+	return err
 }

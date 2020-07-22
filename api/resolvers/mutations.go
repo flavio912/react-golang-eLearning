@@ -748,3 +748,13 @@ func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input 
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteCourse(args.Input)
 }
+
+func (m *MutationResolver) CreateCertificateType(ctx context.Context, args struct {
+	Input gentypes.CreateCertificateTypeInput
+}) (*CertificateTypeResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certType, err := app.CourseApp.CreateCertificateType(args.Input)
+	return &CertificateTypeResolver{
+		CertificateType: certType,
+	}, err
+}

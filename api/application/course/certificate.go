@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
 
@@ -16,6 +17,25 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
+
+func (c *courseAppImpl) certificateTypeToGentype(certType models.CertificateType) gentypes.CertificateType {
+	var cert_url *string
+	if certType.CertificateBodyImageKey != nil {
+		url := uploads.GetImgixURL(*certType.CertificateBodyImageKey)
+		cert_url = &url
+	}
+
+	createdAt := certType.CreatedAt.Format(time.RFC3339)
+	return gentypes.CertificateType{
+		UUID:                    certType.UUID,
+		Name:                    certType.Name,
+		CreatedAt:               createdAt,
+		RegulationText:          certType.RegulationText,
+		RequiresCAANo:           certType.RequiresCAANo,
+		ShowTrainingSection:     certType.ShowTrainingSection,
+		CertificateBodyImageURL: cert_url,
+	}
+}
 
 func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) {
 	token, err := auth.GenerateCertificateToken(historicalCourseUUID)
@@ -135,4 +155,17 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 		InstructorCIN:          "",
 		InstructorSignatureURL: nil,
 	}, nil
+}
+
+func (c *courseAppImpl) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.CertificateType{}, err
+	}
+
+	certType, err := c.coursesRepository.CreateCertificateType(input)
+	return c.certificateTypeToGentype(certType), err
 }

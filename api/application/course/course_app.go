@@ -82,9 +82,11 @@ type CourseApp interface {
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
 	DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error)
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
+
+	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
 	CertificateInfo(token string) (gentypes.CertficateInfo, error)
+
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
 	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)

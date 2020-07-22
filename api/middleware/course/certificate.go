@@ -21,3 +21,35 @@ func (c *coursesRepoImpl) CertificateType(uuid gentypes.UUID) (models.Certificat
 	}
 	return certType, nil
 }
+
+func (c *coursesRepoImpl) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error) {
+	tx := database.GormDB.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "CreateCertificateType: Forced to recover")
+		}
+	}()
+
+	certType := models.CertificateType{
+		Name:                input.Name,
+		RegulationText:      input.RegulationText,
+		RequiresCAANo:       input.RequiresCAANo != nil && *input.RequiresCAANo,
+		ShowTrainingSection: input.ShowTrainingSection != nil && *input.ShowTrainingSection,
+	}
+
+	if err := tx.Create(&certType).Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to create certificate type")
+		tx.Rollback()
+		return models.CertificateType{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return models.CertificateType{}, &errors.ErrWhileHandling
+	}
+
+	return certType, nil
+}

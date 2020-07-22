@@ -201,6 +201,27 @@ func (_m *CoursesRepository) Courses(courseIDs []uint) ([]models.Course, error) 
 	return r0, r1
 }
 
+// CreateCertificateType provides a mock function with given fields: input
+func (_m *CoursesRepository) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error) {
+	ret := _m.Called(input)
+
+	var r0 models.CertificateType
+	if rf, ok := ret.Get(0).(func(gentypes.CreateCertificateTypeInput) models.CertificateType); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.CertificateType)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.CreateCertificateTypeInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateClassroomCourse provides a mock function with given fields: courseInfo
 func (_m *CoursesRepository) CreateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error) {
 	ret := _m.Called(courseInfo)

@@ -23,3 +23,11 @@ type CertificateType {
   requiresCAANo: Boolean!
   showTrainingSection: Boolean!
 }
+
+input CreateCertificateTypeInput {
+  name: String!
+  regulationText: String!
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+  certificateBodyToken: String
+}

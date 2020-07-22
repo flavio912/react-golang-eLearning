@@ -8,7 +8,7 @@ type CertificateTypeResolver struct {
 
 func (c *CertificateTypeResolver) UUID() gentypes.UUID { return c.CertificateType.UUID }
 func (c *CertificateTypeResolver) Name() string        { return c.CertificateType.Name }
-func (c *CertificateTypeResolver) CreatedtAt() string  { return c.CertificateType.CreatedAt }
+func (c *CertificateTypeResolver) CreatedAt() string   { return c.CertificateType.CreatedAt }
 func (c *CertificateTypeResolver) CertificateBodyImageURL() *string {
 	return c.CertificateType.CertificateBodyImageURL
 }
