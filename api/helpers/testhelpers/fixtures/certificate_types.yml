@@ -1,0 +1,20 @@
+- uuid: e281f319-554a-459a-8ac0-9c13508461ce
+  name: Avatar
+  created_at: 2020-01-08 13:53:37.338775+00
+  regulation_text: You are the master of all 4 elements, Water, Earth, Fire and Air
+  requires_caa_no: false
+  show_training_section: true
+
+- uuid: 0f18892b-94b7-412c-8b4a-1719afcaee6b
+  name: Lead Dev
+  created_at: 2020-01-08 13:53:37.438775+00
+  regulation_text: Basically, @tom.emmerson
+  requires_caa_no: true
+  show_training_section: true
+
+- uuid: 11ac9a4d-555e-49ff-9875-5a616419bdd8
+  name: Quantum Physics PhD
+  created_at: 2020-01-08 13:53:37.438775+00
+  regulation_text: yayy now you can teach everyone else about qft
+  requires_caa_no: true
+  show_training_section: false

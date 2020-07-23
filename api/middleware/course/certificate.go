@@ -81,7 +81,7 @@ func filterCertificateTypes(query *gorm.DB, filter *gentypes.CertificateTypeFilt
 			query = query.Where("regulation_text ILIKE ?", "%%"+*filter.RegulationText+"%%")
 		}
 		if filter.RequiresCAANo != nil {
-			query = query.Where("requires_caano = ?", *filter.RequiresCAANo)
+			query = query.Where("requires_caa_no = ?", *filter.RequiresCAANo)
 		}
 		if filter.ShowTrainingSection != nil {
 			query = query.Where("show_training_section = ?", *filter.ShowTrainingSection)
