@@ -142,7 +142,7 @@ func (u *usersRepoImpl) UpdateIndividual(input gentypes.UpdateIndividualInput) (
 	if err := tx.Model(&models.Individual{}).Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
 		u.Logger.Logf(sentry.LevelError, err, "Unable to update individual: %s", input.UUID)
 		tx.Rollback()
-		return models.Individual{}, &errors.ErrWhileHandling
+		return models.Individual{}, &errors.ErrUpdateFailed
 	}
 
 	if err := tx.Commit().Error; err != nil {
