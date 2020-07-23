@@ -158,3 +158,27 @@ func (u *usersRepoImpl) UpdateIndividual(input gentypes.UpdateIndividualInput) (
 
 	return ind, nil
 }
+
+func (u *usersRepoImpl) DeleteIndividual(uuid gentypes.UUID) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			u.Logger.LogMessage(sentry.LevelFatal, "DeleteIndividual: Forced to recover")
+		}
+	}()
+
+	if err := tx.Delete(models.Individual{}, "uuid = ?", uuid).Error; err != nil {
+		u.Logger.Logf(sentry.LevelError, err, "Unable to delete individual: %s", uuid)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
+}

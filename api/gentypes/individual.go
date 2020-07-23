@@ -30,6 +30,10 @@ type UpdateIndividualInput struct {
 	Password  *string
 }
 
+type DeleteIndividualInput struct {
+	UUID UUID
+}
+
 type IndividualFilter struct {
 	UserFilter
 	Email *string `valid:"email"`

@@ -40,3 +40,7 @@ input UpdateIndividualInput {
 type UpdateIndividualResponse {
   user: User
 }
+
+input DeleteIndividualInput {
+  uuid: UUID!
+}

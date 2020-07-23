@@ -254,6 +254,27 @@ func (_m *UsersRepository) Delegate(uuid gentypes.UUID) (models.Delegate, error)
 	return r0, r1
 }
 
+// DeleteIndividual provides a mock function with given fields: uuid
+func (_m *UsersRepository) DeleteIndividual(uuid gentypes.UUID) (bool, error) {
+	ret := _m.Called(uuid)
+
+	var r0 bool
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) bool); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Get(0).(bool)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // DeleteManager provides a mock function with given fields: uuid
 func (_m *UsersRepository) DeleteManager(uuid gentypes.UUID) (bool, error) {
 	ret := _m.Called(uuid)

@@ -771,3 +771,10 @@ func (m *MutationResolver) UpdateIndividual(ctx context.Context, args struct {
 		User: user_res,
 	}, err
 }
+
+func (m *MutationResolver) DeleteIndividual(ctx context.Context, args struct {
+	Input gentypes.DeleteIndividualInput
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.UsersApp.DeleteIndividual(args.Input)
+}

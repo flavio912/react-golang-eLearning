@@ -60,3 +60,11 @@ func (u *usersAppImpl) Individuals(page *gentypes.Page, filter *gentypes.Individ
 	individuals, pageInfo, err := u.usersRepository.Individuals(page, filter, orderBy)
 	return u.individualsToGentype(individuals), pageInfo, err
 }
+
+func (u *usersAppImpl) DeleteIndividual(input gentypes.DeleteIndividualInput) (bool, error) {
+	if !u.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	return u.usersRepository.DeleteIndividual(input.UUID)
+}

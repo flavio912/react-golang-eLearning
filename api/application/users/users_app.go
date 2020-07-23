@@ -34,6 +34,7 @@ type UsersApp interface {
 
 	CreateIndividual(input gentypes.CreateIndividualInput) (gentypes.User, error)
 	UpdateIndividual(input gentypes.UpdateIndividualInput) (gentypes.User, error)
+	DeleteIndividual(input gentypes.DeleteIndividualInput) (bool, error)
 	Individual(uuid gentypes.UUID) (gentypes.Individual, error)
 	Individuals(page *gentypes.Page, filter *gentypes.IndividualFilter, orderBy *gentypes.OrderBy) ([]gentypes.Individual, gentypes.PageInfo, error)
 
