@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
 
 const UPLOAD_REQUEST = gql`
   mutation UploadRequest($fileType: String!, $contentLength: Int!) {
-    answerImageUploadRequest(
+    voiceoverUploadRequest(
       input: { fileType: $fileType, contentLength: $contentLength }
     ) {
       url
@@ -69,18 +69,15 @@ function AudioVideo({ state, setState }) {
                   }}
                   label="Upload Voiceover"
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>Upload Voiceover</MenuItem>
                 </Select>
               </FormControl>
               <Grid item sm={12} className={classes.uploadButton}>
                 <UploadFile
                   uploadMutation={UPLOAD_REQUEST}
-                  onUploaded={(successToken, url) => {}}
+                  onUploaded={(successToken, url) => {
+                    setState({ voiceoverSuccessToken: '' });
+                  }}
                 />
               </Grid>
             </CardContent>
@@ -100,12 +97,7 @@ function AudioVideo({ state, setState }) {
                   }}
                   label="Wistia URL"
                 >
-                  <MenuItem value="">
-                    <em>None</em>
-                  </MenuItem>
-                  <MenuItem value={10}>Ten</MenuItem>
-                  <MenuItem value={20}>Twenty</MenuItem>
-                  <MenuItem value={30}>Thirty</MenuItem>
+                  <MenuItem value={10}>Wistia URL</MenuItem>
                 </Select>
               </FormControl>
               <Typography>
@@ -139,7 +131,7 @@ function AudioVideo({ state, setState }) {
                   label="Transcript"
                   name="transcript"
                   onChange={inp => {
-                    setState('transcript', inp.target.value);
+                    setState({ transcript: inp.target.value });
                   }}
                   variant="outlined"
                 />

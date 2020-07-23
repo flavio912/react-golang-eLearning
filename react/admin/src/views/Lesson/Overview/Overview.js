@@ -57,7 +57,7 @@ function Overview({ state, setState }) {
                   name="lesson"
                   value={state.name}
                   onChange={inp => {
-                    setState('name', inp.target.value);
+                    setState({ name: inp.target.value });
                   }}
                   placeholder="Lesson Name"
                   variant="outlined"
@@ -95,7 +95,7 @@ function Overview({ state, setState }) {
                   name="description"
                   value={state.text}
                   onChange={inp => {
-                    setState('text', inp.target.value);
+                    setState({ text: inp.target.value });
                   }}
                   placeholder="Lesson Description"
                   variant="outlined"

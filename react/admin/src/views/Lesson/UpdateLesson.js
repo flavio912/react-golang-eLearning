@@ -58,8 +58,8 @@ function UpdateLesson({ match, history }) {
 
   const [state, setState] = useState(initState);
 
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
+  const updateState = updates => {
+    var updatedState = { ...state, ...updates };
     setState(updatedState);
   };
 

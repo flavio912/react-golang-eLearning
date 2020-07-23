@@ -30,8 +30,8 @@ function CreateLesson({ match, history }) {
   const [state, setState] = useState(initState);
   const [createLesson, { error }] = useMutation(CREATE_LESSON);
 
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
+  const updateState = updates => {
+    var updatedState = { ...state, ...updates };
     setState(updatedState);
   };
 
