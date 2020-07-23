@@ -49,6 +49,7 @@ const SAVE_ONLINE_COURSE = gql`
     $requirements: [String!]
     $bannerImageSuccess: String
     $categoryUUID: UUID
+    $structure: [CourseItem!]
   ) {
     saveOnlineCourse(
       input: {
@@ -64,6 +65,7 @@ const SAVE_ONLINE_COURSE = gql`
         requirements: $requirements
         bannerImageSuccess: $bannerImageSuccess
         categoryUUID: $categoryUUID
+        structure: $structure
       }
     ) {
       id
@@ -90,6 +92,11 @@ const GET_COURSE = gql`
         name
         uuid
       }
+      syllabus {
+        uuid
+        name
+        type
+      }
     }
   }
 `;
@@ -111,7 +118,8 @@ var initState = {
   priceType: 'paid',
   bannerImageURL: undefined,
   bannerImageSuccess: undefined,
-  categoryUUID: undefined
+  categoryUUID: undefined,
+  structure: [{type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9'}],
 };
 
 function CreateCourse({ match, history }) {
@@ -125,7 +133,7 @@ function CreateCourse({ match, history }) {
     { value: 'pricing', label: 'Pricing' }
   ];
 
-  const handleTabsChange = (event, value) => {
+  const handleTabsChange = (_, value) => {
     history.push(value);
   };
 
@@ -154,7 +162,8 @@ function CreateCourse({ match, history }) {
       requirements: data.course.requirements,
       bannerImageURL: data.course.bannerImageURL,
       price: data.course.price,
-      categoryUUID: data.course.categoryUUID
+      categoryUUID: data.course.categoryUUID,
+      syllabus: data.course.syllabus,
     });
   }, [data, loading, error]);
 
@@ -183,7 +192,8 @@ function CreateCourse({ match, history }) {
           whatYouLearn: state.whatYouLearn,
           requirements: state.requirements,
           bannerImageSuccess: state.bannerImageSuccess,
-          price: state.price
+          price: state.price,
+          structure: state.structure,
         }
       });
 

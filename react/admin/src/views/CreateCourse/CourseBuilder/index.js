@@ -7,15 +7,18 @@ import {
   Divider,
   Typography,
   TextField,
-  InputAdornment,
+  InputAdornment
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
+import { gql } from 'apollo-boost';
+import { useMutation } from '@apollo/react-hooks';
+import { useQuery } from '@apollo/react-hooks';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
-import ReoderableList from 'src/components/ReorderableList/ReorderableList';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
+import ReoderableList from 'src/components/ReorderableList/ReorderableList';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -23,75 +26,171 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
-  },
+  }
 }));
 
-const lessons = [
-  {
-    uuid: '1231231231',
-    name: 'Firesafety Module 1 - Lesson 1',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: '#123'
-      },
-      {
-        name: 'HEALTH & SAFETY',
-        color: '#123'
+const GET_MODULES = gql`
+  query SearchModules($page: Page!) {
+    modules(page: $page) {
+      edges {
+        uuid
+        name
+        type
+        syllabus {
+          uuid
+          name
+        }
       }
-    ]
-  },
-  {
-    uuid: '1231231231',
-    name: 'Firesafety Module 1 - Lesson 2',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: '#123'
+      pageInfo {
+        total
+        limit
+        offset
+        given
       }
-    ]
-  },
-  {
-    uuid: '1231231231',
-    name: 'Firesafety Module 1 - Lesson 3',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: '#123'
-      }
-    ]
+    }
   }
-];
+`;
+
+const SEARCH = gql`
+  query SearchSyllabus($name: String!, $page: Page!) {
+    searchSyllabus(filter: { name: $name }, page: $page) {
+      edges {
+        uuid
+        name
+        type
+        complete
+      }
+      pageInfo {
+        total
+        limit
+        offset
+        given
+      }
+    }
+  }
+`;
+
+function useModulesQuery(page) {
+  const { error, data } = useQuery(GET_MODULES, {
+    variables: {
+      page,
+    }
+  });
+
+  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo) {
+    error && console.error('Could not get data', data, error);
+    return {
+      resultItems: [],
+      pageInfo: {
+        total: 1,
+        offset: 0,
+        limit: 4,
+        given: 0
+      }
+    };
+  }
+
+  const resultItems = data.modules.edges.map(module => ({
+    uuid: module?.uuid ?? '',
+    name: module?.name ?? '',
+    type: module?.type ?? '',
+    syllabus: module?.syllabus ?? ''
+  }));
+
+  const pageInfo = {
+    total: data.modules.pageInfo?.total,
+    offset: data.modules.pageInfo.offset,
+    limit: data.modules.pageInfo.limit,
+    given: data.modules.pageInfo.given
+  };
+
+  return { resultItems, pageInfo };
+}
+
+function useSearchQuery(text, page) {
+  const { error, data } = useQuery(SEARCH, {
+    variables: {
+      name: text,
+      page: page
+    }
+  });
+
+  if (!data || !data.searchSyllabus || !data.searchSyllabus.edges || !data.searchSyllabus.pageInfo) {
+    error && console.error('Could not get data', data, error);
+    return {
+      resultItems: [],
+      pageInfo: {
+        total: 1,
+        offset: 0,
+        limit: 4,
+        given: 0
+      }
+    };
+  }
+
+  const resultItems = data.searchSyllabus.edges.map(syllabus => ({
+    uuid: syllabus?.uuid ?? '',
+    name: syllabus?.name ?? '',
+    text: syllabus?.text ?? '',
+    tags: syllabus?.tags ?? ''
+  }));
+
+  const pageInfo = {
+    total: data.searchSyllabus.pageInfo?.total,
+    offset: data.searchSyllabus.pageInfo.offset,
+    limit: data.searchSyllabus.pageInfo.limit,
+    given: data.searchSyllabus.pageInfo.given
+  };
+
+  return { resultItems, pageInfo };
+}
 
 function CourseBuilder({ state, setState }) {
   const classes = useStyles();
 
-  const onDelete = () => {};
+  const [searchText, setSearchText] = React.useState('');
+  const page = { total: 4, offset: 0, given: 4 };
+  const searchResults = useSearchQuery(searchText, page);
 
-  const [ items, setItems ] = React.useState([
-    {id: 0, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-    {id: 1, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-    {id: 2, component: <ReoderableListItem text="text" onDelete={onDelete} />},
-  ]);
+  const [courseStructure, setCourseStructure] = React.useState([]);
+  const { resultItems } = useModulesQuery(page);
 
-  const [ dropdowns, setDropdowns ] = React.useState([
-    {id: 0, component: <ReoderableDropdown title="Module 1" items={items} setItems={setItems} />},
-    {id: 1, component: <ReoderableDropdown title="Module 2" items={items} setItems={setItems} />},
-    {id: 2, component: <ReoderableDropdown title="Module 3" items={items} setItems={setItems} />},
-  ]);
+  // Add module syllabus and name
+  const addModule = (array) => {
+    array.map((element) => {
+      if (element.type === 'module') {
+        const module = resultItems.find(x => x.uuid === element.uuid);
+        if (module && !courseStructure.find(x => x.uuid === module.uuid)) {        
+          setCourseStructure([
+            ...courseStructure,
+            module,
+          ])
+        }
+      }
+    })
+  }
+
+  console.log('strut: ', courseStructure)
+  React.useEffect(() => {
+    if (state.syllabus) {
+      addModule(state.syllabus);
+    } else if (state.structure) {
+      addModule(state.structure);
+    }
+  })
+
+  const onDelete = uuid => {
+    setState({
+      syllabus: state.syllabus.filter(item => item.uuid !== uuid)
+    });
+  };
 
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
         <Grid container spacing={4} direction={'column'}>
           <Grid item className={classes.heading}>
-            <Typography
+          <Typography
               variant="h3"
               color="textPrimary"
               className={classes.header}
@@ -113,31 +212,44 @@ function CourseBuilder({ state, setState }) {
                 className={classes.noPadding}
               />
               <CardContent>
-              <Autocomplete
-                freeSolo
-                options={[]}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    placeholder="Search Modules, Lessons or Tests"
-                    InputProps={{
-                      startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                      )
-                    }}
-                  /> 
-                )}
-              />
+                <Autocomplete
+                  freeSolo
+                  options={searchResults.resultItems}
+                  getOptionLabel={option => option.name}
+                  onChange={(_, { uuid, name, type }) =>
+                    setState({
+                      syllabus: [...state.syllabus, { uuid, name, type }]
+                    })
+                  }
+                  renderInput={params => (
+                    <TextField
+                      {...params}
+                      placeholder="Search Modules, Lessons or Tests"
+                      onChange={inp => {
+                        setSearchText(inp.target.value);
+                      }}
+                      InputProps={{
+                        ...params.InputProps,
+                        startAdornment: (
+                          <InputAdornment position="start">
+                            <SearchIcon />
+                          </InputAdornment>
+                        )
+                      }}
+                    />
+                  )}
+                />
               </CardContent>
             </Card>
           </Grid>
           <Grid item>
-          <SuggestedTable
-            title="Suggested Lessons based on Tags"
-            lessons={lessons}
-          />
+            <SuggestedTable
+              title="Suggested Modules based on Tags"
+              suggestions={resultItems.slice(0, 3)}
+              onAdd={({ uuid, name }) =>
+                setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
+              }
+            />
           </Grid>
           <Grid item>
             <Card>
@@ -145,8 +257,35 @@ function CourseBuilder({ state, setState }) {
               <Divider />
               <CardContent>
                 <ReoderableList
-                  items={dropdowns}
-                  setItems={setDropdowns}
+                  items={courseStructure.map((module) => ({
+                    id: module.uuid,
+                    component: (
+                      <ReoderableDropdown
+                        title={module.name}
+                        items={module.syllabus && module.syllabus.map((item) => ({
+                          id: item.uuid,
+                          component: (
+                            <ReoderableListItem
+                              uuid={item.uuid}
+                              text={item.name}
+                              onDelete={onDelete}
+                            />
+                          )
+                        }))}
+                        setItems={(items) => {
+                          const newModule = {
+                            ...module,
+                            syllabus: items,
+                          };
+                          setCourseStructure([
+                            ...courseStructure,
+                            ...newModule
+                          ])
+                        }}
+                      />
+                    )
+                  }))}
+                  setItems={setCourseStructure}
                 />
               </CardContent>
             </Card>

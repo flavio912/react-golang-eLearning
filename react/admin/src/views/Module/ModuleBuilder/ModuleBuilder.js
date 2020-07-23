@@ -28,49 +28,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const lessons = [
-  {
-    uuid: '1231231231',
-    name: 'Firesafety Module 1 - Lesson 1',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      },
-      {
-        name: 'HEALTH & SAFETY',
-        color: 'default'
-      }
-    ]
-  },
-  {
-    uuid: '1231231232',
-    name: 'Firesafety Module 1 - Lesson 2',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      }
-    ]
-  },
-  {
-    uuid: '1231231233',
-    name: 'Firesafety Module 1 - Lesson 3',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      }
-    ]
-  }
-];
-
 const GET_LESSONS = gql`
   query SearchLessons($tags: [UUID]) {
     lessons(filter: { tags: $tags }) {
@@ -78,6 +35,7 @@ const GET_LESSONS = gql`
         uuid
         name
         text
+        type
         tags {
           uuid
         }
@@ -94,7 +52,7 @@ const GET_LESSONS = gql`
 
 const SEARCH = gql`
   query SearchSyllabus($name: String!, $page: Page!) {
-    searchSyllabus(filter: { name: $name }, page: $page) {
+    searchSyllabus(filter: { name: $name, excludeModule: true }, page: $page) {
       edges {
         uuid
         name
@@ -136,6 +94,7 @@ function useSuggestedQuery(text, page) {
     uuid: lesson?.uuid ?? '',
     name: lesson?.name ?? '',
     text: lesson?.text ?? '',
+    type: lesson?.type ?? '',
     tags: lesson?.tags ?? ''
   }));
 
@@ -191,7 +150,7 @@ function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
   const [searchText, setSearchText] = React.useState('');
-  const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
+  const page = { total: 4, offset: 0, given: 4 };
   const searchResults = useSearchQuery(searchText, page);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
@@ -260,7 +219,7 @@ function ModuleBuilder({ state, setState }) {
           <Grid item>
             <SuggestedTable
               title="Suggested Lessons based on Tags"
-              lessons={suggestedLessons.resultItems.slice(0, 3)}
+              suggestions={suggestedLessons.resultItems.slice(0, 3)}
               onAdd={({ uuid, name }) =>
                 setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
               }
