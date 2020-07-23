@@ -34,6 +34,7 @@ const GET_MODULE = gql`
       syllabus {
         name
         uuid
+        type
       }
       complete
     }
@@ -44,9 +45,9 @@ const UPDATE_MODULE = gql`
   mutation UpdateModule(
     $uuid: UUID!
     $tags: [UUID!]
-    $name: String!
-    $description: String!
-    $transcript: String!
+    $name: String
+    $description: String
+    $transcript: String
     $bannerImageSuccessToken: String
     $voiceoverSuccessToken: String
     $video: VideoInput
@@ -81,7 +82,7 @@ const initState = {
   transcript: '',
   voiceoverSuccessToken: undefined,
   video: { type: 'WISTIA', url: '' },
-  syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }],
+  syllabus: [],
   complete: false
 };
 
@@ -134,30 +135,23 @@ function UpdateModule({ match, history }) {
   }
 
   const onUpdate = async () => {
-    console.log(state);
     try {
       await updateModule({
         variables: {
           uuid: ident,
           name: state.name,
-          tags: state.tags,
+          tags: state.tags.map(({ uuid }) => uuid),
           description: state.description,
           transcript: state.transcript,
           bannerImageSuccessToken: state.bannerImageSuccessToken,
           voiceoverSuccessToken: state.voiceoverSuccessToken,
           video: state.video,
-          syllabus: state.syllabus.map(({ uuid }) => ({
-            type: 'lesson',
-            uuid
-          })),
-          complete: state.complete
+          syllabus: state.syllabus.map(({ uuid, type }) => ({ type, uuid })),
         }
       });
       refetch();
     } catch (err) {}
   };
-
-  const onPublish = () => {};
 
   return (
     <>

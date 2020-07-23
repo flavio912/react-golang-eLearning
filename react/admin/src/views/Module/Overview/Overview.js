@@ -71,7 +71,10 @@ function Overview({ state, setState }) {
                     <Grid item>
                       <TagsInput
                         allowNew
-                        onChange={tags => setState({ tags: tags })}
+                        onChange={tags => {
+                          setState({ tags: tags })
+                          console.log('tasgs: ', tags)
+                        }}
                       />
                     </Grid>
                   </Grid>
