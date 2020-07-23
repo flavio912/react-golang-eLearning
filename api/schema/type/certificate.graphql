@@ -21,6 +21,11 @@ type CAANumber {
   used: Boolean!
 }
 
+type CAANumberPage implements PaginatedQuery{
+  edges: [CAANumber]
+  pageInfo: PageInfo
+}
+
 input CreateCAANumberInput {
   identifier: String!
 }

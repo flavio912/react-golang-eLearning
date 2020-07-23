@@ -461,3 +461,31 @@ func (q *QueryResolver) CertificateTypes(
 		PageInfo:         &pageInfo,
 	})
 }
+
+func (q *QueryResolver) CAANumbers(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.CAANumberFilter
+	}) (*CAANumberPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	numbers, pageInfo, err := app.CourseApp.CAANumbers(args.Page, args.Filter)
+
+	if err != nil {
+		return &CAANumberPageResolver{}, err
+	}
+
+	var resolvers []*CAANumberResolver
+	for _, no := range numbers {
+		resolvers = append(resolvers, &CAANumberResolver{
+			CAANumber: no,
+		})
+	}
+
+	return &CAANumberPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, nil
+}

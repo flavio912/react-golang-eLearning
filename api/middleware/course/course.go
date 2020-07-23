@@ -43,6 +43,11 @@ type CoursesRepository interface {
 		page *gentypes.Page,
 		filter *gentypes.CertificateTypeFilter) ([]models.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error)
+	CAANumber(uuid gentypes.UUID) (models.CAANumber, error)
+	CAANumbers(
+		page *gentypes.Page,
+		filter *gentypes.CAANumberFilter) ([]models.CAANumber, gentypes.PageInfo, error)
+
 	CreateCAANumber(identifier string) (models.CAANumber, error)
 
 	RequirementBullets(courseID uint) ([]models.RequirementBullet, error)

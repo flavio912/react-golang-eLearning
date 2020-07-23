@@ -39,6 +39,57 @@ func (_m *CoursesRepository) AreInCourses(courseIDs []uint, uuids []gentypes.UUI
 	return r0, r1
 }
 
+// CAANumber provides a mock function with given fields: uuid
+func (_m *CoursesRepository) CAANumber(uuid gentypes.UUID) (models.CAANumber, error) {
+	ret := _m.Called(uuid)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) models.CAANumber); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CAANumbers provides a mock function with given fields: page, filter
+func (_m *CoursesRepository) CAANumbers(page *gentypes.Page, filter *gentypes.CAANumberFilter) ([]models.CAANumber, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter)
+
+	var r0 []models.CAANumber
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.CAANumberFilter) []models.CAANumber); ok {
+		r0 = rf(page, filter)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.CAANumber)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.CAANumberFilter) gentypes.PageInfo); ok {
+		r1 = rf(page, filter)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.CAANumberFilter) error); ok {
+		r2 = rf(page, filter)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // Categories provides a mock function with given fields: page, text
 func (_m *CoursesRepository) Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error) {
 	ret := _m.Called(page, text)

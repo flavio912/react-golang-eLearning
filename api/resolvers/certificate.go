@@ -98,3 +98,11 @@ func (c *CAANumberResolver) UUID() gentypes.UUID { return c.CAANumber.UUID }
 func (c *CAANumberResolver) CreatedAt() string   { return c.CAANumber.CreatedAt }
 func (c *CAANumberResolver) Identifier() string  { return c.CAANumber.Identifier }
 func (c *CAANumberResolver) Used() bool          { return c.CAANumber.Used }
+
+type CAANumberPageResolver struct {
+	edges    *[]*CAANumberResolver
+	pageInfo *PageInfoResolver
+}
+
+func (r *CAANumberPageResolver) PageInfo() *PageInfoResolver  { return r.pageInfo }
+func (r *CAANumberPageResolver) Edges() *[]*CAANumberResolver { return r.edges }

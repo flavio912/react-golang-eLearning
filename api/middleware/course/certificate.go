@@ -57,6 +57,17 @@ func (c *coursesRepoImpl) CreateCertificateType(input gentypes.CreateCertificate
 	return certType, nil
 }
 
+func (c *coursesRepoImpl) CAANumber(uuid gentypes.UUID) (models.CAANumber, error) {
+	var no models.CAANumber
+	query := database.GormDB.Model(&models.CAANumber{}).Where("uuid = ?", uuid).Find(&no)
+	if query.Error != nil {
+		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find CAANumber: %s", uuid)
+		return models.CAANumber{}, &errors.ErrNotFound
+	}
+
+	return no, nil
+}
+
 func (c *coursesRepoImpl) CreateCAANumber(identifier string) (models.CAANumber, error) {
 	no := models.CAANumber{
 		Identifier: identifier,
@@ -118,5 +129,47 @@ func (c *coursesRepoImpl) CertificateTypes(
 		Limit:  limit,
 		Offset: offset,
 		Given:  int32(len(certTypes)),
+	}, nil
+}
+
+func filterCAANumbers(query *gorm.DB, filter *gentypes.CAANumberFilter) *gorm.DB {
+	if filter != nil {
+		if helpers.StringNotNilOrEmpty(filter.Identifier) {
+			query = query.Where("identifier ILIKE ?", "%%"+*filter.Identifier+"%%")
+		}
+		if filter.Used != nil {
+			query = query.Where("used = ?", *filter.Used)
+		}
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) CAANumbers(
+	page *gentypes.Page,
+	filter *gentypes.CAANumberFilter) ([]models.CAANumber, gentypes.PageInfo, error) {
+	var numbers []models.CAANumber
+
+	query := filterCAANumbers(database.GormDB, filter)
+
+	var count int32
+	countErr := query.Model(&models.CAANumber{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		c.Logger.Log(sentry.LevelWarning, countErr, "Unable to count CAANumbers")
+		return numbers, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := middleware.GetPage(query, page)
+	query = query.Find(&numbers)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to find CAANumbers")
+		return []models.CAANumber{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
+	return numbers, gentypes.PageInfo{
+		Total:  count,
+		Limit:  limit,
+		Offset: offset,
+		Given:  int32(len(numbers)),
 	}, nil
 }

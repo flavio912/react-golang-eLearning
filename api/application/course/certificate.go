@@ -56,6 +56,14 @@ func (c *courseAppImpl) caaNumberToGentype(no models.CAANumber) gentypes.CAANumb
 	}
 }
 
+func (c *courseAppImpl) caaNumbersToGentypes(numbers []models.CAANumber) []gentypes.CAANumber {
+	gens := make([]gentypes.CAANumber, len(numbers))
+	for i, no := range numbers {
+		gens[i] = c.caaNumberToGentype(no)
+	}
+	return gens
+}
+
 func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) {
 	token, err := auth.GenerateCertificateToken(historicalCourseUUID)
 
@@ -220,4 +228,15 @@ func (c *courseAppImpl) CertificateTypes(
 
 	certTypes, pageInfo, err := c.coursesRepository.CertificateTypes(page, filter)
 	return c.certificatesTypeToGentype(certTypes), pageInfo, err
+}
+
+func (c *courseAppImpl) CAANumbers(
+	page *gentypes.Page,
+	filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CAANumber{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	numbers, pageInfo, err := c.coursesRepository.CAANumbers(page, filter)
+	return c.caaNumbersToGentypes(numbers), pageInfo, err
 }
