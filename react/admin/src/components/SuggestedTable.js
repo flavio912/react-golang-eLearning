@@ -86,7 +86,11 @@ function SuggestedTable({ title, lessons, onAdd }) {
                 </TableCell>
                 <TableCell padding="none">
                   {lesson.tags && lesson.tags.map(tag => (
-                    <Chip key={tag.name} color={tag.color} label={tag.name} />
+                    <Chip
+                      key={tag.name}
+                      style={{ backgroundColor: tag.color }}
+                      label={tag.name}
+                    />
                   ))}
                 </TableCell>
                 <TableCell align="right">
