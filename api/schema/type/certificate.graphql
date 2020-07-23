@@ -35,6 +35,11 @@ type CertificateType {
   showTrainingSection: Boolean!
 }
 
+type CertificateTypePage implements PaginatedQuery {
+  edges: [CertificateType]
+  pageInfo: PageInfo
+}
+
 input CreateCertificateTypeInput {
   name: String!
   regulationText: String!

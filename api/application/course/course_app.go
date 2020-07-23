@@ -84,6 +84,10 @@ type CourseApp interface {
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
 
+	CertificateType(uuid gentypes.UUID) (gentypes.CertificateType, error)
+	CertificateTypes(
+		page *gentypes.Page,
+		filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
 	CertificateInfo(token string) (gentypes.CertficateInfo, error)
 	CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error)

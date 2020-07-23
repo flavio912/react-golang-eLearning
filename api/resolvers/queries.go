@@ -443,3 +443,21 @@ func (q *QueryResolver) Categories(
 		Categories: &categories,
 	})
 }
+
+func (q *QueryResolver) CertificateTypes(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.CertificateTypeFilter
+	}) (*CertificateTypePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certTypes, pageInfo, err := app.CourseApp.CertificateTypes(args.Page, args.Filter)
+	if err != nil {
+		return &CertificateTypePageResolver{}, err
+	}
+
+	return NewCertificateTypePageResolver(ctx, NewCertificateTypePageArgs{
+		CertificateTypes: &certTypes,
+		PageInfo:         &pageInfo,
+	})
+}

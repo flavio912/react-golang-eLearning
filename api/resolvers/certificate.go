@@ -1,9 +1,42 @@
 package resolvers
 
-import "gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+import (
+	"context"
+
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+)
 
 type CertificateTypeResolver struct {
 	CertificateType gentypes.CertificateType
+}
+
+type NewCertificateTypeArgs struct {
+	CertificateTypeUUID *gentypes.UUID
+	CertificateType     *gentypes.CertificateType
+}
+
+func NewCertificateTypeResolver(ctx context.Context, args NewCertificateTypeArgs) (*CertificateTypeResolver, error) {
+	switch {
+	case args.CertificateTypeUUID != nil:
+		app := auth.AppFromContext(ctx)
+		certType, err := app.CourseApp.CertificateType(*args.CertificateTypeUUID)
+
+		if err != nil {
+			return &CertificateTypeResolver{}, err
+		}
+		return &CertificateTypeResolver{
+			CertificateType: certType,
+		}, nil
+
+	case args.CertificateType != nil:
+		return &CertificateTypeResolver{
+			CertificateType: *args.CertificateType,
+		}, nil
+	default:
+		return &CertificateTypeResolver{}, &errors.ErrUnableToResolve
+	}
 }
 
 func (c *CertificateTypeResolver) UUID() gentypes.UUID { return c.CertificateType.UUID }
@@ -17,6 +50,45 @@ func (c *CertificateTypeResolver) RequiresCAANo() bool    { return c.Certificate
 func (c *CertificateTypeResolver) ShowTrainingSection() bool {
 	return c.CertificateType.ShowTrainingSection
 }
+
+type CertificateTypePageResolver struct {
+	edges    *[]*CertificateTypeResolver
+	pageInfo *PageInfoResolver
+}
+
+type NewCertificateTypePageArgs struct {
+	CertificateTypes *[]gentypes.CertificateType
+	PageInfo         *gentypes.PageInfo
+}
+
+func NewCertificateTypePageResolver(ctx context.Context, args NewCertificateTypePageArgs) (*CertificateTypePageResolver, error) {
+	var resolvers []*CertificateTypeResolver
+
+	switch {
+	case args.CertificateTypes != nil:
+		for _, certType := range *args.CertificateTypes {
+			res, err := NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+				CertificateType: &certType,
+			})
+
+			if err != nil {
+				return &CertificateTypePageResolver{}, err
+			}
+
+			resolvers = append(resolvers, res)
+		}
+	}
+
+	return &CertificateTypePageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: args.PageInfo,
+		},
+	}, nil
+}
+
+func (r *CertificateTypePageResolver) PageInfo() *PageInfoResolver        { return r.pageInfo }
+func (r *CertificateTypePageResolver) Edges() *[]*CertificateTypeResolver { return r.edges }
 
 type CAANumberResolver struct {
 	CAANumber gentypes.CAANumber

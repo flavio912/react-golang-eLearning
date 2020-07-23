@@ -37,6 +37,15 @@ func (c *courseAppImpl) certificateTypeToGentype(certType models.CertificateType
 		CertificateBodyImageURL: cert_url,
 	}
 }
+
+func (c *courseAppImpl) certificatesTypeToGentype(certTypes []models.CertificateType) []gentypes.CertificateType {
+	gens := make([]gentypes.CertificateType, len(certTypes))
+	for i, cert := range certTypes {
+		gens[i] = c.certificateTypeToGentype(cert)
+	}
+	return gens
+}
+
 func (c *courseAppImpl) caaNumberToGentype(no models.CAANumber) gentypes.CAANumber {
 	createdAt := no.CreatedAt.Format(time.RFC3339)
 	return gentypes.CAANumber{
@@ -191,4 +200,24 @@ func (c *courseAppImpl) CreateCAANumber(input gentypes.CreateCAANumberInput) (ge
 
 	number, err := c.coursesRepository.CreateCAANumber(input.Identifier)
 	return c.caaNumberToGentype(number), err
+}
+
+func (c *courseAppImpl) CertificateType(uuid gentypes.UUID) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	certType, err := c.coursesRepository.CertificateType(uuid)
+	return c.certificateTypeToGentype(certType), err
+}
+
+func (c *courseAppImpl) CertificateTypes(
+	page *gentypes.Page,
+	filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CertificateType{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	certTypes, pageInfo, err := c.coursesRepository.CertificateTypes(page, filter)
+	return c.certificatesTypeToGentype(certTypes), pageInfo, err
 }

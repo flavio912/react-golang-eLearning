@@ -51,3 +51,10 @@ func (c *CreateCertificateTypeInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }
+
+type CertificateTypeFilter struct {
+	Name                *string
+	RegulationText      *string
+	RequiresCAANo       *bool
+	ShowTrainingSection *bool
+}

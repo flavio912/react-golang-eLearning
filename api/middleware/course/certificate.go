@@ -2,9 +2,12 @@ package course
 
 import (
 	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -67,4 +70,53 @@ func (c *coursesRepoImpl) CreateCAANumber(identifier string) (models.CAANumber, 
 	}
 
 	return no, nil
+}
+
+func filterCertificateTypes(query *gorm.DB, filter *gentypes.CertificateTypeFilter) *gorm.DB {
+	if filter != nil {
+		if helpers.StringNotNilOrEmpty(filter.Name) {
+			query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+		}
+		if helpers.StringNotNilOrEmpty(filter.RegulationText) {
+			query = query.Where("regulation_text ILIKE ?", "%%"+*filter.RegulationText+"%%")
+		}
+		if filter.RequiresCAANo != nil {
+			query = query.Where("requires_caano = ?", *filter.RequiresCAANo)
+		}
+		if filter.ShowTrainingSection != nil {
+			query = query.Where("show_training_section = ?", *filter.ShowTrainingSection)
+		}
+	}
+
+	return query
+}
+
+func (c *coursesRepoImpl) CertificateTypes(
+	page *gentypes.Page,
+	filter *gentypes.CertificateTypeFilter) ([]models.CertificateType, gentypes.PageInfo, error) {
+	var certTypes []models.CertificateType
+
+	query := filterCertificateTypes(database.GormDB, filter)
+
+	var count int32
+	countErr := query.Model(&models.CertificateType{}).Limit(middleware.MaxPageLimit).Offset(0).Count(&count).Error
+	if countErr != nil {
+		c.Logger.Log(sentry.LevelWarning, countErr, "Unable to count certificate types")
+		return certTypes, gentypes.PageInfo{}, &errors.ErrWhileHandling
+	}
+
+	query, limit, offset := middleware.GetPage(query, page)
+	query = query.Find(&certTypes)
+
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get certificate types")
+		return []models.CertificateType{}, gentypes.PageInfo{}, &errors.ErrNotAllFound
+	}
+
+	return certTypes, gentypes.PageInfo{
+		Total:  count,
+		Limit:  limit,
+		Offset: offset,
+		Given:  int32(len(certTypes)),
+	}, nil
 }

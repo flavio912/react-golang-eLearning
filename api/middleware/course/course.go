@@ -39,6 +39,9 @@ type CoursesRepository interface {
 	UpdateClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (models.Course, error)
 
 	CertificateType(uuid gentypes.UUID) (models.CertificateType, error)
+	CertificateTypes(
+		page *gentypes.Page,
+		filter *gentypes.CertificateTypeFilter) ([]models.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error)
 	CreateCAANumber(identifier string) (models.CAANumber, error)
 
