@@ -157,9 +157,14 @@ function MobileMenu({
                     />
                 </div>
                 )}
-                <FontAwesomeIcon icon={faBars} size="lg" onClick={() => (
-                    selected ? setSelected(undefined) : setSelected(tabs[0])
-                )}/>
+                <Icon
+                    name={selected ? 'CloseHamburger' : 'MenuHamburger'}
+                    onClick={() => (
+                        selected ? setSelected(undefined) : setSelected(tabs[0])
+                    )}
+                    style={{ cursor: 'pointer' }}
+                    size={25}
+                />
             </div>
             {selected && (
                 <div className={classes.openMenu}>
