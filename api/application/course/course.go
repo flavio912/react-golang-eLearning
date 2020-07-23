@@ -167,8 +167,7 @@ func (c *courseAppImpl) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCou
 }
 
 func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error) {
-	// TODO: should also allow delegates and individuals
-	if !c.grant.IsAdmin {
+	if !application.GrantCanViewSyllabus(&c.usersRepository, c.grant, courseID) {
 		return []gentypes.CourseItem{}, &errors.ErrUnauthorized
 	}
 

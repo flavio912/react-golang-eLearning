@@ -14,6 +14,7 @@ type CourseApp interface {
 
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
 	FulfilPendingOrder(clientSecret string) (bool, error)
+	CancelPendingOrder(clientSecret string) (bool, error)
 	DeleteCourse(input gentypes.DeleteCourseInput) (bool, error)
 
 	Course(courseID uint) (gentypes.Course, error)
@@ -52,6 +53,7 @@ type CourseApp interface {
 	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
 	SubmitTest(input gentypes.SubmitTestInput) (bool, gentypes.CourseStatus, error)
 	DeleteTest(input gentypes.DeleteTestInput) (bool, error)
+	TestQuestions(testUUID gentypes.UUID) ([]gentypes.Question, error)
 
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
 	ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error)

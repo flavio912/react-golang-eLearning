@@ -23,12 +23,18 @@ func (a *MyCourseResolver) Status(ctx context.Context) gentypes.CourseStatus {
 func (a *MyCourseResolver) MinutesTracked() float64 {
 	return a.MyCourse.MinutesTracked
 }
+func (a *MyCourseResolver) EnrolledAt() string {
+	return a.MyCourse.CreatedAt
+}
+func (a *MyCourseResolver) UpTo() *gentypes.UUID {
+	return a.MyCourse.UpTo
+}
 
-type NewMyCourseArgs struct {
+type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID
 }
 
-func NewMyCoursesResolvers(ctx context.Context, args NewMyCourseArgs) (*[]*MyCourseResolver, error) {
+func NewMyCoursesResolvers(ctx context.Context, args NewMyCoursesArgs) (*[]*MyCourseResolver, error) {
 	app := auth.AppFromContext(ctx)
 
 	var resolvers []*MyCourseResolver

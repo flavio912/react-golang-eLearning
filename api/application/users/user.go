@@ -13,11 +13,13 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func activeCourseToMyCourse(activeCourse models.ActiveCourse) gentypes.MyCourse {
+func activeCourseToMyCourse(activeCourse models.ActiveCourse, upTo *gentypes.UUID) gentypes.MyCourse {
 	return gentypes.MyCourse{
 		CourseID:       activeCourse.CourseID,
 		MinutesTracked: activeCourse.MinutesTracked,
 		Status:         gentypes.CourseIncomplete,
+		CreatedAt:      activeCourse.CreatedAt.Format(time.RFC3339),
+		UpTo:           upTo,
 	}
 }
 
@@ -36,7 +38,7 @@ func historicalCourseToMyCourse(historicalCourse models.HistoricalCourse) gentyp
 func userCoursesToGentypes(activeCourses []models.ActiveCourse, historicalCourses []models.HistoricalCourse) []gentypes.MyCourse {
 	var genCourses = make([]gentypes.MyCourse, len(activeCourses)+len(historicalCourses))
 	for i, course := range activeCourses {
-		genCourses[i] = activeCourseToMyCourse(course)
+		genCourses[i] = activeCourseToMyCourse(course, nil)
 	}
 	for i, course := range historicalCourses {
 		genCourses[len(activeCourses)+i] = historicalCourseToMyCourse(course)
@@ -159,4 +161,34 @@ func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool
 	}
 
 	return []gentypes.MyCourse{}, &errors.ErrUnauthorized
+}
+
+// TakerCourse gets an active course from the courseID
+func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gentypes.MyCourse, error) {
+	if !(u.grant.IsDelegate || u.grant.IsIndividual) {
+		return gentypes.MyCourse{}, &errors.ErrUnauthorized
+	}
+	//TODO: Auth checks
+
+	activeCourse, err := u.usersRepository.TakerActiveCourse(takerUUID, courseID)
+	if err != nil {
+		return gentypes.MyCourse{}, &errors.ErrWhileHandling
+	}
+
+	// Get last test taken
+	var latestTest *gentypes.UUID
+	var latestDate = time.Time{}
+	marks, err := u.usersRepository.TakerTestMarks(takerUUID, courseID)
+	if err != nil {
+		u.grant.Logger.Log(sentry.LevelWarning, err, "TakerCourse: Unable to get test marks")
+	} else {
+		for _, mark := range marks {
+			if mark.CreatedAt.After(latestDate) && mark.Passed {
+				latestDate = mark.CreatedAt
+				latestTest = &mark.TestUUID
+			}
+		}
+	}
+
+	return activeCourseToMyCourse(activeCourse, latestTest), nil
 }

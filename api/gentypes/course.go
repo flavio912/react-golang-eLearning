@@ -86,6 +86,8 @@ type MyCourse struct {
 	CourseID       uint
 	MinutesTracked float64
 	Status         CourseStatus
+	CreatedAt      string
+	UpTo           *UUID
 }
 
 type CourseFilter struct {

@@ -16,7 +16,7 @@ var ordersRepository = middleware.NewOrdersRepository(&logging.Logger{Hub: &sent
 func TestFulfilPendingOrder(t *testing.T) {
 	prepareTestDatabase()
 	t.Run("Fulfil order successfully", func(t *testing.T) {
-		err := ordersRepository.FulfilPendingOrder("supersecretclientsecret")
+		_, err := ordersRepository.FulfilPendingOrder("supersecretclientsecret")
 		assert.Nil(t, err)
 	})
 }
@@ -28,7 +28,7 @@ func TestCancelPendingOrder(t *testing.T) {
 		err := ordersRepository.CancelPendingOrder("supersecretclientsecret")
 		assert.Nil(t, err)
 
-		fulfilErr := ordersRepository.FulfilPendingOrder("supersecretclientsecret")
+		_, fulfilErr := ordersRepository.FulfilPendingOrder("supersecretclientsecret")
 		assert.Equal(t, &errors.ErrNotFound, fulfilErr)
 	})
 }
