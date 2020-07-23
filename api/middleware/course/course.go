@@ -40,6 +40,7 @@ type CoursesRepository interface {
 
 	CertificateType(uuid gentypes.UUID) (models.CertificateType, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error)
+	CreateCAANumber(identifier string) (models.CAANumber, error)
 
 	RequirementBullets(courseID uint) ([]models.RequirementBullet, error)
 	LearnBullets(courseID uint) ([]models.WhatYouLearnBullet, error)

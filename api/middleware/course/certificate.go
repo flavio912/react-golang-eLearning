@@ -53,3 +53,18 @@ func (c *coursesRepoImpl) CreateCertificateType(input gentypes.CreateCertificate
 
 	return certType, nil
 }
+
+func (c *coursesRepoImpl) CreateCAANumber(identifier string) (models.CAANumber, error) {
+	no := models.CAANumber{
+		Identifier: identifier,
+		Used:       false,
+	}
+
+	query := database.GormDB.Create(&no)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to create CAANumber")
+		return models.CAANumber{}, &errors.ErrWhileHandling
+	}
+
+	return no, nil
+}

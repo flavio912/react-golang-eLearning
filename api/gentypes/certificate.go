@@ -25,6 +25,10 @@ type CAANumber struct {
 	Used       bool
 }
 
+type CreateCAANumberInput struct {
+	Identifier string `valid:"required"`
+}
+
 type CertificateType struct {
 	UUID                    UUID
 	Name                    string

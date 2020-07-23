@@ -21,6 +21,10 @@ type CAANumber {
   used: Boolean!
 }
 
+input CreateCAANumberInput {
+  identifier: String!
+}
+
 type CertificateType {
   uuid: UUID!
   name: String!

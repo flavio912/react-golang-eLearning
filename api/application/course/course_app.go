@@ -86,6 +86,7 @@ type CourseApp interface {
 
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
 	CertificateInfo(token string) (gentypes.CertficateInfo, error)
+	CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error)
 
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)

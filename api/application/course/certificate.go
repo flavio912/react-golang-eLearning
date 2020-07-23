@@ -13,6 +13,7 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
@@ -34,6 +35,15 @@ func (c *courseAppImpl) certificateTypeToGentype(certType models.CertificateType
 		RequiresCAANo:           certType.RequiresCAANo,
 		ShowTrainingSection:     certType.ShowTrainingSection,
 		CertificateBodyImageURL: cert_url,
+	}
+}
+func (c *courseAppImpl) caaNumberToGentype(no models.CAANumber) gentypes.CAANumber {
+	createdAt := no.CreatedAt.Format(time.RFC3339)
+	return gentypes.CAANumber{
+		UUID:       no.UUID,
+		CreatedAt:  createdAt,
+		Identifier: no.Identifier,
+		Used:       no.Used,
 	}
 }
 
@@ -168,4 +178,17 @@ func (c *courseAppImpl) CreateCertificateType(input gentypes.CreateCertificateTy
 
 	certType, err := c.coursesRepository.CreateCertificateType(input)
 	return c.certificateTypeToGentype(certType), err
+}
+
+func (c *courseAppImpl) CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CAANumber{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CAANumber{}, err
+	}
+
+	number, err := c.coursesRepository.CreateCAANumber(input.Identifier)
+	return c.caaNumberToGentype(number), err
 }

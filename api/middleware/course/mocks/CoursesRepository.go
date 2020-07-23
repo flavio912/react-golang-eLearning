@@ -201,6 +201,27 @@ func (_m *CoursesRepository) Courses(courseIDs []uint) ([]models.Course, error) 
 	return r0, r1
 }
 
+// CreateCAANumber provides a mock function with given fields: identifier
+func (_m *CoursesRepository) CreateCAANumber(identifier string) (models.CAANumber, error) {
+	ret := _m.Called(identifier)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(string) models.CAANumber); ok {
+		r0 = rf(identifier)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(identifier)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CreateCertificateType provides a mock function with given fields: input
 func (_m *CoursesRepository) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error) {
 	ret := _m.Called(input)
