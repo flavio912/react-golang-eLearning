@@ -8,10 +8,10 @@ type CertificateInfo {
   certificateBodyURL: String
   regulationText: String!
   CAANo: String
-  Title: String!
-  InstructorName: String!
-  InstructorCIN: String!
-  InstructorSignatureURL: String
+  title: String!
+  instructorName: String!
+  instructorCIN: String!
+  instructorSignatureURL: String
 }
 
 input RegenerateCertificateInput {
