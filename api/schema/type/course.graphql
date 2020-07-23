@@ -17,12 +17,14 @@ enum CourseType {
 interface SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
 }
 
 type Lesson implements SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
   mp3URL: String
   text: String!

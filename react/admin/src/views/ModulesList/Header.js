@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-function Header({ className, ...rest }) {
+function Header({ className, onAdd, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -23,7 +23,7 @@ function Header({ className, ...rest }) {
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained">
+          <Button color="primary" variant="contained" onClick={onAdd}>
             Add module
           </Button>
         </Grid>

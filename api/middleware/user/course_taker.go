@@ -198,6 +198,7 @@ func (u *usersRepoImpl) HistoricalCourse(uuid gentypes.UUID) (models.HistoricalC
 	return course, nil
 }
 
+// CreateHistoricalCourse deletes any activeCourse for the taker and creates a historicalCourse in its place
 func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error) {
 	tx := database.GormDB.Begin()
 	defer func() {
@@ -208,12 +209,19 @@ func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (
 
 	// Remove any test marks for this user
 	query := tx.
-		Where("course_taker_uuid = ? AND course_id = ", course.CourseTakerUUID, course.CourseID).
+		Where("course_taker_uuid = ? AND course_id = ?", course.CourseTakerUUID, course.CourseID).
 		Delete(models.TestMark{})
-
 	if query.Error != nil {
 		tx.Rollback()
 		u.Logger.Log(sentry.LevelError, query.Error, "CreateHistoricalCourse: Unable to delete testmarks")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	query = tx.Where("course_taker_uuid = ? AND course_id = ?", course.CourseTakerUUID, course.CourseID).
+		Delete(models.ActiveCourse{})
+	if query.Error != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, query.Error, "CreateHistoricalCourse: Unable to delete active course")
 		return models.HistoricalCourse{}, &errors.ErrWhileHandling
 	}
 

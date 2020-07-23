@@ -14,6 +14,7 @@ type CourseApp interface {
 
 	PurchaseCourses(input gentypes.PurchaseCoursesInput) (*gentypes.PurchaseCoursesResponse, error)
 	FulfilPendingOrder(clientSecret string) (bool, error)
+	CancelPendingOrder(clientSecret string) (bool, error)
 	DeleteCourse(input gentypes.DeleteCourseInput) (bool, error)
 
 	Course(courseID uint) (gentypes.Course, error)
@@ -52,6 +53,7 @@ type CourseApp interface {
 	UpdateTest(input gentypes.UpdateTestInput) (gentypes.Test, error)
 	SubmitTest(input gentypes.SubmitTestInput) (bool, gentypes.CourseStatus, error)
 	DeleteTest(input gentypes.DeleteTestInput) (bool, error)
+	TestQuestions(testUUID gentypes.UUID) ([]gentypes.Question, error)
 
 	Module(uuid gentypes.UUID) (gentypes.Module, error)
 	ModulesByUUIDs(uuids []gentypes.UUID) ([]gentypes.Module, error)
@@ -63,7 +65,11 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
+	ModuleBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error)
+	ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Tag, error)
+
+	VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	SearchSyllabus(
 		page *gentypes.Page,

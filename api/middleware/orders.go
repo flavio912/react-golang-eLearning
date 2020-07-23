@@ -15,7 +15,7 @@ import (
 
 type OrdersRepository interface {
 	CreatePendingOrder(clientSecret string, courseIds []uint, courseTakerIds []gentypes.UUID, extraInvoiceEmail *string) error
-	FulfilPendingOrder(clientSecret string) error
+	FulfilPendingOrder(clientSecret string) ([]models.ActiveCourse, error)
 	CancelPendingOrder(clientSecret string) error
 }
 
@@ -80,7 +80,8 @@ func (o *ordersRepositoryImpl) CreatePendingOrder(clientSecret string, courseIDs
 }
 
 // FulfilPendingOrder gives the users the courses they purchased, should only be run after payment confirmation
-func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
+// returns the activeCourses created
+func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) ([]models.ActiveCourse, error) {
 
 	var pendingOrder models.PendingOrder
 	query := database.GormDB.
@@ -91,23 +92,26 @@ func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
 
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return &errors.ErrNotFound
+			return []models.ActiveCourse{}, &errors.ErrNotFound
 		}
 
 		sentry.CaptureException(query.Error)
-		return &errors.ErrWhileHandling
+		return []models.ActiveCourse{}, &errors.ErrWhileHandling
 	}
 
+	var createdActive []models.ActiveCourse
 	for _, courseTaker := range pendingOrder.CourseTakers {
 		var activeCourses []models.ActiveCourse
 
 		for _, course := range pendingOrder.Courses {
-			activeCourses = append(activeCourses, models.ActiveCourse{
+			newCourse := models.ActiveCourse{
 				CourseTakerUUID: courseTaker.UUID,
 				CourseID:        course.ID,
 				Status:          gentypes.CourseIncomplete,
 				MinutesTracked:  0,
-			})
+			}
+			activeCourses = append(activeCourses, newCourse)
+			createdActive = append(activeCourses, newCourse)
 		}
 
 		courseTaker.ActiveCourses = activeCourses
@@ -115,17 +119,17 @@ func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) error {
 			sentry.CaptureException(err)
 			sentry.CaptureMessage(fmt.Sprintf("Unable to fulfil pending order: %s", clientSecret))
 			glog.Errorf("Unable to fufil pending order: %s : %s", err.Error(), clientSecret)
-			return &errors.ErrWhileHandling
+			return []models.ActiveCourse{}, &errors.ErrWhileHandling
 		}
 	}
 
 	err := database.GormDB.Delete(&pendingOrder).Error
 	if err != nil {
 		o.Logger.Log(sentry.LevelError, err, "Unable to delete pending order")
-		return &errors.ErrWhileHandling
+		return []models.ActiveCourse{}, &errors.ErrWhileHandling
 	}
 
-	return nil
+	return createdActive, nil
 }
 
 // CancelPendingOrder deletes a pending order from the DB. Usually after stripe

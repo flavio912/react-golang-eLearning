@@ -230,7 +230,7 @@ function CreateCourse({ match, history }) {
           {currentTab === 'pricing' && (
             <Pricing state={state} setState={updateState} />
           )}
-          {currentTab === 'builder' && <CourseBuilder />}
+          {currentTab === 'builder' && <CourseBuilder state={state} setState={updateState} />}
         </div>
       </Container>
     </Page>

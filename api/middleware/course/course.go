@@ -65,6 +65,7 @@ type CoursesRepository interface {
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 	IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error)
+	ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.Tag, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
 	Tests(
@@ -558,19 +559,40 @@ func filterSyllabus(query *gorm.DB, filter *gentypes.SyllabusFilter) *gorm.SqlEx
 	return query.Raw(sb.String()).SubQuery()
 }
 
-// AreInCourses checks if (module/lesson/test)s are in online courses
+// AreInCourses checks if (module/lesson/test)s are in online courses or inside a module in courses
 func (c *coursesRepoImpl) AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error) {
 	var count int
-	query := database.GormDB.Table("online_courses").
-		Joins(fmt.Sprintf(`
-			JOIN course_structures
-			ON course_structures.online_course_uuid = online_courses.uuid 
-			AND course_structures.%s_uuid IN (?)
-			AND online_courses.course_id IN (?)`, string(courseElement)),
-			uuids,
-			courseIDs).
-		Count(&count)
+	query := database.GormDB
 
+	//TODO: Cleanify (and optimise?)
+	if courseElement == gentypes.LessonType || courseElement == gentypes.TestType {
+		query = query.Table("module_structures").
+			Joins(`
+				JOIN course_structures
+				ON module_structures.module_uuid = course_structures.module_uuid
+			`).
+			Joins(fmt.Sprintf(`
+			JOIN online_courses
+			ON online_courses.uuid = course_structures.online_course_uuid
+			AND online_courses.course_id IN (?)
+			AND (
+				course_structures.%s_uuid IN (?)
+				OR
+				module_structures.%s_uuid IN (?)
+			)
+		`, string(courseElement), string(courseElement)), courseIDs, uuids, uuids)
+	} else {
+		query = query.Table("online_courses").
+			Joins(fmt.Sprintf(`
+				JOIN course_structures
+				ON online_courses.uuid = course_structures.online_course_uuid
+				AND course_structures.%s_uuid IN (?)
+				AND online_courses.course_id IN (?)`, string(courseElement)),
+				uuids,
+				courseIDs)
+	}
+
+	query = query.Count(&count)
 	if query.Error != nil {
 		c.Logger.Logf(sentry.LevelError, query.Error, "%s: Unable to get courses %s is in",
 			strings.ToUpper(string(courseElement)), courseElement)

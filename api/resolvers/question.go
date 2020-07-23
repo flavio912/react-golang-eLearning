@@ -27,7 +27,7 @@ func (q *QuestionResolver) Answers(ctx context.Context) (*[]*AnswerResolver, err
 	app := auth.AppFromContext(ctx)
 	answers, err := app.CourseApp.ManyAnswers([]gentypes.UUID{q.question.UUID})
 	if err != nil {
-		return nil, &errors.ErrUnableToResolve
+		return nil, err
 	}
 
 	var res []*AnswerResolver

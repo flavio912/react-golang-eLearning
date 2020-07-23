@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import Page from 'src/components/Page';
 import Header from './Header';
-import Filter from './Filter';
+import Filter from 'src/components/Filter';
 import Results from './Results';
 
 const useStyles = makeStyles(theme => ({

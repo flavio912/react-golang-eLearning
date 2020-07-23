@@ -275,6 +275,7 @@ func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Questi
 		Find(&questions)
 
 	if query.Error != nil && !query.RecordNotFound() {
+		c.Logger.Log(sentry.LevelError, query.Error, "TestQuestions: Unable to fetch")
 		return []models.Question{}, &errors.ErrWhileHandling
 	}
 
@@ -317,7 +318,7 @@ func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.
 
 	// Fetch the tests
 	testMap, err := c.ManyTests(testIDs)
-	if err != nil {
+	if err != nil && err != &errors.ErrNotAllFound {
 		c.Logger.Log(sentry.LevelWarning, err, "Unable to get tests")
 		return []models.Test{}, &errors.ErrWhileHandling
 	}

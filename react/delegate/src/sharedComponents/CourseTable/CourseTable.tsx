@@ -87,9 +87,6 @@ const courseRow = (
         <CourseCompletion total={totalProcess} complete={totalCompleted} />
       )
     },
-    {
-      component: () => <Attempt attempt={attempt} />
-    },
     { component: () => <Status isComplete={status} expires={expires} /> }
   ]
 });
@@ -171,7 +168,6 @@ const CourseTable = ({
           'COURSE TITLE',
           'CATEGORY',
           'PROGRESS',
-          'ATTEMPT',
           'STATUS'
         ]}
         rows={courseRows}
