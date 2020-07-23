@@ -18,6 +18,13 @@ type CertficateInfo struct {
 	InstructorSignatureURL *string
 }
 
+type CAANumber struct {
+	UUID       UUID
+	CreatedAt  string
+	Identifier string
+	Used       bool
+}
+
 type CertificateType struct {
 	UUID                    UUID
 	Name                    string

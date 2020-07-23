@@ -17,3 +17,12 @@ func (c *CertificateTypeResolver) RequiresCAANo() bool    { return c.Certificate
 func (c *CertificateTypeResolver) ShowTrainingSection() bool {
 	return c.CertificateType.ShowTrainingSection
 }
+
+type CAANumberResolver struct {
+	CAANumber gentypes.CAANumber
+}
+
+func (c *CAANumberResolver) UUID() gentypes.UUID { return c.CAANumber.UUID }
+func (c *CAANumberResolver) CreatedAt() string   { return c.CAANumber.CreatedAt }
+func (c *CAANumberResolver) Identifier() string  { return c.CAANumber.Identifier }
+func (c *CAANumberResolver) Used() bool          { return c.CAANumber.Used }
