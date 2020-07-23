@@ -147,3 +147,20 @@ func TestUpdateIndividual(t *testing.T) {
 		assert.Equal(t, *input.Email, ind.Email)
 	})
 }
+
+func TestDeleteIndividual(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Deletes an individual", func(t *testing.T) {
+		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000013")
+		b, err := usersRepo.DeleteIndividual(uuid)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		ind, err := usersRepo.Individual(uuid)
+
+		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, models.Individual{}, ind)
+	})
+}
