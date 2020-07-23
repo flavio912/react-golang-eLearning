@@ -13,3 +13,7 @@ type CertificateInfo {
   InstructorCIN: String!
   InstructorSignatureURL: String
 }
+
+input RegenerateCertificateInput {
+  historicalCourseUUID: UUID!
+}

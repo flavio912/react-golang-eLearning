@@ -84,4 +84,6 @@ type Mutation {
   blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
   blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+
+  regenerateCertificate(input: RegenerateCertificateInput!): Boolean!
 }

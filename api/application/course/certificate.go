@@ -16,7 +16,6 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
@@ -29,12 +28,11 @@ func GeneratePdfFromURL(url string) (io.Reader, error) {
 		fmt.Sprintf(`{"url":"%s", "direct": true, "key": "dea9fe3bc2b5981dbb46001bac2e7aa324971384235861a0d9666c70110a016224971384235861a0d9666c70110a0162"}`, url),
 	)
 
-	glog.Error(helpers.Config.PDF.ServerURL)
 	req, err := http.NewRequest("POST", helpers.Config.PDF.ServerURL, bytes.NewBuffer(payload))
 	if err != nil {
 		return nil, err
 	}
-
+	req.Header.Set("Content-Type", "application/json")
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, err
@@ -45,6 +43,15 @@ func GeneratePdfFromURL(url string) (io.Reader, error) {
 	}
 
 	return resp.Body, nil
+}
+
+func (c *courseAppImpl) RegenerateCertificate(historicalCourseUUID gentypes.UUID) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
+	go c.generateCertificate(historicalCourseUUID)
+	return nil
 }
 
 // generateCertificate updates a historicalCourse with its generated cert
