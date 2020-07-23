@@ -14,12 +14,26 @@ type CourseTaker struct {
 
 // ActiveCourse represents a course the taker is assigned and can complete
 type ActiveCourse struct {
+	Status          gentypes.CourseStatus
+	CreatedAt       time.Time
 	CourseTaker     CourseTaker
 	CourseTakerUUID gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	Course          Course
 	CourseID        uint `gorm:"primary_key;"` // FKEY
-	CurrentAttempt  uint `gorm:"default:1"`    // Starts at 1
 	MinutesTracked  float64
+}
+
+type HistoricalCourse struct {
+	UUID            gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
+	CreatedAt       time.Time
+	CourseTaker     CourseTaker
+	CourseTakerUUID gentypes.UUID
+	Course          Course
+	CourseID        uint
+	Passed          bool
+	MinutesTracked  float64
+	ExpirationDate  *time.Time
+	CertificateKey  *string
 }
 
 type CourseTakerActivity struct {
@@ -31,13 +45,12 @@ type CourseTakerActivity struct {
 	Course          Course
 }
 
-// TestMark Stores a mark for a user on a test
+// TestMark stores a mark for a user on a test
 type TestMark struct {
+	CreatedAt       time.Time
 	TestUUID        gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	CourseTakerUUID gentypes.UUID `gorm:"primary_key;type:uuid;"`
 	CourseID        uint          `gorm:"primary_key;auto_increment:false"`
-	NumCorrect      uint
-	// Total keeps its own record of total marks in case the
-	// test changes in between a user completing this test and completing the course
-	Total uint
+	Passed          bool
+	CurrentAttempt  uint
 }

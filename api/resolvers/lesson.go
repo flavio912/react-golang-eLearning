@@ -20,7 +20,7 @@ type LessonResolver struct {
 }
 
 type NewLessonArgs struct {
-	UUID   string
+	UUID   *gentypes.UUID
 	Lesson gentypes.Lesson
 }
 
@@ -35,8 +35,8 @@ func NewLessonResolver(ctx context.Context, args NewLessonArgs) (*LessonResolver
 	)
 
 	switch {
-	case args.UUID != "":
-		lesson, err = loader.LoadLesson(ctx, args.UUID)
+	case args.UUID != nil:
+		lesson, err = loader.LoadLesson(ctx, *args.UUID)
 	case args.Lesson.UUID.String() != "":
 		lesson = args.Lesson
 	default:
@@ -81,9 +81,12 @@ func NewLessonResolvers(ctx context.Context, args NewLessonsArgs) (*[]*LessonRes
 
 func (l *LessonResolver) UUID() gentypes.UUID { return l.Lesson.UUID }
 func (l *LessonResolver) Name() string        { return l.Lesson.Name }
-func (l *LessonResolver) Text() string        { return l.Lesson.Text }
-func (l *LessonResolver) Complete() *bool     { return helpers.BoolPointer(false) } // TODO
-func (l *LessonResolver) Mp3URL() *string     { return helpers.StringPointer("/google.com") }
+func (l *LessonResolver) Type() gentypes.CourseElement {
+	return gentypes.LessonType
+}
+func (l *LessonResolver) Text() string    { return l.Lesson.Text }
+func (l *LessonResolver) Complete() *bool { return helpers.BoolPointer(false) } // TODO
+func (l *LessonResolver) Mp3URL() *string { return helpers.StringPointer("/google.com") }
 
 // TODO: Use dataloaders
 func (l *LessonResolver) Tags(ctx context.Context) (*[]*TagResolver, error) {

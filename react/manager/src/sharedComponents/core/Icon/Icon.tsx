@@ -59,6 +59,7 @@ export type IconNames =
   | 'MenuHamburger'
   | 'Mp3_Pause'
   | 'Mp3_Speaker'
+  | 'Mp3_Play'
   | 'Nippon_Express'
   | 'Payments_Method'
   | 'Stripe'
@@ -127,11 +128,13 @@ const iconNameMap = {
   MenuHamburger: require('../../../assets/MenuHamburger.svg'),
   Maersk_Grey: require('../../../assets/maersk-logo-grey.png'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
-  Nippon_Express: require("../../../assets/nippon-express-logo.png"),
-  Payments_Method: require("../../../assets/Payments_Method.svg"),
-  Stripe: require("../../../assets/Stripe.svg"),
-  Tick: require("../../../assets/Tick.svg"),
-  Twitter_Logo: require("../../../assets/Twitter_Logo.png"),
+  Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
+  Nippon_Express: require('../../../assets/nippon-express-logo.png'),
+  Payments_Method: require('../../../assets/Payments_Method.svg'),
+  Stripe: require('../../../assets/Stripe.svg'),
+  Mp3_Play: require('../../../assets/Mp3_Play.svg'),
+  Tick: require('../../../assets/Tick.svg'),
+  Twitter_Logo: require('../../../assets/Twitter_Logo.png'),
   Ups: require('../../../assets/ups-logo.svg'),
   Ups_Grey: require('../../../assets/ups-logo-grey.png'),
   Volume: require('../../../assets/Volume.svg'),

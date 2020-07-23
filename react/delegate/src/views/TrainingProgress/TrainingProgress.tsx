@@ -1,10 +1,14 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
+import { createFragmentContainer, graphql } from 'react-relay';
 import { useRouter } from 'found';
 import Heading from 'components/core/Heading';
 import CourseTable from 'sharedComponents/CourseTable';
 import ActivityTable from 'components/ActivityTable/ActivityTable';
+import Page from 'components/Page';
+import { TrainingProgress_activity } from './__generated__/TrainingProgress_activity.graphql';
+import { TrainingProgress_user } from './__generated__/TrainingProgress_user.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   progressRoot: {
@@ -26,46 +30,85 @@ const useStyles = createUseStyles((theme: Theme) => ({
   activeTable: {}
 }));
 
-type Props = {};
+type Props = {
+  activity: TrainingProgress_activity;
+  user: TrainingProgress_user;
+};
 
-function Progress({}: Props) {
+function Progress({ activity, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
 
-  const userName = 'James';
+  const myCourses =
+    user?.myCourses?.map((myCourse) => ({
+      title: myCourse.course.name,
+      categoryName: myCourse.course.category?.name ?? '',
+      progress: {
+        total: 100,
+        completed: myCourse.status === 'complete' ? 100 : 0
+      },
+      attempt: 1,
+      status: {
+        isComplete: myCourse.status === 'complete'
+      },
+      onClick: () => {}
+    })) ?? [];
+
   return (
-    <div className={classes.progressRoot}>
-      <div className={classes.header}>
-        <Heading
-          text="Training Progress"
-          size={'large'}
-          className={classes.heading}
-        />
-        <div className={classes.headingDescription}>
+    <Page>
+      <div className={classes.progressRoot}>
+        <div className={classes.header}>
           <Heading
-            text={`${userName}, here you can see your training progress,`}
-            size={'medium'}
-            className={classes.subHeading}
+            text="Training Progress"
+            size={'large'}
+            className={classes.heading}
           />
-          <Heading
-            text={`and keep up to date with your daily activity.`}
-            size={'medium'}
-            className={classes.subHeading}
-          />
+          <div className={classes.headingDescription}>
+            <Heading
+              text={`${user.firstName}, here you can see your training progress,`}
+              size={'medium'}
+              className={classes.subHeading}
+            />
+            <Heading
+              text={`and keep up to date with your daily activity.`}
+              size={'medium'}
+              className={classes.subHeading}
+            />
+          </div>
         </div>
+        <CourseTable
+          EmptyComponent={<div>No Courses to show</div>}
+          className={classes.courseTable}
+          courses={myCourses}
+          rowClicked={() => {
+            router.push('/app/courses/1');
+          }}
+        />
+        <ActivityTable className={classes.activeTable} activity={activity} />
       </div>
-      <CourseTable
-        EmptyComponent={<div>No Courses to show</div>}
-        className={classes.courseTable}
-        courses={[]}
-        rowClicked={() => {
-          router.push('/app/courses/1');
-        }}
-      />
-      <ActivityTable className={classes.activeTable} />
-    </div>
+    </Page>
   );
 }
 
-export default Progress;
+export default createFragmentContainer(Progress, {
+  activity: graphql`
+    fragment TrainingProgress_activity on ActivityPage {
+      ...ActivityTable_activity
+    }
+  `,
+  user: graphql`
+    fragment TrainingProgress_user on User {
+      firstName
+      myCourses {
+        status
+        course {
+          name
+          category {
+            name
+          }
+        }
+      }
+    }
+  `
+});

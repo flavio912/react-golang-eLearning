@@ -232,20 +232,28 @@ func (c *coursesRepoImpl) Tests(
 	return tests, pageInfo, err
 }
 
-// ManyTests maps testUUIDs to their respective test
-func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error) {
+func (c *coursesRepoImpl) TestsByUUIDs(testUUIDs []gentypes.UUID) ([]models.Test, error) {
 	var tests []models.Test
 	query := database.GormDB.Where("uuid IN (?)", testUUIDs).Find(&tests)
 	if query.Error != nil {
 		if query.RecordNotFound() {
-			return map[gentypes.UUID]models.Test{}, &errors.ErrNotAllFound
+			return []models.Test{}, &errors.ErrNotAllFound
 		}
 
-		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get many tests")
-		return map[gentypes.UUID]models.Test{}, &errors.ErrWhileHandling
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get tests")
+		return []models.Test{}, &errors.ErrWhileHandling
 	}
 
-	var err error
+	return tests, nil
+}
+
+// ManyTests maps testUUIDs to their respective test
+func (c *coursesRepoImpl) ManyTests(testUUIDs []gentypes.UUID) (map[gentypes.UUID]models.Test, error) {
+	tests, err := c.TestsByUUIDs(testUUIDs)
+	if err != nil {
+		return map[gentypes.UUID]models.Test{}, err
+	}
+
 	if len(tests) < len(testUUIDs) {
 		err = &errors.ErrNotAllFound
 	}
@@ -267,6 +275,7 @@ func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Questi
 		Find(&questions)
 
 	if query.Error != nil && !query.RecordNotFound() {
+		c.Logger.Log(sentry.LevelError, query.Error, "TestQuestions: Unable to fetch")
 		return []models.Question{}, &errors.ErrWhileHandling
 	}
 
@@ -309,7 +318,7 @@ func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.
 
 	// Fetch the tests
 	testMap, err := c.ManyTests(testIDs)
-	if err != nil {
+	if err != nil && err != &errors.ErrNotAllFound {
 		c.Logger.Log(sentry.LevelWarning, err, "Unable to get tests")
 		return []models.Test{}, &errors.ErrWhileHandling
 	}
@@ -320,16 +329,6 @@ func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.
 	}
 
 	return outputTests, nil
-}
-
-func (c *coursesRepoImpl) CreateTestMarks(mark models.TestMark) error {
-	err := database.GormDB.Create(&mark).Error
-	if err != nil {
-		c.Logger.Log(sentry.LevelError, err, "Unable to create test marks")
-		return &errors.ErrWhileHandling
-	}
-
-	return nil
 }
 
 func (c *coursesRepoImpl) DeleteTest(uuid gentypes.UUID) (bool, error) {

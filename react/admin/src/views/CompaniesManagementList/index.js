@@ -1,5 +1,4 @@
 import React from 'react';
-import uuid from 'uuid/v1';
 import { makeStyles } from '@material-ui/styles';
 import { Container } from '@material-ui/core';
 import gql from 'graphql-tag';
@@ -26,7 +25,16 @@ const GET_COMPANIES = gql`
       edges {
         uuid
         name
+        isContract
         managers {
+          edges {
+            email
+          }
+          pageInfo {
+            total
+          }
+        }
+        delegates {
           edges {
             email
           }
@@ -51,13 +59,13 @@ function CompaniesManagementList() {
 
   const handleSearch = () => {};
   const companies = data?.companies?.edges.map(comp => ({
-    id: uuid(),
+    id: comp.uuid,
     name: comp.name,
     email: comp.managers?.edges[0]?.email,
     logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
-    noDelegates: 40,
+    noDelegates: comp.delegates?.pageInfo?.total,
     noManagers: comp.managers?.pageInfo?.total,
-    paymentType: 'Contract'
+    paymentType: comp.isContract ? 'Contract' : 'Pay as you go'
   }));
 
   return (

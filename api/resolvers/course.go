@@ -3,8 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -25,13 +23,8 @@ type NewCourseArgs struct {
 func NewCourseResolver(ctx context.Context, args NewCourseArgs) (*CourseResolver, error) {
 	if args.ID != nil {
 		// TODO: Use loader to stop n+1 calls
-		grant := auth.GrantFromContext(ctx)
-		if grant == nil {
-			return &CourseResolver{}, &errors.ErrUnauthorized
-		}
-
-		courseFuncs := course.NewCourseApp(grant)
-		info, err := courseFuncs.Course(*args.ID)
+		app := auth.AppFromContext(ctx)
+		info, err := app.CourseApp.Course(*args.ID)
 		if err != nil {
 			return &CourseResolver{}, err
 		}
@@ -90,11 +83,17 @@ func (r *CourseResolver) Category(ctx context.Context) (*CategoryResolver, error
 func (r *CourseResolver) AllowedToBuy() *bool {
 	return helpers.BoolPointer(r.Course.AllowedToBuy)
 }
-func (r *CourseResolver) Syllabus(ctx context.Context) (*[]SyllabusResolver, error) {
+func (r *CourseResolver) Syllabus(ctx context.Context) (*[]*SyllabusResolver, error) {
 	return NewSyllabusResolvers(ctx, NewSyllabusArgs{CourseID: &r.Course.ID})
 }
 func (r *CourseResolver) BannerImageURL() *string {
 	return r.Course.BannerImageURL
+}
+func (r *CourseResolver) ExpiresInMonths() int32 {
+	return int32(r.Course.ExpiresInMonths)
+}
+func (r *CourseResolver) ExpirationToEndMonth() bool {
+	return r.Course.ExpirationToEndMonth
 }
 
 type CoursePageResolver struct {
