@@ -50,13 +50,13 @@ function CreateQuestion({ match, history }) {
     bannerImageSuccessToken: undefined,
     voiceoverSuccessToken: undefined,
     video: { type: 'WISTIA', url: '' },
-    syllabus: [{ type: 'lesson', uuid: '00000000-0000-0000-0000-000000000002' }]
+    syllabus: [],
   };
 
   const [state, setState] = useState(initState);
   const [createModule, { error }] = useMutation(CREATE_MODULE);
-  const updateState = (item, value) => {
-    var updatedState = { ...state, [item]: value };
+  const updateState = (item) => {
+    var updatedState = {...state, ...item};
     setState(updatedState);
   };
 
@@ -71,7 +71,7 @@ function CreateQuestion({ match, history }) {
           bannerImageSuccessToken: state.bannerImageSuccessToken,
           voiceoverSuccessToken: state.voiceoverSuccessToken,
           video: state.video,
-          syllabus: state.syllabus.map(({ uuid }) => ({ type: 'lesson', uuid }))
+          syllabus: state.syllabus.map(({ uuid, type }) => ({ type, uuid }))
         }
       });
       if (res.data?.createModule?.module?.uuid) {

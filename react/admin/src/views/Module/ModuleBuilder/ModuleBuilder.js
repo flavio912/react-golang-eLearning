@@ -72,8 +72,8 @@ const lessons = [
 ];
 
 const GET_LESSONS = gql`
-  query SearchLessons($name: String!, $page: Page!) {
-    lessons(filter: { name: $name }, page: $page) {
+  query SearchLessons($tags: [UUID]) {
+    lessons(filter: { tags: $tags }) {
       edges {
         uuid
         name
@@ -92,7 +92,26 @@ const GET_LESSONS = gql`
   }
 `;
 
-function useSearchQuery(text, page) {
+const SEARCH = gql`
+  query SearchSyllabus($name: String!, $page: Page!) {
+    searchSyllabus(filter: { name: $name }, page: $page) {
+      edges {
+        uuid
+        name
+        type
+        complete
+      }
+      pageInfo {
+        total
+        limit
+        offset
+        given
+      }
+    }
+  }
+`;
+
+function useSuggestedQuery(text, page) {
   const { error, data } = useQuery(GET_LESSONS, {
     variables: {
       name: text,
@@ -101,7 +120,7 @@ function useSearchQuery(text, page) {
   });
 
   if (!data || !data.lessons || !data.lessons.edges || !data.lessons.pageInfo) {
-    console.error('Could not get data', data, error);
+    error && console.error('Could not get data', data, error);
     return {
       resultItems: [],
       pageInfo: {
@@ -112,8 +131,6 @@ function useSearchQuery(text, page) {
       }
     };
   }
-
-  console.log(data);
 
   const resultItems = data.lessons.edges.map(lesson => ({
     uuid: lesson?.uuid ?? '',
@@ -132,20 +149,57 @@ function useSearchQuery(text, page) {
   return { resultItems, pageInfo };
 }
 
+function useSearchQuery(text, page) {
+  const { error, data } = useQuery(SEARCH, {
+    variables: {
+      name: text,
+      page: page
+    }
+  });
+
+  if (!data || !data.searchSyllabus || !data.searchSyllabus.edges || !data.searchSyllabus.pageInfo) {
+    error && console.error('Could not get data', data, error);
+    return {
+      resultItems: [],
+      pageInfo: {
+        total: 1,
+        offset: 0,
+        limit: 4,
+        given: 0
+      }
+    };
+  }
+
+  const resultItems = data.searchSyllabus.edges.map(syllabus => ({
+    uuid: syllabus?.uuid ?? '',
+    name: syllabus?.name ?? '',
+    text: syllabus?.text ?? '',
+    tags: syllabus?.tags ?? ''
+  }));
+
+  const pageInfo = {
+    total: data.searchSyllabus.pageInfo?.total,
+    offset: data.searchSyllabus.pageInfo.offset,
+    limit: data.searchSyllabus.pageInfo.limit,
+    given: data.searchSyllabus.pageInfo.given
+  };
+
+  return { resultItems, pageInfo };
+}
+
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
   const searchResults = useSearchQuery(searchText, page);
+  const suggestedLessons = useSuggestedQuery(state.tags);
 
   const onDelete = uuid => {
     setState({
       syllabus: state.syllabus.filter(item => item.uuid !== uuid)
     });
   };
-
-  console.log(state.syllabus);
 
   return (
     <div className={classes.root}>
@@ -177,9 +231,9 @@ function ModuleBuilder({ state, setState }) {
                   freeSolo
                   options={searchResults.resultItems}
                   getOptionLabel={option => option.name}
-                  onChange={(_, { uuid, name }) =>
+                  onChange={(_, { uuid, name, type }) =>
                     setState({
-                      syllabus: [...state.syllabus, { uuid, name }]
+                      syllabus: [...state.syllabus, { uuid, name, type }]
                     })
                   }
                   renderInput={params => (
@@ -206,9 +260,9 @@ function ModuleBuilder({ state, setState }) {
           <Grid item>
             <SuggestedTable
               title="Suggested Lessons based on Tags"
-              lessons={searchResults.resultItems.slice(0, 3)}
+              lessons={suggestedLessons.resultItems.slice(0, 3)}
               onAdd={({ uuid, name }) =>
-                setState({ syllabus: [...state.syllabus, { uuid, name }] })
+                setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
               }
             />
           </Grid>

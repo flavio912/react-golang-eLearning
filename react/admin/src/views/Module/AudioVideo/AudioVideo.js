@@ -114,6 +114,7 @@ function AudioVideo({ state, setState }) {
                         label="Wisita URL"
                         variant="outlined"
                         className={classes.thinInput}
+                        contentEditable={false}
                       />
                     )}
                   />

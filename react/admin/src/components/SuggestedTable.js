@@ -39,7 +39,7 @@ function SuggestedTable({ title, lessons, onAdd }) {
       <CardContent>
         <Table>
           <TableBody>
-            {lessons.map(lesson => (
+            {lessons && lessons.map(lesson => (
               <TableRow key={lesson.uuid}>
                 <TableCell>
                 <Typography
@@ -57,7 +57,7 @@ function SuggestedTable({ title, lessons, onAdd }) {
                   Used in {lesson.numCoursesUsedIn} other Courses
                 </Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell padding="none">
                   <Typography
                     className={classes.heavy}
                     variant="subtitle2"
@@ -66,16 +66,16 @@ function SuggestedTable({ title, lessons, onAdd }) {
                     Type: 
                   </Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell padding="none">
                   <Typography
                     className={classes.bold}
-                    variant="body2"
+                    variant="body1"
                     color="textPrimary"
                     >
-                    {lesson.type}
+                    Lesson
                   </Typography>
                 </TableCell>
-                <TableCell>
+                <TableCell padding="none">
                   <Typography
                     className={classes.heavy}
                     variant="subtitle2"
@@ -84,12 +84,12 @@ function SuggestedTable({ title, lessons, onAdd }) {
                     Tags: 
                   </Typography>
                 </TableCell>
-                <TableCell>
-                  {lesson.tags.map(tag => (
+                <TableCell padding="none">
+                  {lesson.tags && lesson.tags.map(tag => (
                     <Chip key={tag.name} color={tag.color} label={tag.name} />
                   ))}
                 </TableCell>
-                <TableCell>
+                <TableCell align="right">
                   <Button
                     color="default"
                     onClick={() => onAdd(lesson)}
