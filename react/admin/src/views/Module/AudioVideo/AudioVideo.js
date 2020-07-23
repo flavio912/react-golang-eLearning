@@ -6,7 +6,9 @@ import {
   CardContent,
   Divider,
   TextField,
-  Typography
+  Typography,
+  Select,
+  MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { Autocomplete } from '@material-ui/lab';
@@ -49,9 +51,8 @@ const UPLOAD_REQUEST = gql`
   }
 `;
 
-const voiceoverOptions = [{ title: 'Upload Voiceover' }];
-
-const videoOptions = [{ title: 'Wistia URL' }];
+const voiceoverOptions = [{ title: 'Upload Voiceover', uuid: '0' }];
+const videoOptions = [{ title: 'Wistia URL', uuid: '0' }];
 
 function AudioVideo({ state, setState }) {
   const classes = useStyles();
@@ -69,18 +70,20 @@ function AudioVideo({ state, setState }) {
                 className={classes.padding}
               >
                 <Grid item>
-                  <Autocomplete
-                    options={voiceoverOptions}
-                    getOptionLabel={option => option.title}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="Upload Voiceover"
-                        variant="outlined"
-                        className={classes.thinInput}
-                      />
-                    )}
-                  />
+                  <Select
+                    value={voiceoverOptions[0]}
+                    variant="outlined"
+                    className={classes.thinInput}
+                  >
+                    {voiceoverOptions.map((option) => (
+                      <MenuItem
+                        key={option.uuid}
+                        value={option}
+                      >
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </Grid>
                 <Grid item>
                   <UploadFile
@@ -105,19 +108,20 @@ function AudioVideo({ state, setState }) {
                 className={classes.padding}
               >
                 <Grid item>
-                  <Autocomplete
-                    options={videoOptions}
-                    getOptionLabel={option => option.title}
-                    renderInput={params => (
-                      <TextField
-                        {...params}
-                        label="Wisita URL"
-                        variant="outlined"
-                        className={classes.thinInput}
-                        contentEditable={false}
-                      />
-                    )}
-                  />
+                  <Select
+                    value={videoOptions[0]}
+                    variant="outlined"
+                    className={classes.thinInput}
+                  >
+                    {videoOptions.map((option) => (
+                      <MenuItem
+                        key={option.uuid}
+                        value={option}
+                      >
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
                 </Grid>
                 <Grid item>
                   <Typography
