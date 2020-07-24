@@ -9,7 +9,6 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 
 function SyllabusSearch({ placeholder, searchFilters, setSearchFilters, searchResults, setSearchText, onChange }) {
-  console.log('fil', searchFilters)
   return (
     <Autocomplete
       multiple
