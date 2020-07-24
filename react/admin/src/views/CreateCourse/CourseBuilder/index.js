@@ -19,6 +19,7 @@ import ReoderableListItem from 'src/components/ReorderableList/ReorderableListIt
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
 import ReoderableList from 'src/components/ReorderableList/ReorderableList';
+import SyllabusSearch from 'src/components/SyllabusSearch';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -52,8 +53,8 @@ const GET_MODULES = gql`
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!, $page: Page!) {
-    searchSyllabus(filter: { name: $name }, page: $page) {
+  query SearchSyllabus($name: String!, $excludeLesson: Boolean, $excludeTest: Boolean, $excludeModule: Boolean, $page: Page!) {
+    searchSyllabus(filter: { name: $name, excludeLesson:$excludeLesson, excludeTest:$excludeTest, excludeModule: $excludeModule }, page: $page) {
       edges {
         uuid
         name
@@ -107,10 +108,14 @@ function useModulesQuery(page) {
   return { resultItems, pageInfo };
 }
 
-function useSearchQuery(text, page) {
+function useSearchQuery(text, filter, page) {
+  console.log('page: ', page)
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
+      excludeLesson: filter.excludeLesson,
+      excludeTest: filter.excludeTest,
+      excludeModule: filter.excludeModule,
       page: page
     }
   });
@@ -132,6 +137,7 @@ function useSearchQuery(text, page) {
     uuid: syllabus?.uuid ?? '',
     name: syllabus?.name ?? '',
     text: syllabus?.text ?? '',
+    type: syllabus?.type ?? '',
     tags: syllabus?.tags ?? ''
   }));
 
@@ -148,9 +154,16 @@ function useSearchQuery(text, page) {
 function CourseBuilder({ state, setState }) {
   const classes = useStyles();
 
+  const [searchFilters, setSearchFilters] = React.useState({
+    excludeLesson: false, excludeTest: false, excludeModule: false, filters: [
+      {name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest'},
+      {name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson'},
+      {name: 'Exclude Modules', type: 'Filter', isFilter: 'excludeModule'},
+    ]
+  });
   const [searchText, setSearchText] = React.useState('');
   const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, page);
+  const searchResults = useSearchQuery(searchText, searchFilters, page);
 
   const [courseStructure, setCourseStructure] = React.useState([]);
   const { resultItems } = useModulesQuery(page);
@@ -212,32 +225,17 @@ function CourseBuilder({ state, setState }) {
                 className={classes.noPadding}
               />
               <CardContent>
-                <Autocomplete
-                  freeSolo
-                  options={searchResults.resultItems}
-                  getOptionLabel={option => option.name}
-                  onChange={(_, { uuid, name, type }) =>
+                <SyllabusSearch
+                  placeholder="Search Modules, Lessons or Tests"
+                  searchFilters={searchFilters}
+                  setSearchFilters={setSearchFilters}
+                  searchResults={searchResults.resultItems}
+                  setSearchText={setSearchText}
+                  onChange={({ uuid, name, type }) => {
                     setState({
                       syllabus: [...state.syllabus, { uuid, name, type }]
-                    })
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Search Modules, Lessons or Tests"
-                      onChange={inp => {
-                        setSearchText(inp.target.value);
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  )}
+                    });
+                  }}
                 />
               </CardContent>
             </Card>

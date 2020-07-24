@@ -7,7 +7,8 @@ import {
   Divider,
   Typography,
   TextField,
-  InputAdornment
+  InputAdornment,
+  Chip
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
@@ -18,6 +19,7 @@ import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
+import SyllabusSearch from 'src/components/SyllabusSearch';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -51,8 +53,8 @@ const GET_LESSONS = gql`
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!, $page: Page!) {
-    searchSyllabus(filter: { name: $name, excludeModule: true }, page: $page) {
+  query SearchSyllabus($name: String!, $excludeLesson: Boolean, $excludeTest: Boolean, $page: Page!) {
+    searchSyllabus(filter: { name: $name, excludeLesson:$excludeLesson, excludeTest:$excludeTest, excludeModule: true }, page: $page) {
       edges {
         uuid
         name
@@ -108,10 +110,12 @@ function useSuggestedQuery(text, page) {
   return { resultItems, pageInfo };
 }
 
-function useSearchQuery(text, page) {
+function useSearchQuery(text, filter, page) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
+      excludeLesson: filter.excludeLesson,
+      excludeTest: filter.excludeTest,
       page: page
     }
   });
@@ -133,6 +137,7 @@ function useSearchQuery(text, page) {
     uuid: syllabus?.uuid ?? '',
     name: syllabus?.name ?? '',
     text: syllabus?.text ?? '',
+    type: syllabus?.type ?? '',
     tags: syllabus?.tags ?? ''
   }));
 
@@ -149,9 +154,15 @@ function useSearchQuery(text, page) {
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
+  const [searchFilters, setSearchFilters] = React.useState({
+    excludeLesson: false, excludeTest: false, filters: [
+      {name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest'},
+      {name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson'},
+    ]
+  });
   const [searchText, setSearchText] = React.useState('');
   const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, page);
+  const searchResults = useSearchQuery(searchText, searchFilters, page);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
   const onDelete = uuid => {
@@ -159,7 +170,6 @@ function ModuleBuilder({ state, setState }) {
       syllabus: state.syllabus.filter(item => item.uuid !== uuid)
     });
   };
-
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -186,32 +196,17 @@ function ModuleBuilder({ state, setState }) {
                 className={classes.noPadding}
               />
               <CardContent>
-                <Autocomplete
-                  freeSolo
-                  options={searchResults.resultItems}
-                  getOptionLabel={option => option.name}
-                  onChange={(_, { uuid, name, type }) =>
+                <SyllabusSearch
+                  placeholder="Search Lessons or Tests"
+                  searchFilters={searchFilters.filters}
+                  setSearchFilters={setSearchFilters}
+                  searchResults={searchResults.resultItems}
+                  setSearchText={setSearchText}
+                  onChange={({ uuid, name, type }) => {
                     setState({
                       syllabus: [...state.syllabus, { uuid, name, type }]
-                    })
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Search Lessons or Tests"
-                      onChange={inp => {
-                        setSearchText(inp.target.value);
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  )}
+                    });
+                  }}
                 />
               </CardContent>
             </Card>
