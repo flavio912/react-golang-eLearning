@@ -772,3 +772,20 @@ func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input 
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.DeleteCourse(args.Input)
 }
+
+func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
+	CourseID  int32
+	Published *bool
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	pub := true
+	if args.Published != nil {
+		pub = *args.Published
+	}
+
+	err := app.CourseApp.SetCoursePublished(uint(args.CourseID), pub)
+	if err != nil {
+		return false, err
+	}
+	return true, err
+}
