@@ -817,6 +817,15 @@ func (m *MutationResolver) UpdateCAANumber(ctx context.Context, args struct{ Inp
 	}, err
 }
 
+func (m *MutationResolver) CertificateBodyImageUploadRequest(ctx context.Context, args struct{ Input gentypes.UploadFileMeta }) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, token, err := app.CourseApp.CertificateBodyImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		SuccessToken: token,
+		URL:          url,
+	}, err
+}
+
 func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
 	CourseID  int32
 	Published *bool

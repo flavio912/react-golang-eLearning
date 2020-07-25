@@ -9,6 +9,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 func (c *coursesRepoImpl) CertificateType(uuid gentypes.UUID) (models.CertificateType, error) {
@@ -35,11 +36,22 @@ func (c *coursesRepoImpl) CreateCertificateType(input gentypes.CreateCertificate
 		}
 	}()
 
+	var s3key *string
+	if input.CertificateBodyToken != nil {
+		key, err := uploads.VerifyUploadSuccess(*input.CertificateBodyToken, "certificateBodyImage")
+		if err != nil {
+			return models.CertificateType{}, err
+		}
+
+		s3key = &key
+	}
+
 	certType := models.CertificateType{
-		Name:                input.Name,
-		RegulationText:      input.RegulationText,
-		RequiresCAANo:       input.RequiresCAANo != nil && *input.RequiresCAANo,
-		ShowTrainingSection: input.ShowTrainingSection != nil && *input.ShowTrainingSection,
+		Name:                    input.Name,
+		RegulationText:          input.RegulationText,
+		RequiresCAANo:           input.RequiresCAANo != nil && *input.RequiresCAANo,
+		ShowTrainingSection:     input.ShowTrainingSection != nil && *input.ShowTrainingSection,
+		CertificateBodyImageKey: s3key,
 	}
 
 	if err := tx.Create(&certType).Error; err != nil {
@@ -71,6 +83,14 @@ func (c *coursesRepoImpl) UpdateCertificateType(input gentypes.UpdateCertificate
 	}
 	if input.ShowTrainingSection != nil {
 		updates["show_training_section"] = *input.ShowTrainingSection
+	}
+	if input.CertificateBodyToken != nil {
+		s3key, err := uploads.VerifyUploadSuccess(*input.CertificateBodyToken, "certificateBodyImage")
+		if err != nil {
+			return models.CertificateType{}, err
+		}
+
+		updates["certificate_body_image_key"] = s3key
 	}
 
 	tx := database.GormDB.Begin()

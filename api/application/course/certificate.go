@@ -266,3 +266,20 @@ func (c *courseAppImpl) CAANumbers(
 	numbers, pageInfo, err := c.coursesRepository.CAANumbers(page, filter)
 	return c.caaNumbersToGentypes(numbers), pageInfo, err
 }
+
+func (c *courseAppImpl) CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,
+		imageMeta.ContentLength,
+		[]string{"jpg", "png"},
+		int32(1000000),
+		"certificate_body_image",
+		"certificateBodyImage",
+	)
+
+	return url, successToken, err
+}

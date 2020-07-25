@@ -82,6 +82,7 @@ type Mutation {
 
   createCertificateType(input: CreateCertificateTypeInput!): CertificateType
   updateCertificateType(input: UpdateCertificateTypeInput!): CertificateType
+  certificateBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
 
   createCAANumber(input: CreateCAANumberInput!): CAANumber
   updateCAANumber(input: UpdateCAANumberInput!): CAANumber

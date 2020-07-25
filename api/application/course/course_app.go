@@ -101,6 +101,7 @@ type CourseApp interface {
 		filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error)
 	CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error)
 	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
+	CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
