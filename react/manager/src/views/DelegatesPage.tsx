@@ -104,7 +104,15 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
   const classes = useStyles({ theme });
 
   const edges = delegates.edges ?? [];
-  const pageInfo = delegates.pageInfo;
+  const pageInfo = {
+    total: delegates.pageInfo?.total ?? 0,
+    limit: delegates.pageInfo?.limit ?? 10,
+    offset: delegates.pageInfo?.offset ?? 0,
+  };
+  const page = {
+    currentPage: Math.ceil(pageInfo.offset/ pageInfo.limit),
+    numPages: Math.ceil(pageInfo.total/ pageInfo.limit)
+  };
   const delegateComponents = edges.map((delegate: any) =>
     delegateRow(
       delegate?.uuid,
@@ -119,6 +127,10 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
       router
     )
   );
+  
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/delegates?offset=${(page - 1) * pageInfo.limit}&limit=${pageInfo.limit}`);
+  };
 
   return (
     <div className={classes.root}>
@@ -206,10 +218,11 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
       />
       <Spacer vertical spacing={3} />
       <Paginator
-        currentPage={1}
-        updatePage={() => {}}
-        numPages={10}
-        itemsPerPage={10}
+        currentPage={page.currentPage}
+        updatePage={onUpdatePage}
+        numPages={page.numPages}
+        itemsPerPage={pageInfo.limit}
+        showRange={page.numPages > 4 ? 4 : page.numPages}
       />
     </div>
   );
