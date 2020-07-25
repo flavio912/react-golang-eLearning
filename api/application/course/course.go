@@ -111,16 +111,32 @@ func (c *courseAppImpl) coursesToGentypes(courses []models.Course) []gentypes.Co
 
 func (c *courseAppImpl) Course(courseID uint) (gentypes.Course, error) {
 	course, err := c.coursesRepository.Course(courseID)
+
+	// Only admins can view unpublished courses
+	if course.Published != true && !c.grant.IsAdmin {
+		return gentypes.Course{}, &errors.ErrUnauthorized
+	}
+
 	return c.courseToGentype(course), err
 }
 
 func (c *courseAppImpl) Courses(courseIDs []uint) ([]gentypes.Course, error) {
-	courses, err := c.coursesRepository.Courses(courseIDs)
+	showUnpublished := false
+	if c.grant.IsAdmin {
+		showUnpublished = true
+	}
+
+	courses, err := c.coursesRepository.Courses(courseIDs, showUnpublished)
 	return c.coursesToGentypes(courses), err
 }
 
 func (c *courseAppImpl) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error) {
-	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, application.IsFullyApproved(&c.usersRepository, c.grant))
+	showUnpublished := false
+	if c.grant.IsAdmin {
+		showUnpublished = true
+	}
+
+	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, application.IsFullyApproved(&c.usersRepository, c.grant), showUnpublished)
 
 	return c.coursesToGentypes(courses), pageInfo, err
 }
