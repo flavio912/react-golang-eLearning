@@ -223,6 +223,19 @@ func (c *courseAppImpl) CreateCAANumber(input gentypes.CreateCAANumberInput) (ge
 	return c.caaNumberToGentype(number), err
 }
 
+func (c *courseAppImpl) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CAANumber{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CAANumber{}, err
+	}
+
+	number, err := c.coursesRepository.UpdateCAANumber(input)
+	return c.caaNumberToGentype(number), err
+}
+
 func (c *courseAppImpl) CertificateType(uuid gentypes.UUID) (gentypes.CertificateType, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.CertificateType{}, &errors.ErrUnauthorized

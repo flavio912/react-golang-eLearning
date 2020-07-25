@@ -1246,6 +1246,27 @@ func (_m *CoursesRepository) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
 	return r0, r1
 }
 
+// UpdateCAANumber provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (models.CAANumber, error) {
+	ret := _m.Called(input)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCAANumberInput) models.CAANumber); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCAANumberInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // UpdateCertificateType provides a mock function with given fields: input
 func (_m *CoursesRepository) UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (models.CertificateType, error) {
 	ret := _m.Called(input)

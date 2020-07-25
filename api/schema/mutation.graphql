@@ -78,7 +78,9 @@ type Mutation {
 
   createCertificateType(input: CreateCertificateTypeInput!): CertificateType
   updateCertificateType(input: UpdateCertificateTypeInput!): CertificateType
+
   createCAANumber(input: CreateCAANumberInput!): CAANumber
+  updateCAANumber(input: UpdateCAANumberInput!): CAANumber
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse

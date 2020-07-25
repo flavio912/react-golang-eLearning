@@ -128,6 +128,28 @@ func (c *coursesRepoImpl) CreateCAANumber(identifier string) (models.CAANumber, 
 	return no, nil
 }
 
+func (c *coursesRepoImpl) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (models.CAANumber, error) {
+	no, err := c.CAANumber(input.UUID)
+	if err != nil {
+		return models.CAANumber{}, err
+	}
+
+	if input.Identifier != nil {
+		no.Identifier = *input.Identifier
+	}
+	if input.Used != nil {
+		no.Used = *input.Used
+	}
+
+	save := database.GormDB.Save(&no)
+	if save.Error != nil {
+		c.Logger.Logf(sentry.LevelError, save.Error, "Unable to update caanumber: %s", input.UUID)
+		return models.CAANumber{}, err
+	}
+
+	return no, nil
+}
+
 func filterCertificateTypes(query *gorm.DB, filter *gentypes.CertificateTypeFilter) *gorm.DB {
 	if filter != nil {
 		if helpers.StringNotNilOrEmpty(filter.Name) {

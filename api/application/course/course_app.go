@@ -95,6 +95,7 @@ type CourseApp interface {
 		page *gentypes.Page,
 		filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error)
 	CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error)
+	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
 
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)

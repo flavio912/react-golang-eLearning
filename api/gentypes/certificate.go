@@ -29,6 +29,12 @@ type CreateCAANumberInput struct {
 	Identifier string `valid:"required"`
 }
 
+type UpdateCAANumberInput struct {
+	UUID       UUID `valid:"required"`
+	Identifier *string
+	Used       *bool
+}
+
 type CAANumberFilter struct {
 	Identifier *string
 	Used       *bool

@@ -784,3 +784,11 @@ func (m *MutationResolver) CreateCAANumber(ctx context.Context, args struct{ Inp
 		CAANumber: number,
 	}, err
 }
+
+func (m *MutationResolver) UpdateCAANumber(ctx context.Context, args struct{ Input gentypes.UpdateCAANumberInput }) (*CAANumberResolver, error) {
+	app := auth.AppFromContext(ctx)
+	number, err := app.CourseApp.UpdateCAANumber(args.Input)
+	return &CAANumberResolver{
+		CAANumber: number,
+	}, err
+}

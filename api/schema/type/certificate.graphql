@@ -30,6 +30,12 @@ input CreateCAANumberInput {
   identifier: String!
 }
 
+input UpdateCAANumberInput {
+  uuid: UUID!
+  identifier: String
+  used: Boolean
+}
+
 type CertificateType {
   uuid: UUID!
   name: String!
