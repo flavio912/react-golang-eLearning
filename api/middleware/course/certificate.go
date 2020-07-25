@@ -106,8 +106,12 @@ func (c *coursesRepoImpl) CAANumber(uuid gentypes.UUID) (models.CAANumber, error
 	var no models.CAANumber
 	query := database.GormDB.Model(&models.CAANumber{}).Where("uuid = ?", uuid).Find(&no)
 	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.CAANumber{}, &errors.ErrNotFound
+		}
+
 		c.Logger.Logf(sentry.LevelError, query.Error, "Unable to find CAANumber: %s", uuid)
-		return models.CAANumber{}, &errors.ErrNotFound
+		return models.CAANumber{}, &errors.ErrWhileHandling
 	}
 
 	return no, nil

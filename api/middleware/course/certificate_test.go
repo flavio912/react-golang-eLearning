@@ -70,6 +70,32 @@ func TestCreateCAANumber(t *testing.T) {
 	})
 }
 
+func TestUpdateCAANumbers(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Cannot update non-existant caaNumber", func(t *testing.T) {
+		no, err := courseRepo.UpdateCAANumber(gentypes.UpdateCAANumberInput{
+			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
+		})
+
+		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, models.CAANumber{}, no)
+	})
+
+	t.Run("Should update CAANumber", func(t *testing.T) {
+		input := gentypes.UpdateCAANumberInput{
+			UUID:       gentypes.MustParseToUUID("2634bd66-cdab-4f16-acc6-ce023011316c"),
+			Identifier: helpers.StringPointer("Millionaire"),
+			Used:       helpers.BoolPointer(true),
+		}
+		no, err := courseRepo.UpdateCAANumber(input)
+
+		assert.Nil(t, err)
+		assert.Equal(t, *input.Identifier, no.Identifier)
+		assert.Equal(t, *input.Used, no.Used)
+	})
+}
+
 func TestCertificateTypes(t *testing.T) {
 	prepareTestDatabase()
 
