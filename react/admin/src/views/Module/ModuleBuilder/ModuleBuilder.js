@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardContent,
   Divider,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
@@ -47,8 +47,8 @@ const GET_LESSONS = gql`
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!, $excludeLesson: Boolean, $excludeTest: Boolean, $page: Page!) {
-    searchSyllabus(filter: { name: $name, excludeLesson:$excludeLesson, excludeTest:$excludeTest, excludeModule: true }, page: $page) {
+  query SearchSyllabus($name: String!, $page: Page!) {
+    searchSyllabus(filter: { name: $name, excludeModule: true }, page: $page) {
       edges {
         uuid
         name
@@ -104,17 +104,20 @@ function useSuggestedQuery(text, page) {
   return { resultItems, pageInfo };
 }
 
-function useSearchQuery(text, filter, page) {
+function useSearchQuery(text, page) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
-      excludeLesson: filter.excludeLesson,
-      excludeTest: filter.excludeTest,
       page: page
     }
   });
 
-  if (!data || !data.searchSyllabus || !data.searchSyllabus.edges || !data.searchSyllabus.pageInfo) {
+  if (
+    !data ||
+    !data.searchSyllabus ||
+    !data.searchSyllabus.edges ||
+    !data.searchSyllabus.pageInfo
+  ) {
     error && console.error('Could not get data', data, error);
     return {
       resultItems: [],
@@ -148,15 +151,9 @@ function useSearchQuery(text, filter, page) {
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
-  const [searchFilters, setSearchFilters] = React.useState({
-    excludeLesson: false, excludeTest: false, filters: [
-      {name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest'},
-      {name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson'},
-    ]
-  });
   const [searchText, setSearchText] = React.useState('');
   const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, searchFilters, page);
+  const searchResults = useSearchQuery(searchText, page);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
   const onDelete = uuid => {
@@ -192,8 +189,8 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
                 <SyllabusSearch
                   placeholder="Search Lessons or Tests"
-                  searchFilters={searchFilters}
-                  setSearchFilters={setSearchFilters}
+                  searchFilters={{ filters: [] }}
+                  setSearchFilters={() => {}}
                   searchResults={searchResults.resultItems}
                   setSearchText={setSearchText}
                   onChange={({ uuid, name, type }) => {
@@ -210,7 +207,9 @@ function ModuleBuilder({ state, setState }) {
               title="Suggested Lessons based on Tags"
               suggestions={suggestedLessons.resultItems.slice(0, 3)}
               onAdd={({ uuid, name }) =>
-                setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
+                setState({
+                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
+                })
               }
             />
           </Grid>
@@ -220,7 +219,7 @@ function ModuleBuilder({ state, setState }) {
               <Divider />
               <CardContent>
                 <ReoderableDropdown
-                  title="Module 1"
+                  title={state.name ?? ''}
                   items={state.syllabus.map(({ name, uuid }) => ({
                     id: uuid,
                     component: (
