@@ -27,7 +27,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   courseTable: {
     marginBottom: theme.spacing(4)
   },
-  activeTable: {}
+  activeTable: {},
+  noCourses: {
+    textAlign: 'center',
+    fontWeight: 300,
+    color: theme.colors.textGrey
+  }
 }));
 
 type Props = {
@@ -78,7 +83,9 @@ function Progress({ activity, user }: Props) {
           </div>
         </div>
         <CourseTable
-          EmptyComponent={<div>No Courses to show</div>}
+          EmptyComponent={
+            <div className={classes.noCourses}>No Courses to show</div>
+          }
           className={classes.courseTable}
           courses={myCourses}
           rowClicked={() => {
