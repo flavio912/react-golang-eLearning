@@ -1263,15 +1263,14 @@ func TestGetCourses(t *testing.T) {
 						"edges": [
 							{"id":1},
 							{"id":2},
-							{"id":3},
 							{"id":4},
 							{"id":5}
 						],
 						"pageInfo": {
-							"total": 5,
+							"total": 4,
 							"offset": 0,
 							"limit": 100,
-							"given": 5
+							"given": 4
 						}
 					}
 				}
