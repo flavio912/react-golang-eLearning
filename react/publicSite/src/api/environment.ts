@@ -1,16 +1,17 @@
-import { Environment, Network, RecordSource, Store } from "relay-runtime";
+import { Environment, Network, RecordSource, Store } from 'relay-runtime';
+import { graphServer } from './config';
 
 function fetchQuery(operation: any, variables: any) {
   const headers: any = {
-    "content-type": "application/json",
+    'content-type': 'application/json',
   };
 
-  const token = localStorage.getItem("auth");
+  const token = localStorage.getItem('auth');
   if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
-  return fetch("http://localhost:8080/graphql", {
-    method: "POST",
+  return fetch(graphServer, {
+    method: 'POST',
     headers,
     body: JSON.stringify({
       query: operation.text,

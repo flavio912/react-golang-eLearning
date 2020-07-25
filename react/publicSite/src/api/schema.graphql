@@ -12,6 +12,20 @@ type Query {
 
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
+  createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+}
+
+input CreateIndividualInput {
+  firstName: String!
+  lastName: String!
+  jobTitle: String
+  telephone: String
+  email: String!
+  password: String!
+}
+
+type CreateIndividualResponse {
+  user: User
 }
 
 type PageInfo {
