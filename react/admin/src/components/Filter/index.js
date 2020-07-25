@@ -7,7 +7,9 @@ import SearchIcon from '@material-ui/icons/Search';
 import MultiSelect from './MultiSelect';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
+  fullWidth: {
+    width: '100%',
+  },
   keywords: {
     padding: theme.spacing(2),
     display: 'flex',
@@ -49,7 +51,7 @@ const selects = [
   }
 ];
 
-function Filter({ className, ...rest }) {
+function Filter({ className, onChange, ...rest }) {
   const classes = useStyles();
   const [inputValue, setInputValue] = useState('');
   const [chips, setChips] = useState([]);
@@ -57,6 +59,7 @@ function Filter({ className, ...rest }) {
   const handleInputChange = event => {
     event.persist();
     setInputValue(event.target.value);
+    onChange && onChange(event.target.value);
   };
 
   const handleInputKeyup = event => {
@@ -84,6 +87,7 @@ function Filter({ className, ...rest }) {
         <SearchIcon className={classes.searchIcon} />
         <Input
           disableUnderline
+          className={classes.fullWidth}
           onChange={handleInputChange}
           onKeyUp={handleInputKeyup}
           placeholder="Enter a keyword"

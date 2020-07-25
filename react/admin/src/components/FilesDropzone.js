@@ -60,12 +60,17 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function FilesDropzone({ className, ...rest }) {
+function FilesDropzone({ className, onUpload, limit, ...rest }) {
   const classes = useStyles();
   const [files, setFiles] = useState([]);
 
   const handleDrop = useCallback((acceptedFiles) => {
-    setFiles((prevFiles) => [...prevFiles].concat(acceptedFiles));
+    if (limit && files.length >= limit - 1) {
+      const reduced = [...files].slice(1, files.length);
+      setFiles(() => reduced.concat(acceptedFiles));
+    } else {
+      setFiles((prevFiles) => [...prevFiles].concat(acceptedFiles));
+    }
   }, []);
 
   const handleRemoveAll = () => {
@@ -112,7 +117,7 @@ function FilesDropzone({ className, ...rest }) {
             {' '}
             <Link underline="always">browse</Link>
             {' '}
-            thorough your machine
+            through your machine
           </Typography>
         </div>
       </div>
@@ -153,8 +158,9 @@ function FilesDropzone({ className, ...rest }) {
               color="secondary"
               size="small"
               variant="contained"
+              onClick={() => onUpload(files)}
             >
-              Upload files
+              Upload {files.length > 1 ? 'files' : 'file'}
             </Button>
           </div>
         </>
