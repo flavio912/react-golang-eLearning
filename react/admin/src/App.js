@@ -55,7 +55,7 @@ const errorLink = new onError(({ graphQLErrors, networkError }) => {
 });
 
 const link = new HttpLink({
-  uri: 'http://localhost:8080/graphql',
+  uri: 'http://ttc.devserver.london/graphql',
   credentials: 'include' //TODO: Possibly change to same-origin in prod
 });
 
