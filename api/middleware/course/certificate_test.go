@@ -91,3 +91,55 @@ func TestCertificateTypes(t *testing.T) {
 		})
 	}
 }
+
+func TestCAANumbers(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should return all CAANumbers", func(t *testing.T) {
+		numbers, _, err := courseRepo.CAANumbers(nil, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, numbers, 2)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(1)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		numbers, pageInfo, err := courseRepo.CAANumbers(&page, nil)
+
+		assert.Nil(t, err)
+		assert.Equal(t, gentypes.PageInfo{Total: 2, Given: 1, Limit: limit}, pageInfo)
+		assert.Len(t, numbers, 1)
+	})
+
+	tests := []struct {
+		name    string
+		filter  gentypes.CAANumberFilter
+		wantLen int
+	}{
+		{
+			name: "identifier",
+			filter: gentypes.CAANumberFilter{
+				Identifier: helpers.StringPointer("id"),
+			},
+			wantLen: 1,
+		},
+		{
+			name: "used",
+			filter: gentypes.CAANumberFilter{
+				Used: helpers.BoolPointer(true),
+			},
+			wantLen: 1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Should filter by %s", test.name), func(t *testing.T) {
+			numbers, _, err := courseRepo.CAANumbers(nil, &test.filter)
+
+			assert.Nil(t, err)
+			assert.Len(t, numbers, test.wantLen)
+		})
+	}
+
+}
