@@ -5,8 +5,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 func TestCreateCertificateType(t *testing.T) {
@@ -22,6 +24,38 @@ func TestCreateCertificateType(t *testing.T) {
 
 		assert.Equal(t, inp.Name, certType.Name)
 		assert.Equal(t, inp.RegulationText, certType.RegulationText)
+	})
+}
+
+func TestUpdateCertificateType(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Cannot update non-existant cert type", func(t *testing.T) {
+		certType, err := courseRepo.UpdateCertificateType(
+			gentypes.UpdateCertificateTypeInput{
+				UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000"),
+			},
+		)
+
+		assert.Equal(t, &errors.ErrNotFound, err)
+		assert.Equal(t, models.CertificateType{}, certType)
+	})
+
+	t.Run("Should update certificate type", func(t *testing.T) {
+		input := gentypes.UpdateCertificateTypeInput{
+			UUID:                gentypes.MustParseToUUID("0f18892b-94b7-412c-8b4a-1719afcaee6b"),
+			Name:                helpers.StringPointer("Project Coordinator"),
+			RegulationText:      helpers.StringPointer("You manager projects"),
+			RequiresCAANo:       helpers.BoolPointer(false),
+			ShowTrainingSection: helpers.BoolPointer(false),
+		}
+		cert, err := courseRepo.UpdateCertificateType(input)
+
+		assert.Nil(t, err)
+		assert.Equal(t, *input.Name, cert.Name)
+		assert.Equal(t, *input.RegulationText, cert.RegulationText)
+		assert.Equal(t, *input.RequiresCAANo, cert.RequiresCAANo)
+		assert.Equal(t, *input.ShowTrainingSection, cert.ShowTrainingSection)
 	})
 }
 
