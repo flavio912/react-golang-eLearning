@@ -43,6 +43,8 @@ type CoursesRepository interface {
 		page *gentypes.Page,
 		filter *gentypes.CertificateTypeFilter) ([]models.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error)
+	UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (models.CertificateType, error)
+
 	CAANumber(uuid gentypes.UUID) (models.CAANumber, error)
 	CAANumbers(
 		page *gentypes.Page,

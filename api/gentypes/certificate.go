@@ -63,3 +63,12 @@ type CertificateTypeFilter struct {
 	RequiresCAANo       *bool
 	ShowTrainingSection *bool
 }
+
+type UpdateCertificateTypeInput struct {
+	UUID                 UUID `valid:"required"`
+	Name                 *string
+	RegulationText       *string
+	RequiresCAANo        *bool
+	ShowTrainingSection  *bool
+	CertificateBodyToken *string
+}

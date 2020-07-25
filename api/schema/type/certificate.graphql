@@ -52,3 +52,12 @@ input CreateCertificateTypeInput {
   showTrainingSection: Boolean
   certificateBodyToken: String
 }
+
+input UpdateCertificateTypeInput {
+  uuid: UUID!
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+  certificateBodyToken: String
+}

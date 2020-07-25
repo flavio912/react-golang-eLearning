@@ -754,9 +754,27 @@ func (m *MutationResolver) CreateCertificateType(ctx context.Context, args struc
 }) (*CertificateTypeResolver, error) {
 	app := auth.AppFromContext(ctx)
 	certType, err := app.CourseApp.CreateCertificateType(args.Input)
-	return &CertificateTypeResolver{
-		CertificateType: certType,
-	}, err
+	if err != nil {
+		return &CertificateTypeResolver{}, err
+	}
+
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+		CertificateType: &certType,
+	})
+}
+
+func (m *MutationResolver) UpdateCertificateType(ctx context.Context, args struct {
+	Input gentypes.UpdateCertificateTypeInput
+}) (*CertificateTypeResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certType, err := app.CourseApp.UpdateCertificateType(args.Input)
+	if err != nil {
+		return &CertificateTypeResolver{}, err
+	}
+
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+		CertificateType: &certType,
+	})
 }
 
 func (m *MutationResolver) CreateCAANumber(ctx context.Context, args struct{ Input gentypes.CreateCAANumberInput }) (*CAANumberResolver, error) {

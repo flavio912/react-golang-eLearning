@@ -57,6 +57,51 @@ func (c *coursesRepoImpl) CreateCertificateType(input gentypes.CreateCertificate
 	return certType, nil
 }
 
+func (c *coursesRepoImpl) UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (models.CertificateType, error) {
+	updates := make(map[string]interface{})
+
+	if input.Name != nil {
+		updates["name"] = *input.Name
+	}
+	if input.RegulationText != nil {
+		updates["regulation_text"] = *input.RegulationText
+	}
+	if input.RequiresCAANo != nil {
+		updates["requires_caa_no"] = *input.RequiresCAANo
+	}
+	if input.ShowTrainingSection != nil {
+		updates["show_training_section"] = *input.ShowTrainingSection
+	}
+
+	tx := database.GormDB.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			c.Logger.LogMessage(sentry.LevelFatal, "UpdateCertificateType: Forced to recover")
+		}
+	}()
+
+	if err := tx.Model(&models.CertificateType{}).Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to update certificate type: %s", input.UUID)
+		tx.Rollback()
+		return models.CertificateType{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return models.CertificateType{}, &errors.ErrWhileHandling
+	}
+
+	certType, err := c.CertificateType(input.UUID)
+	if err != nil {
+		return models.CertificateType{}, err
+	}
+
+	return certType, nil
+}
+
 func (c *coursesRepoImpl) CAANumber(uuid gentypes.UUID) (models.CAANumber, error) {
 	var no models.CAANumber
 	query := database.GormDB.Model(&models.CAANumber{}).Where("uuid = ?", uuid).Find(&no)

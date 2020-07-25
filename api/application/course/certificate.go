@@ -197,6 +197,19 @@ func (c *courseAppImpl) CreateCertificateType(input gentypes.CreateCertificateTy
 	return c.certificateTypeToGentype(certType), err
 }
 
+func (c *courseAppImpl) UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CertificateType{}, err
+	}
+
+	certType, err := c.coursesRepository.UpdateCertificateType(input)
+	return c.certificateTypeToGentype(certType), err
+}
+
 func (c *courseAppImpl) CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.CAANumber{}, &errors.ErrUnauthorized
