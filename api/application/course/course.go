@@ -90,6 +90,10 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 }
 
 func (c *courseAppImpl) SetCoursePublished(courseID uint, published bool) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
 	_, err := c.coursesRepository.UpdateCourse(courseID, course.CourseInput{
 		Published: &published,
 	})
