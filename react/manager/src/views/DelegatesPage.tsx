@@ -20,6 +20,7 @@ import { fetchQuery } from 'relay-runtime';
 import environment from 'api/environment';
 import { OrgOverviewDelegatesQueryResponse } from './__generated__/OrgOverviewDelegatesQuery.graphql';
 import { DelegatesPageQueryResponse } from './__generated__/DelegatesPageQuery.graphql';
+import { CourseStatus } from './__generated__/DelegateProfilePage_delegate.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -113,14 +114,15 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
     currentPage: Math.ceil(pageInfo.offset/ pageInfo.limit),
     numPages: Math.ceil(pageInfo.total/ pageInfo.limit)
   };
+
   const delegateComponents = edges.map((delegate: any) =>
     delegateRow(
       delegate?.uuid,
       `${delegate?.firstName} ${delegate?.lastName}`,
       '',
       delegate?.email,
-      3,
-      6,
+      (delegate.myCourses as Array<{status: CourseStatus}>).filter(course => course.status == "complete").length,
+      delegate.myCourses.length,
       delegate?.lastLogin,
       '2013-04-20T20:00:00+0800',
       classes,
@@ -238,6 +240,9 @@ const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
         lastName
         lastLogin
         createdAt
+        myCourses {
+          status
+        }
       }
       pageInfo {
         total
