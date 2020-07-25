@@ -13,6 +13,29 @@ type Query {
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  createCompanyRequest(
+    company: CreateCompanyInput!
+    manager: CreateManagerInput!
+    recaptcha: String!
+  ): Boolean!
+}
+
+input CreateManagerInput {
+  firstName: String!
+  lastName: String!
+  email: String!
+  jobTitle: String!
+  telephone: String!
+  password: String!
+}
+
+input CreateCompanyInput {
+  companyName: String!
+  addressLine1: String!
+  addressLine2: String!
+  county: String!
+  postCode: String!
+  country: String!
 }
 
 input CreateIndividualInput {

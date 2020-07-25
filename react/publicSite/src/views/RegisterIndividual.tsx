@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
-import classnames from 'classnames';
 import { Theme } from 'helpers/theme';
 import RegisterInd from 'components/Overview/Registration/RegisterIndividual';
 import { Router } from 'found';
 import RegistrationCarousel from 'components/Overview/Registration/RegistrationCarousel';
-import { createFragmentContainer, graphql, commitMutation } from 'react-relay';
+import { graphql, commitMutation } from 'react-relay';
 import { Image } from 'components/Misc/CarouselImage';
 import environment from 'api/environment';
 import { GraphError } from 'types/general';
@@ -13,7 +12,6 @@ import {
   RegisterIndividual_CreateIndividualMutationVariables,
   RegisterIndividual_CreateIndividualMutationResponse,
 } from '__generated__/RegisterIndividual_CreateIndividualMutation.graphql';
-import { fn } from 'moment';
 import { delegateLogin } from 'api/config';
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -106,7 +104,7 @@ function RegisterIndividual({ router }: Props) {
     <div className={classes.registerRoot}>
       <div className={classes.picker}>
         <RegisterInd
-          onSubmit={async (fname, lname, email, password, telephone, role) => {
+          onSubmit={async (fname, lname, email, password, telephone) => {
             try {
               const resp = await submitForm({
                 firstName: fname,

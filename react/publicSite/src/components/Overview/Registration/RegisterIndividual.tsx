@@ -64,7 +64,6 @@ type Props = {
     email: string,
     password: string,
     telephone: string,
-    role: string,
   ) => void;
   onLogoClick?: () => void;
 };
@@ -77,13 +76,9 @@ function RegisterIndividual({ onSubmit, onLogoClick }: Props) {
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
   const [telephone, setTelephone] = React.useState('');
-  const [role, setRole] = React.useState({
-    id: 0,
-    title: 'What role best describes you',
-  });
 
   const submitInfo = () => {
-    onSubmit(firstName, lastName, email, password, telephone, role.title);
+    onSubmit(firstName, lastName, email, password, telephone);
   };
 
   return (
@@ -131,14 +126,6 @@ function RegisterIndividual({ onSubmit, onLogoClick }: Props) {
           onChange={setPassword}
           value={'password'}
           className={classnames(classes.input, classes.fullWidth)}
-        />
-        <Dropdown
-          placeholder="What role best describes you"
-          options={[{ id: 0, title: 'Default Option' }]}
-          selected={role}
-          fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setRole(selected)}
-          className={classnames(classes.dropdown, classes.fullWidth)}
         />
         <CheckboxSingle
           size={18}
