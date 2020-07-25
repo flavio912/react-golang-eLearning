@@ -6,15 +6,10 @@ import {
   CardContent,
   Divider,
   Typography,
-  TextField,
-  InputAdornment
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
 import { useQuery } from '@apollo/react-hooks';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';

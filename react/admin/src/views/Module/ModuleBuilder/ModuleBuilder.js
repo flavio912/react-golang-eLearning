@@ -6,16 +6,10 @@ import {
   CardContent,
   Divider,
   Typography,
-  TextField,
-  InputAdornment,
-  Chip
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
 import { useQuery } from '@apollo/react-hooks';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
@@ -198,7 +192,7 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
                 <SyllabusSearch
                   placeholder="Search Lessons or Tests"
-                  searchFilters={searchFilters.filters}
+                  searchFilters={searchFilters}
                   setSearchFilters={setSearchFilters}
                   searchResults={searchResults.resultItems}
                   setSearchText={setSearchText}
