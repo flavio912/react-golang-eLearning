@@ -6,6 +6,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
@@ -84,7 +85,15 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		BannerImageURL:       bannerUrl,
 		ExpiresInMonths:      courseInfo.ExpiresInMonths,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		Published:            courseInfo.Published,
 	}
+}
+
+func (c *courseAppImpl) SetCoursePublished(courseID uint, published bool) error {
+	_, err := c.coursesRepository.UpdateCourse(courseID, course.CourseInput{
+		Published: &published,
+	})
+	return err
 }
 
 // TODO: Bulk load rather than making a million db calls

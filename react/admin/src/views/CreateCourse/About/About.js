@@ -45,7 +45,7 @@ function About({ state, setState }) {
                     rows={5}
                     value={state.howToComplete}
                     onChange={inp => {
-                      setState('howToComplete', inp.target.value);
+                      setState({ howToComplete: inp.target.value });
                     }}
                     placeholder={'How to complete this course (500 words)'}
                     variant="outlined"
@@ -57,14 +57,14 @@ function About({ state, setState }) {
               <BulletRepeater
                 title={"What you'll learn"}
                 items={state['whatYouLearn']}
-                onChange={items => setState('whatYouLearn', items)}
+                onChange={items => setState({ whatYouLearn: items })}
               />
             </Grid>
             <Grid item>
               <BulletRepeater
                 title={'Requirements'}
                 items={state['requirements']}
-                onChange={items => setState('requirements', items)}
+                onChange={items => setState({ requirements: items })}
               />
             </Grid>
           </Grid>

@@ -157,6 +157,7 @@ type CourseInput struct {
 	CertificateType      *gentypes.UUID
 	ExpiresInMonths      *uint
 	ExpirationToEndMonth *bool
+	Published            *bool
 }
 
 // UpdateCourse updates the course for a given courseID
@@ -218,6 +219,9 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 	if infoChanges.SpecificTerms != nil {
 		updates["specific_terms"] = *infoChanges.SpecificTerms
+	}
+	if infoChanges.Published != nil {
+		updates["published"] = *infoChanges.Published
 	}
 
 	tx := database.GormDB.Begin()
