@@ -25,6 +25,17 @@ func TestCreateCertificateType(t *testing.T) {
 	})
 }
 
+func TestCreateCAANumber(t *testing.T) {
+	t.Run("Creates a CAANumber", func(t *testing.T) {
+		id := "2Pac"
+		no, err := courseRepo.CreateCAANumber(id)
+
+		assert.Nil(t, err)
+		assert.Equal(t, id, no.Identifier)
+		assert.False(t, no.Used)
+	})
+}
+
 func TestCertificateTypes(t *testing.T) {
 	prepareTestDatabase()
 
