@@ -16,6 +16,7 @@ import Pricing from './Pricing';
 import CourseBuilder from './CourseBuilder';
 import { gql } from 'apollo-boost';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,6 +50,7 @@ const SAVE_ONLINE_COURSE = gql`
     $requirements: [String!]
     $bannerImageSuccess: String
     $categoryUUID: UUID
+    $structure: [CourseItem!]
   ) {
     saveOnlineCourse(
       input: {
@@ -64,10 +66,17 @@ const SAVE_ONLINE_COURSE = gql`
         requirements: $requirements
         bannerImageSuccess: $bannerImageSuccess
         categoryUUID: $categoryUUID
+        structure: $structure
       }
     ) {
       id
     }
+  }
+`;
+
+const SET_PUBLISHED = gql`
+  mutation SetPublished($courseID: Int!, $published: Boolean) {
+    setCoursePublished(courseID: $courseID, published: $published)
   }
 `;
 
@@ -86,9 +95,15 @@ const GET_COURSE = gql`
       whatYouLearn
       requirements
       bannerImageURL
+      published
       category {
         name
         uuid
+      }
+      syllabus {
+        uuid
+        name
+        type
       }
     }
   }
@@ -109,9 +124,11 @@ var initState = {
   hoursToComplete: 0,
   price: 0,
   priceType: 'paid',
+  published: false,
   bannerImageURL: undefined,
   bannerImageSuccess: undefined,
-  categoryUUID: undefined
+  categoryUUID: { title: '', value: '' },
+  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }]
 };
 
 function CreateCourse({ match, history }) {
@@ -125,12 +142,17 @@ function CreateCourse({ match, history }) {
     { value: 'pricing', label: 'Pricing' }
   ];
 
-  const handleTabsChange = (event, value) => {
+  const handleTabsChange = (_, value) => {
     history.push(value);
   };
 
   const [state, setState] = useState(initState);
-  const [saveOnlineCourse] = useMutation(SAVE_ONLINE_COURSE);
+  const [saveOnlineCourse, { error: saveError }] = useMutation(
+    SAVE_ONLINE_COURSE
+  );
+  const [setPublishedMutation, { error: publishError }] = useMutation(
+    SET_PUBLISHED
+  );
   const { loading, error, data, refetch } = useQuery(GET_COURSE, {
     variables: {
       id: parseInt(ident)
@@ -138,6 +160,7 @@ function CreateCourse({ match, history }) {
     fetchPolicy: 'cache-and-network',
     skip: !ident
   });
+
   useEffect(() => {
     if (loading || error) return;
     if (!data) return;
@@ -152,9 +175,11 @@ function CreateCourse({ match, history }) {
       hoursToComplete: data.course.hoursToComplete,
       whatYouLearn: data.course.whatYouLearn,
       requirements: data.course.requirements,
+      published: data.course.published,
       bannerImageURL: data.course.bannerImageURL,
       price: data.course.price,
-      categoryUUID: data.course.categoryUUID
+      category: data.course.category,
+      syllabus: data.course.syllabus
     });
   }, [data, loading, error]);
 
@@ -183,7 +208,9 @@ function CreateCourse({ match, history }) {
           whatYouLearn: state.whatYouLearn,
           requirements: state.requirements,
           bannerImageSuccess: state.bannerImageSuccess,
-          price: state.price
+          categoryUUID: state.category?.uuid,
+          price: state.price,
+          structure: state.structure
         }
       });
 
@@ -196,9 +223,20 @@ function CreateCourse({ match, history }) {
     refetch();
   };
 
-  // if (!currentTab) {
-  //   return <Redirect to={`/courses/create/overview`} />;
-  // }
+  const setPublish = async published => {
+    if (!ident) {
+      alert('Must save the course before publishing');
+      return;
+    }
+
+    await setPublishedMutation({
+      variables: {
+        published: published,
+        courseID: parseInt(ident)
+      }
+    });
+    refetch();
+  };
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
@@ -206,8 +244,14 @@ function CreateCourse({ match, history }) {
 
   return (
     <Page className={classes.root} title="Create Course">
+      <ErrorModal error={saveError || publishError || error} />
       <Container maxWidth={false}>
-        <Header onSaveDraft={saveDraft} />
+        <Header
+          onSaveDraft={saveDraft}
+          setPublish={setPublish}
+          isSaved={ident ?? undefined}
+          published={state.published}
+        />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -230,7 +274,9 @@ function CreateCourse({ match, history }) {
           {currentTab === 'pricing' && (
             <Pricing state={state} setState={updateState} />
           )}
-          {currentTab === 'builder' && <CourseBuilder />}
+          {currentTab === 'builder' && (
+            <CourseBuilder state={state} setState={updateState} />
+          )}
         </div>
       </Container>
     </Page>

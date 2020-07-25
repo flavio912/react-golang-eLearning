@@ -66,12 +66,16 @@ function CourseInfo({ state, setState }) {
             <Grid container spacing={1} alignItems={'center'}>
               <Grid item xs={12}>
                 <Autocomplete
+                  value={state.category}
                   options={categoryOptions}
                   loading={loading}
-                  getOptionLabel={option => option.title}
+                  getOptionLabel={option => option.title ?? option.name}
                   onChange={(event, newValue) => {
+                    console.log('new', newValue);
                     if (!newValue) return;
-                    setState({ categoryUUID: newValue.value });
+                    setState({
+                      category: { uuid: newValue.value, name: newValue.title }
+                    });
                   }}
                   renderInput={params => (
                     <TextField

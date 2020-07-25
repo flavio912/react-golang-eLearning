@@ -109,12 +109,14 @@ export const AppHolder = ({ children }: Props) => {
       title: 'Features',
       options: [
         {
+          id: 0,
           title: 'For Companies',
           text:
             "We're training the finest minds in air, road and sea - are you on the list?",
           link: '/register/company',
         },
         {
+          id: 1,
           title: 'For Individuals',
           text:
             'Do you need trainingsolutions for your next role in Transport Compliance?',
@@ -127,28 +129,40 @@ export const AppHolder = ({ children }: Props) => {
       title: 'Courses',
       options: [
         {
-          title: 'Aviation Security',
+          id: 0,
+          title: 'Online Courses',
           text:
             'Training courses specifically designed for those who work in Aviation Security',
-          link: '/courses',
-        },
-        {
-          title: 'Dangerous Goods',
-          text:
-            'Courses for both air and road, all in accordance with CAA Regulations',
           link: '/',
         },
         {
-          title: 'Health & Safety',
-          text:
-            'All our courses can be taken online in conjunction withyour internal policies',
-          link: '/',
-        },
-        {
+          id: 1,
           title: 'Classroom Courses',
           text:
             'All classroom courses are delivered in London at our purpose built facility',
-          link: '/',
+          options: [
+            {
+              id: 0,
+              title: 'Aviation Security',
+              text:
+                'Training courses specifically designed for those who work in Aviation Security',
+              link: '/courses',
+            },
+            {
+              id: 1,
+              title: 'Dangerous Goods',
+              text:
+                'Courses for both air and road, all in accordance with CAA Regulations',
+              link: '/',
+            },
+            {
+              id: 2,
+              title: 'Health & Safety',
+              text:
+                'All our courses can be taken online in conjunction withyour internal policies',
+              link: '/',
+            },
+          ],
         },
       ],
     },
@@ -157,24 +171,28 @@ export const AppHolder = ({ children }: Props) => {
       title: 'Resources',
       options: [
         {
+          id: 0,
           title: 'News & Blog',
           text:
             'Stay in touch with all the industry news from the team at TTC Hub',
           link: '/articles',
         },
         {
+          id: 1,
           title: 'Book A Demo',
           text:
             'Looking for more information on our platform? Let us show you the ropes',
           link: '/',
         },
         {
+          id: 2,
           title: 'About Us',
           text:
             "We're a growing team of industry experts with 40+ years of experience",
           link: '/aboutus',
         },
         {
+          id: 3,
           title: 'Contact Us',
           text:
             "We're a growing team of industry experts with 100+ years of experience",

@@ -142,12 +142,12 @@ func (u *usersAppImpl) ProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (
 	}
 
 	url, successToken, err := uploads.GenerateUploadURL(
-		imageMeta.FileType,      // The actual file type
-		imageMeta.ContentLength, // The actual file content length
-		[]string{"jpg", "png"},  // Allowed file types
-		int32(20000000),         // Max file size = 20MB
-		"profile",               // Save files in the "profile" s3 directory
-		"profileImage",          // Unique identifier for this type of upload request
+		imageMeta.FileType,             // The actual file type
+		imageMeta.ContentLength,        // The actual file content length
+		[]string{"jpg", "png", "jpeg"}, // Allowed file types
+		int32(20000000),                // Max file size = 20MB
+		"profile",                      // Save files in the "profile" s3 directory
+		"profileImage",                 // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err

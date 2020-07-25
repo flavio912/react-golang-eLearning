@@ -545,6 +545,30 @@ func (m *MutationResolver) UpdateModule(ctx context.Context, args struct{ Input 
 	}, err
 }
 
+func (m *MutationResolver) ModuleBannerImageUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.CourseApp.ModuleBannerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
+func (m *MutationResolver) VoiceoverUploadRequest(
+	ctx context.Context,
+	args struct{ Input gentypes.UploadFileMeta },
+) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, successToken, err := app.CourseApp.VoiceoverUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		URL:          url,
+		SuccessToken: successToken,
+	}, err
+}
+
 func (m *MutationResolver) FulfilPendingOrder(ctx context.Context, args struct{ ClientSecret string }) (bool, error) {
 	app := auth.AppFromContext(ctx)
 	return app.CourseApp.FulfilPendingOrder(args.ClientSecret)
@@ -791,4 +815,21 @@ func (m *MutationResolver) UpdateCAANumber(ctx context.Context, args struct{ Inp
 	return &CAANumberResolver{
 		CAANumber: number,
 	}, err
+}
+
+func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
+	CourseID  int32
+	Published *bool
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	pub := true
+	if args.Published != nil {
+		pub = *args.Published
+	}
+
+	err := app.CourseApp.SetCoursePublished(uint(args.CourseID), pub)
+	if err != nil {
+		return false, err
+	}
+	return true, err
 }

@@ -11,7 +11,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Header({ className, onSaveDraft, onPublish, ...rest }) {
+function Header({
+  className,
+  onSaveDraft,
+  setPublish,
+  published,
+  isSaved,
+  ...rest
+}) {
   const classes = useStyles();
 
   return (
@@ -33,8 +40,10 @@ function Header({ className, onSaveDraft, onPublish, ...rest }) {
             color="secondary"
             variant="contained"
             className={classes.publish}
+            onClick={() => setPublish(!published)}
+            disabled={!isSaved}
           >
-            Publish
+            {published ? 'Unpublish' : 'Publish'}
           </Button>
         </Grid>
       </Grid>

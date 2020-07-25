@@ -22,6 +22,7 @@ type CourseApp interface {
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error)
 	CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error)
 
+	SetCoursePublished(courseID uint, published bool) error
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
@@ -65,7 +66,11 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
+	ModuleBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error)
+	ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Tag, error)
+
+	VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	SearchSyllabus(
 		page *gentypes.Page,

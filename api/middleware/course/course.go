@@ -20,11 +20,11 @@ import (
 
 type CoursesRepository interface {
 	Course(courseID uint) (models.Course, error)
-	Courses(courseIDs []uint) ([]models.Course, error)
+	Courses(courseIDs []uint, showUnpublished bool) ([]models.Course, error)
 	UpdateCourse(courseID uint, infoChanges CourseInput) (models.Course, error)
 	DeleteCourse(ID uint) (bool, error)
 	ComposeCourse(courseInfo CourseInput) (models.Course, error)
-	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error)
+	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool, showPublished bool) ([]models.Course, gentypes.PageInfo, error)
 	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
 	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
@@ -77,6 +77,7 @@ type CoursesRepository interface {
 	GetModuleStructure(moduleUUID gentypes.UUID) ([]gentypes.ModuleItem, error)
 	UpdateModuleStructure(tx *gorm.DB, moduleUUID gentypes.UUID, moduleStructure []gentypes.ModuleItem) (models.Module, error)
 	IsModuleInCourses(courseIDs []uint, moduleUUID gentypes.UUID) (bool, error)
+	ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.Tag, error)
 
 	Test(testUUID gentypes.UUID) (models.Test, error)
 	Tests(
@@ -136,14 +137,23 @@ func (c *coursesRepoImpl) Course(courseID uint) (models.Course, error) {
 }
 
 // TODO: Optimise to use (IN) query
-func (c *coursesRepoImpl) Courses(courseIDs []uint) ([]models.Course, error) {
+func (c *coursesRepoImpl) Courses(courseIDs []uint, showUnpublished bool) ([]models.Course, error) {
 	var courseModels []models.Course
-	for _, id := range courseIDs {
-		mod, err := c.Course(id)
-		if err != nil {
-			return []models.Course{}, err
+
+	query := database.GormDB
+	if showUnpublished {
+		query = query.Where("id IN (?) AND published = ?", courseIDs, true).Find(&courseModels)
+	} else {
+		query = query.Where("id IN (?)", courseIDs).Find(&courseModels)
+	}
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return courseModels, &errors.ErrNotFound
 		}
-		courseModels = append(courseModels, mod)
+
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get courses")
+		return courseModels, &errors.ErrWhileHandling
 	}
 	return courseModels, nil
 }
@@ -168,6 +178,7 @@ type CourseInput struct {
 	CertificateType      *gentypes.UUID
 	ExpiresInMonths      *uint
 	ExpirationToEndMonth *bool
+	Published            *bool
 }
 
 // UpdateCourse updates the course for a given courseID
@@ -229,6 +240,9 @@ func (c *coursesRepoImpl) UpdateCourse(courseID uint, infoChanges CourseInput) (
 	}
 	if infoChanges.SpecificTerms != nil {
 		updates["specific_terms"] = *infoChanges.SpecificTerms
+	}
+	if infoChanges.Published != nil {
+		updates["published"] = *infoChanges.Published
 	}
 
 	tx := database.GormDB.Begin()
@@ -463,11 +477,14 @@ func filterCourse(query *gorm.DB, filter *gentypes.CourseFilter, fullyApproved b
 	return query
 }
 
-func (c *coursesRepoImpl) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool) ([]models.Course, gentypes.PageInfo, error) {
+func (c *coursesRepoImpl) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy, fullyApproved bool, showPublished bool) ([]models.Course, gentypes.PageInfo, error) {
 	// Public function
 	var courses []models.Course
 
 	query := filterCourse(database.GormDB, filter, fullyApproved)
+	if !showPublished {
+		query = query.Where("published = ?", true)
+	}
 
 	var count int32
 	if err := query.Model(&models.Course{}).Count(&count).Error; err != nil {

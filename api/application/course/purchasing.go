@@ -17,7 +17,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		return &gentypes.PurchaseCoursesResponse{}, err
 	}
 
-	courseModels, err := c.coursesRepository.Courses(helpers.Int32sToUints(input.Courses))
+	courseModels, err := c.coursesRepository.Courses(helpers.Int32sToUints(input.Courses), false)
 	if err != nil {
 		return &gentypes.PurchaseCoursesResponse{}, err
 	}

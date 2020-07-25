@@ -41,6 +41,7 @@ type Mutation {
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: UUID!): Company
+  setCoursePublished(courseID: Int!, published: Boolean): Boolean!
 
   fulfilPendingOrder(clientSecret: String!): Boolean!
   saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
@@ -68,8 +69,11 @@ type Mutation {
   deleteQuestion(input: DeleteQuestionInput!): Boolean!
 
   createModule(input: CreateModuleInput!): CreateModulePayload
+  moduleBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
   deleteModule(input: DeleteModuleInput!): Boolean!
+
+  voiceoverUploadRequest(input: UploadFileMeta!): UploadFileResp
 
   createTutor(input: CreateTutorInput!): Tutor
   updateTutor(input: UpdateTutorInput!): Tutor
