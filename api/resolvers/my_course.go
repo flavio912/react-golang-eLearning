@@ -52,6 +52,5 @@ func NewMyCoursesResolvers(ctx context.Context, args NewMyCoursesArgs) (*[]*MyCo
 	default:
 		return &resolvers, &errors.ErrUnableToResolve
 	}
-
 	return &resolvers, nil
 }
