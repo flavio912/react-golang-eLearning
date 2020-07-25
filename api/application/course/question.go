@@ -291,12 +291,12 @@ func (c *courseAppImpl) AnswerImageUploadRequest(imageMeta gentypes.UploadFileMe
 	}
 
 	url, successToken, err := uploads.GenerateUploadURL(
-		imageMeta.FileType,      // The actual file type
-		imageMeta.ContentLength, // The actual file content length
-		[]string{"jpg", "png"},  // Allowed file types
-		int32(20000000),         // Max file size = 20MB
-		"answers",               // Save files in the "answers" s3 directory
-		"answerImages",          // Unique identifier for this type of upload request
+		imageMeta.FileType,             // The actual file type
+		imageMeta.ContentLength,        // The actual file content length
+		[]string{"jpg", "png", "jpeg"}, // Allowed file types
+		int32(20000000),                // Max file size = 20MB
+		"answers",                      // Save files in the "answers" s3 directory
+		"answerImages",                 // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err
