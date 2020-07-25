@@ -11,7 +11,6 @@ import {
   MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import { Autocomplete } from '@material-ui/lab';
 import { gql } from 'apollo-boost';
 import UploadFile from 'src/components/UploadFile';
 
@@ -75,11 +74,8 @@ function AudioVideo({ state, setState }) {
                     variant="outlined"
                     className={classes.thinInput}
                   >
-                    {voiceoverOptions.map((option) => (
-                      <MenuItem
-                        key={option.uuid}
-                        value={option}
-                      >
+                    {voiceoverOptions.map(option => (
+                      <MenuItem key={option.uuid} value={option}>
                         {option.title}
                       </MenuItem>
                     ))}
@@ -113,11 +109,8 @@ function AudioVideo({ state, setState }) {
                     variant="outlined"
                     className={classes.thinInput}
                   >
-                    {videoOptions.map((option) => (
-                      <MenuItem
-                        key={option.uuid}
-                        value={option}
-                      >
+                    {videoOptions.map(option => (
+                      <MenuItem key={option.uuid} value={option}>
                         {option.title}
                       </MenuItem>
                     ))}

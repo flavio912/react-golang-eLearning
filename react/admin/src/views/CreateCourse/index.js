@@ -229,7 +229,7 @@ function CreateCourse({ match, history }) {
       return;
     }
 
-    const success = await setPublishedMutation({
+    await setPublishedMutation({
       variables: {
         published: published,
         courseID: parseInt(ident)

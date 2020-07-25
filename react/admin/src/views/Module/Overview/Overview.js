@@ -9,9 +9,7 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
 import TagsInput from 'src/components/TagsInput';
-import FilesDropzone from 'src/components/FilesDropzone';
 import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
@@ -72,8 +70,8 @@ function Overview({ state, setState }) {
                       <TagsInput
                         allowNew
                         onChange={tags => {
-                          setState({ tags: tags })
-                          console.log('tasgs: ', tags)
+                          setState({ tags: tags });
+                          console.log('tasgs: ', tags);
                         }}
                       />
                     </Grid>
@@ -109,7 +107,11 @@ function Overview({ state, setState }) {
             <Divider />
             <CardContent>
               {state.bannerImageURL && (
-                <img src={state.bannerImageURL} className={classes.preview} />
+                <img
+                  src={state.bannerImageURL}
+                  className={classes.preview}
+                  alt="preview"
+                />
               )}
               <UploadFile
                 uploadMutation={UPLOAD_REQUEST}
