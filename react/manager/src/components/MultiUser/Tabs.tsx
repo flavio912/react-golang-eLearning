@@ -11,7 +11,7 @@ import Tabs, {
   Text,
   CourseList,
   Payment
-} from 'components/core/Modals/SideModal/Tabs';
+} from 'sharedComponents/SideModal/Tabs';
 import SearchableDropdown, {
   CourseCategory,
   Course
@@ -19,12 +19,10 @@ import SearchableDropdown, {
 import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
 import Button from 'sharedComponents/core/Input/Button';
 import Checkbox from 'components/core/Input/Checkbox';
-import { ResultItem } from 'components/UserSearch';
 import environment from 'api/environment';
 import { TabsDelegateQueryResponse } from './__generated__/TabsDelegateQuery.graphql';
 import { TabsCoursesQueryResponse } from './__generated__/TabsCoursesQuery.graphql';
-import { PurchaseCoursesType } from './MultiUser';
-import PaymentSuccess from '../../PaymentSuccess';
+import PaymentSuccess from 'sharedComponents/SideModal/PaymentSuccess';
 import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
 
 const userSearchFunction = async (text: string) => {
@@ -136,18 +134,7 @@ const courseSearchFunction = async (text: string) => {
   return results;
 };
 
-export type OnPurchase = (
-  callback?: (
-    response: MultiUser_PurchaseMutationResponse,
-    error: string | undefined
-  ) => void,
-  showSuccess?: () => void
-) => void;
-
-export const tabList: (
-  onPurchase: PurchaseCoursesType,
-  isContract: boolean
-) => TabContent[] = (onPurchase, isContract) => {
+export const tabList: (isContract: boolean) => TabContent[] = (isContract) => {
   return [
     {
       key: 'Courses',
@@ -293,16 +280,6 @@ export const tabList: (
               (user: { uuid: string } | undefined) => user?.uuid
             )}
             isContract={isContract}
-            onPurchase={(callback) =>
-              onPurchase(
-                state.courses.map((course: Course) => course.id),
-                state.users.map(
-                  (user: { uuid: string } | undefined) => user?.uuid
-                ),
-                'email@email.com',
-                callback
-              )
-            }
             onSuccess={() => {
               setState((s: object) => ({ ...s, success: true }));
             }}

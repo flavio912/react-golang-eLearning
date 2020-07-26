@@ -7,6 +7,10 @@ import PaymentForm from 'sharedComponents/SideModal/PaymentForm';
 import PaymentSuccess from 'sharedComponents/SideModal/PaymentSuccess';
 import Button from 'sharedComponents/core/Input/Button';
 import { OnPurchase } from 'sharedComponents/SideModal/PaymentForm/PaymentForm';
+import environment from 'api/environment';
+import { commitMutation, graphql } from 'react-relay';
+import { GraphError } from 'types/general';
+import { Payment_PurchaseMutationResponse } from './__generated__/Payment_PurchaseMutation.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   paymentRoot: {},
@@ -190,18 +194,97 @@ export type Course = {
   price: number;
 };
 
+const mutation = graphql`
+  mutation Payment_PurchaseMutation(
+    $courses: [Int!]!
+    $users: [UUID!]!
+    $extraEmail: String
+  ) {
+    purchaseCourses(
+      input: {
+        courses: $courses
+        users: $users
+        extraInvoiceEmail: $extraEmail
+        acceptedTerms: true
+        backgroundCheckConfirm: true
+      }
+    ) {
+      transactionComplete
+      stripeClientSecret
+    }
+  }
+`;
+
+type PurchaseCallback = (
+  response: Payment_PurchaseMutationResponse,
+  error: string | undefined
+) => void;
+
+const PurchaseCourses = (
+  courses: number[],
+  users: string[],
+  extraEmail: string,
+  callback?: PurchaseCallback
+) => {
+  const variables = {
+    courses,
+    users,
+    extraEmail
+  };
+
+  if (!users) {
+    if (callback)
+      callback(
+        { purchaseCourses: null },
+        'No users given, cannot purchase course without users'
+      );
+  }
+
+  if (!courses) {
+    if (callback)
+      callback(
+        { purchaseCourses: null },
+        'Please select at least one course to purchase'
+      );
+  }
+
+  commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted: async (
+      response: Payment_PurchaseMutationResponse,
+      errors: GraphError[]
+    ) => {
+      if (errors) {
+        // Display error
+        if (callback) {
+          callback(response, `${errors[0]?.extensions?.message}`);
+        }
+        return;
+      }
+
+      if (callback) {
+        callback(response, undefined);
+      }
+      console.log('Response received from server.', response, errors);
+    },
+    onError: (err) => {
+      console.log('ERR', err);
+      if (callback) callback({ purchaseCourses: null }, err.message);
+    }
+  });
+};
+
 export default function Payment({
   courses,
   userUUIDs,
   isContract,
-  onPurchase,
   onSuccess,
   onError
 }: {
   courses: Course[];
   userUUIDs: string[];
   isContract: boolean;
-  onPurchase: OnPurchase;
   onSuccess: () => void;
   onError: (message: string) => void;
 }) {
@@ -214,6 +297,15 @@ export default function Payment({
     );
   const vat = subTotal * (20 / 100);
   const totalDue = subTotal + vat;
+
+  const onPurchase = (callback?: PurchaseCallback) =>
+    PurchaseCourses(
+      courses.map((course: Course) => course.id),
+      userUUIDs,
+      'email@email.com',
+      callback
+    );
+
   return (
     <>
       <div className={classes.paymentRoot}>

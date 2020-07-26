@@ -65,7 +65,6 @@ function TrainingZone({}: Props) {
   const userName = 'James';
   return (
     <Page>
-      <SingleUser isOpen={true} onClose={() => {}} />
       <div className={classes.trainingZoneRoot}>
         <div className={classes.trainingHeader}>
           <Heading text="Training Zone" size={'large'} />

@@ -23,7 +23,6 @@ export const normal = () => {
       ]}
       userUUIDs={['123']}
       isContract={false}
-      onPurchase={() => false}
       onSuccess={() => {}}
       onError={() => {}}
     />

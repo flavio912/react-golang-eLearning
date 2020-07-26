@@ -19,6 +19,8 @@ import Checkbox from 'sharedComponents/core/Input/Checkbox';
 import { graphql, fetchQuery } from 'react-relay';
 import environment from 'api/environment';
 import { TabsCoursesQueryResponse } from './__generated__/TabsCoursesQuery.graphql';
+import PaymentSuccess from 'sharedComponents/SideModal/PaymentSuccess';
+import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
 
 const courseSearchFunction = async (text: string) => {
   const query = graphql`
@@ -191,16 +193,28 @@ export const tabList: TabContent[] = [
   },
   {
     key: 'Payment',
-    component: ({ state }) => (
+    component: ({ state, setState }) => (
       <Body>
         <Payment
           courses={state.courses}
-          userUUIDs={[]}
+          userUUIDs={[state.userUUID]}
           isContract={false}
-          onPurchase={() => false}
-          onSuccess={() => {}}
-          onError={() => {}}
+          onSuccess={() => {
+            setState((s: object) => ({ ...s, success: true }));
+          }}
+          onError={(message: string) => {
+            setState((s: object) => ({ ...s, error: message }));
+          }}
         />
+        {state.success && <PaymentSuccess total={0} transactionId={``} />}
+        {state.error !== undefined && (
+          <LabelledCard
+            label={'Transaction failed'}
+            labelBackground={'#ff7474'}
+          >
+            {state.error}
+          </LabelledCard>
+        )}
       </Body>
     )
   }

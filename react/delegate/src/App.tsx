@@ -27,6 +27,7 @@ import TrainingProgress from 'views/TrainingProgress';
 import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
 import Test from 'views/Test/Test';
+import { SideModalProvider } from 'views/SideModalProvider';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -229,7 +230,9 @@ const Router = createFarceRouter({
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <Router resolver={new Resolver(environment)} />
+    <SideModalProvider>
+      <Router resolver={new Resolver(environment)} />
+    </SideModalProvider>
   </ThemeProvider>
 );
 

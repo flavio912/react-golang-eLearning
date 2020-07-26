@@ -176,6 +176,10 @@ function Tabs({ content, closeModal, initialState }: Props) {
   };
 
   React.useEffect(() => {
+    setState(initialState);
+  }, [initialState]);
+
+  React.useEffect(() => {
     content.forEach(({ key }, index) => {
       if (active === key) {
         set({ right: index * width });

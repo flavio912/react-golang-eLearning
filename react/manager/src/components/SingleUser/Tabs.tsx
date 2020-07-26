@@ -15,7 +15,6 @@ import SearchableDropdown, {
   CourseCategory,
   Course
 } from 'components/core/Input/SearchableDropdown';
-import MultiUserSearch from 'components/UserSearch/MultiUserSearch';
 import Button from 'sharedComponents/core/Input/Button';
 import Checkbox from 'components/core/Input/Checkbox';
 import { ResultItem } from 'components/UserSearch';
@@ -250,7 +249,6 @@ export const tabList: TabContent[] = [
           courses={state.courses}
           userUUIDs={[]}
           isContract={false}
-          onPurchase={() => false}
           onSuccess={() => {}}
           onError={() => {}}
         />

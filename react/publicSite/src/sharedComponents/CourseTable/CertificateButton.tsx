@@ -16,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   inactive: {
     background: theme.colors.searchHoverGrey,
-    border: `1px solid ${theme.colors.approxZircon}`,
+    border: `1px solid #E9EBEB`,
     color: '#34373ab5'
   }
 }));

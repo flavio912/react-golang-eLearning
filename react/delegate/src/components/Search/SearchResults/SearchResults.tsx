@@ -28,6 +28,7 @@ export type ResultItem = {
   title: string;
   image: string;
   description: string;
+  onClick?: () => void;
 };
 
 export type PageInfo = {
@@ -93,7 +94,11 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
         <>
           <div className={classes.searchList}>
             {results.map((item, index) => (
-              <SearchResultItem course={item} key={index} onClick={() => {}} />
+              <SearchResultItem
+                course={item}
+                key={index}
+                onClick={item.onClick ? item.onClick : () => {}}
+              />
             ))}
           </div>
           <Spacer vertical spacing={2} />
