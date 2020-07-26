@@ -10,8 +10,8 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import TimeSpent from 'components/ActivityTable/TimeSpent';
 import ActivityName from 'components/ActivityTable/ActivityName';
 import classnames from 'classnames';
-import { ActivityTable_activity } from './__generated__/ActivityTable_activity.graphql';
 import moment from 'moment';
+import { TrainingProgress_activity } from 'views/TrainingProgress/__generated__/TrainingProgress_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootActivityTable: {},
@@ -63,17 +63,6 @@ const activityRow = (
 ): any => ({
   key,
   cells: [
-    // {
-    //   component: () => (
-    //     <CheckboxSingle
-    //       box={{
-    //         label: "",
-    //         checked: false,
-    //       }}
-    //       setBox={() => {}}
-    //     />
-    //   ),
-    // },
     {
       component: () => {
         return (
@@ -100,15 +89,22 @@ const activityRow = (
   onClick: () => {}
 });
 
-type Props = {
-  className?: string;
-  activity: ActivityTable_activity;
+type PageInfo = {
+  currentPage: number;
+  totalPages: number;
 };
 
-const ActivityTable = ({ activity, className }: Props) => {
+type Props = {
+  className?: string;
+  activity: TrainingProgress_activity;
+  pageInfo: PageInfo;
+  onUpdatePage: (page: number) => void;
+};
+
+const ActivityTable = ({ activity, className, pageInfo, onUpdatePage }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
-  console.log('asda', activity);
+  
   return (
     <div className={classnames(className, classes.rootActivityTable)}>
       <div className={classes.sectionTitleWrapper}>
@@ -170,30 +166,15 @@ const ActivityTable = ({ activity, className }: Props) => {
       />
       <div className={classes.pagination}>
         <Paginator
-          currentPage={1}
-          updatePage={() => {}}
-          numPages={10}
+          currentPage={pageInfo.currentPage}
+          updatePage={onUpdatePage}
+          numPages={pageInfo.totalPages}
           itemsPerPage={10}
+          showRange={pageInfo.totalPages > 4 ? 4 : pageInfo.totalPages}
         />
       </div>
     </div>
   );
 };
 
-export default createFragmentContainer(ActivityTable, {
-  activity: graphql`
-    fragment ActivityTable_activity on ActivityPage {
-      edges {
-        type
-        createdAt
-        course {
-          ident: id
-          name
-        }
-      }
-      pageInfo {
-        total
-      }
-    }
-  `
-});
+export default ActivityTable;

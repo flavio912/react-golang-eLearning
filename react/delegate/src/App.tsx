@@ -156,14 +156,14 @@ const Router = createFarceRouter({
             }
           `}
           prepareVariables={(params: any, { location }: any) => {
-            const { pageNum } = location.query;
+            const { offset, limit } = location.query;
             return {
-              offset: pageNum ?? 0,
-              limit: 10
+              offset: offset,
+              limit: limit
             };
           }}
           render={(args: any) => {
-            if (args.error) {
+            if (args.error && args.error != null) {
               args.match.router.push('/app');
             }
             if (!args.props) {

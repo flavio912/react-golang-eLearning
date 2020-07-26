@@ -55,6 +55,21 @@ function Progress({ activity, user }: Props) {
       onClick: () => {}
     })) ?? [];
 
+  const pageProps = {
+    total: activity.pageInfo?.total ?? 0,
+    limit: activity.pageInfo?.limit ?? 10,
+    offset: activity.pageInfo?.offset ?? 0
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
+    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
+  };
+
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/progress?offset=${(page - 1) * pageProps.limit}&limit=${pageProps.limit}`);
+  }
+
   return (
     <Page>
       <div className={classes.progressRoot}>
@@ -85,7 +100,7 @@ function Progress({ activity, user }: Props) {
             router.push('/app/courses/1');
           }}
         />
-        <ActivityTable className={classes.activeTable} activity={activity} />
+        <ActivityTable className={classes.activeTable} activity={activity} pageInfo={pageInfo} onUpdatePage={onUpdatePage} />
       </div>
     </Page>
   );
@@ -94,7 +109,19 @@ function Progress({ activity, user }: Props) {
 export default createFragmentContainer(Progress, {
   activity: graphql`
     fragment TrainingProgress_activity on ActivityPage {
-      ...ActivityTable_activity
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+        limit
+        offset
+      }
     }
   `,
   user: graphql`
