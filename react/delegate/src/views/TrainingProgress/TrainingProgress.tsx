@@ -86,6 +86,7 @@ function Progress({ activity, user }: Props) {
           EmptyComponent={
             <div className={classes.noCourses}>No Courses to show</div>
           }
+          showCertificates={user.type === 'individual'}
           className={classes.courseTable}
           courses={myCourses}
           rowClicked={() => {
@@ -107,6 +108,7 @@ export default createFragmentContainer(Progress, {
   user: graphql`
     fragment TrainingProgress_user on User {
       firstName
+      type
       myCourses {
         status
         course {

@@ -164,7 +164,7 @@ const Router = createFarceRouter({
           }}
           render={(args: any) => {
             if (args.error) {
-              args.match.router.push('/app');
+              console.log(args.error);
             }
             if (!args.props) {
               return <div></div>;
