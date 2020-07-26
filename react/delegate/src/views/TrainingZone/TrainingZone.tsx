@@ -9,6 +9,7 @@ import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';
 import Page from 'components/Page';
+import SingleUser from 'components/SingleUser';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -64,6 +65,7 @@ function TrainingZone({}: Props) {
   const userName = 'James';
   return (
     <Page>
+      <SingleUser isOpen={true} onClose={() => {}} />
       <div className={classes.trainingZoneRoot}>
         <div className={classes.trainingHeader}>
           <Heading text="Training Zone" size={'large'} />

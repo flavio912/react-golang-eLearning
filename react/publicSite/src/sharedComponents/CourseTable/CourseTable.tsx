@@ -9,6 +9,7 @@ import Status from 'sharedComponents/core/Table/Status';
 import classnames from 'classnames';
 import CourseCompletion from 'sharedComponents/core/CourseCompletion';
 import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
+import CertificateButton from './CertificateButton';
 // import CheckboxSingle from "components/core/CheckboxSingle";
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -55,41 +56,42 @@ const courseRow = (
   category: string,
   totalProcess: number,
   totalCompleted: number,
-  attempt: string,
   status: boolean,
   expires?: string,
-  classes?: { [key: string]: string }
-): TableRow => ({
-  key,
-  onClick,
-  cells: [
-    // {
-    //   component: () => (
-    //     <CheckboxSingle
-    //       box={{
-    //         label: "",
-    //         checked: false,
-    //       }}
-    //       setBox={() => {}}
-    //     />
-    //   ),
-    // },
-    {
-      component: () => <Text text={title} color={theme.colors.secondaryBlack} />
-    },
-    {
-      component: () => (
-        <Text text={category} color={theme.colors.secondaryBlack} />
-      )
-    },
-    {
-      component: () => (
-        <CourseCompletion total={totalProcess} complete={totalCompleted} />
-      )
-    },
-    { component: () => <Status isComplete={status} expires={expires} /> }
-  ]
-});
+  certificateURL?: string,
+  showCertificates?: boolean
+): TableRow => {
+  const item = {
+    key,
+    onClick,
+    cells: [
+      {
+        component: () => (
+          <Text text={title} color={theme.colors.secondaryBlack} />
+        )
+      },
+      {
+        component: () => (
+          <Text text={category} color={theme.colors.secondaryBlack} />
+        )
+      },
+      {
+        component: () => (
+          <CourseCompletion total={totalProcess} complete={totalCompleted} />
+        )
+      },
+      { component: () => <Status isComplete={status} expires={expires} /> }
+    ]
+  };
+
+  if (showCertificates) {
+    item.cells.push({
+      component: () => <CertificateButton url={certificateURL} />
+    });
+  }
+
+  return item;
+};
 
 const defaultFilterCourseOptions: DropdownOption[] = [];
 
@@ -105,6 +107,7 @@ type Course = {
     isComplete: boolean;
     expires?: string;
   };
+  certURL?: string;
   onClick: () => void;
 };
 
@@ -114,6 +117,7 @@ type Props = {
   className?: string;
   rowClicked: () => void | undefined;
   courses: Course[];
+  showCertificates?: boolean;
 };
 
 const CourseTable = ({
@@ -121,6 +125,7 @@ const CourseTable = ({
   bookCourseHandler,
   className,
   courses,
+  showCertificates,
   rowClicked
 }: Props) => {
   const theme = useTheme();
@@ -137,15 +142,20 @@ const CourseTable = ({
         course.categoryName,
         course.progress.total,
         course.progress.completed,
-        String(course.attempt),
         course.status.isComplete,
         course.status.expires,
-        classes
+        course.certURL,
+        showCertificates
       )
     );
   } else {
     courseRows = [courseRowEmpty(EmptyComponent)];
   }
+
+  const tableHeaders = showCertificates
+    ? ['COURSE TITLE', 'CATEGORY', 'PROGRESS', 'STATUS', 'CERTIFICATE']
+    : ['COURSE TITLE', 'CATEGORY', 'PROGRESS', 'STATUS'];
+
   return (
     <div className={classnames(classes.root, className)}>
       <div className={classes.sectionTitleWrapper}>
@@ -159,19 +169,7 @@ const CourseTable = ({
           />
         </div>
       </div>
-      <Table
-        header={[
-          //   <CheckboxSingle
-          //     box={{ label: "", checked: false }}
-          //     setBox={() => {}}
-          //   />,
-          'COURSE TITLE',
-          'CATEGORY',
-          'PROGRESS',
-          'STATUS'
-        ]}
-        rows={courseRows}
-      />
+      <Table header={tableHeaders} rows={courseRows} />
       {bookCourseHandler && (
         <div
           className={classes.courseButton}

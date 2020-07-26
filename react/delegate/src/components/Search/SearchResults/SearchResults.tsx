@@ -5,7 +5,6 @@ import SearchResultItem from 'components/Search/SearchResultItem';
 import SearchInput from 'components/Search/SearchInput';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
-import { Record } from 'relay-runtime';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   searchRoot: {

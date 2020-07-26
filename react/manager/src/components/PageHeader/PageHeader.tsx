@@ -6,8 +6,8 @@ import { Theme } from 'helpers/theme';
 import DelegateSlideIn, {
   DelegateInfo
 } from 'components/Delegate/DelegateSlideIn';
-import MultiUser from 'components/core/Modals/SideModal/CourseManagement/MultiUser';
-import SingleUser from 'components/core/Modals/SideModal/CourseManagement/SingleUser';
+import MultiUser from 'sharedComponents/SideModal/CourseManagement/MultiUser';
+import SingleUser from 'sharedComponents/SideModal/CourseManagement/SingleUser';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
