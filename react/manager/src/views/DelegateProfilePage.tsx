@@ -13,6 +13,7 @@ import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegateProfilePage_delegate } from './__generated__/DelegateProfilePage_delegate.graphql';
+import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -46,14 +47,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   headerActions: {}
 }));
 
-const headerActionOptions: DropdownOption[] = [
-  {
-    id: 1,
-    title: 'Edit',
-    component: <div>Edit</div>
-  }
-];
-
 type Props = {
   delegate: DelegateProfilePage_delegate;
   router: Router;
@@ -63,6 +56,28 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [action, setAction] = React.useState<DropdownOption>();
+  
+  const [openDelegateSlideIn, setOpenDelegateSlideIn] = React.useState(false);
+  
+  const headerActionOptions: DropdownOption[] = [
+    {
+      id: 1,
+      title: 'Edit',
+      component: <div onClick={() => setOpenDelegateSlideIn(true)}>Edit</div>
+    }
+  ];
+
+  const inpDelegate = {
+    uuid: delegate.uuid,
+    firstName: delegate.firstName,
+    lastName: delegate.lastName,
+    jobTitle: delegate.jobTitle,
+    email: delegate.email ?? '',
+    phone: delegate.telephone ?? '',
+    ttcId: delegate.TTC_ID,
+    generatePassword: false,
+    generatedPassword: '',
+  };
 
   const myCourses =
     delegate?.myCourses?.map((myCourse) => ({
@@ -150,6 +165,11 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
       />
       <Spacer vertical spacing={3} />
       <ActivityTable />
+      <DelegateSlideIn 
+        isOpen={openDelegateSlideIn}
+        onClose={() => setOpenDelegateSlideIn(false)}
+        delegate={inpDelegate}
+      />
     </div>
   );
 };
@@ -157,8 +177,13 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
 const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
   delegate: graphql`
     fragment DelegateProfilePage_delegate on Delegate {
+      uuid
       firstName
       lastName
+      email
+      jobTitle
+      telephone
+      TTC_ID
       myCourses {
         status
         course {

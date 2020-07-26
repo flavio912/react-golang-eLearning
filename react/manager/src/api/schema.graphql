@@ -16,6 +16,7 @@ type Query {
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
+  updateDelegate(input: UpdateDelegateInput!): Delegate
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 }
 
@@ -51,6 +52,18 @@ input CreateDelegateInput {
 type CreateDelegateResponse {
   delegate: Delegate!
   generatedPassword: String
+}
+
+input UpdateDelegateInput {
+  uuid: UUID!
+  companyUUID: UUID
+  firstName: String
+  lastName: String
+  jobTitle: String
+  email: String
+  telephone: String
+  profileImageUploadToken: String
+  newPassword: String
 }
 
 input DelegateFilter {

@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 7411ad3eb2942b46845d555835c34cde */
+/* @relayHash a58b571a0d97599c9e95ea1a3883937e */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -29,8 +29,13 @@ query App_DelegatesProfile_Query(
 }
 
 fragment DelegateProfilePage_delegate on Delegate {
+  uuid
   firstName
   lastName
+  email
+  jobTitle
+  telephone
+  TTC_ID
   myCourses {
     status
     course {
@@ -108,6 +113,13 @@ const node: ConcreteRequest = (function () {
                         {
                             "kind": "ScalarField",
                             "alias": null,
+                            "name": "uuid",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
                             "name": "firstName",
                             "args": null,
                             "storageKey": null
@@ -116,6 +128,34 @@ const node: ConcreteRequest = (function () {
                             "kind": "ScalarField",
                             "alias": null,
                             "name": "lastName",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "email",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "jobTitle",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "telephone",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "TTC_ID",
                             "args": null,
                             "storageKey": null
                         },
@@ -169,7 +209,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_DelegatesProfile_Query",
             "id": null,
-            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  firstName\n  lastName\n  myCourses {\n    status\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
+            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  uuid\n  firstName\n  lastName\n  email\n  jobTitle\n  telephone\n  TTC_ID\n  myCourses {\n    status\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
