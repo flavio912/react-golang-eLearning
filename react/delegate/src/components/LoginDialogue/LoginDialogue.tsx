@@ -118,8 +118,8 @@ function LoginDialogue({ onSubmit }: Props) {
           onChange={setPassword}
         />
         <FancyButton text="Login to TTC" onClick={onLogin} />
-        <a className={classes.link} href="https://example.com">
-          I don't have a TTC Hub account
+        <a className={classes.link} href="//manager.ttc.devserver.london">
+          Manager login
         </a>
       </Card>
       <div className={classes.links}>

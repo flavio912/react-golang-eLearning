@@ -16,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   registerCompanyRoot: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     width: '100%',
@@ -24,16 +24,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: '600',
     color: theme.colors.primaryWhite,
-    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)'
+    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)',
   },
   form: {
     display: 'grid',
     width: '100%',
     gridGap: theme.spacing(2),
-    gridTemplateColumns: '1fr 1fr'
+    gridTemplateColumns: '1fr 1fr',
   },
   fullWidth: {
-    gridColumn: '1 / 3'
+    gridColumn: '1 / 3',
   },
   input: {
     fontSize: theme.fontSizes.default,
@@ -41,20 +41,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     border: ['1px', 'solid', theme.colors.borderGrey],
     borderRadius: theme.buttonBorderRadius,
     '&::placeholder': {
-      color: theme.colors.secondaryBlack
-    }
+      color: theme.colors.secondaryBlack,
+    },
   },
   dropdownText: {
     fontSize: theme.fontSizes.default,
     fontWeight: '400',
-    color: theme.colors.secondaryBlack
+    color: theme.colors.secondaryBlack,
   },
   dropdown: {
-    flex: 1
+    flex: 1,
   },
   checkboxText: {
-    color: theme.colors.textGrey
-  }
+    color: theme.colors.textGrey,
+  },
 }));
 
 type Props = {
@@ -62,9 +62,9 @@ type Props = {
     fname: string,
     lname: string,
     email: string,
+    password: string,
     telephone: string,
-    role: string,
-    compType: string
+    companyName: string,
   ) => void;
   onLogoClick?: () => void;
 };
@@ -75,19 +75,13 @@ function RegisterCompany({ onSubmit, onLogoClick }: Props) {
   const [firstName, setFirstName] = React.useState('');
   const [lastName, setLastName] = React.useState('');
   const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
   const [telephone, setTelephone] = React.useState('');
-  const [role, setRole] = React.useState({
-    id: 0,
-    title: 'What role best describes you'
-  });
-  const [compType, setCompType] = React.useState({
-    id: 0,
-    title: 'Type of company'
-  });
+  const [company, setCompany] = React.useState('');
   const [agreedTerms, setAgreedTerms] = React.useState(false);
 
   const submitInfo = () => {
-    onSubmit(firstName, lastName, email, telephone, role.title, compType.title);
+    onSubmit(firstName, lastName, email, password, telephone, company);
   };
 
   return (
@@ -116,10 +110,24 @@ function RegisterCompany({ onSubmit, onLogoClick }: Props) {
           className={classes.input}
         />
         <CoreInput
+          placeholder="Company Name"
+          type="text"
+          onChange={setCompany}
+          value={'company'}
+          className={classnames(classes.input, classes.fullWidth)}
+        />
+        <CoreInput
           placeholder="Company Email"
           type="email"
           onChange={setEmail}
           value={'email'}
+          className={classnames(classes.input, classes.fullWidth)}
+        />
+        <CoreInput
+          placeholder="Password"
+          type="password"
+          onChange={setPassword}
+          value={'password'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
@@ -128,22 +136,6 @@ function RegisterCompany({ onSubmit, onLogoClick }: Props) {
           onChange={setTelephone}
           value={'telephone'}
           className={classnames(classes.input, classes.fullWidth)}
-        />
-        <Dropdown
-          placeholder="Type of Company"
-          options={[{ id: 0, title: 'Default Option' }]}
-          selected={compType}
-          fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setCompType(selected)}
-          className={classnames(classes.dropdown, classes.fullWidth)}
-        />
-        <Dropdown
-          placeholder="What role best describes you"
-          options={[{ id: 0, title: 'Default Option' }]}
-          selected={role}
-          fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setRole(selected)}
-          className={classnames(classes.dropdown, classes.fullWidth)}
         />
         <CheckboxSingle
           size={18}

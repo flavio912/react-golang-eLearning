@@ -1,6 +1,11 @@
 package email
 
 import (
+	"bytes"
+	"html/template"
+	"path"
+	"runtime"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
@@ -25,6 +30,34 @@ func Initialize() {
 		panic("Could not setup aws connection")
 	}
 	Session = sess
+}
+
+func SendEmail(templateName string, subject string, email string, params interface{}) error {
+	_, filename, _, _ := runtime.Caller(0)
+	filepath := path.Join(path.Dir(filename), "./templates/"+templateName)
+	t, err := template.ParseFiles(filepath)
+	if err != nil {
+		glog.Errorf("Unable to create email template: %s", err.Error())
+		return &errors.ErrWhileHandling
+	}
+
+	var buf bytes.Buffer
+	err = t.Execute(&buf, params)
+	if err != nil {
+		glog.Errorf("Unable to execute email template: %s", err.Error())
+		return &errors.ErrWhileHandling
+	}
+
+	// Run in goroutine so as not to disrupt return of request
+	go func() {
+		err := SendRawMail([]*string{aws.String(email)}, subject, buf.String(), "") // TODO: add text version
+		if err != nil {
+			// TODO: Tell someone the email failed
+			glog.Errorf("Unable to send finalise account email to: %s - error: %s", email, err.Error())
+			return
+		}
+	}()
+	return nil
 }
 
 // Sends a html + text email to one or more recipients

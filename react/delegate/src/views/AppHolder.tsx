@@ -35,30 +35,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-const results = [
-  {
-    id: 1,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  },
-  {
-    id: 2,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  },
-  {
-    id: 3,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  }
-];
-
 type Props = {
   children?: React.ReactChildren;
   user?: AppHolder_user;
