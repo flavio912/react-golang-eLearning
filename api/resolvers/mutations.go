@@ -773,6 +773,18 @@ func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input 
 	return app.CourseApp.DeleteCourse(args.Input)
 }
 
+func (m *MutationResolver) RegenerateCertificate(ctx context.Context, args struct {
+	Input struct{ HistoricalCourseUUID gentypes.UUID }
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	err := app.CourseApp.RegenerateCertificate(args.Input.HistoricalCourseUUID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
 	CourseID  int32
 	Published *bool
