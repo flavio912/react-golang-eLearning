@@ -1,12 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container } from '@material-ui/core';
+import { Container, Card, CardContent, TextField } from '@material-ui/core';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
 import Page from 'src/components/Page';
 import Header from './Header';
 import Results from './Results';
-import Filter from 'src/components/Filter';
+import SearchIcon from '@material-ui/icons/Search';
+import SearchBar from 'src/components/SearchBar';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -16,8 +18,12 @@ const useStyles = makeStyles(theme => ({
   results: {
     marginTop: theme.spacing(3)
   },
-  filter: {
-    marginTop: theme.spacing(3)
+  row: {
+    display: 'flex',
+  },
+  icon: {
+    marginTop: 7,
+    marginRight: 5,
   }
 }));
 
@@ -101,10 +107,7 @@ function ModulesList({ match, history }) {
             history.push('/modules/create/overview');
           }}
         />
-        <Filter
-          className={classes.filter}
-          onChange={text => setSearchText(text)}
-        />
+        <SearchBar onSearch={(text) => setSearchText(text)} setSearchText={setSearchText} />
         {searchResults && (
           <Results
             className={classes.results}

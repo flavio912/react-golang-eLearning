@@ -74,6 +74,9 @@ function Results({ className, modules, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
+  const resultsPerPage = (offset) => (page + offset) * rowsPerPage;
+  const results = modules.slice(resultsPerPage(0), resultsPerPage(1));
+
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <Table>
@@ -87,7 +90,7 @@ function Results({ className, modules, ...rest }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {modules && modules.map(module => (
+          {results && results.map(module => (
             <TableRow key={module.uuid}>
               <TableCell className={classes.moduleName}>
                 {module.name}
