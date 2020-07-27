@@ -54,6 +54,7 @@ const SAVE_ONLINE_COURSE = gql`
     $expiresInMonths: Int
     $expirationToEndMonth: Boolean
     $certificateType: UUID
+    $specificTerms: String
   ) {
     saveOnlineCourse(
       input: {
@@ -72,6 +73,7 @@ const SAVE_ONLINE_COURSE = gql`
         structure: $structure
         expiresInMonths: $expiresInMonths
         expirationToEndMonth: $expirationToEndMonth
+        specificTerms: $specificTerms
         certificateType: $certificateType
       }
     ) {
@@ -104,6 +106,7 @@ const GET_COURSE = gql`
       published
       expiresInMonths
       expirationToEndMonth
+      specificTerms
       certificateType {
         uuid
         name
@@ -197,6 +200,7 @@ function CreateCourse({ match, history }) {
       syllabus: data.course.syllabus,
       expiresInMonths: data.course.expiresInMonths,
       expirationToEndMonth: data.course.expirationToEndMonth,
+      specificTerms: data.course.specificTerms,
       certificateType: {
         name: data.course.certificateType?.name,
         uuid: data.course.certificateType?.uuid
@@ -234,7 +238,8 @@ function CreateCourse({ match, history }) {
           structure: state.structure,
           expiresInMonths: state.expiresInMonths,
           expirationToEndMonth: state.expirationToEndMonth,
-          certificateType: state.certificateType?.uuid
+          certificateType: state.certificateType?.uuid,
+          specificTerms: state.specificTerms
         }
       });
 

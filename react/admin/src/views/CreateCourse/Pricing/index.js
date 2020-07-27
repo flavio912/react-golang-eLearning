@@ -78,9 +78,9 @@ function Pricing({ state, setState }) {
                     multiline
                     className={classes.termsInput}
                     rows={5}
-                    value={state.terms}
+                    value={state.specificTerms}
                     onChange={inp => {
-                      setState({ terms: inp.target.value });
+                      setState({ specificTerms: inp.target.value });
                     }}
                     placeholder={'Terms and conditions'}
                     variant="outlined"
