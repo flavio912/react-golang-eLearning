@@ -52,8 +52,6 @@ function Pageinator({
 }: Props) {
   const classes = useStyles();
 
-  console.log(showRange);
-
   const [itemsPerPage, setItemsPerPage] = React.useState<DropdownOption>();
   return (
     <div className={classes.paginatorRoot}>
