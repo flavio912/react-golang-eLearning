@@ -136,7 +136,6 @@ func (c *coursesRepoImpl) Course(courseID uint) (models.Course, error) {
 	return course, nil
 }
 
-// TODO: Optimise to use (IN) query
 func (c *coursesRepoImpl) Courses(courseIDs []uint, showUnpublished bool) ([]models.Course, error) {
 	var courseModels []models.Course
 

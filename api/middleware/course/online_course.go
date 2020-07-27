@@ -88,6 +88,7 @@ func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 		CourseType:           &courseType,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 		ExpiresInMonths:      expMonths,
+		CertificateType:      courseInfo.CertificateType,
 	})
 
 	if err != nil {
@@ -153,6 +154,7 @@ func (c *coursesRepoImpl) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 		SpecificTerms:        courseInfo.SpecificTerms,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 		ExpiresInMonths:      expMonths,
+		CertificateType:      courseInfo.CertificateType,
 	})
 
 	if err != nil {

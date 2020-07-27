@@ -53,6 +53,7 @@ type Course {
   expiresInMonths: Int!
   expirationToEndMonth: Boolean!
   published: Boolean!
+  certificateType: CertificateType
 }
 
 type CoursePage implements PaginatedQuery {
