@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardContent,
   Divider,
-  Typography,
+  Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
@@ -48,8 +48,22 @@ const GET_MODULES = gql`
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!, $excludeLesson: Boolean, $excludeTest: Boolean, $excludeModule: Boolean, $page: Page!) {
-    searchSyllabus(filter: { name: $name, excludeLesson:$excludeLesson, excludeTest:$excludeTest, excludeModule: $excludeModule }, page: $page) {
+  query SearchSyllabus(
+    $name: String!
+    $excludeLesson: Boolean
+    $excludeTest: Boolean
+    $excludeModule: Boolean
+    $page: Page!
+  ) {
+    searchSyllabus(
+      filter: {
+        name: $name
+        excludeLesson: $excludeLesson
+        excludeTest: $excludeTest
+        excludeModule: $excludeModule
+      }
+      page: $page
+    ) {
       edges {
         uuid
         name
@@ -69,7 +83,7 @@ const SEARCH = gql`
 function useModulesQuery(page) {
   const { error, data } = useQuery(GET_MODULES, {
     variables: {
-      page,
+      page
     }
   });
 
@@ -104,7 +118,7 @@ function useModulesQuery(page) {
 }
 
 function useSearchQuery(text, filter, page) {
-  console.log('page: ', page)
+  console.log('page: ', page);
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
@@ -115,7 +129,12 @@ function useSearchQuery(text, filter, page) {
     }
   });
 
-  if (!data || !data.searchSyllabus || !data.searchSyllabus.edges || !data.searchSyllabus.pageInfo) {
+  if (
+    !data ||
+    !data.searchSyllabus ||
+    !data.searchSyllabus.edges ||
+    !data.searchSyllabus.pageInfo
+  ) {
     error && console.error('Could not get data', data, error);
     return {
       resultItems: [],
@@ -150,10 +169,13 @@ function CourseBuilder({ state, setState }) {
   const classes = useStyles();
 
   const [searchFilters, setSearchFilters] = React.useState({
-    excludeLesson: false, excludeTest: false, excludeModule: false, filters: [
-      {name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest'},
-      {name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson'},
-      {name: 'Exclude Modules', type: 'Filter', isFilter: 'excludeModule'},
+    excludeLesson: false,
+    excludeTest: false,
+    excludeModule: false,
+    filters: [
+      { name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest' },
+      { name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson' },
+      { name: 'Exclude Modules', type: 'Filter', isFilter: 'excludeModule' }
     ]
   });
   const [searchText, setSearchText] = React.useState('');
@@ -164,28 +186,25 @@ function CourseBuilder({ state, setState }) {
   const { resultItems } = useModulesQuery(page);
 
   // Add module syllabus and name
-  const addModule = (array) => {
-    array.map((element) => {
+  const addModule = array => {
+    array.forEach(element => {
       if (element.type === 'module') {
         const module = resultItems.find(x => x.uuid === element.uuid);
-        if (module && !courseStructure.find(x => x.uuid === module.uuid)) {        
-          setCourseStructure([
-            ...courseStructure,
-            module,
-          ])
+        if (module && !courseStructure.find(x => x.uuid === module.uuid)) {
+          setCourseStructure([...courseStructure, module]);
         }
       }
-    })
-  }
+    });
+  };
 
-  console.log('strut: ', courseStructure)
+  console.log('strut: ', courseStructure);
   React.useEffect(() => {
     if (state.syllabus) {
       addModule(state.syllabus);
     } else if (state.structure) {
       addModule(state.structure);
     }
-  })
+  });
 
   const onDelete = uuid => {
     setState({
@@ -198,18 +217,17 @@ function CourseBuilder({ state, setState }) {
       <Grid container spacing={2}>
         <Grid container spacing={4} direction={'column'}>
           <Grid item className={classes.heading}>
-          <Typography
+            <Typography
               variant="h3"
               color="textPrimary"
               className={classes.header}
             >
               Build this Course
             </Typography>
-            <Typography
-              variant="body1"
-              color="textPrimary"
-            >
-              All Courses are comprised of <strong>Modules</strong>, <strong>Lessons</strong> and <strong>Tests</strong><br />
+            <Typography variant="body1" color="textPrimary">
+              All Courses are comprised of <strong>Modules</strong>,{' '}
+              <strong>Lessons</strong> and <strong>Tests</strong>
+              <br />
               Add your first Module or Lesson below to get started
             </Typography>
           </Grid>
@@ -240,7 +258,9 @@ function CourseBuilder({ state, setState }) {
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
               onAdd={({ uuid, name }) =>
-                setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
+                setState({
+                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
+                })
               }
             />
           </Grid>
@@ -250,30 +270,33 @@ function CourseBuilder({ state, setState }) {
               <Divider />
               <CardContent>
                 <ReoderableList
-                  items={courseStructure.map((module) => ({
+                  items={courseStructure.map(module => ({
                     id: module.uuid,
                     component: (
                       <ReoderableDropdown
                         title={module.name}
-                        items={module.syllabus && module.syllabus.map((item) => ({
-                          id: item.uuid,
-                          component: (
-                            <ReoderableListItem
-                              uuid={item.uuid}
-                              text={item.name}
-                              onDelete={onDelete}
-                            />
-                          )
-                        }))}
-                        setItems={(items) => {
+                        items={
+                          module.syllabus &&
+                          module.syllabus.map(item => ({
+                            id: item.uuid,
+                            component: (
+                              <ReoderableListItem
+                                uuid={item.uuid}
+                                text={item.name}
+                                onDelete={onDelete}
+                              />
+                            )
+                          }))
+                        }
+                        setItems={items => {
                           const newModule = {
                             ...module,
-                            syllabus: items,
+                            syllabus: items
                           };
                           setCourseStructure([
                             ...courseStructure,
                             ...newModule
-                          ])
+                          ]);
                         }}
                       />
                     )

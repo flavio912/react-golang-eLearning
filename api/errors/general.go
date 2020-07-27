@@ -193,4 +193,10 @@ var (
 			Message: message,
 		}
 	}
+	ErrUpdateFailed = FullError{
+		Type:     "ErrUpdateFailed",
+		Message:  "Could not update the requested item",
+		Title:    "Unable to update",
+		HelpText: "Sorry, we're unable to update the item. Please try again.",
+	}
 )

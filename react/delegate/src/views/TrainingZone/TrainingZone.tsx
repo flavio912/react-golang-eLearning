@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
-import CoreInput, { InputTypes } from 'sharedComponents/core/Input/CoreInput';
-import classnames from 'classnames';
 import { Theme } from 'helpers/theme';
 import Heading from 'components/core/Heading';
-import QuickInfo from 'components/Overview/QuickInfo';
 import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';

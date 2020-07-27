@@ -2196,3 +2196,61 @@ func TestUpdateTutor(t *testing.T) {
 		DelegateAllowed: false,
 	})
 }
+
+func TestUpdateIndividual(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update some fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateIndividual(input: {
+						uuid: "00000000-0000-0000-0000-000000000012"
+						firstName: "Steve"
+						lastName: "Jobs"
+						email: "steve.jobs@apple.com"
+					}) {
+						user {
+							firstName
+							lastName
+							email	
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateIndividual": {
+						"user":{
+							"firstName": "Steve",
+							"lastName": "Jobs",
+							"email": "steve.jobs@apple.com"
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateIndividual(input: {
+					uuid: "00000000-0000-0000-0000-000000000012"
+				}){
+					user {
+						firstName
+					}
+				}
+			}
+		`,
+		Path:            []interface{}{"updateIndividual"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}

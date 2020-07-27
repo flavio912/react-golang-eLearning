@@ -18,34 +18,34 @@ const useStyles = makeStyles(theme => ({
   },
   filter: {
     marginTop: theme.spacing(3)
-  },
+  }
 }));
 
 const GET_MODULES = gql`
-      query SearchModules($name: String!,  $page: Page!){
-        modules(filter: { name: $name }, page: $page){
-          edges{
-            uuid
-            name
-            syllabus {
-              name
-              uuid
-            }
-            tags {
-              uuid
-              name
-              color
-            }
-          }
-          pageInfo{
-            total
-            limit
-            offset
-            given
-          }
+  query SearchModules($name: String!, $page: Page!) {
+    modules(filter: { name: $name }, page: $page) {
+      edges {
+        uuid
+        name
+        syllabus {
+          name
+          uuid
+        }
+        tags {
+          uuid
+          name
+          color
         }
       }
-    `;
+      pageInfo {
+        total
+        limit
+        offset
+        given
+      }
+    }
+  }
+`;
 
 function useSearchQuery(text, page) {
   const { error, data } = useQuery(GET_MODULES, {
@@ -55,7 +55,7 @@ function useSearchQuery(text, page) {
     }
   });
 
-  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo){
+  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo) {
     console.error('Could not get data', data, error);
     return {
       resultItems: [],
@@ -70,7 +70,7 @@ function useSearchQuery(text, page) {
 
   console.log(data);
 
-  const resultItems = data.modules.edges.map((module) => ({
+  const resultItems = data.modules.edges.map(module => ({
     uuid: module?.uuid ?? '',
     name: module?.name ?? '',
     syllabus: module?.syllabus ?? ''
@@ -90,19 +90,27 @@ function ModulesList({ match, history }) {
   const classes = useStyles();
 
   const [searchText, setSearchText] = React.useState('');
-  const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
+  const [page] = React.useState({ limit: 20, offset: 0 });
   const searchResults = useSearchQuery(searchText, page);
-
-  console.log(searchResults);
 
   return (
     <Page className={classes.root} title="Modules">
       <Container maxWidth={false}>
-        <Header onAdd={() => {
+        <Header
+          onAdd={() => {
             history.push('/modules/create/overview');
-          }}/>
-        <Filter className={classes.filter} onChange={(text) => setSearchText(text)}/>
-        {searchResults && <Results className={classes.results} modules={searchResults.resultItems} />}
+          }}
+        />
+        <Filter
+          className={classes.filter}
+          onChange={text => setSearchText(text)}
+        />
+        {searchResults && (
+          <Results
+            className={classes.results}
+            modules={searchResults.resultItems}
+          />
+        )}
       </Container>
     </Page>
   );

@@ -3,7 +3,6 @@ import { Grid, Typography, TextField, Chip } from '@material-ui/core';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import SearchIcon from '@material-ui/icons/Search';
 import { makeStyles } from '@material-ui/styles';
-import { DayGridView } from '@fullcalendar/daygrid';
 
 const useStyles = makeStyles(theme => ({
   chip: {},
@@ -44,7 +43,7 @@ function SyllabusSearch({
       )}
       onChange={(_, values) => {
         values &&
-          values.map((value, index) => {
+          values.forEach((value, index) => {
             if (value.isFilter) {
               const newFilters = { ...searchFilters };
               newFilters[value.isFilter] = !searchFilters[value.isFilter];

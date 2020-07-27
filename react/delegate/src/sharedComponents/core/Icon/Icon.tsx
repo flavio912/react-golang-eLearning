@@ -12,6 +12,7 @@ export type IconNames =
   | 'Blue_TTC_Logo_Icon'
   | 'Card_SecondaryActon_Dots'
   | 'CloseCourseManagementTray_X'
+  | 'CloseHamburger'
   | 'CourseAccountActivated'
   | 'CourseCertificates'
   | 'CourseExpiringSoon'
@@ -55,6 +56,7 @@ export type IconNames =
   | 'TTC_Logo'
   | 'Maersk'
   | 'Maersk_Grey'
+  | 'MenuHamburger'
   | 'Mp3_Pause'
   | 'Mp3_Speaker'
   | 'Mp3_Play'
@@ -80,6 +82,7 @@ const iconNameMap = {
   Blue_TTC_Logo_Icon: require('../../../assets/logo/blue-ttc-logo.svg'),
   Card_SecondaryActon_Dots: require('../../../assets/Card_SecondaryActon_Dots.svg'),
   CloseCourseManagementTray_X: require('../../../assets/CloseCourseManagementTray_X.svg'),
+  CloseHamburger: require('../../../assets/CloseHamburger.svg'),
   CourseAccountActivated: require('../../../assets/CourseAccountActivated.svg'),
   CourseCertificates: require('../../../assets/CourseCertificates.svg'),
   CourseExpiringSoon: require('../../../assets/CourseExpiringSoon.svg'),
@@ -122,6 +125,7 @@ const iconNameMap = {
   TTC_Logo_Icon: require('../../../assets/logo/ttc-logo-icon.svg'),
   TTC_Logo: require('../../../assets/logo/ttc-logo.svg'),
   Maersk: require('../../../assets/maersk-logo.svg'),
+  MenuHamburger: require('../../../assets/MenuHamburger.svg'),
   Maersk_Grey: require('../../../assets/maersk-logo-grey.png'),
   Mp3_Speaker: require('../../../assets/Mp3_Speaker.svg'),
   Mp3_Pause: require('../../../assets/Mp3_Pause.svg'),
