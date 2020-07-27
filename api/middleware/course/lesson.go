@@ -8,6 +8,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 // CreateLesson is an admin function for creating lessons directly
@@ -27,10 +28,43 @@ func (c *coursesRepoImpl) CreateLesson(lesson gentypes.CreateLessonInput) (model
 		tags = _tags
 	}
 
+	var (
+		bannerImagekey *string
+		voiceoverKey   *string
+		videoType      *gentypes.VideoType
+		videoURL       *string
+	)
+
+	if lesson.BannerImageToken != nil {
+		key, err := uploads.VerifyUploadSuccess(*lesson.BannerImageToken, "lessonImages")
+		if err != nil {
+			return models.Lesson{}, err
+		}
+
+		bannerImagekey = &key
+	}
+	if lesson.VoiceoverToken != nil {
+		key, err := uploads.VerifyUploadSuccess(*lesson.VoiceoverToken, "voiceoverUploads")
+		if err != nil {
+			return models.Lesson{}, err
+		}
+
+		voiceoverKey = &key
+	}
+	if lesson.Video != nil {
+		videoType = &lesson.Video.Type
+		videoURL = &lesson.Video.URL
+	}
+
 	lessonModel := models.Lesson{
-		Name:        lesson.Name,
-		Tags:        tags,
-		Description: lesson.Description,
+		Name:         lesson.Name,
+		Tags:         tags,
+		Description:  lesson.Description,
+		Transcript:   lesson.Transcript,
+		BannerKey:    bannerImagekey,
+		VideoType:    videoType,
+		VideoURL:     videoURL,
+		VoiceoverKey: voiceoverKey,
 	}
 
 	query := database.GormDB.Create(&lessonModel)

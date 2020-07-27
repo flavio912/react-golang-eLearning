@@ -53,6 +53,7 @@ type Mutation {
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
 
+  lessonBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createLesson(input: CreateLessonInput!): Lesson
   updateLesson(input: UpdateLessonInput!): Lesson
   deleteLesson(input: DeleteLessonInput!): Boolean!

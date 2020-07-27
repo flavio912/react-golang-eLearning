@@ -4,6 +4,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
@@ -11,11 +12,38 @@ func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
 	if lesson.Tags != nil {
 		tags = tagsToGentypes(lesson.Tags)
 	}
+
+	var (
+		bannerImageURL *string
+		voiceoverURL   *string
+	)
+
+	if lesson.BannerKey != nil {
+		url := uploads.GetImgixURL(*lesson.BannerKey)
+		bannerImageURL = &url
+	}
+	if lesson.VoiceoverKey != nil {
+		url := uploads.GetImgixURL(*lesson.VoiceoverKey)
+		voiceoverURL = &url
+	}
+
+	var video gentypes.Video
+	if lesson.VideoType != nil {
+		video.Type = *lesson.VideoType
+	}
+	if lesson.VideoURL != nil {
+		video.URL = *lesson.VideoURL
+	}
+
 	return gentypes.Lesson{
-		UUID:        lesson.UUID,
-		Name:        lesson.Name,
-		Tags:        tags,
-		Description: lesson.Description,
+		UUID:           lesson.UUID,
+		Name:           lesson.Name,
+		Tags:           tags,
+		Description:    lesson.Description,
+		Transcript:     lesson.Transcript,
+		BannerImageURL: bannerImageURL,
+		Video:          &video,
+		VoiceoverURL:   voiceoverURL,
 	}
 }
 
@@ -112,4 +140,21 @@ func (c *courseAppImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, er
 
 	b, err := c.coursesRepository.DeleteLesson(input.UUID)
 	return b, err
+}
+
+func (c *courseAppImpl) LessonBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,             // The actual file type
+		imageMeta.ContentLength,        // The actual file content length
+		[]string{"jpg", "png", "jpeg"}, // Allowed file types
+		int32(20000000),                // Max file size = 20MB
+		"lessonImages",                 // Save files in this s3 directory
+		"lessonImages",                 // Unique identifier for this type of upload request
+	)
+
+	return url, successToken, err
 }

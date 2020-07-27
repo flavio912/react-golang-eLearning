@@ -20,6 +20,10 @@ input CreateLessonInput {
   name: String!
   tags: [UUID!]
   description: String!
+  bannerImageToken: String
+  voiceoverToken: String
+  transcript: String
+  video: VideoInput
 }
 
 input UpdateLessonInput {

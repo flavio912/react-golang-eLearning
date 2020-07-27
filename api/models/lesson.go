@@ -7,7 +7,7 @@ type Lesson struct {
 	Name         string
 	Tags         []Tag `gorm:"many2many:lesson_tags_link;"`
 	Description  string
-	Transcript   string
+	Transcript   *string
 	VoiceoverKey *string
 	VideoType    *gentypes.VideoType
 	VideoURL     *string
