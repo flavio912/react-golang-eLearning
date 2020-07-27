@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash a58b571a0d97599c9e95ea1a3883937e */
+/* @relayHash 7b498bb7a0d4fd5a58ce1ed037c4eb45 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -36,8 +36,10 @@ fragment DelegateProfilePage_delegate on Delegate {
   jobTitle
   telephone
   TTC_ID
+  lastLogin
   myCourses {
     status
+    minutesTracked
     course {
       name
       category {
@@ -160,6 +162,13 @@ const node: ConcreteRequest = (function () {
                             "storageKey": null
                         },
                         {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "lastLogin",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
                             "kind": "LinkedField",
                             "alias": null,
                             "name": "myCourses",
@@ -172,6 +181,13 @@ const node: ConcreteRequest = (function () {
                                     "kind": "ScalarField",
                                     "alias": null,
                                     "name": "status",
+                                    "args": null,
+                                    "storageKey": null
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "minutesTracked",
                                     "args": null,
                                     "storageKey": null
                                 },
@@ -209,7 +225,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_DelegatesProfile_Query",
             "id": null,
-            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  uuid\n  firstName\n  lastName\n  email\n  jobTitle\n  telephone\n  TTC_ID\n  myCourses {\n    status\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
+            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n) {\n  delegate(uuid: $uuid) {\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  uuid\n  firstName\n  lastName\n  email\n  jobTitle\n  telephone\n  TTC_ID\n  lastLogin\n  myCourses {\n    status\n    minutesTracked\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;

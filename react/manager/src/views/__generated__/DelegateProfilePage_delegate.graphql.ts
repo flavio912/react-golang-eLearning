@@ -12,8 +12,10 @@ export type DelegateProfilePage_delegate = {
     readonly jobTitle: string;
     readonly telephone: string | null;
     readonly TTC_ID: string;
+    readonly lastLogin: string;
     readonly myCourses: ReadonlyArray<{
         readonly status: CourseStatus;
+        readonly minutesTracked: number;
         readonly course: {
             readonly name: string;
             readonly category: {
@@ -96,6 +98,13 @@ const node: ReaderFragment = (function () {
                 "storageKey": null
             },
             {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "lastLogin",
+                "args": null,
+                "storageKey": null
+            },
+            {
                 "kind": "LinkedField",
                 "alias": null,
                 "name": "myCourses",
@@ -108,6 +117,13 @@ const node: ReaderFragment = (function () {
                         "kind": "ScalarField",
                         "alias": null,
                         "name": "status",
+                        "args": null,
+                        "storageKey": null
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "minutesTracked",
                         "args": null,
                         "storageKey": null
                     },
@@ -140,5 +156,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = 'd074fdb9ce18d37411e8b449802b6b0e';
+(node as any).hash = '89ed76957a78507829c0629dedd8c13d';
 export default node;

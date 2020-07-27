@@ -79,6 +79,8 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
     generatedPassword: '',
   };
 
+  const lastActive = (new Date()).getDay() - (new Date(delegate.lastLogin)).getDay();
+
   const myCourses =
     delegate?.myCourses?.map((myCourse) => ({
       title: myCourse.course.name,
@@ -93,6 +95,13 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
       },
       onClick: () => {}
     })) ?? [];
+  
+  const totalMinsTracked = delegate?.myCourses?.reduce((sum, current) => sum + current.minutesTracked, 0) ?? 0;
+  const totalTimeTracked = {
+    h: Math.floor(totalMinsTracked/60),
+    m: totalMinsTracked % 60,
+  };
+  
   return (
     <div className={classes.root}>
       <div className={classes.top}>
@@ -120,8 +129,8 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
           className={classes.quickOverview}
         >
           <Summary
-            numActiveCourses={3}
-            numLastActive={4}
+            numActiveCourses={myCourses.length}
+            numLastActive={lastActive}
             numCertificates={2}
             numExpiringSoon={1}
           />
@@ -141,11 +150,11 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
             />
             <Spacer spacing={3} horizontal />
             <TrainingProgressCard
-              coursesDone={20}
+              coursesDone={myCourses.filter(course => course.status.isComplete).length}
               coursesPercent={300}
               courseNewCourseIcon={'CourseNewCourseGreen'}
               courseTimeTrackedIcon={'CourseTimeTrackedGreen'}
-              timeTracked={{ h: 30, m: 10 }}
+              timeTracked={totalTimeTracked}
               timePercent={100}
               title="Monthly"
             />
@@ -184,8 +193,10 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
       jobTitle
       telephone
       TTC_ID
+      lastLogin
       myCourses {
         status
+        minutesTracked
         course {
           name
           category {
