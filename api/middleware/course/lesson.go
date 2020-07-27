@@ -28,9 +28,9 @@ func (c *coursesRepoImpl) CreateLesson(lesson gentypes.CreateLessonInput) (model
 	}
 
 	lessonModel := models.Lesson{
-		Name: lesson.Name,
-		Tags: tags,
-		Text: lesson.Text,
+		Name:        lesson.Name,
+		Tags:        tags,
+		Description: lesson.Description,
 	}
 
 	query := database.GormDB.Create(&lessonModel)
@@ -155,8 +155,8 @@ func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models
 	if input.Name != nil {
 		lesson.Name = *input.Name
 	}
-	if input.Text != nil {
-		lesson.Text = *input.Text
+	if input.Description != nil {
+		lesson.Description = *input.Description
 	}
 	if input.Tags != nil {
 		tags, err := c.CheckTagsExist(*input.Tags)

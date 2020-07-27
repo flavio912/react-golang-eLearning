@@ -12,10 +12,10 @@ func (c *courseAppImpl) lessonToGentype(lesson models.Lesson) gentypes.Lesson {
 		tags = tagsToGentypes(lesson.Tags)
 	}
 	return gentypes.Lesson{
-		UUID: lesson.UUID,
-		Name: lesson.Name,
-		Tags: tags,
-		Text: lesson.Text,
+		UUID:        lesson.UUID,
+		Name:        lesson.Name,
+		Tags:        tags,
+		Description: lesson.Description,
 	}
 }
 

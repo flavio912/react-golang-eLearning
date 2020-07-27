@@ -16,9 +16,9 @@ func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
 	var newLessonInput = gentypes.CreateLessonInput{
-		Name: "Test lesson",
-		Text: "{}",
-		Tags: nil,
+		Name:        "Test lesson",
+		Description: "{}",
+		Tags:        nil,
 	}
 
 	t.Run("Check non-tagged lesson is created with no tags", func(t *testing.T) {
@@ -26,7 +26,7 @@ func TestCreateLesson(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Equal(t, newLessonInput.Name, lesson.Name)
-		assert.Equal(t, newLessonInput.Text, lesson.Text)
+		assert.Equal(t, newLessonInput.Description, lesson.Description)
 	})
 	tag, _ := courseRepo.CreateTag(gentypes.CreateTagInput{
 		Name:  "Go",
@@ -39,7 +39,7 @@ func TestCreateLesson(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Equal(t, newLessonInput.Name, lesson.Name)
-		assert.Equal(t, newLessonInput.Text, lesson.Text)
+		assert.Equal(t, newLessonInput.Description, lesson.Description)
 
 		foundTags, err := courseRepo.GetTagsByLessonUUID(lesson.UUID.String())
 		assert.Nil(t, err)
@@ -148,10 +148,10 @@ func TestGetLessons(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		lesson := gentypes.Lesson{
-			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-			Name: "Dynamic Programming",
-			Tags: nil,
-			Text: "{}",
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Name:        "Dynamic Programming",
+			Tags:        nil,
+			Description: "{}",
 		}
 		uuidString := lesson.UUID.String()
 
@@ -202,10 +202,10 @@ func TestUpdateLesson(t *testing.T) {
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
 	input := gentypes.UpdateLessonInput{
-		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		Name: helpers.StringPointer("Diagonalizing Matrices"),
-		Text: helpers.StringPointer(`{"ayy" : "yoo"}`),
-		Tags: &tags,
+		UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Name:        helpers.StringPointer("Diagonalizing Matrices"),
+		Description: helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags:        &tags,
 	}
 	t.Run("Updates existing lesson", func(t *testing.T) {
 		lesson, err := courseRepo.UpdateLesson(input)
@@ -213,7 +213,7 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, input.UUID, lesson.UUID)
 		assert.Equal(t, *input.Name, lesson.Name)
-		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, *input.Description, lesson.Description)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
 
@@ -226,7 +226,7 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Nil(t, tag_err)
 		assert.Equal(t, input.UUID, lesson.UUID)
 		assert.Equal(t, *input.Name, lesson.Name)
-		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, *input.Description, lesson.Description)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
 	})

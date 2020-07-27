@@ -8,7 +8,7 @@ type Lesson struct {
 	UUID           UUID
 	Name           string
 	Tags           []Tag
-	Text           string
+	Description    string
 	BannerImageURL *string
 	VoiceoverURL   *string
 	Transcript     *string
@@ -27,9 +27,9 @@ func (l *LessonFilter) Validate() error {
 }
 
 type CreateLessonInput struct {
-	Name string `valid:"required"`
-	Tags *[]UUID
-	Text string
+	Name        string `valid:"required"`
+	Tags        *[]UUID
+	Description string
 }
 
 func (c *CreateLessonInput) Validate() error {
@@ -38,10 +38,10 @@ func (c *CreateLessonInput) Validate() error {
 }
 
 type UpdateLessonInput struct {
-	UUID UUID `valid:"required"`
-	Name *string
-	Text *string
-	Tags *[]UUID
+	UUID        UUID `valid:"required"`
+	Name        *string
+	Description *string
+	Tags        *[]UUID
 }
 
 func (u *UpdateLessonInput) Validate() error {

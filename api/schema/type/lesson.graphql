@@ -3,7 +3,7 @@ type Lesson implements SyllabusItem {
   uuid: UUID!
   type: StructureElement!
   complete: Boolean
-  text: String!
+  description: String!
   tags: [Tag!]
   bannerImageURL: String
   voiceoverURL: String
@@ -19,13 +19,13 @@ type LessonPage implements PaginatedQuery {
 input CreateLessonInput {
   name: String!
   tags: [UUID!]
-  text: String!
+  description: String!
 }
 
 input UpdateLessonInput {
   uuid: UUID!
   name: String
-  text: String
+  description: String
   tags: [UUID!]
 }
 

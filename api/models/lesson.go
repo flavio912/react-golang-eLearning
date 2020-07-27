@@ -6,7 +6,7 @@ type Lesson struct {
 	UUID         gentypes.UUID `gorm:"primary_key;type:uuid;default:uuid_generate_v4()"`
 	Name         string
 	Tags         []Tag `gorm:"many2many:lesson_tags_link;"`
-	Text         string
+	Description  string
 	Transcript   string
 	VoiceoverKey *string
 	VideoType    *gentypes.VideoType
