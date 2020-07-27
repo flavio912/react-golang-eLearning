@@ -18,6 +18,9 @@ import UpdateModule from './views/Module/UpdateModule';
 import TestsList from './views/TestsList';
 import CreateTest from './views/Test/CreateTest';
 import UpdateTest from './views/Test/UpdateTest';
+import CertificateTypes from './views/CertificateTypesList';
+import CreateCertificateType from './views/CertificateType/CreateCertificateType';
+import UpdateCertificateType from './views/CertificateType/UpdateCertificateType';
 
 export default [
   {
@@ -211,6 +214,21 @@ export default [
         path: '/question/:ident/:tab',
         exact: true,
         component: UpdateQuestion
+      },
+      {
+        path: '/certificateTypes',
+        exact: true,
+        component: CertificateTypes
+      },
+      {
+        path: '/certificateTypes/create/:tab',
+        exact: true,
+        component: CreateCertificateType
+      },
+      {
+        path: '/certificateTypes/:ident/:tab',
+        exact: true,
+        component: UpdateCertificateType
       },
       {
         path: '/settings',

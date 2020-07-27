@@ -462,6 +462,10 @@ func (q *QueryResolver) CertificateTypes(
 	})
 }
 
+func (q *QueryResolver) CertificateType(ctx context.Context, args struct{ UUID gentypes.UUID }) (*CertificateTypeResolver, error) {
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{CertificateTypeUUID: &args.UUID})
+}
+
 func (q *QueryResolver) CAANumbers(
 	ctx context.Context,
 	args struct {
