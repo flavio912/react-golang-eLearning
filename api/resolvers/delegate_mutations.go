@@ -2,6 +2,7 @@ package resolvers
 
 import (
 	"context"
+	"strings"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -11,7 +12,17 @@ import (
 )
 
 func (m *MutationResolver) DelegateLogin(ctx context.Context, args struct{ Input gentypes.DelegateLoginInput }) (*gentypes.AuthToken, error) {
-	token, err := middleware.GetDelegateAccessToken(args.Input.TTC_ID, args.Input.Password)
+	var (
+		token string
+		err   error
+	)
+
+	if strings.Contains(args.Input.TTC_ID, "@") {
+		token, err = middleware.GetIndividualAccessToken(args.Input.TTC_ID, args.Input.Password)
+	} else {
+		token, err = middleware.GetDelegateAccessToken(args.Input.TTC_ID, args.Input.Password)
+	}
+
 	if err != nil {
 		return nil, err
 	}

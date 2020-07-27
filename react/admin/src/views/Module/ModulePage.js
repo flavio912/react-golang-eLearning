@@ -38,7 +38,7 @@ function ModulePage({
 }) {
   const classes = useStyles();
 
-  const handleTabsChange = (event, value) => {
+  const handleTabsChange = (_, value) => {
     history.push(value);
   };
 

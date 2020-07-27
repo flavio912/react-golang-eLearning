@@ -5,19 +5,15 @@ import {
   CardHeader,
   CardContent,
   Divider,
-  Typography,
-  TextField,
-  InputAdornment
+  Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation } from '@apollo/react-hooks';
 import { useQuery } from '@apollo/react-hooks';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import SearchIcon from '@material-ui/icons/Search';
 import ReoderableListItem from 'src/components/ReorderableList/ReorderableListItem';
 import ReoderableDropdown from 'src/components/ReorderableList/ReorderableDropdown';
 import SuggestedTable from 'src/components/SuggestedTable';
+import SyllabusSearch from 'src/components/SyllabusSearch';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,49 +24,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const lessons = [
-  {
-    uuid: '1231231231',
-    name: 'Firesafety Module 1 - Lesson 1',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      },
-      {
-        name: 'HEALTH & SAFETY',
-        color: 'default'
-      }
-    ]
-  },
-  {
-    uuid: '1231231232',
-    name: 'Firesafety Module 1 - Lesson 2',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      }
-    ]
-  },
-  {
-    uuid: '1231231233',
-    name: 'Firesafety Module 1 - Lesson 3',
-    numCoursesUsedIn: 3,
-    type: 'Lesson',
-    tags: [
-      {
-        name: 'FIRE SAFETY',
-        color: 'default'
-      }
-    ]
-  }
-];
-
 const GET_LESSONS = gql`
   query SearchLessons($tags: [UUID]) {
     lessons(filter: { tags: $tags }) {
@@ -78,6 +31,7 @@ const GET_LESSONS = gql`
         uuid
         name
         text
+        type
         tags {
           uuid
         }
@@ -94,7 +48,7 @@ const GET_LESSONS = gql`
 
 const SEARCH = gql`
   query SearchSyllabus($name: String!, $page: Page!) {
-    searchSyllabus(filter: { name: $name }, page: $page) {
+    searchSyllabus(filter: { name: $name, excludeModule: true }, page: $page) {
       edges {
         uuid
         name
@@ -136,6 +90,7 @@ function useSuggestedQuery(text, page) {
     uuid: lesson?.uuid ?? '',
     name: lesson?.name ?? '',
     text: lesson?.text ?? '',
+    type: lesson?.type ?? '',
     tags: lesson?.tags ?? ''
   }));
 
@@ -157,7 +112,12 @@ function useSearchQuery(text, page) {
     }
   });
 
-  if (!data || !data.searchSyllabus || !data.searchSyllabus.edges || !data.searchSyllabus.pageInfo) {
+  if (
+    !data ||
+    !data.searchSyllabus ||
+    !data.searchSyllabus.edges ||
+    !data.searchSyllabus.pageInfo
+  ) {
     error && console.error('Could not get data', data, error);
     return {
       resultItems: [],
@@ -174,6 +134,7 @@ function useSearchQuery(text, page) {
     uuid: syllabus?.uuid ?? '',
     name: syllabus?.name ?? '',
     text: syllabus?.text ?? '',
+    type: syllabus?.type ?? '',
     tags: syllabus?.tags ?? ''
   }));
 
@@ -191,7 +152,7 @@ function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
   const [searchText, setSearchText] = React.useState('');
-  const [page, setPage] = React.useState({ total: 4, offset: 0, given: 4 });
+  const page = { total: 4, offset: 0, given: 4 };
   const searchResults = useSearchQuery(searchText, page);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
@@ -200,7 +161,6 @@ function ModuleBuilder({ state, setState }) {
       syllabus: state.syllabus.filter(item => item.uuid !== uuid)
     });
   };
-
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -227,32 +187,17 @@ function ModuleBuilder({ state, setState }) {
                 className={classes.noPadding}
               />
               <CardContent>
-                <Autocomplete
-                  freeSolo
-                  options={searchResults.resultItems}
-                  getOptionLabel={option => option.name}
-                  onChange={(_, { uuid, name, type }) =>
+                <SyllabusSearch
+                  placeholder="Search Lessons or Tests"
+                  searchFilters={{ filters: [] }}
+                  setSearchFilters={() => {}}
+                  searchResults={searchResults.resultItems}
+                  setSearchText={setSearchText}
+                  onChange={({ uuid, name, type }) => {
                     setState({
                       syllabus: [...state.syllabus, { uuid, name, type }]
-                    })
-                  }
-                  renderInput={params => (
-                    <TextField
-                      {...params}
-                      placeholder="Search Lessons or Tests"
-                      onChange={inp => {
-                        setSearchText(inp.target.value);
-                      }}
-                      InputProps={{
-                        ...params.InputProps,
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SearchIcon />
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  )}
+                    });
+                  }}
                 />
               </CardContent>
             </Card>
@@ -260,9 +205,11 @@ function ModuleBuilder({ state, setState }) {
           <Grid item>
             <SuggestedTable
               title="Suggested Lessons based on Tags"
-              lessons={suggestedLessons.resultItems.slice(0, 3)}
+              suggestions={suggestedLessons.resultItems.slice(0, 3)}
               onAdd={({ uuid, name }) =>
-                setState({ syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }] })
+                setState({
+                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
+                })
               }
             />
           </Grid>
@@ -272,7 +219,7 @@ function ModuleBuilder({ state, setState }) {
               <Divider />
               <CardContent>
                 <ReoderableDropdown
-                  title="Module 1"
+                  title={state.name ?? ''}
                   items={state.syllabus.map(({ name, uuid }) => ({
                     id: uuid,
                     component: (

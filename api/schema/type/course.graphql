@@ -52,6 +52,8 @@ type Course {
   bannerImageURL: String
   expiresInMonths: Int!
   expirationToEndMonth: Boolean!
+  published: Boolean!
+  certificateType: CertificateType
 }
 
 type CoursePage implements PaginatedQuery {
@@ -135,7 +137,7 @@ input CreateCategoryInput {
 
 input PurchaseCoursesInput {
   courses: [Int!]!
-  users: [UUID!]! # List of delegates UUIDs
+  users: [UUID!] # List of delegates UUIDs
   extraInvoiceEmail: String
   acceptedTerms: Boolean!
   backgroundCheckConfirm: Boolean

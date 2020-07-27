@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-function SuggestedTable({ title, lessons, onAdd }) {
+function SuggestedTable({ title, suggestions, onAdd }) {
   const classes = useStyles();
 
   return (
@@ -39,22 +39,22 @@ function SuggestedTable({ title, lessons, onAdd }) {
       <CardContent>
         <Table>
           <TableBody>
-            {lessons && lessons.map(lesson => (
-              <TableRow key={lesson.uuid}>
+            {suggestions && suggestions.map(suggestion => (
+              <TableRow key={suggestion.uuid}>
                 <TableCell>
                 <Typography
                   className={classes.bold}
                   variant="subtitle2"
                   color="textPrimary"
                 >
-                  {lesson.name}
+                  {suggestion.name}
                 </Typography>
                 <Typography
                   className={classes.bold}
                   variant="body2"
                   color="textSecondary"
                 >
-                  Used in {lesson.numCoursesUsedIn} other Courses
+                  Used in {suggestion.numCoursesUsedIn} other Courses
                 </Typography>
                 </TableCell>
                 <TableCell padding="none">
@@ -71,8 +71,8 @@ function SuggestedTable({ title, lessons, onAdd }) {
                     className={classes.bold}
                     variant="body1"
                     color="textPrimary"
-                    >
-                    Lesson
+                  >
+                    {suggestion.type.replace(/^\w/, (c) => c.toUpperCase())}
                   </Typography>
                 </TableCell>
                 <TableCell padding="none">
@@ -85,7 +85,7 @@ function SuggestedTable({ title, lessons, onAdd }) {
                   </Typography>
                 </TableCell>
                 <TableCell padding="none">
-                  {lesson.tags && lesson.tags.map(tag => (
+                  {suggestion.tags && suggestion.tags.map(tag => (
                     <Chip
                       key={tag.name}
                       style={{ backgroundColor: tag.color }}
@@ -96,7 +96,7 @@ function SuggestedTable({ title, lessons, onAdd }) {
                 <TableCell align="right">
                   <Button
                     color="default"
-                    onClick={() => onAdd(lesson)}
+                    onClick={() => onAdd(suggestion)}
                     >
                     + ADD
                   </Button>

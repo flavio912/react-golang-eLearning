@@ -49,7 +49,7 @@ function Overview({ state, setState }) {
                     rows={5}
                     value={state.excerpt}
                     onChange={inp => {
-                      setState('excerpt', inp.target.value);
+                      setState({ excerpt: inp.target.value });
                     }}
                     placeholder={'Short description'}
                     variant="outlined"

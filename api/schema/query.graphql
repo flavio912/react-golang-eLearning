@@ -54,6 +54,26 @@ input SyllabusFilter {
   excludeTest: Boolean
 }
 
+input CertificateTypeFilter {
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+}
+
+input CAANumberFilter {
+  identifier: String
+  used: Boolean
+}
+
+input IndividualFilter {
+  uuid: UUID
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
+}
+
 interface PaginatedQuery {
   pageInfo: PageInfo
 }
@@ -86,6 +106,12 @@ type Query {
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   course(id: Int!): Course
   user: User
+  individual(uuid: UUID!): Individual
+  individuals(
+    page: Page
+    filter: IndividualFilter
+    orderBy: OrderBy
+  ): IndividualPage
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
@@ -97,6 +123,14 @@ type Query {
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags
   certificateInfo(token: String!): CertificateInfo!
+  certificateTypes(
+    page: Page
+    filter: CertificateTypeFilter
+  ): CertificateTypePage
+  certificateType(uuid: UUID!): CertificateType
+
+  caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
+
   categories(page: Page, text: String): CategoryPage
   # secondaryCategories(page: Page, text: String): CategoryPage
 }

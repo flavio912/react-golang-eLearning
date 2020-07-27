@@ -21,6 +21,9 @@ import UpdateTest from './views/Test/UpdateTest';
 import LessonsList from './views/LessonsList';
 import CreateLesson from './views/Lesson/CreateLesson';
 import UpdateLesson from './views/Lesson/UpdateLesson';
+import CertificateTypes from './views/CertificateTypesList';
+import CreateCertificateType from './views/CertificateType/CreateCertificateType';
+import UpdateCertificateType from './views/CertificateType/UpdateCertificateType';
 
 export default [
   {
@@ -126,6 +129,21 @@ export default [
         component: lazy(() => import('src/views/AdminDetails'))
       },
       {
+        path: '/individuals',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualsList'))
+      },
+      {
+        path: '/individuals/:id',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
+        path: '/individuals/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
         path: '/tutors',
         exact: true,
         component: TutorsView
@@ -214,6 +232,21 @@ export default [
         path: '/lesson/:ident/:tab',
         exact: true,
         component: UpdateLesson
+      },
+      {
+        path: '/certificateTypes',
+        exact: true,
+        component: CertificateTypes
+      },
+      {
+        path: '/certificateTypes/create/:tab',
+        exact: true,
+        component: CreateCertificateType
+      },
+      {
+        path: '/certificateTypes/:ident/:tab',
+        exact: true,
+        component: UpdateCertificateType
       },
       {
         path: '/settings',

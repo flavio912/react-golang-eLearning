@@ -270,12 +270,12 @@ func (c *courseAppImpl) ModuleBannerImageUploadRequest(imageMeta gentypes.Upload
 	}
 
 	url, successToken, err := uploads.GenerateUploadURL(
-		imageMeta.FileType,      // The actual file type
-		imageMeta.ContentLength, // The actual file content length
-		[]string{"jpg", "png"},  // Allowed file types
-		int32(20000000),         // Max file size = 20MB
-		"moduleImages",          // Save files in this s3 directory
-		"moduleImages",          // Unique identifier for this type of upload request
+		imageMeta.FileType,             // The actual file type
+		imageMeta.ContentLength,        // The actual file content length
+		[]string{"jpg", "png", "jpeg"}, // Allowed file types
+		int32(20000000),                // Max file size = 20MB
+		"moduleImages",                 // Save files in this s3 directory
+		"moduleImages",                 // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err
