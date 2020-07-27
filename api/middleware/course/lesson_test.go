@@ -213,11 +213,17 @@ func TestUpdateLesson(t *testing.T) {
 	})
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
+	vidType := gentypes.WistiaVideo
 	input := course.UpdateLessonInput{
-		UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		Name:        helpers.StringPointer("Diagonalizing Matrices"),
-		Description: helpers.StringPointer(`{"ayy" : "yoo"}`),
-		Tags:        &tags,
+		UUID:           gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Name:           helpers.StringPointer("Diagonalizing Matrices"),
+		Description:    helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags:           &tags,
+		VoiceoverKey:   helpers.StringPointer("/places/orange.mp3"),
+		BannerImageKey: helpers.StringPointer("/images/banner.png"),
+		VideoURL:       helpers.StringPointer("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		VideoType:      &vidType,
+		Transcript:     helpers.StringPointer("never gonna give you up!"),
 	}
 	t.Run("Updates existing lesson", func(t *testing.T) {
 		lesson, err := courseRepo.UpdateLesson(input)
@@ -228,6 +234,11 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Equal(t, *input.Description, lesson.Description)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
+		assert.Equal(t, input.BannerImageKey, lesson.BannerKey)
+		assert.Equal(t, input.VoiceoverKey, lesson.VoiceoverKey)
+		assert.Equal(t, input.VideoType, lesson.VideoType)
+		assert.Equal(t, input.VideoURL, lesson.VideoURL)
+		assert.Equal(t, input.Transcript, lesson.Transcript)
 
 		lesson, err = courseRepo.GetLessonByUUID(input.UUID)
 		assert.Nil(t, err)
