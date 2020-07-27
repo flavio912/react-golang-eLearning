@@ -228,6 +228,7 @@ func (c *courseAppImpl) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes
 		UUID:           input.UUID,
 		Name:           input.Name,
 		Description:    input.Description,
+		Tags:           input.Tags,
 		Transcript:     input.Transcript,
 		BannerImageKey: bannerImageKey,
 		VoiceoverKey:   voiceoverKey,
