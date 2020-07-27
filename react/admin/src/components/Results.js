@@ -77,6 +77,10 @@ Results.propTypes = {
     __typename: PropTypes.string,
   }),
   className: PropTypes.string,
+  headers: PropTypes.array,
+  cells: PropTypes.array,
+  handleChangePage: PropTypes.func,
+  handleChangeRowsPerPage: PropTypes.func
 };
 
 export default Results;

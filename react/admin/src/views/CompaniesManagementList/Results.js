@@ -50,11 +50,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Results({ className, companies, ...rest }) {
+function Results({ className, companies, page, handleChangePage, rowsPerPage, handleChangeRowsPerPage, ...rest }) {
   const classes = useStyles();
   const [selectedCompanies, setSelectedCompanies] = useState([]);
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const handleSelectAll = event => {
     const selectedCompanies = event.target.checked
@@ -86,14 +84,6 @@ function Results({ className, companies, ...rest }) {
     }
 
     setSelectedCompanies(newSelectedCompanies);
-  };
-
-  const handleChangePage = (event, page) => {
-    setPage(page);
-  };
-
-  const handleChangeRowsPerPage = event => {
-    setRowsPerPage(event.target.value);
   };
 
   return (
