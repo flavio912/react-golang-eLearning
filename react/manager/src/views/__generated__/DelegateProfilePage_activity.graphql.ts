@@ -3,21 +3,8 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
-export type ActivityType = "activated" | "completedCourse" | "failedCourse" | "newCourse" | "%future added value";
 export type DelegateProfilePage_activity = {
-    readonly edges: ReadonlyArray<{
-        readonly type: ActivityType;
-        readonly createdAt: string;
-        readonly course: {
-            readonly ident: number;
-            readonly name: string;
-        } | null;
-    } | null> | null;
-    readonly pageInfo: {
-        readonly total: number;
-        readonly limit: number;
-        readonly offset: number;
-    } | null;
+    readonly " $fragmentRefs": FragmentRefs<"ActivityTable_activity">;
     readonly " $refType": "DelegateProfilePage_activity";
 };
 export type DelegateProfilePage_activity$data = DelegateProfilePage_activity;
@@ -36,88 +23,11 @@ const node: ReaderFragment = ({
     "argumentDefinitions": [],
     "selections": [
         {
-            "kind": "LinkedField",
-            "alias": null,
-            "name": "edges",
-            "storageKey": null,
-            "args": null,
-            "concreteType": "Activity",
-            "plural": true,
-            "selections": [
-                {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "type",
-                    "args": null,
-                    "storageKey": null
-                },
-                {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "createdAt",
-                    "args": null,
-                    "storageKey": null
-                },
-                {
-                    "kind": "LinkedField",
-                    "alias": null,
-                    "name": "course",
-                    "storageKey": null,
-                    "args": null,
-                    "concreteType": "Course",
-                    "plural": false,
-                    "selections": [
-                        {
-                            "kind": "ScalarField",
-                            "alias": "ident",
-                            "name": "id",
-                            "args": null,
-                            "storageKey": null
-                        },
-                        {
-                            "kind": "ScalarField",
-                            "alias": null,
-                            "name": "name",
-                            "args": null,
-                            "storageKey": null
-                        }
-                    ]
-                }
-            ]
-        },
-        {
-            "kind": "LinkedField",
-            "alias": null,
-            "name": "pageInfo",
-            "storageKey": null,
-            "args": null,
-            "concreteType": "PageInfo",
-            "plural": false,
-            "selections": [
-                {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "total",
-                    "args": null,
-                    "storageKey": null
-                },
-                {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "limit",
-                    "args": null,
-                    "storageKey": null
-                },
-                {
-                    "kind": "ScalarField",
-                    "alias": null,
-                    "name": "offset",
-                    "args": null,
-                    "storageKey": null
-                }
-            ]
+            "kind": "FragmentSpread",
+            "name": "ActivityTable_activity",
+            "args": null
         }
     ]
 } as any);
-(node as any).hash = '45e0372b57c55924466c805260ac754a';
+(node as any).hash = '1d987834673f0c45ef0b4307c86ebaa4';
 export default node;

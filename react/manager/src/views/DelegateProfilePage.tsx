@@ -81,7 +81,8 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
     generatedPassword: '',
   };
 
-  const lastActive = (new Date()).getDay() - (new Date(delegate.lastLogin)).getDay();
+  const lastActivity = (new Date()).getDay() - (new Date(delegate.lastLogin)).getDay();
+  const lastActive = lastActivity < 0 ? 0: lastActivity;
 
   const myCourses =
     delegate?.myCourses?.map((myCourse) => ({
@@ -104,19 +105,8 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
     m: totalMinsTracked % 60,
   };
   
-  const pageProps = {
-    total: activity.pageInfo?.total ?? 0,
-    limit: activity.pageInfo?.limit ?? 10,
-    offset: activity.pageInfo?.offset ?? 0
-  };
-
-  const pageInfo = {
-    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
-    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
-  };
-
-  const onUpdatePage = (page: number) => {
-    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * pageProps.limit}&limit=${pageProps.limit}`);
+  const onUpdatePage = (page: number, offset: number, limit: number) => {
+    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * offset}&limit=${limit}`);
   }
 
   return (
@@ -192,7 +182,6 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
       <Spacer vertical spacing={3} />
       <ActivityTable 
         activity={activity}
-        pageInfo={pageInfo}
         onUpdatePage={onUpdatePage}
         userName={delegate.firstName}
       />
@@ -230,19 +219,7 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
   `,
   activity: graphql`
     fragment DelegateProfilePage_activity on ActivityPage {
-      edges {
-        type
-        createdAt
-        course {
-          ident: id
-          name
-        }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-      }
+      ...ActivityTable_activity
     }
   `
 });

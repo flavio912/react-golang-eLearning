@@ -11,6 +11,8 @@ import TimeSpent from 'components/Delegate/TimeSpent';
 import ActivityName from 'components/Delegate/ActivityName';
 import { DelegateProfilePage_activity } from 'views/__generated__/DelegateProfilePage_activity.graphql';
 import moment from 'moment';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { ActivityTable_activity } from './__generated__/ActivityTable_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   sectionTitleWrapper: {
@@ -92,25 +94,31 @@ const activityRow = (
   onClick: () => {}
 });
 
-type PageInfo = {
-  currentPage: number;
-  totalPages: number;
-};
-
 type Props = {
-  activity: DelegateProfilePage_activity; 
-  pageInfo: PageInfo;
+  activity: ActivityTable_activity; 
   userName: string;
-  onUpdatePage: (page: number) => void;
+  onUpdatePage: (page: number, offset: number, limit: number) => void
 };
 
-const ActivityTable = ({activity, userName, pageInfo, onUpdatePage}: Props) => {
+const ActivityTable = ({activity, userName, onUpdatePage}: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const pageProps = {
+    total: activity.pageInfo?.total ?? 0,
+    limit: activity.pageInfo?.limit ?? 10,
+    offset: activity.pageInfo?.offset ?? 0
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
+    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
+  };
+
   return (
     <div>
       <div className={classes.sectionTitleWrapper}>
-        <h2>Bruce's activity</h2>
+        <h2>{userName}'s activity</h2>
         <div className={classes.courseDropdown}>
           <Button
             archetype={'default'}
@@ -152,7 +160,7 @@ const ActivityTable = ({activity, userName, pageInfo, onUpdatePage}: Props) => {
               date: moment(activity?.createdAt).format('DD/MM/YY')
             },
             activity?.course
-              ? `${nameMap[activity.type]} the ${activity?.course?.name} Course`
+              ? `${userName} ${nameMap[activity.type]} the ${activity?.course?.name} Course`
               : nameMap[activity?.type],
             {
               icon: iconMap[activity.type],
@@ -170,7 +178,7 @@ const ActivityTable = ({activity, userName, pageInfo, onUpdatePage}: Props) => {
       />
       <Paginator
         currentPage={pageInfo.currentPage}
-        updatePage={onUpdatePage}
+        updatePage={(page) => onUpdatePage(page, pageProps.offset, pageProps.limit)}
         numPages={pageInfo.totalPages}
         itemsPerPage={10}
         showRange={pageInfo.totalPages > 4 ? 4 : pageInfo.totalPages}
@@ -179,4 +187,22 @@ const ActivityTable = ({activity, userName, pageInfo, onUpdatePage}: Props) => {
   );
 };
 
-export default ActivityTable;
+export default createFragmentContainer(ActivityTable, {
+  activity: graphql`
+    fragment ActivityTable_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+        limit
+        offset
+      }
+    }
+  `
+});

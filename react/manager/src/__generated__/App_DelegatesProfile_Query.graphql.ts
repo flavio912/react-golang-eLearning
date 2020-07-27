@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 1b2a79c3686ac395a228f3a04d2aac46 */
+/* @relayHash 386c6c54cf5598b26b3e904b09bdf1b5 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -38,7 +38,7 @@ query App_DelegatesProfile_Query(
   }
 }
 
-fragment DelegateProfilePage_activity on ActivityPage {
+fragment ActivityTable_activity on ActivityPage {
   edges {
     type
     createdAt
@@ -52,6 +52,10 @@ fragment DelegateProfilePage_activity on ActivityPage {
     limit
     offset
   }
+}
+
+fragment DelegateProfilePage_activity on ActivityPage {
+  ...ActivityTable_activity
 }
 
 fragment DelegateProfilePage_delegate on Delegate {
@@ -383,7 +387,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_DelegatesProfile_Query",
             "id": null,
-            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n  $offset: Int\n  $limit: Int\n) {\n  delegate(uuid: $uuid) {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...DelegateProfilePage_activity\n    }\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment DelegateProfilePage_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n    limit\n    offset\n  }\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  uuid\n  firstName\n  lastName\n  email\n  jobTitle\n  telephone\n  TTC_ID\n  lastLogin\n  myCourses {\n    status\n    minutesTracked\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
+            "text": "query App_DelegatesProfile_Query(\n  $uuid: UUID!\n  $offset: Int\n  $limit: Int\n) {\n  delegate(uuid: $uuid) {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...DelegateProfilePage_activity\n    }\n    ...DelegateProfilePage_delegate\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n    limit\n    offset\n  }\n}\n\nfragment DelegateProfilePage_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n\nfragment DelegateProfilePage_delegate on Delegate {\n  uuid\n  firstName\n  lastName\n  email\n  jobTitle\n  telephone\n  TTC_ID\n  lastLogin\n  myCourses {\n    status\n    minutesTracked\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
