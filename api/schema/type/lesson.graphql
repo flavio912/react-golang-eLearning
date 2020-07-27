@@ -1,3 +1,16 @@
+type Lesson implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  type: StructureElement!
+  complete: Boolean
+  text: String!
+  tags: [Tag!]
+  bannerImageURL: String
+  voiceoverURL: String
+  transcript: String
+  video: Video
+}
+
 type LessonPage implements PaginatedQuery {
   edges: [Lesson]
   pageInfo: PageInfo

@@ -83,11 +83,13 @@ func (l *LessonResolver) Name() string        { return l.Lesson.Name }
 func (l *LessonResolver) Type() gentypes.CourseElement {
 	return gentypes.LessonType
 }
-func (l *LessonResolver) Text() string    { return l.Lesson.Text }
-func (l *LessonResolver) Complete() *bool { return helpers.BoolPointer(false) } // TODO
-func (l *LessonResolver) Mp3URL() *string { return helpers.StringPointer("/google.com") }
+func (l *LessonResolver) Text() string            { return l.Lesson.Text }
+func (l *LessonResolver) Complete() *bool         { return helpers.BoolPointer(false) } // TODO
+func (l *LessonResolver) BannerImageURL() *string { return l.Lesson.BannerImageURL }
+func (l *LessonResolver) VoiceoverURL() *string   { return l.Lesson.VoiceoverURL }
+func (l *LessonResolver) Transcript() *string     { return l.Lesson.Transcript }
+func (l *LessonResolver) Video() *gentypes.Video  { return l.Lesson.Video }
 
-// TODO: Use dataloaders
 func (l *LessonResolver) Tags(ctx context.Context) (*[]*TagResolver, error) {
 	app := auth.AppFromContext(ctx)
 	tags, err := app.CourseApp.GetTagsByLessonUUID(l.UUID().String())

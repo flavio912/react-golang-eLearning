@@ -5,10 +5,14 @@ import (
 )
 
 type Lesson struct {
-	UUID UUID
-	Name string
-	Tags []Tag
-	Text string
+	UUID           UUID
+	Name           string
+	Tags           []Tag
+	Text           string
+	BannerImageURL *string
+	VoiceoverURL   *string
+	Transcript     *string
+	Video          *Video
 }
 
 type LessonFilter struct {
