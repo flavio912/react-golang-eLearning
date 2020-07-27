@@ -24,7 +24,7 @@ function SideOptions({ state, setState }) {
           value={state.hoursToComplete}
           onChange={evt => {
             try {
-              setState('hoursToComplete', parseFloat(evt.target.value));
+              setState({ hoursToComplete: parseFloat(evt.target.value) });
             } catch (err) {}
           }}
         />

@@ -22,6 +22,7 @@ type CourseApp interface {
 	GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error)
 	CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error)
 
+	SetCoursePublished(courseID uint, published bool) error
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
@@ -65,7 +66,11 @@ type CourseApp interface {
 	CreateModule(input gentypes.CreateModuleInput) (gentypes.Module, error)
 	UpdateModule(input gentypes.UpdateModuleInput) (gentypes.Module, error)
 	DeleteModule(input gentypes.DeleteModuleInput) (bool, error)
+	ModuleBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ModuleSyllabus(uuid gentypes.UUID) ([]gentypes.ModuleItem, error)
+	ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Tag, error)
+
+	VoiceoverUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	SearchSyllabus(
 		page *gentypes.Page,
@@ -82,9 +87,22 @@ type CourseApp interface {
 	UpdateQuestion(input gentypes.UpdateQuestionInput) (gentypes.Question, error)
 	DeleteQuestion(input gentypes.DeleteQuestionInput) (bool, error)
 	AnswerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
-
 	ManyAnswers(questionUUIDs []gentypes.UUID) (map[gentypes.UUID][]gentypes.Answer, error)
+
+	CertificateType(uuid gentypes.UUID) (gentypes.CertificateType, error)
+	CertificateTypes(
+		page *gentypes.Page,
+		filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error)
+	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
+	UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (gentypes.CertificateType, error)
 	CertificateInfo(token string) (gentypes.CertficateInfo, error)
+	CAANumbers(
+		page *gentypes.Page,
+		filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error)
+	CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error)
+	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
+	CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
 	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)

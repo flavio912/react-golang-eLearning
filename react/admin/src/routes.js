@@ -13,6 +13,8 @@ import ModulesList from './views/ModulesList';
 import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
+import CreateModule from './views/Module/CreateModule';
+import UpdateModule from './views/Module/UpdateModule';
 import TestsList from './views/TestsList';
 import CreateTest from './views/Test/CreateTest';
 import UpdateTest from './views/Test/UpdateTest';
@@ -184,6 +186,16 @@ export default [
         path: '/modules',
         exact: true,
         component: ModulesList
+      },
+      {
+        path: '/modules/create/:tab',
+        exact: true,
+        component: CreateModule
+      },
+      {
+        path: '/modules/:ident/:tab',
+        exact: true,
+        component: UpdateModule
       },
       {
         path: '/questions',

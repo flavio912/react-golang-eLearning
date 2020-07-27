@@ -78,7 +78,7 @@ func (r *CourseResolver) Category(ctx context.Context) (*CategoryResolver, error
 	if r.Course.CategoryUUID != nil {
 		return NewCategoryResolver(ctx, NewCategoryResolverArgs{UUID: *r.Course.CategoryUUID})
 	}
-	return &CategoryResolver{}, nil
+	return nil, nil
 }
 func (r *CourseResolver) AllowedToBuy() *bool {
 	return helpers.BoolPointer(r.Course.AllowedToBuy)
@@ -94,6 +94,9 @@ func (r *CourseResolver) ExpiresInMonths() int32 {
 }
 func (r *CourseResolver) ExpirationToEndMonth() bool {
 	return r.Course.ExpirationToEndMonth
+}
+func (r *CourseResolver) Published() bool {
+	return r.Course.Published
 }
 
 type CoursePageResolver struct {

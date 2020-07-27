@@ -1,0 +1,9 @@
+- uuid: 2634bd66-cdab-4f16-acc6-ce023011316c
+  identifier: some id
+  used: false
+  created_at: 2020-01-08 12:53:37.338775+00
+
+- uuid: 55f7745c-970c-406c-9198-6756c51f7963
+  identifier: Big L
+  used: true
+  created_at: 2020-03-08 13:53:37.338775+00

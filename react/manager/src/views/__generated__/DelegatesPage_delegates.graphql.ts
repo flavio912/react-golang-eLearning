@@ -3,6 +3,7 @@
 
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
+export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added value";
 export type DelegatesPage_delegates = {
     readonly edges: ReadonlyArray<{
         readonly uuid: string;
@@ -11,6 +12,9 @@ export type DelegatesPage_delegates = {
         readonly lastName: string;
         readonly lastLogin: string;
         readonly createdAt: string | null;
+        readonly myCourses: ReadonlyArray<{
+            readonly status: CourseStatus;
+        }> | null;
     } | null> | null;
     readonly pageInfo: {
         readonly total: number;
@@ -85,6 +89,24 @@ const node: ReaderFragment = ({
                     "name": "createdAt",
                     "args": null,
                     "storageKey": null
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "myCourses",
+                    "storageKey": null,
+                    "args": null,
+                    "concreteType": "MyCourse",
+                    "plural": true,
+                    "selections": [
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "status",
+                            "args": null,
+                            "storageKey": null
+                        }
+                    ]
                 }
             ]
         },
@@ -129,5 +151,5 @@ const node: ReaderFragment = ({
         }
     ]
 } as any);
-(node as any).hash = '8a7f29cca036c34433d36538addac5f0';
+(node as any).hash = '14e453175c3c5481b85cecf321877354';
 export default node;

@@ -52,6 +52,7 @@ type Course {
   bannerImageURL: String
   expiresInMonths: Int!
   expirationToEndMonth: Boolean!
+  published: Boolean!
 }
 
 type CoursePage implements PaginatedQuery {

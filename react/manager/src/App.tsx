@@ -22,6 +22,7 @@ import OrgOverview from 'views/OrgOverview';
 import DelegatesPage from 'views/DelegatesPage';
 import CoursesPage from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
+import { off } from 'process';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -69,8 +70,8 @@ const Router = createFarceRouter({
           path="/delegates"
           Component={DelegatesPage}
           query={graphql`
-            query App_DelegatesPage_Query {
-              delegates {
+            query App_DelegatesPage_Query($offset: Int, $limit: Int) {
+              delegates(page: { offset: $offset, limit: $limit }) {
                 ...DelegatesPage_delegates
               }
               manager {
@@ -78,6 +79,16 @@ const Router = createFarceRouter({
               }
             }
           `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { offset, limit } = location.query;
+            return {
+              ...params,
+              page: {
+                offset: offset,
+                limit: limit,
+              }
+            }
+          }}
         />
         <Route
           path="/delegates/:uuid"

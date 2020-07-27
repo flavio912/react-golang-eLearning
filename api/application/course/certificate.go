@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
 
@@ -12,10 +13,56 @@ import (
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
+	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
+
+func (c *courseAppImpl) certificateTypeToGentype(certType models.CertificateType) gentypes.CertificateType {
+	var cert_url *string
+	if certType.CertificateBodyImageKey != nil {
+		url := uploads.GetImgixURL(*certType.CertificateBodyImageKey)
+		cert_url = &url
+	}
+
+	createdAt := certType.CreatedAt.Format(time.RFC3339)
+	return gentypes.CertificateType{
+		UUID:                    certType.UUID,
+		Name:                    certType.Name,
+		CreatedAt:               createdAt,
+		RegulationText:          certType.RegulationText,
+		RequiresCAANo:           certType.RequiresCAANo,
+		ShowTrainingSection:     certType.ShowTrainingSection,
+		CertificateBodyImageURL: cert_url,
+	}
+}
+
+func (c *courseAppImpl) certificatesTypeToGentype(certTypes []models.CertificateType) []gentypes.CertificateType {
+	gens := make([]gentypes.CertificateType, len(certTypes))
+	for i, cert := range certTypes {
+		gens[i] = c.certificateTypeToGentype(cert)
+	}
+	return gens
+}
+
+func (c *courseAppImpl) caaNumberToGentype(no models.CAANumber) gentypes.CAANumber {
+	createdAt := no.CreatedAt.Format(time.RFC3339)
+	return gentypes.CAANumber{
+		UUID:       no.UUID,
+		CreatedAt:  createdAt,
+		Identifier: no.Identifier,
+		Used:       no.Used,
+	}
+}
+
+func (c *courseAppImpl) caaNumbersToGentypes(numbers []models.CAANumber) []gentypes.CAANumber {
+	gens := make([]gentypes.CAANumber, len(numbers))
+	for i, no := range numbers {
+		gens[i] = c.caaNumberToGentype(no)
+	}
+	return gens
+}
 
 func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) {
 	token, err := auth.GenerateCertificateToken(historicalCourseUUID)
@@ -135,4 +182,104 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 		InstructorCIN:          "",
 		InstructorSignatureURL: nil,
 	}, nil
+}
+
+func (c *courseAppImpl) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.CertificateType{}, err
+	}
+
+	certType, err := c.coursesRepository.CreateCertificateType(input)
+	return c.certificateTypeToGentype(certType), err
+}
+
+func (c *courseAppImpl) UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CertificateType{}, err
+	}
+
+	certType, err := c.coursesRepository.UpdateCertificateType(input)
+	return c.certificateTypeToGentype(certType), err
+}
+
+func (c *courseAppImpl) CreateCAANumber(input gentypes.CreateCAANumberInput) (gentypes.CAANumber, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CAANumber{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CAANumber{}, err
+	}
+
+	number, err := c.coursesRepository.CreateCAANumber(input.Identifier)
+	return c.caaNumberToGentype(number), err
+}
+
+func (c *courseAppImpl) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CAANumber{}, &errors.ErrUnauthorized
+	}
+
+	if ok, err := govalidator.ValidateStruct(input); !ok || err != nil {
+		return gentypes.CAANumber{}, err
+	}
+
+	number, err := c.coursesRepository.UpdateCAANumber(input)
+	return c.caaNumberToGentype(number), err
+}
+
+func (c *courseAppImpl) CertificateType(uuid gentypes.UUID) (gentypes.CertificateType, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.CertificateType{}, &errors.ErrUnauthorized
+	}
+
+	certType, err := c.coursesRepository.CertificateType(uuid)
+	return c.certificateTypeToGentype(certType), err
+}
+
+func (c *courseAppImpl) CertificateTypes(
+	page *gentypes.Page,
+	filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CertificateType{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	certTypes, pageInfo, err := c.coursesRepository.CertificateTypes(page, filter)
+	return c.certificatesTypeToGentype(certTypes), pageInfo, err
+}
+
+func (c *courseAppImpl) CAANumbers(
+	page *gentypes.Page,
+	filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CAANumber{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	numbers, pageInfo, err := c.coursesRepository.CAANumbers(page, filter)
+	return c.caaNumbersToGentypes(numbers), pageInfo, err
+}
+
+func (c *courseAppImpl) CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error) {
+	if !c.grant.IsAdmin {
+		return "", "", &errors.ErrUnauthorized
+	}
+
+	url, successToken, err := uploads.GenerateUploadURL(
+		imageMeta.FileType,
+		imageMeta.ContentLength,
+		[]string{"jpg", "png"},
+		int32(1000000),
+		"certificate_body_image",
+		"certificateBodyImage",
+	)
+
+	return url, successToken, err
 }

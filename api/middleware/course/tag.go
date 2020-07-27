@@ -53,7 +53,6 @@ func (c *coursesRepoImpl) CreateTag(input gentypes.CreateTagInput) (models.Tag, 
 // ManyCourseTags takes a list of courseInfo ids and returns a mapping
 // of a courseInfo Id to a slice of tags
 func (c *coursesRepoImpl) ManyCourseTags(ids []uint) (map[uint][]models.Tag, error) {
-	// TODO: Check if user has access to this particular course
 
 	// Find the table links
 	var links []models.CourseTagsLink
@@ -92,6 +91,45 @@ func (c *coursesRepoImpl) ManyCourseTags(ids []uint) (map[uint][]models.Tag, err
 		}
 	}
 	return courseInfoIdsToTags, nil
+}
+
+func (c *coursesRepoImpl) ManyModuleTags(moduleUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.Tag, error) {
+	// Find the table links
+	var links []models.ModuleTag
+	query := database.GormDB.Where("module_uuid IN (?)", moduleUUIDs).Find(&links)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get module tags links")
+		return map[gentypes.UUID][]models.Tag{}, &errors.ErrWhileHandling
+	}
+
+	var tagUUIDs []gentypes.UUID
+	for _, i := range links {
+		tagUUIDs = append(tagUUIDs, i.TagUUID)
+	}
+
+	// Get all tags
+	var tags []models.Tag
+	query = database.GormDB.Where("uuid IN (?)", tagUUIDs).Find(&tags)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get course tags")
+		return map[gentypes.UUID][]models.Tag{}, &errors.ErrWhileHandling
+	}
+
+	var tagsMap = make(map[gentypes.UUID]models.Tag)
+	for _, tag := range tags {
+		tagsMap[tag.UUID] = tag
+	}
+
+	var modulesToTags = make(map[gentypes.UUID][]models.Tag, len(tagUUIDs))
+	for _, link := range links {
+		id := link.ModuleUUID
+		if _, ok := modulesToTags[id]; ok {
+			modulesToTags[id] = append(modulesToTags[id], tagsMap[link.TagUUID])
+		} else {
+			modulesToTags[id] = []models.Tag{tagsMap[link.TagUUID]}
+		}
+	}
+	return modulesToTags, nil
 }
 
 // TODO: Finish func

@@ -9,6 +9,7 @@ type Module implements SyllabusItem {
   video: Video
   syllabus: [SyllabusItem!]
   complete: Boolean
+  tags: [Tag!]!
 }
 
 enum VideoType {
