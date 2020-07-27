@@ -45,7 +45,7 @@ function Search({ onSearch, setSearchText, className, ...rest }) {
         <SearchIcon className={classes.searchIcon} />
         <Input
           className={classes.searchInput}
-          onChange={inp => setSearchText(inp.target.value)}
+          onChange={inp => setSearchText && setSearchText(inp.target.value)}
           disableUnderline
           placeholder="Search"
         />

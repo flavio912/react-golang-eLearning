@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   Card,
@@ -10,7 +10,6 @@ import {
   Switch
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
-import TagsInput from 'src/components/TagsInput';
 import UploadFile from 'src/components/UploadFile';
 import { gql } from 'apollo-boost';
 
