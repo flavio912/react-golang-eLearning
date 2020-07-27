@@ -68,7 +68,6 @@ function CompaniesManagementList() {
     }
   });
 
-  if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
 
   const companies = data?.companies?.edges.map(comp => ({
