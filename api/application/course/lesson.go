@@ -244,7 +244,25 @@ func (c *courseAppImpl) DeleteLesson(input gentypes.DeleteLessonInput) (bool, er
 		return false, &errors.ErrUnauthorized
 	}
 
+	lesson, _ := c.coursesRepository.GetLessonByUUID(input.UUID)
+
 	b, err := c.coursesRepository.DeleteLesson(input.UUID)
+
+	if b {
+		if lesson.BannerKey != nil {
+			err := uploads.DeleteImageFromKey(*lesson.BannerKey)
+			if err != nil {
+				return false, err
+			}
+		}
+		if lesson.VoiceoverKey != nil {
+			err := uploads.DeleteImageFromKey(*lesson.VoiceoverKey)
+			if err != nil {
+				return false, err
+			}
+		}
+	}
+
 	return b, err
 }
 
