@@ -14,6 +14,7 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegateProfilePage_delegate } from './__generated__/DelegateProfilePage_delegate.graphql';
 import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
+import { DelegateProfilePage_activity } from './__generated__/DelegateProfilePage_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -49,10 +50,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   delegate: DelegateProfilePage_delegate;
+  activity: DelegateProfilePage_activity;
   router: Router;
 };
 
-const DelegateProfilePage = ({ delegate, router }: Props) => {
+const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [action, setAction] = React.useState<DropdownOption>();
@@ -102,6 +104,21 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
     m: totalMinsTracked % 60,
   };
   
+  const pageProps = {
+    total: activity.pageInfo?.total ?? 0,
+    limit: activity.pageInfo?.limit ?? 10,
+    offset: activity.pageInfo?.offset ?? 0
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
+    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
+  };
+
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * pageProps.limit}&limit=${pageProps.limit}`);
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.top}>
@@ -173,7 +190,12 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
         rowClicked={() => {}}
       />
       <Spacer vertical spacing={3} />
-      <ActivityTable />
+      <ActivityTable 
+        activity={activity}
+        pageInfo={pageInfo}
+        onUpdatePage={onUpdatePage}
+        userName={delegate.firstName}
+      />
       <DelegateSlideIn 
         isOpen={openDelegateSlideIn}
         onClose={() => setOpenDelegateSlideIn(false)}
@@ -203,6 +225,23 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
             name
           }
         }
+      }
+    }
+  `,
+  activity: graphql`
+    fragment DelegateProfilePage_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+        limit
+        offset
       }
     }
   `
