@@ -97,7 +97,7 @@ const activityRow = (
 type Props = {
   activity: ActivityTable_activity; 
   userName: string;
-  onUpdatePage: (page: number, offset: number, limit: number) => void
+  onUpdatePage: (page: number, limit: number) => void;
 };
 
 const ActivityTable = ({activity, userName, onUpdatePage}: Props) => {
@@ -178,7 +178,7 @@ const ActivityTable = ({activity, userName, onUpdatePage}: Props) => {
       />
       <Paginator
         currentPage={pageInfo.currentPage}
-        updatePage={(page) => onUpdatePage(page, pageProps.offset, pageProps.limit)}
+        updatePage={(page) => onUpdatePage(page, pageProps.limit)}
         numPages={pageInfo.totalPages}
         itemsPerPage={10}
         showRange={pageInfo.totalPages > 4 ? 4 : pageInfo.totalPages}

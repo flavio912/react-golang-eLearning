@@ -105,8 +105,8 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
     m: totalMinsTracked % 60,
   };
   
-  const onUpdatePage = (page: number, offset: number, limit: number) => {
-    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * offset}&limit=${limit}`);
+  const onUpdatePage = (page: number, limit: number) => {
+    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * limit}&limit=${limit}`);
   }
 
   return (
