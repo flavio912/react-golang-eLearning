@@ -101,7 +101,7 @@ type CourseFilter struct {
 
 type PurchaseCoursesInput struct {
 	Courses                []int32
-	Users                  []UUID
+	Users                  *[]UUID
 	ExtraInvoiceEmail      *string `valid:"email"`
 	AcceptedTerms          bool
 	BackgroundCheckConfirm *bool

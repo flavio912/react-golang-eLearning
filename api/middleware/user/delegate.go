@@ -152,9 +152,8 @@ func (u *usersRepoImpl) CreateDelegate(
 	}
 
 	// Add link manually because gorm doesn't like blank associations
-	var courseTaker = models.CourseTaker{}
-	if err := tx.Create(&courseTaker).Error; err != nil {
-		tx.Rollback()
+	courseTaker, err := u.createCourseTaker(tx)
+	if err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Unable to create courseTaker")
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}

@@ -5,7 +5,6 @@ import SearchResultItem from 'components/Search/SearchResultItem';
 import SearchInput from 'components/Search/SearchInput';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
-import { Record } from 'relay-runtime';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   searchRoot: {
@@ -29,6 +28,7 @@ export type ResultItem = {
   title: string;
   image: string;
   description: string;
+  onClick?: () => void;
 };
 
 export type PageInfo = {
@@ -94,7 +94,11 @@ function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
         <>
           <div className={classes.searchList}>
             {results.map((item, index) => (
-              <SearchResultItem course={item} key={index} onClick={() => {}} />
+              <SearchResultItem
+                course={item}
+                key={index}
+                onClick={item.onClick ? item.onClick : () => {}}
+              />
             ))}
           </div>
           <Spacer vertical spacing={2} />

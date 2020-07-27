@@ -46,7 +46,11 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 
 	// Managers can only purchase for users that exist and that they are manager of
 	if c.grant.IsManager {
-		for _, uuid := range input.Users {
+		if input.Users == nil {
+			return nil, &errors.ErrUserNotFound
+		}
+
+		for _, uuid := range *input.Users {
 			delegate, err := c.usersRepository.Delegate(uuid)
 			if err != nil {
 				return &gentypes.PurchaseCoursesResponse{}, errors.ErrDelegateDoesNotExist(uuid.String())
@@ -73,6 +77,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 	// Create a pending order
 	err = c.ordersRepository.CreatePendingOrder(intent.ClientSecret, helpers.Int32sToUints(input.Courses), courseTakerIDs, input.ExtraInvoiceEmail)
 	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to create pending order")
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 	}
 

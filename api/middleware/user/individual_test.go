@@ -20,3 +20,24 @@ func TestIndividual(t *testing.T) {
 	})
 
 }
+
+func TestCreateIndividual(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Creates user with taker", func(t *testing.T) {
+		ind, err := usersRepo.CreateIndividual(gentypes.CreateIndividualInput{
+			FirstName: "Tony",
+			LastName:  "Orange",
+			Email:     "jim@jim.com",
+			Password:  "iamapassword",
+		})
+
+		assert.Nil(t, err)
+		assert.NotEqual(t, gentypes.UUID{}, ind.UUID)
+		assert.Equal(t, "jim@jim.com", ind.Email)
+		assert.Equal(t, "Tony", ind.FirstName)
+		assert.Equal(t, "Orange", ind.LastName)
+		assert.NotEqual(t, gentypes.UUID{}, ind.CourseTakerUUID)
+	})
+
+}

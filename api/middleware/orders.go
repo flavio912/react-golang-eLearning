@@ -111,7 +111,7 @@ func (o *ordersRepositoryImpl) FulfilPendingOrder(clientSecret string) ([]models
 				MinutesTracked:  0,
 			}
 			activeCourses = append(activeCourses, newCourse)
-			createdActive = append(activeCourses, newCourse)
+			createdActive = append(createdActive, newCourse)
 		}
 
 		courseTaker.ActiveCourses = activeCourses
