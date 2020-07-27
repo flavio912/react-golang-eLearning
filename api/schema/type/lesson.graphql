@@ -31,6 +31,10 @@ input UpdateLessonInput {
   name: String
   description: String
   tags: [UUID!]
+  bannerImageToken: String
+  voiceoverToken: String
+  transcript: String
+  video: VideoInput
 }
 
 input DeleteLessonInput {

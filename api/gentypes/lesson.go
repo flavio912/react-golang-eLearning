@@ -42,10 +42,14 @@ func (c *CreateLessonInput) Validate() error {
 }
 
 type UpdateLessonInput struct {
-	UUID        UUID `valid:"required"`
-	Name        *string
-	Description *string
-	Tags        *[]UUID
+	UUID             UUID `valid:"required"`
+	Name             *string
+	Description      *string
+	Tags             *[]UUID
+	BannerImageToken *string
+	VoiceoverToken   *string
+	Transcript       *string
+	Video            *Video
 }
 
 func (u *UpdateLessonInput) Validate() error {

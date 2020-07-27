@@ -1354,18 +1354,18 @@ func (_m *CoursesRepository) UpdateCourse(courseID uint, infoChanges course.Cour
 }
 
 // UpdateLesson provides a mock function with given fields: input
-func (_m *CoursesRepository) UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error) {
+func (_m *CoursesRepository) UpdateLesson(input course.UpdateLessonInput) (models.Lesson, error) {
 	ret := _m.Called(input)
 
 	var r0 models.Lesson
-	if rf, ok := ret.Get(0).(func(gentypes.UpdateLessonInput) models.Lesson); ok {
+	if rf, ok := ret.Get(0).(func(course.UpdateLessonInput) models.Lesson); ok {
 		r0 = rf(input)
 	} else {
 		r0 = ret.Get(0).(models.Lesson)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.UpdateLessonInput) error); ok {
+	if rf, ok := ret.Get(1).(func(course.UpdateLessonInput) error); ok {
 		r1 = rf(input)
 	} else {
 		r1 = ret.Error(1)

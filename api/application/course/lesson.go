@@ -168,7 +168,74 @@ func (c *courseAppImpl) UpdateLesson(input gentypes.UpdateLessonInput) (gentypes
 		return gentypes.Lesson{}, &errors.ErrUnauthorized
 	}
 
-	lesson, err := c.coursesRepository.UpdateLesson(input)
+	if err := input.Validate(); err != nil {
+		return gentypes.Lesson{}, err
+	}
+
+	var (
+		bannerImageKey *string
+		voiceoverKey   *string
+		videoType      *gentypes.VideoType
+		videoURL       *string
+	)
+
+	lesson, err := c.coursesRepository.GetLessonByUUID(input.UUID)
+	if err != nil {
+		return gentypes.Lesson{}, err
+	}
+
+	var (
+		oldBannerKey    = lesson.BannerKey
+		oldVoiceoverKey = lesson.VoiceoverKey
+	)
+
+	if input.BannerImageToken != nil {
+		if oldBannerKey != nil {
+			err = uploads.DeleteImageFromKey(*oldBannerKey)
+			if err != nil {
+				return gentypes.Lesson{}, err
+			}
+		}
+
+		key, err := getUploadKey(input.BannerImageToken, "lessonImages")
+		if err != nil {
+			return gentypes.Lesson{}, &errors.ErrUploadTokenInvalid
+		}
+
+		bannerImageKey = key
+	}
+	if input.VoiceoverToken != nil {
+		if oldVoiceoverKey != nil {
+			err = uploads.DeleteImageFromKey(*oldVoiceoverKey)
+			if err != nil {
+				return gentypes.Lesson{}, err
+			}
+		}
+
+		key, err := getUploadKey(input.VoiceoverToken, "voiceoverUploads")
+		if err != nil {
+			return gentypes.Lesson{}, &errors.ErrUploadTokenInvalid
+		}
+
+		voiceoverKey = key
+	}
+	if input.Video != nil {
+		videoType = &input.Video.Type
+		videoURL = &input.Video.URL
+	}
+
+	inp := course.UpdateLessonInput{
+		UUID:           input.UUID,
+		Name:           input.Name,
+		Description:    input.Description,
+		Transcript:     input.Transcript,
+		BannerImageKey: bannerImageKey,
+		VoiceoverKey:   voiceoverKey,
+		VideoType:      videoType,
+		VideoURL:       videoURL,
+	}
+
+	lesson, err = c.coursesRepository.UpdateLesson(inp)
 	return c.lessonToGentype(lesson), err
 }
 

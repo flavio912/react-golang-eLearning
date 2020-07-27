@@ -59,7 +59,7 @@ type CoursesRepository interface {
 	CreateLesson(lesson CreateLessonInput) (models.Lesson, error)
 	GetLessonByUUID(UUID gentypes.UUID) (models.Lesson, error)
 	GetLessonsByUUID(uuids []string) ([]models.Lesson, error)
-	UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error)
+	UpdateLesson(input UpdateLessonInput) (models.Lesson, error)
 	DeleteLesson(uuid gentypes.UUID) (bool, error)
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)

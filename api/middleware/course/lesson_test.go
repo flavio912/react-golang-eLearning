@@ -207,13 +207,13 @@ func TestUpdateLesson(t *testing.T) {
 
 	t.Run("Lesson must exist", func(t *testing.T) {
 		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
-		l, err := courseRepo.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
+		l, err := courseRepo.UpdateLesson(course.UpdateLessonInput{UUID: uuidZero})
 		assert.Equal(t, &errors.ErrLessonNotFound, err)
 		assert.Equal(t, models.Lesson{}, l)
 	})
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
-	input := gentypes.UpdateLessonInput{
+	input := course.UpdateLessonInput{
 		UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
 		Name:        helpers.StringPointer("Diagonalizing Matrices"),
 		Description: helpers.StringPointer(`{"ayy" : "yoo"}`),

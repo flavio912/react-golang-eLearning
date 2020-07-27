@@ -142,13 +142,20 @@ func (c *coursesRepoImpl) GetLessons(
 	}, nil
 }
 
-// UpdateLesson updates an existing lesson
-func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error) {
-	// Validate input
-	if err := input.Validate(); err != nil {
-		return models.Lesson{}, err
-	}
+type UpdateLessonInput struct {
+	UUID           gentypes.UUID
+	Name           *string
+	Description    *string
+	Tags           *[]gentypes.UUID
+	BannerImageKey *string
+	VoiceoverKey   *string
+	Transcript     *string
+	VideoType      *gentypes.VideoType
+	VideoURL       *string
+}
 
+// UpdateLesson updates an existing lesson
+func (c *coursesRepoImpl) UpdateLesson(input UpdateLessonInput) (models.Lesson, error) {
 	lesson, err := c.GetLessonByUUID(input.UUID)
 	if err != nil {
 		return models.Lesson{}, err
@@ -182,6 +189,21 @@ func (c *coursesRepoImpl) UpdateLesson(input gentypes.UpdateLessonInput) (models
 			return models.Lesson{}, &errors.ErrDeleteFailed
 		}
 
+	}
+	if input.BannerImageKey != nil {
+		lesson.BannerKey = input.BannerImageKey
+	}
+	if input.VoiceoverKey != nil {
+		lesson.VoiceoverKey = input.VoiceoverKey
+	}
+	if input.Transcript != nil {
+		lesson.Transcript = input.Transcript
+	}
+	if input.VideoType != nil {
+		lesson.VideoType = input.VideoType
+	}
+	if input.VideoURL != nil {
+		lesson.VideoURL = input.VideoURL
 	}
 
 	if err := tx.Model(&models.Lesson{}).Where("uuid = ?", lesson.UUID).Updates(&lesson).Error; err != nil {
