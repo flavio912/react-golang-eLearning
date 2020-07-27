@@ -55,6 +55,7 @@ func (c *coursesRepoImpl) CreateClassroomCourse(courseInfo gentypes.SaveClassroo
 		CourseType:           &courseType,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 		ExpiresInMonths:      expMonths,
+		CertificateType:      courseInfo.CertificateType,
 	})
 	if err != nil {
 		return models.Course{}, err
@@ -84,20 +85,27 @@ func (c *coursesRepoImpl) UpdateClassroomCourse(courseInfo gentypes.SaveClassroo
 		l := uint(*courseInfo.ExpiresInMonths)
 		expMonths = &l
 	}
+
 	course, err := c.UpdateCourse(uint(*courseInfo.ID), CourseInput{
-		Name:                 courseInfo.Name,
-		CategoryUUID:         courseInfo.CategoryUUID,
+		Name:         courseInfo.Name,
+		Price:        courseInfo.Price,
+		Color:        courseInfo.Color,
+		CategoryUUID: courseInfo.CategoryUUID,
+		// TAGS
 		Excerpt:              courseInfo.Excerpt,
 		Introduction:         courseInfo.Introduction,
-		BackgroundCheck:      courseInfo.BackgroundCheck,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		HowToComplete:        courseInfo.HowToComplete,
+		WhatYouLearn:         courseInfo.WhatYouLearn,
+		Requirements:         courseInfo.Requirements,
 		AccessType:           courseInfo.AccessType,
-		Price:                courseInfo.Price,
-		Color:                courseInfo.Color,
+		ImageSuccessToken:    courseInfo.BannerImageSuccess,
+		BackgroundCheck:      courseInfo.BackgroundCheck,
 		SpecificTerms:        courseInfo.SpecificTerms,
-		Tags:                 courseInfo.Tags,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 		ExpiresInMonths:      expMonths,
 	})
+
 	if err != nil {
 		return models.Course{}, err
 	}

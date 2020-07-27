@@ -107,7 +107,11 @@ type Query {
   course(id: Int!): Course
   user: User
   individual(uuid: UUID!): Individual
-  individuals(page: Page, filter: IndividualFilter, orderBy: OrderBy): IndividualPage
+  individuals(
+    page: Page
+    filter: IndividualFilter
+    orderBy: OrderBy
+  ): IndividualPage
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
@@ -119,7 +123,12 @@ type Query {
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags
   certificateInfo(token: String!): CertificateInfo!
-  certificateTypes(page: Page, filter: CertificateTypeFilter): CertificateTypePage
+  certificateTypes(
+    page: Page
+    filter: CertificateTypeFilter
+  ): CertificateTypePage
+  certificateType(uuid: UUID!): CertificateType
+
   caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
 
   categories(page: Page, text: String): CategoryPage

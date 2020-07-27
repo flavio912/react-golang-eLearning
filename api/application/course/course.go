@@ -86,6 +86,7 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 		ExpiresInMonths:      courseInfo.ExpiresInMonths,
 		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
 		Published:            courseInfo.Published,
+		CertificateTypeUUID:  courseInfo.CertificateTypeUUID,
 	}
 }
 
