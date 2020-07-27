@@ -3,6 +3,7 @@ package course
 import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
@@ -102,12 +103,50 @@ func (c *courseAppImpl) GetLessonsByUUID(uuids []string) ([]gentypes.Lesson, err
 	return c.lessonsToGentype(lessons), err
 }
 
-func (c *courseAppImpl) CreateLesson(lesson gentypes.CreateLessonInput) (gentypes.Lesson, error) {
+func (c *courseAppImpl) CreateLesson(input gentypes.CreateLessonInput) (gentypes.Lesson, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Lesson{}, &errors.ErrUnauthorized
 	}
 
-	lessonMod, err := c.coursesRepository.CreateLesson(lesson)
+	var (
+		bannerImageKey *string
+		voiceoverKey   *string
+		videoType      *gentypes.VideoType
+		videoURL       *string
+	)
+	if input.BannerImageToken != nil {
+		key, err := getUploadKey(input.BannerImageToken, "lessonImages")
+		if err != nil {
+			return gentypes.Lesson{}, &errors.ErrUploadTokenInvalid
+		}
+
+		bannerImageKey = key
+	}
+	if input.VoiceoverToken != nil {
+		key, err := getUploadKey(input.VoiceoverToken, "voiceoverUploads")
+		if err != nil {
+			return gentypes.Lesson{}, &errors.ErrUploadTokenInvalid
+		}
+
+		voiceoverKey = key
+	}
+	if input.Video != nil {
+		videoType = &input.Video.Type
+		videoURL = &input.Video.URL
+	}
+
+	inp := course.CreateLessonInput{
+		Name:         input.Name,
+		Description:  input.Description,
+		Tags:         input.Tags,
+		BannerKey:    bannerImageKey,
+		VoiceoverKey: voiceoverKey,
+		VideoType:    videoType,
+		VideoURL:     videoURL,
+		Transcript:   input.Transcript,
+	}
+
+	lessonMod, err := c.coursesRepository.CreateLesson(inp)
 	return c.lessonToGentype(lessonMod), err
 }
 

@@ -9,13 +9,14 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
-	var newLessonInput = gentypes.CreateLessonInput{
+	var newLessonInput = course.CreateLessonInput{
 		Name:        "Test lesson",
 		Description: "{}",
 		Tags:        nil,

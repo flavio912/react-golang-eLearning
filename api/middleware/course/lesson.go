@@ -8,63 +8,39 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-// CreateLesson is an admin function for creating lessons directly
-func (c *coursesRepoImpl) CreateLesson(lesson gentypes.CreateLessonInput) (models.Lesson, error) {
-	// Validate input
-	if err := lesson.Validate(); err != nil {
-		return models.Lesson{}, err
-	}
+type CreateLessonInput struct {
+	Name         string
+	Tags         *[]gentypes.UUID
+	Description  string
+	Transcript   *string
+	BannerKey    *string
+	VoiceoverKey *string
+	VideoType    *gentypes.VideoType
+	VideoURL     *string
+}
 
+// CreateLesson is an admin function for creating lessons directly
+func (c *coursesRepoImpl) CreateLesson(input CreateLessonInput) (models.Lesson, error) {
 	// Get tags if they exist
 	var tags []models.Tag
-	if lesson.Tags != nil {
-		_tags, err := c.CheckTagsExist(*lesson.Tags)
+	if input.Tags != nil {
+		_tags, err := c.CheckTagsExist(*input.Tags)
 		if err != nil {
 			return models.Lesson{}, err
 		}
 		tags = _tags
 	}
-
-	var (
-		bannerImagekey *string
-		voiceoverKey   *string
-		videoType      *gentypes.VideoType
-		videoURL       *string
-	)
-
-	if lesson.BannerImageToken != nil {
-		key, err := uploads.VerifyUploadSuccess(*lesson.BannerImageToken, "lessonImages")
-		if err != nil {
-			return models.Lesson{}, err
-		}
-
-		bannerImagekey = &key
-	}
-	if lesson.VoiceoverToken != nil {
-		key, err := uploads.VerifyUploadSuccess(*lesson.VoiceoverToken, "voiceoverUploads")
-		if err != nil {
-			return models.Lesson{}, err
-		}
-
-		voiceoverKey = &key
-	}
-	if lesson.Video != nil {
-		videoType = &lesson.Video.Type
-		videoURL = &lesson.Video.URL
-	}
-
 	lessonModel := models.Lesson{
-		Name:         lesson.Name,
+		Name:         input.Name,
 		Tags:         tags,
-		Description:  lesson.Description,
-		Transcript:   lesson.Transcript,
-		BannerKey:    bannerImagekey,
-		VideoType:    videoType,
-		VideoURL:     videoURL,
-		VoiceoverKey: voiceoverKey,
+		Description:  input.Description,
+		Transcript:   input.Transcript,
+		BannerKey:    input.BannerKey,
+		VideoType:    input.VideoType,
+		VideoURL:     input.VideoURL,
+		VoiceoverKey: input.VoiceoverKey,
 	}
 
 	query := database.GormDB.Create(&lessonModel)
