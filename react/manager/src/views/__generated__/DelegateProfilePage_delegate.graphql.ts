@@ -7,8 +7,10 @@ export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added
 export type DelegateProfilePage_delegate = {
     readonly firstName: string;
     readonly lastName: string;
+    readonly lastLogin: string;
     readonly myCourses: ReadonlyArray<{
         readonly status: CourseStatus;
+        readonly minutesTracked: number;
         readonly course: {
             readonly name: string;
             readonly category: {
@@ -56,6 +58,13 @@ const node: ReaderFragment = (function () {
                 "storageKey": null
             },
             {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "lastLogin",
+                "args": null,
+                "storageKey": null
+            },
+            {
                 "kind": "LinkedField",
                 "alias": null,
                 "name": "myCourses",
@@ -68,6 +77,13 @@ const node: ReaderFragment = (function () {
                         "kind": "ScalarField",
                         "alias": null,
                         "name": "status",
+                        "args": null,
+                        "storageKey": null
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "minutesTracked",
                         "args": null,
                         "storageKey": null
                     },
@@ -100,5 +116,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = 'd85d7e60751bc1864497e64c71994411';
+(node as any).hash = 'ce8c0ab865186b7b9a85386a327213e0';
 export default node;
