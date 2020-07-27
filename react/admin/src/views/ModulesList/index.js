@@ -7,6 +7,7 @@ import Page from 'src/components/Page';
 import Header from './Header';
 import Results from './Results';
 import SearchIcon from '@material-ui/icons/Search';
+import SearchBar from 'src/components/SearchBar';
 
 
 const useStyles = makeStyles(theme => ({
@@ -106,17 +107,7 @@ function ModulesList({ match, history }) {
             history.push('/modules/create/overview');
           }}
         />
-        <Card className={classes.results}>
-          <CardContent className={classes.row}>
-            <SearchIcon className={classes.icon} />
-            <TextField
-              placeholder="Search"
-              onChange={inp => setSearchText(inp.target.value)}
-              value={searchText}
-              fullWidth
-            />
-          </CardContent>
-        </Card>
+        <SearchBar onSearch={(text) => setSearchText(text)} setSearchText={setSearchText} />
         {searchResults && (
           <Results
             className={classes.results}
