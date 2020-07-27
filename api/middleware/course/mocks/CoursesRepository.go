@@ -39,6 +39,57 @@ func (_m *CoursesRepository) AreInCourses(courseIDs []uint, uuids []gentypes.UUI
 	return r0, r1
 }
 
+// CAANumber provides a mock function with given fields: uuid
+func (_m *CoursesRepository) CAANumber(uuid gentypes.UUID) (models.CAANumber, error) {
+	ret := _m.Called(uuid)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) models.CAANumber); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CAANumbers provides a mock function with given fields: page, filter
+func (_m *CoursesRepository) CAANumbers(page *gentypes.Page, filter *gentypes.CAANumberFilter) ([]models.CAANumber, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter)
+
+	var r0 []models.CAANumber
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.CAANumberFilter) []models.CAANumber); ok {
+		r0 = rf(page, filter)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.CAANumber)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.CAANumberFilter) gentypes.PageInfo); ok {
+		r1 = rf(page, filter)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.CAANumberFilter) error); ok {
+		r2 = rf(page, filter)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // Categories provides a mock function with given fields: page, text
 func (_m *CoursesRepository) Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error) {
 	ret := _m.Called(page, text)
@@ -88,6 +139,36 @@ func (_m *CoursesRepository) CertificateType(uuid gentypes.UUID) (models.Certifi
 	}
 
 	return r0, r1
+}
+
+// CertificateTypes provides a mock function with given fields: page, filter
+func (_m *CoursesRepository) CertificateTypes(page *gentypes.Page, filter *gentypes.CertificateTypeFilter) ([]models.CertificateType, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter)
+
+	var r0 []models.CertificateType
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.CertificateTypeFilter) []models.CertificateType); ok {
+		r0 = rf(page, filter)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.CertificateType)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.CertificateTypeFilter) gentypes.PageInfo); ok {
+		r1 = rf(page, filter)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.CertificateTypeFilter) error); ok {
+		r2 = rf(page, filter)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
 }
 
 // CheckTagsExist provides a mock function with given fields: tags
@@ -194,6 +275,48 @@ func (_m *CoursesRepository) Courses(courseIDs []uint, showUnpublished bool) ([]
 	var r1 error
 	if rf, ok := ret.Get(1).(func([]uint, bool) error); ok {
 		r1 = rf(courseIDs, showUnpublished)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateCAANumber provides a mock function with given fields: identifier
+func (_m *CoursesRepository) CreateCAANumber(identifier string) (models.CAANumber, error) {
+	ret := _m.Called(identifier)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(string) models.CAANumber); ok {
+		r0 = rf(identifier)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(string) error); ok {
+		r1 = rf(identifier)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// CreateCertificateType provides a mock function with given fields: input
+func (_m *CoursesRepository) CreateCertificateType(input gentypes.CreateCertificateTypeInput) (models.CertificateType, error) {
+	ret := _m.Called(input)
+
+	var r0 models.CertificateType
+	if rf, ok := ret.Get(0).(func(gentypes.CreateCertificateTypeInput) models.CertificateType); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.CertificateType)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.CreateCertificateTypeInput) error); ok {
+		r1 = rf(input)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1139,6 +1262,48 @@ func (_m *CoursesRepository) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
 	var r1 error
 	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
 		r1 = rf(uuid)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateCAANumber provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (models.CAANumber, error) {
+	ret := _m.Called(input)
+
+	var r0 models.CAANumber
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCAANumberInput) models.CAANumber); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.CAANumber)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCAANumberInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateCertificateType provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (models.CertificateType, error) {
+	ret := _m.Called(input)
+
+	var r0 models.CertificateType
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCertificateTypeInput) models.CertificateType); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.CertificateType)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCertificateTypeInput) error); ok {
+		r1 = rf(input)
 	} else {
 		r1 = ret.Error(1)
 	}
