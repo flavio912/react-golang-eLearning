@@ -13,3 +13,57 @@ type CertificateInfo {
   InstructorCIN: String!
   InstructorSignatureURL: String
 }
+
+type CAANumber {
+  uuid: UUID!
+  createdAt: String!
+  identifier: String!
+  used: Boolean!
+}
+
+type CAANumberPage implements PaginatedQuery{
+  edges: [CAANumber]
+  pageInfo: PageInfo
+}
+
+input CreateCAANumberInput {
+  identifier: String!
+}
+
+input UpdateCAANumberInput {
+  uuid: UUID!
+  identifier: String
+  used: Boolean
+}
+
+type CertificateType {
+  uuid: UUID!
+  name: String!
+  createdAt: String!
+  certificateBodyImageURL: String
+  regulationText: String!
+  requiresCAANo: Boolean!
+  showTrainingSection: Boolean!
+}
+
+type CertificateTypePage implements PaginatedQuery {
+  edges: [CertificateType]
+  pageInfo: PageInfo
+}
+
+input CreateCertificateTypeInput {
+  name: String!
+  regulationText: String!
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+  certificateBodyToken: String
+}
+
+input UpdateCertificateTypeInput {
+  uuid: UUID!
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+  certificateBodyToken: String
+}

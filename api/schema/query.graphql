@@ -54,6 +54,18 @@ input SyllabusFilter {
   excludeTest: Boolean
 }
 
+input CertificateTypeFilter {
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+}
+
+input CAANumberFilter {
+  identifier: String
+  used: Boolean
+}
+
 interface PaginatedQuery {
   pageInfo: PageInfo
 }
@@ -97,6 +109,9 @@ type Query {
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags
   certificateInfo(token: String!): CertificateInfo!
+  certificateTypes(page: Page, filter: CertificateTypeFilter): CertificateTypePage
+  caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
+
   categories(page: Page, text: String): CategoryPage
   # secondaryCategories(page: Page, text: String): CategoryPage
 }

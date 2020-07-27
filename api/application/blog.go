@@ -143,7 +143,7 @@ func (b *blogAppImpl) BlogBodyImageUploadRequest(imageMeta gentypes.UploadFileMe
 	url, successToken, err := uploads.GenerateUploadURL(
 		imageMeta.FileType,
 		imageMeta.ContentLength,
-		[]string{"jpg", "png", "gif"}, // gif just for fun, can remove later
+		[]string{"jpg", "png", "gif", "jpeg"}, // gif just for fun, can remove later
 		int32(10000000),
 		"blog_images",
 		"blogBodyImage",

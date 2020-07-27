@@ -80,6 +80,7 @@ type Course struct {
 	BannerImageURL       *string
 	ExpiresInMonths      uint
 	ExpirationToEndMonth bool
+	Published            bool
 }
 
 type MyCourse struct {
