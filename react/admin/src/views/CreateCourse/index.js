@@ -51,6 +51,9 @@ const SAVE_ONLINE_COURSE = gql`
     $bannerImageSuccess: String
     $categoryUUID: UUID
     $structure: [CourseItem!]
+    $expiresInMonths: Int
+    $expirationToEndMonth: Boolean
+    $certificateType: UUID
   ) {
     saveOnlineCourse(
       input: {
@@ -67,6 +70,9 @@ const SAVE_ONLINE_COURSE = gql`
         bannerImageSuccess: $bannerImageSuccess
         categoryUUID: $categoryUUID
         structure: $structure
+        expiresInMonths: $expiresInMonths
+        expirationToEndMonth: $expirationToEndMonth
+        certificateType: $certificateType
       }
     ) {
       id
@@ -96,6 +102,12 @@ const GET_COURSE = gql`
       requirements
       bannerImageURL
       published
+      expiresInMonths
+      expirationToEndMonth
+      certificateType {
+        uuid
+        name
+      }
       category {
         name
         uuid
@@ -128,7 +140,10 @@ var initState = {
   bannerImageURL: undefined,
   bannerImageSuccess: undefined,
   categoryUUID: { title: '', value: '' },
-  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }]
+  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }],
+  certificateType: { name: '', uuid: undefined },
+  expiresInMonths: false,
+  expirationToEndMonth: false
 };
 
 function CreateCourse({ match, history }) {
@@ -139,7 +154,7 @@ function CreateCourse({ match, history }) {
     { value: 'overview', label: 'Overview' },
     { value: 'about', label: 'About' },
     { value: 'builder', label: 'Course Builder' },
-    { value: 'pricing', label: 'Pricing' }
+    { value: 'pricing', label: 'Pricing + Certificates' }
   ];
 
   const handleTabsChange = (_, value) => {
@@ -179,7 +194,13 @@ function CreateCourse({ match, history }) {
       bannerImageURL: data.course.bannerImageURL,
       price: data.course.price,
       category: data.course.category,
-      syllabus: data.course.syllabus
+      syllabus: data.course.syllabus,
+      expiresInMonths: data.course.expiresInMonths,
+      expirationToEndMonth: data.course.expirationToEndMonth,
+      certificateType: {
+        name: data.course.certificateType?.name,
+        uuid: data.course.certificateType?.uuid
+      }
     });
   }, [data, loading, error]);
 
@@ -210,7 +231,10 @@ function CreateCourse({ match, history }) {
           bannerImageSuccess: state.bannerImageSuccess,
           categoryUUID: state.category?.uuid,
           price: state.price,
-          structure: state.structure
+          structure: state.structure,
+          expiresInMonths: state.expiresInMonths,
+          expirationToEndMonth: state.expirationToEndMonth,
+          certificateType: state.certificateType?.uuid
         }
       });
 

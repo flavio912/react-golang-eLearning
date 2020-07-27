@@ -81,6 +81,7 @@ type Course struct {
 	ExpiresInMonths      uint
 	ExpirationToEndMonth bool
 	Published            bool
+	CertificateTypeUUID  *UUID
 }
 
 type MyCourse struct {
