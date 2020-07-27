@@ -16,10 +16,16 @@ import (
 func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
+	vidType := gentypes.WistiaVideo
 	var newLessonInput = course.CreateLessonInput{
-		Name:        "Test lesson",
-		Description: "{}",
-		Tags:        nil,
+		Name:         "Test lesson",
+		Description:  "{}",
+		Tags:         nil,
+		VoiceoverKey: helpers.StringPointer("/places/orange.mp3"),
+		BannerKey:    helpers.StringPointer("/images/banner.png"),
+		VideoURL:     helpers.StringPointer("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		VideoType:    &vidType,
+		Transcript:   helpers.StringPointer("never gonna give you up!"),
 	}
 
 	t.Run("Check non-tagged lesson is created with no tags", func(t *testing.T) {
@@ -28,6 +34,11 @@ func TestCreateLesson(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, newLessonInput.Name, lesson.Name)
 		assert.Equal(t, newLessonInput.Description, lesson.Description)
+		assert.Equal(t, newLessonInput.BannerKey, lesson.BannerKey)
+		assert.Equal(t, newLessonInput.VoiceoverKey, lesson.VoiceoverKey)
+		assert.Equal(t, newLessonInput.VideoType, lesson.VideoType)
+		assert.Equal(t, newLessonInput.VideoURL, lesson.VideoURL)
+		assert.Equal(t, newLessonInput.Transcript, lesson.Transcript)
 	})
 	tag, _ := courseRepo.CreateTag(gentypes.CreateTagInput{
 		Name:  "Go",
