@@ -66,6 +66,14 @@ input CAANumberFilter {
   used: Boolean
 }
 
+input IndividualFilter {
+  uuid: UUID
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
+}
+
 interface PaginatedQuery {
   pageInfo: PageInfo
 }
@@ -98,6 +106,8 @@ type Query {
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   course(id: Int!): Course
   user: User
+  individual(uuid: UUID!): Individual
+  individuals(page: Page, filter: IndividualFilter, orderBy: OrderBy): IndividualPage
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question

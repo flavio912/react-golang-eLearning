@@ -842,3 +842,33 @@ func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
 	}
 	return true, err
 }
+
+type UpdateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) UpdateIndividual(ctx context.Context, args struct {
+	Input gentypes.UpdateIndividualInput
+}) (*UpdateIndividualResponse, error) {
+	app := auth.AppFromContext(ctx)
+	user, err := app.UsersApp.UpdateIndividual(args.Input)
+
+	if err != nil {
+		return &UpdateIndividualResponse{}, err
+	}
+
+	user_res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &UpdateIndividualResponse{
+		User: user_res,
+	}, err
+}
+
+func (m *MutationResolver) DeleteIndividual(ctx context.Context, args struct {
+	Input gentypes.DeleteIndividualInput
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.UsersApp.DeleteIndividual(args.Input)
+}

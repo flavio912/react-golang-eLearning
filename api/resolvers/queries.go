@@ -489,3 +489,28 @@ func (q *QueryResolver) CAANumbers(
 		},
 	}, nil
 }
+
+func (q *QueryResolver) Individual(ctx context.Context, args struct{ UUID gentypes.UUID }) (*IndividualResolver, error) {
+	return NewIndividualResolver(ctx, NewIndividualArgs{
+		IndividualUUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Individuals(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.IndividualFilter
+		OrderBy *gentypes.OrderBy
+	}) (*IndividualPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	inds, pageInfo, err := app.UsersApp.Individuals(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &IndividualPageResolver{}, err
+	}
+
+	return NewIndividualPageResolver(ctx, NewIndividualPageArgs{
+		Individuals: &inds,
+		PageInfo:    pageInfo,
+	})
+}
