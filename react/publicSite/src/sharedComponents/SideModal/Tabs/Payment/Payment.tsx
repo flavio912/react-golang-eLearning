@@ -197,7 +197,7 @@ export type Course = {
 const mutation = graphql`
   mutation Payment_PurchaseMutation(
     $courses: [Int!]!
-    $users: [UUID!]!
+    $users: [UUID!]
     $extraEmail: String
   ) {
     purchaseCourses(
@@ -222,7 +222,7 @@ type PurchaseCallback = (
 
 const PurchaseCourses = (
   courses: number[],
-  users: string[],
+  users: string[] | undefined,
   extraEmail: string,
   callback?: PurchaseCallback
 ) => {
@@ -283,7 +283,7 @@ export default function Payment({
   onError
 }: {
   courses: Course[];
-  userUUIDs: string[];
+  userUUIDs?: string[];
   isContract: boolean;
   onSuccess: () => void;
   onError: (message: string) => void;
@@ -332,14 +332,14 @@ export default function Payment({
                 <tr key={index}>
                   <td colSpan={2}>
                     <span className={classes.productText}>
-                      <strong>{userUUIDs.length}x </strong>
+                      <strong>{userUUIDs ? userUUIDs.length : 1}x </strong>
                       {name}
                     </span>
                     <span className={classes.productSku}>SKU: {sku}</span>
                   </td>
                   <td colSpan={1}>
                     <span className={classes.productText}>
-                      {userUUIDs.length}
+                      {userUUIDs ? userUUIDs.length : 1}
                     </span>
                   </td>
                   <td colSpan={1}>

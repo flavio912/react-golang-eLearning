@@ -6,10 +6,10 @@ import {
   CardElement,
   Elements,
   useStripe,
-  useElements
+  useElements,
 } from '@stripe/react-stripe-js';
 import Button from 'sharedComponents/core/Input/Button';
-import Spinner from 'components/core/Spinner';
+import Spinner from 'sharedComponents/core/Spinner';
 
 export type OnPurchase = (
   callback?: (
@@ -19,9 +19,9 @@ export type OnPurchase = (
         readonly stripeClientSecret: string | null;
       } | null;
     },
-    error: string | undefined
+    error: string | undefined,
   ) => void,
-  showSuccess?: () => void
+  showSuccess?: () => void,
 ) => void;
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -30,7 +30,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     border: `1px solid #E9EBEB`,
     borderRadius: 4,
     padding: [14.5, 17.5, 43.5, 20.5],
-    marginBottom: 25
+    marginBottom: 25,
   },
   cardTitle: {
     lineHeight: `41px`,
@@ -38,7 +38,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.default,
     fontWeight: 900,
     color: theme.colors.primaryBlack,
-    marginBottom: 5
+    marginBottom: 5,
   },
   buttonOrder: {
     background: 'linear-gradient(221.01deg, #16C225 0%, #0D57FF 100%)',
@@ -47,7 +47,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     border: 'none',
     height: 39,
     marginLeft: 23,
-    color: 'white'
+    color: 'white',
   },
   form: {
     display: 'flex',
@@ -57,9 +57,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
       background: theme.colors.primaryWhite,
       borderRadius: 5,
       border: `1px solid #E3E3E3`,
-      boxShadow: `0 2px 4px 0 rgba(0,0,0,0.08)`
-    }
-  }
+      boxShadow: `0 2px 4px 0 rgba(0,0,0,0.08)`,
+    },
+  },
 }));
 const stripePromise = loadStripe('pk_test_T5ZBhTO9Lq709gdga8c9aoPN00PnTm0tfU');
 
@@ -113,19 +113,19 @@ function PaymentForm({ onPurchase, onSuccess, onError }: Props) {
 
       const paymentData: ConfirmCardPaymentData = {
         payment_method: {
-          card: cardEl
-        }
+          card: cardEl,
+        },
       };
 
       const result = await stripe?.confirmCardPayment(
         resp.purchaseCourses?.stripeClientSecret,
-        paymentData
+        paymentData,
       );
 
       if (result?.error) {
         onError(
           result.error.message ||
-            'Error handling your payment, please check your details and try again'
+            'Error handling your payment, please check your details and try again',
         );
         setLoading(false);
         return;
@@ -150,9 +150,9 @@ function PaymentForm({ onPurchase, onSuccess, onError }: Props) {
                 fontSize: `${theme.fontSizes.default}px`,
                 fontFamily: `'Muli', sans-serif`,
                 lineHeight: `31px`,
-                color: theme.colors.secondaryBlack
-              }
-            }
+                color: theme.colors.secondaryBlack,
+              },
+            },
           }}
         />
         <Button

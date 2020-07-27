@@ -197,7 +197,7 @@ export const tabList: TabContent[] = [
       <Body>
         <Payment
           courses={state.courses}
-          userUUIDs={[state.userUUID]}
+          userUUIDs={[]}
           isContract={false}
           onSuccess={() => {
             setState((s: object) => ({ ...s, success: true }));

@@ -44,7 +44,6 @@ const SingleUser = ({
         closeModal={() => onClose()}
         initialState={{
           courses: initialCourses,
-          userUUID: userUUID,
           training: trainingInitialValue,
           ToB: ToBInitialValue
         }}

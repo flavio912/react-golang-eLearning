@@ -34,23 +34,44 @@ func (u *usersRepoImpl) Individual(uuid gentypes.UUID) (models.Individual, error
 	return individual, nil
 }
 
-// CreateIndividual - PUBLIC
+// CreateIndividual
 func (u *usersRepoImpl) CreateIndividual(input gentypes.CreateIndividualInput) (models.Individual, error) {
 	if ok, err := govalidator.ValidateStruct(input); !ok {
 		return models.Individual{}, err
 	}
 
-	newIndividual := models.Individual{
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		JobTitle:  input.JobTitle,
-		Telephone: input.Telephone,
-		Password:  input.Password,
-		Email:     input.Email,
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	taker, err := u.createCourseTaker(tx)
+	if err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "CreateIndividual: Unable to create course taker")
+		return models.Individual{}, &errors.ErrWhileHandling
 	}
 
-	if err := database.GormDB.Create(&newIndividual).Error; err != nil {
+	newIndividual := models.Individual{
+		FirstName:       input.FirstName,
+		LastName:        input.LastName,
+		JobTitle:        input.JobTitle,
+		Telephone:       input.Telephone,
+		Password:        input.Password,
+		Email:           input.Email,
+		CourseTakerUUID: taker.UUID,
+	}
+
+	if err := tx.Create(&newIndividual).Error; err != nil {
+		tx.Rollback()
 		u.Logger.Log(sentry.LevelError, err, "Unable to create individual")
+		return models.Individual{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "CreateIndividual: Unable to commit")
 		return models.Individual{}, &errors.ErrWhileHandling
 	}
 
