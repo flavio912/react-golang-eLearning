@@ -8,11 +8,8 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-function Header({ className, ...rest }) {
+function Header({ className, companyName, ...rest }) {
   const classes = useStyles();
-  const customer = {
-    name: 'FedEx'
-  };
 
   return (
     <div {...rest} className={clsx(classes.root, className)}>
@@ -20,7 +17,7 @@ function Header({ className, ...rest }) {
         Companies
       </Typography>
       <Typography component="h1" variant="h3">
-        {customer.name}
+        {companyName}
       </Typography>
     </div>
   );

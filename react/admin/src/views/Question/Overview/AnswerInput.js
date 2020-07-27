@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   TextField,
@@ -11,15 +11,11 @@ import {
   InputLabel,
   Select,
   Typography,
-  Radio,
-  RadioGroup,
-  FormControlLabel,
-  Button,
-  CircularProgress
+  Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-import { useMutation, useQuery } from '@apollo/react-hooks';
+import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -46,6 +42,11 @@ const useStyles = makeStyles(theme => ({
   },
   input: {
     display: 'none'
+  },
+  previewImage: {
+    width: 200,
+    maxHeight: 200,
+    marginLeft: 16
   }
 }));
 
@@ -62,44 +63,6 @@ const UPLOAD_REQUEST = gql`
 
 function AnswerInput({ answer, onSave, onChange }) {
   const classes = useStyles();
-
-  const [uploadRequest, { error: mutationErr }] = useMutation(UPLOAD_REQUEST);
-  const [uploadText, setUploadText] = useState('Upload Image');
-
-  const uploadChange = async evt => {
-    // Attempt to get upload request
-    console.log(evt.target.files);
-    const file = evt.target.files[0];
-    const fType = file.type.replace('image/', '');
-
-    setUploadText(<CircularProgress />);
-    try {
-      const resp = await uploadRequest({
-        variables: {
-          fileType: fType,
-          contentLength: file.size
-        }
-      });
-
-      const data = resp.data.answerImageUploadRequest;
-      // Upload to S3
-      const uploadResp = await fetch(data.url, {
-        method: 'PUT',
-        body: file
-      });
-
-      setUploadText(file.name);
-      const newAns = {
-        ...answer,
-        imageToken: data.successToken,
-        imageURL: URL.createObjectURL(file),
-        isCorrect: false
-      };
-      onChange(newAns);
-    } catch (err) {
-      setUploadText('Unable to upload, please try again');
-    }
-  };
 
   return (
     <Card>
@@ -126,8 +89,14 @@ function AnswerInput({ answer, onSave, onChange }) {
                   switch (value) {
                     case 'TEXT':
                       newAns.imageToken = undefined;
+                      newAns.imageURL = undefined;
+                      break;
                     case 'IMAGE':
                       newAns.text = undefined;
+                      break;
+                    default:
+                      console.error('Unable to find onChange type');
+                      break;
                   }
 
                   newAns.answerType = value;
@@ -141,8 +110,8 @@ function AnswerInput({ answer, onSave, onChange }) {
               </Select>
             </FormControl>
           </Grid>
-          {(answer.answerType == 'TEXT' ||
-            answer.answerType == 'TEXT_IMAGE') && (
+          {(answer.answerType === 'TEXT' ||
+            answer.answerType === 'TEXT_IMAGE') && (
             <>
               <Grid item>
                 <Typography variant="h6">Answer Text</Typography>
@@ -164,25 +133,32 @@ function AnswerInput({ answer, onSave, onChange }) {
               </Grid>
             </>
           )}
-          {(answer.answerType == 'IMAGE' ||
-            answer.answerType == 'TEXT_IMAGE') && (
+          {(answer.answerType === 'IMAGE' ||
+            answer.answerType === 'TEXT_IMAGE') && (
             <>
               <Grid item>
                 <Typography variant="h6">Answer Image</Typography>
               </Grid>
-              <Grid item>
-                <input
-                  accept="image/*"
-                  className={classes.input}
-                  id="contained-button-file"
-                  onChange={uploadChange}
-                  type="file"
+              {answer.imageURL && (
+                <img
+                  src={answer.imageURL}
+                  className={classes.previewImage}
+                  alt="preview"
                 />
-                <label htmlFor="contained-button-file">
-                  <Button variant="contained" component="span">
-                    {uploadText}
-                  </Button>
-                </label>
+              )}
+              <Grid item>
+                <UploadFile
+                  uploadMutation={UPLOAD_REQUEST}
+                  onUploaded={(successToken, url) => {
+                    const newAns = {
+                      ...answer,
+                      imageToken: successToken,
+                      imageURL: url,
+                      isCorrect: false
+                    };
+                    onChange(newAns);
+                  }}
+                />
               </Grid>
             </>
           )}

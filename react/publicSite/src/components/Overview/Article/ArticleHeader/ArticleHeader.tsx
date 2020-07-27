@@ -6,19 +6,35 @@ import CircleBorder, { User } from "sharedComponents/core/CircleBorder";
 
 const useStyles = createUseStyles((theme: Theme) => ({
     root: {
-        display: 'flex',
-        flexDirection: 'column',
+        width: '100%',
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat',
-        padding: '10% 0 10% 0',
-        alignItems: 'center',
-        '@media (max-width: 700px)': {
-            padding: '5%',
+        padding: '75px 0'
+    },
+    centerer: {
+        display: 'flex',
+        justifyContent: 'center'
+    },
+    centered: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'flex-start',
+        width: '1000px',
+        '@media (max-width: 800px)': {
+            alignItems: 'center',
         }
     },
     padding: {
-        paddingBottom: '5%',
+        padding: '50px 0',
+    },
+    bar: {
+        width: (author: boolean) => author ? 0 : '50px',
+        margin:(author: boolean) => author ? 0 : '20px 0',
+        borderBottom: ['2px', 'solid', theme.colors.primaryWhite],
+        '@media (min-width: 800px)': {
+            display: 'none',
+        }
     },
     row: {
         display: 'flex',
@@ -30,7 +46,10 @@ const useStyles = createUseStyles((theme: Theme) => ({
         fontSize: 40,
         fontWeight: '800',
         color: theme.colors.primaryWhite,
-        maxWidth: '615px'
+        maxWidth: '615px',
+        '@media (max-width: 800px)': {
+            textAlign: 'center',
+        }
     },
     detail: {
         fontSize: theme.fontSizes.large,
@@ -43,7 +62,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
         marginBottom: '5px'
     },
     profile: {
-        marginRight: '20px'
+        margin: '2px 20px 0 0'
     },
     italic: {
         fontStyle: 'italic',
@@ -69,29 +88,30 @@ type Props = {
 
 function ArticleHeader({ title, date, image, featured, genre, author, className }: Props) {
     const theme = useTheme();
-    const classes = useStyles({ theme });
+    const classes = useStyles({ author, theme });
 
   return (
       <div
         className={classNames(classes.root, author && classes.padding, className)}
         style={{ backgroundImage: `url(${image})` }}
     >
-        <div>
-            {featured && (
-                <div className={classNames(classes.detail, classes.marginBottom)}>{featured}  •  {date}</div>
-            )}
-
-            <div className={classNames(classes.title, featured && classes.underline)}>{title}</div>
-
-            {author && (
-                <div className={classes.row}>
-                    <CircleBorder user={author} size={50} className={classes.profile}/>
-                    <div>
-                        <div className={classes.name}>{author.name}</div>
-                        <div className={classNames(classes.detail, classes.italic)}>{date} • {genre}</div>
+        <div className={classes.centerer}>
+            <div className={classes.centered}>
+                {featured && (
+                    <div className={classNames(classes.detail, classes.marginBottom)}>{featured}  •  {date}</div>
+                )}
+                <div className={classes.bar} />
+                <div className={classNames(classes.title, featured && classes.underline)}>{title}</div>
+                {author && (
+                    <div className={classes.row}>
+                        <CircleBorder user={author} size={50} className={classes.profile}/>
+                        <div>
+                            <div className={classes.name}>{author.name}</div>
+                            <div className={classNames(classes.detail, classes.italic)}>{date} • {genre}</div>
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
+            </div>
         </div>
       </div>
   );

@@ -7,3 +7,6 @@
 - test_uuid: c212859c-ddd3-433c-9bf5-15cdd1db32f9
   question_uuid: 18cce315-ef3c-4597-aca8-f3d06e9347b1
   rank: 3
+- test_uuid: 2a56f8a8-1cd3-4e7b-bd10-c489b519828d
+  question_uuid: 797efc50-f980-42a2-a008-2991a1162631
+  rank: 1

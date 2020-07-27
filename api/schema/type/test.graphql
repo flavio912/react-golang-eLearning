@@ -1,6 +1,7 @@
 type Test implements SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
   tags: [Tag!]
   attemptsAllowed: Int
@@ -46,7 +47,8 @@ input SubmitTestInput {
 }
 
 type SubmitTestPayload {
-  success: Boolean!
+  courseStatus: CourseStatus!
+  passed: Boolean! # True if the user passed the test
 }
 
 input UpdateTestInput {
@@ -62,4 +64,8 @@ input UpdateTestInput {
 
 type UpdateTestPayload {
   test: Test
+}
+
+input DeleteTestInput {
+  uuid: UUID!
 }

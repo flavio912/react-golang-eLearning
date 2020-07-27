@@ -13,6 +13,11 @@ import ModulesList from './views/ModulesList';
 import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
+import CreateModule from './views/Module/CreateModule';
+import UpdateModule from './views/Module/UpdateModule';
+import TestsList from './views/TestsList';
+import CreateTest from './views/Test/CreateTest';
+import UpdateTest from './views/Test/UpdateTest';
 
 export default [
   {
@@ -103,6 +108,36 @@ export default [
         component: lazy(() => import('src/views/OrderManagementDetails'))
       },
       {
+        path: '/admins',
+        exact: true,
+        component: lazy(() => import('src/views/AdminsList'))
+      },
+      {
+        path: '/admins/:id',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
+        path: '/admins/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
+        path: '/individuals',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualsList'))
+      },
+      {
+        path: '/individuals/:id',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
+        path: '/individuals/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
         path: '/tutors',
         exact: true,
         component: TutorsView
@@ -133,9 +168,34 @@ export default [
         component: CreateCourse
       },
       {
+        path: '/tests',
+        exact: true,
+        component: TestsList
+      },
+      {
+        path: '/test/create/:tab',
+        exact: true,
+        component: CreateTest
+      },
+      {
+        path: '/test/:ident/:tab',
+        exact: true,
+        component: UpdateTest
+      },
+      {
         path: '/modules',
         exact: true,
         component: ModulesList
+      },
+      {
+        path: '/modules/create/:tab',
+        exact: true,
+        component: CreateModule
+      },
+      {
+        path: '/modules/:ident/:tab',
+        exact: true,
+        component: UpdateModule
       },
       {
         path: '/questions',

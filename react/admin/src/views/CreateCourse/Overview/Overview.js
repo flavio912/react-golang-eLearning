@@ -10,7 +10,7 @@ import {
 import { makeStyles } from '@material-ui/styles';
 import CourseFeatures from './CourseFeatures';
 import CourseInfo from './CourseInfo';
-import EditorCard from 'src/components/EditorCard';
+import CourseBannerUpload from './CourseBannerUpload';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -49,7 +49,7 @@ function Overview({ state, setState }) {
                     rows={5}
                     value={state.excerpt}
                     onChange={inp => {
-                      setState('excerpt', inp.target.value);
+                      setState({ excerpt: inp.target.value });
                     }}
                     placeholder={'Short description'}
                     variant="outlined"
@@ -59,8 +59,13 @@ function Overview({ state, setState }) {
             </Grid>
           </Grid>
         </Grid>
-        <Grid item xs={4}>
-          <CourseFeatures state={state} setState={setState} />
+        <Grid item xs={4} container spacing={2} direction={'column'}>
+          <Grid item>
+            <CourseFeatures state={state} setState={setState} />
+          </Grid>
+          <Grid item>
+            <CourseBannerUpload state={state} setState={setState} />
+          </Grid>
         </Grid>
       </Grid>
     </div>

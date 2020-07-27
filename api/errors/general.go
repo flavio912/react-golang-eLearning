@@ -171,4 +171,32 @@ var (
 		Type:    "ErrNotEnoughAnswersGiven",
 		Message: "Not enough answers were given to complete the test, please try again",
 	}
+	ErrTutorDoesNotExist = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrTutorDoesNotExist",
+			Message: fmt.Sprintf("The given tutor does not exist: %s", uuid),
+		}
+	}
+	ErrSaveFail = SimpleError{
+		Type:    "ErrSaveFail",
+		Message: "Unable to save model",
+	}
+	ErrBlogNotFound = func(uuid string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrBlogNotFound",
+			Message: fmt.Sprintf("The given blog does not exist: %s", uuid),
+		}
+	}
+	ErrUnableToDelete = func(message string) *SimpleError {
+		return &SimpleError{
+			Type:    "ErrUnableToDelete",
+			Message: message,
+		}
+	}
+	ErrUpdateFailed = FullError{
+		Type:     "ErrUpdateFailed",
+		Message:  "Could not update the requested item",
+		Title:    "Unable to update",
+		HelpText: "Sorry, we're unable to update the item. Please try again.",
+	}
 )

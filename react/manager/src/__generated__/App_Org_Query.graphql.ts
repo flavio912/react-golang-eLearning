@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash bcd5a67afcca3352db500552cee0795e */
+/* @relayHash fb93a174b88b042978c8690cb6d31b85 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -32,6 +32,11 @@ fragment OrgOverview_manager on Manager {
   createdAt
   company {
     name
+    delegates {
+      pageInfo {
+        total
+      }
+    }
   }
 }
 */
@@ -127,6 +132,35 @@ const node: ConcreteRequest = ({
                                 "name": "name",
                                 "args": null,
                                 "storageKey": null
+                            },
+                            {
+                                "kind": "LinkedField",
+                                "alias": null,
+                                "name": "delegates",
+                                "storageKey": null,
+                                "args": null,
+                                "concreteType": "DelegatePage",
+                                "plural": false,
+                                "selections": [
+                                    {
+                                        "kind": "LinkedField",
+                                        "alias": null,
+                                        "name": "pageInfo",
+                                        "storageKey": null,
+                                        "args": null,
+                                        "concreteType": "PageInfo",
+                                        "plural": false,
+                                        "selections": [
+                                            {
+                                                "kind": "ScalarField",
+                                                "alias": null,
+                                                "name": "total",
+                                                "args": null,
+                                                "storageKey": null
+                                            }
+                                        ]
+                                    }
+                                ]
                             }
                         ]
                     }
@@ -138,7 +172,7 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_Org_Query",
         "id": null,
-        "text": "query App_Org_Query {\n  manager {\n    ...OrgOverview_manager\n  }\n}\n\nfragment OrgOverview_manager on Manager {\n  firstName\n  lastName\n  email\n  telephone\n  createdAt\n  company {\n    name\n  }\n}\n",
+        "text": "query App_Org_Query {\n  manager {\n    ...OrgOverview_manager\n  }\n}\n\nfragment OrgOverview_manager on Manager {\n  firstName\n  lastName\n  email\n  telephone\n  createdAt\n  company {\n    name\n    delegates {\n      pageInfo {\n        total\n      }\n    }\n  }\n}\n",
         "metadata": {}
     }
 } as any);

@@ -181,3 +181,119 @@ func TestCreateDelegate(t *testing.T) {
 		}})
 	})
 }
+
+func TestUpdateDelegate(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update some fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateDelegate(input: {
+						uuid: "00000000-0000-0000-0000-000000000001"
+						firstName: "Elon"
+						lastName: "Musk"
+						email: "musk@spacex.com"
+						companyUUID: "00000000-0000-0000-0000-000000000002"
+					}) {
+						uuid
+						firstName
+						lastName
+						email
+						company {
+							uuid
+							name
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateDelegate": {
+						"uuid": "00000000-0000-0000-0000-000000000001",
+						"firstName": "Elon",
+						"lastName": "Musk",
+						"email": "musk@spacex.com",
+						"company": {
+							"uuid": "00000000-0000-0000-0000-000000000002",
+							"name": "Fake Work Place"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Manager cannot update delegate's company",
+			Context: managerContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateDelegate(input: {
+						uuid: "00000000-0000-0000-0000-000000000002"
+						companyUUID: "00000000-0000-0000-0000-000000000002"
+					}) {
+						company {
+							uuid
+							name
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateDelegate": {
+						"company": {
+							"uuid": "00000000-0000-0000-0000-000000000001",
+							"name": "TestCompany"
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Delegate does not exist",
+			Context: managerContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateDelegate(input: {
+						uuid: "00000000-0000-0000-0000-000000000000"
+					}) {
+						uuid
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateDelegate": null
+				}
+			`,
+			ExpectedErrors: []gqltest.TestQueryError{
+				{
+					ResolverError: errors.ErrDelegateDoesNotExist("00000000-0000-0000-0000-000000000000"),
+					Path:          []interface{}{"updateDelegate"},
+				},
+			},
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateDelegate(input: {
+					uuid: "00000000-0000-0000-0000-000000000001"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateDelegate"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  true,
+		DelegateAllowed: false,
+	})
+}

@@ -3,6 +3,8 @@ package users
 import (
 	"time"
 
+	"github.com/getsentry/sentry-go"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
@@ -11,18 +13,35 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func activeCourseToGentype(activeCourse models.ActiveCourse) gentypes.ActiveCourse {
-	return gentypes.ActiveCourse{
+func activeCourseToMyCourse(activeCourse models.ActiveCourse, upTo *gentypes.UUID) gentypes.MyCourse {
+	return gentypes.MyCourse{
 		CourseID:       activeCourse.CourseID,
-		CurrentAttempt: activeCourse.CurrentAttempt,
 		MinutesTracked: activeCourse.MinutesTracked,
+		Status:         gentypes.CourseIncomplete,
+		CreatedAt:      activeCourse.CreatedAt.Format(time.RFC3339),
+		UpTo:           upTo,
 	}
 }
 
-func activeCoursesToGentypes(activeCourses []models.ActiveCourse) []gentypes.ActiveCourse {
-	var genCourses = make([]gentypes.ActiveCourse, len(activeCourses))
+func historicalCourseToMyCourse(historicalCourse models.HistoricalCourse) gentypes.MyCourse {
+	status := gentypes.CourseFailed
+	if historicalCourse.Passed {
+		status = gentypes.CourseComplete
+	}
+	return gentypes.MyCourse{
+		CourseID:       historicalCourse.CourseID,
+		MinutesTracked: historicalCourse.MinutesTracked,
+		Status:         status,
+	}
+}
+
+func userCoursesToGentypes(activeCourses []models.ActiveCourse, historicalCourses []models.HistoricalCourse) []gentypes.MyCourse {
+	var genCourses = make([]gentypes.MyCourse, len(activeCourses)+len(historicalCourses))
 	for i, course := range activeCourses {
-		genCourses[i] = activeCourseToGentype(course)
+		genCourses[i] = activeCourseToMyCourse(course, nil)
+	}
+	for i, course := range historicalCourses {
+		genCourses[len(activeCourses)+i] = historicalCourseToMyCourse(course)
 	}
 	return genCourses
 }
@@ -94,30 +113,82 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
-func (u *usersAppImpl) ActiveCourses() ([]gentypes.ActiveCourse, error) {
-	if !u.grant.IsDelegate && !u.grant.IsIndividual {
-		return []gentypes.ActiveCourse{}, &errors.ErrUnauthorized
-	}
+// TakerCourses gets the courses for a course taker
+func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool) ([]gentypes.MyCourse, error) {
+	var authorized = false
 
-	var takerUUID gentypes.UUID
-	if u.grant.IsDelegate {
+	switch {
+	case u.grant.IsAdmin:
+		authorized = true
+	case u.grant.IsManager:
+		ok, err := u.usersRepository.CompanyManagesCourseTakers(u.grant.Claims.Company, []gentypes.UUID{takerUUID})
+		if err != nil {
+			u.grant.Logger.Log(sentry.LevelError, err, "MyCourses error checking if company manages takers")
+			return []gentypes.MyCourse{}, &errors.ErrUnauthorized
+		}
+
+		if ok {
+			authorized = true
+		}
+	case u.grant.IsDelegate:
 		delegate, _ := u.usersRepository.Delegate(u.grant.Claims.UUID)
-		takerUUID = delegate.CourseTakerUUID
-	}
-
-	if u.grant.IsIndividual {
+		if delegate.CourseTakerUUID == takerUUID {
+			authorized = true
+		}
+	case u.grant.IsIndividual:
 		individual, _ := u.usersRepository.Individual(u.grant.Claims.UUID)
-		takerUUID = individual.CourseTakerUUID
+		if individual.CourseTakerUUID == takerUUID {
+			authorized = true
+		}
 	}
 
-	if (takerUUID == gentypes.UUID{}) {
-		return []gentypes.ActiveCourse{}, &errors.ErrNotFound
+	if authorized {
+		activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
+		if err != nil {
+			return []gentypes.MyCourse{}, &errors.ErrWhileHandling
+		}
+
+		if !showHistorical {
+			return userCoursesToGentypes(activeCourses, []models.HistoricalCourse{}), nil
+		}
+
+		historicalCourses, err := u.usersRepository.TakerHistoricalCourses(takerUUID)
+		if err != nil || err == &errors.ErrNotFound {
+			return []gentypes.MyCourse{}, &errors.ErrWhileHandling
+		}
+
+		return userCoursesToGentypes(activeCourses, historicalCourses), nil
 	}
 
-	activeCourses, err := u.usersRepository.TakerActiveCourses(takerUUID)
+	return []gentypes.MyCourse{}, &errors.ErrUnauthorized
+}
+
+// TakerCourse gets an active course from the courseID
+func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gentypes.MyCourse, error) {
+	if !(u.grant.IsDelegate || u.grant.IsIndividual) {
+		return gentypes.MyCourse{}, &errors.ErrUnauthorized
+	}
+	//TODO: Auth checks
+
+	activeCourse, err := u.usersRepository.TakerActiveCourse(takerUUID, courseID)
 	if err != nil {
-		return []gentypes.ActiveCourse{}, &errors.ErrWhileHandling
+		return gentypes.MyCourse{}, &errors.ErrWhileHandling
 	}
 
-	return activeCoursesToGentypes(activeCourses), nil
+	// Get last test taken
+	var latestTest *gentypes.UUID
+	var latestDate = time.Time{}
+	marks, err := u.usersRepository.TakerTestMarks(takerUUID, courseID)
+	if err != nil {
+		u.grant.Logger.Log(sentry.LevelWarning, err, "TakerCourse: Unable to get test marks")
+	} else {
+		for _, mark := range marks {
+			if mark.CreatedAt.After(latestDate) && mark.Passed {
+				latestDate = mark.CreatedAt
+				latestTest = &mark.TestUUID
+			}
+		}
+	}
+
+	return activeCourseToMyCourse(activeCourse, latestTest), nil
 }

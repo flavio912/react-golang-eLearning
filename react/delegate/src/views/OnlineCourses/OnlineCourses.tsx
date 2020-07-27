@@ -7,16 +7,17 @@ import Dropdown, { DropdownOption } from 'sharedComponents/core/Input/Dropdown';
 import CourseCard from 'sharedComponents/Overview/CourseCard';
 import { Course } from 'sharedComponents/Overview/CourseCard/CourseCard';
 import Paginator from 'sharedComponents/Pagination/Paginator';
+import Button from 'sharedComponents/core/Input/Button';
 import { useRouter } from 'found';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { OnlineCourses_user } from './__generated__/OnlineCourses_user.graphql';
+import Page from 'components/Page';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   onlineCoursesRoot: {
     display: 'flex',
     flexDirection: 'column',
-    flexGrow: 1,
-    maxWidth: 1275
+    flexGrow: 1
   },
   mainHeading: {
     gridArea: 'headin'
@@ -37,11 +38,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'grid',
     gridGap: 26,
     marginTop: theme.spacing(3),
-    gridTemplateColumns: 'repeat(auto-fit, 298px)',
-    justifyContent: 'space-between'
+    gridTemplateColumns: 'repeat(auto-fit, 298px)'
   },
   page: {
     marginTop: theme.spacing(3)
+  },
+  subFilters: {
+    display: 'flex'
+  },
+  filterButton: {
+    marginRight: theme.spacing(1)
   }
 }));
 
@@ -58,22 +64,6 @@ const defaultOption: DropdownOption = {
   component: defaultComponent()
 };
 
-const defaultCourse: Course = {
-  id: 1,
-  type: 'DANGEROUS GOODS AIR',
-  colour: '#8C1CB4',
-  url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
-  title: 'Dangerous goods by air category 7',
-  price: 60,
-  description:
-    'This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage',
-  date: 'MAR 3rd 2020',
-  location: 'TTC at Hilton T4',
-  modules: 5,
-  lessons: 5,
-  videoTime: 5
-};
-
 function OnlineCourses({ className, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -84,78 +74,81 @@ function OnlineCourses({ className, user }: Props) {
 
   const filterOptions = [defaultOption];
 
-  let courses = [defaultCourse, defaultCourse, defaultCourse, defaultCourse];
-
-  if (selectedOption == selectOptions[0]) {
-    courses = [
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse,
-      defaultCourse
-    ];
-  }
-
   return (
-    <div className={classes.onlineCoursesRoot}>
-      <Heading
-        text={'Courses'}
-        size={'large'}
-        className={classes.mainHeading}
-      />
-      <Heading
-        text={`${user?.firstName}, here are all of the courses you’ve currently been enrolled on. If you’ve already passed a course, it’s stored here for safe keeping! `}
-        size={'medium'}
-        className={classes.subHeading}
-      />
-      <div className={classes.filterRow}>
-        <SelectButton
-          options={selectOptions}
-          selected={selectedOption}
-          onClick={(option: string) => {
-            setSelectedOption(option);
-          }}
-          className={classes.selectButton}
+    <Page>
+      <div className={classes.onlineCoursesRoot}>
+        <Heading
+          text={'Courses'}
+          size={'large'}
+          className={classes.mainHeading}
         />
-        <Dropdown
-          options={filterOptions}
-          placeholder={'Show Categories'}
-          setSelected={() => {
-            //
-          }}
+        <Heading
+          text={`${user?.firstName}, here are all of the courses you’ve currently been enrolled on. If you’ve already passed a course, it’s stored here for safe keeping! `}
+          size={'medium'}
+          className={classes.subHeading}
         />
-      </div>
-      <div className={classes.courseHolder}>
-        {user?.activeCourses?.map((course, index) => (
-          <CourseCard
-            key={index}
-            course={{
-              title: course.course.name,
-              id: course.course.ident,
-              type: 'Online Course',
-              colour: course.course.color ?? '',
-              description: course.course.excerpt ?? '',
-              url: ''
+        <div className={classes.filterRow}>
+          <SelectButton
+            options={selectOptions}
+            selected={selectedOption}
+            onClick={(option: string) => {
+              setSelectedOption(option);
             }}
-            onClick={() => {
-              router.push('/app/courses/1');
-            }}
-            progress={30}
+            className={classes.selectButton}
           />
-        ))}
+          <div className={classes.subFilters}>
+            <Button
+              archetype={'default'}
+              icon={{ right: 'FilterAdjust' }}
+              children={'Filters'}
+              className={classes.filterButton}
+            />
+            <Dropdown
+              options={filterOptions}
+              placeholder={'Show Categories'}
+              setSelected={() => {
+                //
+              }}
+            />
+          </div>
+        </div>
+        <div className={classes.courseHolder}>
+          {user?.myCourses
+            ?.filter((course) =>
+              selectedOption == selectOptions[0]
+                ? course.status != 'complete'
+                : course.status == 'complete'
+            )
+            .map((course, index) => (
+              <CourseCard
+                key={index}
+                course={{
+                  title: course.course.name,
+                  id: course.course.ident,
+                  type: course.course.category?.name ?? 'Online Course',
+                  colour: course.course.category?.color ?? '',
+                  description: course.course.excerpt ?? '',
+                  url: course.course.bannerImageURL ?? ''
+                }}
+                onClick={() => {
+                  router.push(`/app/courses/${course.course.ident}`);
+                }}
+                progress={course.status == 'complete' ? 100 : 30}
+              />
+            ))}
+        </div>
+        <div className={classes.page}>
+          <Paginator
+            currentPage={1}
+            numPages={3}
+            updatePage={() => {
+              //TODO:
+            }}
+            itemsPerPage={10}
+          />
+        </div>
       </div>
-      <div className={classes.page}>
-        <Paginator
-          currentPage={1}
-          numPages={3}
-          updatePage={() => {
-            //TODO:
-          }}
-          itemsPerPage={10}
-        />
-      </div>
-    </div>
+    </Page>
   );
 }
 
@@ -163,15 +156,19 @@ export default createFragmentContainer(OnlineCourses, {
   user: graphql`
     fragment OnlineCourses_user on User {
       firstName
-      activeCourses {
+      myCourses {
         course {
+          ident: id
           name
           excerpt
-          color
+          category {
+            color
+            name
+          }
           type
-          ident: id
+          bannerImageURL
         }
-        currentAttempt
+        status
       }
     }
   `

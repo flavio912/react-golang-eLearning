@@ -10,6 +10,7 @@ export default {
 export const normal = () => {
   return (
     <CourseTable
+      courses={[]}
       EmptyComponent={<div>No content to show</div>}
       rowClicked={() => {}}
     />

@@ -1,25 +1,28 @@
-import * as React from "react";
-import UserSearch, { ResultItem } from "./UserSearch";
-import { withKnobs, text, number } from "@storybook/addon-knobs";
+import * as React from 'react';
+import UserSearch, { ResultItem } from './UserSearch';
+import { withKnobs, text, number } from '@storybook/addon-knobs';
 
 export default {
-  title: "Search/UserSearch",
-  decorators: [withKnobs],
+  title: 'Search/UserSearch',
+  decorators: [withKnobs]
 };
 
 const items: ResultItem[] = [
   {
-    key: "Jim Smith",
-    value: "uuid-1",
+    uuid: '',
+    key: 'Jim Smith',
+    value: 'uuid-1'
   },
   {
-    key: "Bruce Willis",
-    value: "uuid-2",
+    uuid: '',
+    key: 'Bruce Willis',
+    value: 'uuid-2'
   },
   {
-    key: "Tony Stark",
-    value: "uuid-3",
-  },
+    uuid: '',
+    key: 'Tony Stark',
+    value: 'uuid-3'
+  }
 ];
 
 const searchFunc = async (query: string) => {
@@ -31,9 +34,9 @@ const searchFunc = async (query: string) => {
 export const plain = () => {
   return (
     <UserSearch
-      companyName={text("Company name", "Fedex")}
+      companyName={text('Company name', 'Fedex')}
       searchFunction={searchFunc}
-      debounceTime={number("Debounce time (ms)", 500)}
+      debounceTime={number('Debounce time (ms)', 500)}
     />
   );
 };

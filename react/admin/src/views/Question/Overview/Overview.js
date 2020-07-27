@@ -1,15 +1,10 @@
 import React, { useState } from 'react';
 import {
   Grid,
-  TextField,
   Card,
   CardHeader,
   CardContent,
   Divider,
-  FormControl,
-  MenuItem,
-  InputLabel,
-  Select,
   Typography,
   Radio,
   RadioGroup,
@@ -20,6 +15,8 @@ import { makeStyles } from '@material-ui/styles';
 import TagsInput from 'src/components/TagsInput';
 import QuestionType from './QuestionType';
 import AnswerInput from './AnswerInput';
+import EditIcon from '@material-ui/icons/Edit';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,20 +44,32 @@ const useStyles = makeStyles(theme => ({
   previewImage: {
     width: 200,
     maxHeight: 200
+  },
+  editItems: {
+    alignItems: 'center'
   }
 }));
 
 function Overview({ state, setState }) {
   const classes = useStyles();
 
-  const [showAnswerInput, setShowAnswerInput] = useState(false);
-  const [answer, setAnswer] = useState({
+  const defaultAnswer = {
     answerType: 'TEXT',
     text: ''
-  });
+  };
+
+  const [showAnswerInput, setShowAnswerInput] = useState(false);
+  const [answer, setAnswer] = useState(defaultAnswer);
 
   const onSaveAnswer = () => {
-    setState('answers', [...state.answers, answer]);
+    const newAnswers = [...state.answers];
+
+    if (answer._index === undefined) {
+      newAnswers.push(answer);
+    } else {
+      newAnswers[answer._index] = answer;
+    }
+    setState('answers', newAnswers);
     setShowAnswerInput(false);
     setAnswer({});
   };
@@ -72,6 +81,22 @@ function Overview({ state, setState }) {
       }
     }
     return 0;
+  };
+
+  const onEdit = (answer, index) => {
+    setAnswer({ ...answer, _index: index });
+    setShowAnswerInput(true);
+  };
+
+  const onDelete = index => {
+    const newAnswers = [...state.answers];
+    newAnswers.splice(index, 1);
+    setState('answers', newAnswers);
+
+    if (answer._index === index) {
+      setShowAnswerInput(false);
+      setAnswer(defaultAnswer);
+    }
   };
 
   return (
@@ -119,14 +144,42 @@ function Overview({ state, setState }) {
                     {state.answers.map((answer, index) => (
                       <Grid item key={index}>
                         <div className={classes.answerItem}>
-                          {answer.imageURL && (
-                            <img
-                              src={answer.imageURL}
-                              className={classes.previewImage}
-                            />
-                          )}
-                          <Typography variant="h6">{answer.text}</Typography>
-                          <FormControlLabel value={index} control={<Radio />} />
+                          <div>
+                            {answer.imageURL && (
+                              <img
+                                src={answer.imageURL}
+                                className={classes.previewImage}
+                                alt="preview"
+                              />
+                            )}
+                            <Typography variant="h6">{answer.text}</Typography>
+                          </div>
+                          <div>
+                            <Grid
+                              container
+                              className={classes.editItems}
+                              spacing={2}
+                            >
+                              <Grid item>
+                                <FormControlLabel
+                                  value={index}
+                                  control={<Radio />}
+                                />
+                              </Grid>
+                              <Grid item>
+                                <EditIcon
+                                  color="#9ea2a6"
+                                  onClick={() => onEdit(answer, index)}
+                                />
+                              </Grid>
+                              <Grid item>
+                                <DeleteIcon
+                                  color="#9ea2a6"
+                                  onClick={() => onDelete(index)}
+                                />
+                              </Grid>
+                            </Grid>
+                          </div>
                         </div>
                       </Grid>
                     ))}

@@ -27,14 +27,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   questionText: {
     height: 86,
-    width: 682,
     paddingLeft: 20.5,
     paddingRight: 29,
     paddingTop: 24.5,
     paddingBottom: 24.5,
     display: 'flex',
     alignItems: 'center',
-    margin: [24, 0],
+    margin: [12, 0],
     cursor: 'pointer',
     position: 'relative',
     '& span': {
@@ -96,7 +95,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 export type Option = {
-  id: string | number;
+  id: string;
   index?: string | number;
   title?: string;
   image?: string;
@@ -111,7 +110,7 @@ type Props = {
   className?: string;
   question: Question;
   type: QuestionType;
-  onSelected: Function;
+  onSelected: (option: Option) => void;
 };
 const OptionImageEle = ({
   classes,
@@ -136,6 +135,7 @@ const OptionImageEle = ({
     </div>
   );
 };
+
 const OptionTextEle = ({
   classes,
   isSelected,
@@ -146,7 +146,7 @@ const OptionTextEle = ({
   <div
     key={index}
     className={classNames(classes.questionItem, classes.questionText, {
-      [classes.questionSelected]: isSelected
+      [classes.optionSelected]: isSelected
     })}
     onClick={onClick}
   >
@@ -172,7 +172,7 @@ function Question({ className, question, type, onSelected }: Props) {
       >
         {question.options.map((option: Option, index: string | number) => {
           const isSelected = select && select.id === option.id;
-          if (type === 'image') {
+          if (option.image) {
             return (
               <OptionImageEle
                 classes={classes}

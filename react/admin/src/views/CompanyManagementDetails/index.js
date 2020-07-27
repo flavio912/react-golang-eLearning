@@ -1,9 +1,11 @@
 import React from 'react';
 import { Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import uuid from 'uuid/v4';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
+
 import Page from 'src/components/Page';
 import Header from './Header';
 import Summary from './Summary';
@@ -28,6 +30,36 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const GET_COMPANY = gql`
+  query GetCompany($id: UUID!) {
+    company(uuid: $id) {
+      uuid
+      name
+      managers {
+        edges {
+          email
+        }
+        pageInfo {
+          total
+        }
+      }
+      delegates {
+        edges {
+          uuid
+          email
+          firstName
+          lastName
+          lastLogin
+          createdAt
+        }
+        pageInfo {
+          total
+        }
+      }
+    }
+  }
+`;
+
 function CompanyManagementDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
@@ -39,6 +71,17 @@ function CompanyManagementDetails({ match, history }) {
     { value: 'invoices', label: 'Invoices' },
     { value: 'logs', label: 'Logs' }
   ];
+
+  const { loading, error, data, refetch } = useQuery(GET_COMPANY, {
+    variables: {
+      id: id
+    },
+    fetchPolicy: 'cache-and-network',
+    skip: !id
+  });
+  if (loading) return <div>Loading</div>;
+  if (error) return <div>{error.message}</div>;
+  const company = data?.company;
 
   const handleTabsChange = (event, value) => {
     history.push(value);
@@ -52,20 +95,14 @@ function CompanyManagementDetails({ match, history }) {
     return <Redirect to="/errors/error-404" />;
   }
 
-  const company = {
-    id: uuid(),
-    name: 'FedEx',
-    email: 'kate@fedex.com',
-    logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
-    noDelegates: 40,
-    noManagers: 1,
-    paymentType: 'Contract'
+  const handleUpdatedCompany = () => {
+    refetch();
   };
 
   return (
     <Page className={classes.root} title="Company Management Details">
       <Container maxWidth={false}>
-        <Header />
+        <Header companyName={data.company.name} />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -81,8 +118,18 @@ function CompanyManagementDetails({ match, history }) {
         <div className={classes.content}>
           {currentTab === 'summary' && <Summary />}
           {currentTab === 'invoices' && <Invoices />}
-          {currentTab === 'managers' && <Managers company={company} />}
-          {currentTab === 'delegates' && <Delegates company={company} />}
+          {currentTab === 'managers' && (
+            <Managers
+              company={company}
+              onUpdateCompany={handleUpdatedCompany}
+            />
+          )}
+          {currentTab === 'delegates' && (
+            <Delegates
+              company={company}
+              onUpdateCompany={handleUpdatedCompany}
+            />
+          )}
           {currentTab === 'logs' && <Logs />}
         </div>
       </Container>

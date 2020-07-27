@@ -3,18 +3,23 @@ package resolvers
 import (
 	"context"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/loader"
 )
 
 type TestResolver struct {
 	test gentypes.Test
 }
 
-func (t *TestResolver) Name() string          { return t.test.Name }
-func (t *TestResolver) UUID() gentypes.UUID   { return t.test.UUID }
+func (t *TestResolver) Name() string        { return t.test.Name }
+func (t *TestResolver) UUID() gentypes.UUID { return t.test.UUID }
+func (t *TestResolver) Type() gentypes.CourseElement {
+	return gentypes.TestType
+}
 func (t *TestResolver) Complete() *bool       { return helpers.BoolPointer(false) }
 func (t *TestResolver) Tags() *[]*TagResolver { return nil }
 func (t *TestResolver) AttemptsAllowed() *int32 {
@@ -30,8 +35,27 @@ func (t *TestResolver) QuestionsToAnswer() *int32 {
 	}
 	return nil
 }
-func (t *TestResolver) RandomiseAnswers() *bool         { return t.test.RandomiseAnswers }
-func (t *TestResolver) Questions() *[]*QuestionResolver { return nil }
+func (t *TestResolver) RandomiseAnswers() *bool { return t.test.RandomiseAnswers }
+func (t *TestResolver) Questions(ctx context.Context) (*[]*QuestionResolver, error) {
+	app := auth.AppFromContext(ctx)
+	questions, err := app.CourseApp.TestQuestions(t.test.UUID)
+	if err != nil {
+		return &([]*QuestionResolver{}), err
+	}
+
+	var resolvers = make([]*QuestionResolver, len(questions))
+	for i, question := range questions {
+		res, err := NewQuestionResolver(ctx, NewQuestionArgs{
+			Question: &question,
+		})
+		if err != nil {
+			return &([]*QuestionResolver{}), err
+		}
+		resolvers[i] = res
+	}
+
+	return &resolvers, nil
+}
 
 type NewTestArgs struct {
 	Test     *gentypes.Test
@@ -39,13 +63,11 @@ type NewTestArgs struct {
 }
 
 func NewTestResolver(ctx context.Context, args NewTestArgs) (*TestResolver, error) {
-	app := auth.AppFromContext(ctx)
-
 	switch {
 	case args.TestUUID != nil:
-		test, err := app.CourseApp.Test(*args.TestUUID)
+		test, err := loader.LoadTest(ctx, *args.TestUUID)
 		if err != nil {
-			return &TestResolver{}, &errors.ErrUnableToResolve
+			return &TestResolver{}, err
 		}
 		return &TestResolver{
 			test: test,

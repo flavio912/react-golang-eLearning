@@ -21,7 +21,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     },
     subtitle: {
         fontSize: theme.fontSizes.tinyHeading,
-        fontWeight: '500',
+        fontWeight: '200',
         color: theme.colors.primaryWhite,
         maxWidth: '711px',
         textAlign: 'center'

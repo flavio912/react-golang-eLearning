@@ -16,6 +16,11 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegatesPage_delegates } from './__generated__/DelegatesPage_delegates.graphql';
 import { DelegatesPage_manager } from './__generated__/DelegatesPage_manager.graphql';
+import { fetchQuery } from 'relay-runtime';
+import environment from 'api/environment';
+import { OrgOverviewDelegatesQueryResponse } from './__generated__/OrgOverviewDelegatesQuery.graphql';
+import { DelegatesPageQueryResponse } from './__generated__/DelegatesPageQuery.graphql';
+import { CourseStatus } from './__generated__/DelegateProfilePage_delegate.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -100,21 +105,34 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
   const classes = useStyles({ theme });
 
   const edges = delegates.edges ?? [];
-  const pageInfo = delegates.pageInfo;
+  const pageInfo = {
+    total: delegates.pageInfo?.total ?? 0,
+    limit: delegates.pageInfo?.limit ?? 10,
+    offset: delegates.pageInfo?.offset ?? 0,
+  };
+  const page = {
+    currentPage: Math.ceil(pageInfo.offset/ pageInfo.limit),
+    numPages: Math.ceil(pageInfo.total/ pageInfo.limit)
+  };
+
   const delegateComponents = edges.map((delegate: any) =>
     delegateRow(
       delegate?.uuid,
       `${delegate?.firstName} ${delegate?.lastName}`,
       '',
       delegate?.email,
-      3,
-      6,
+      (delegate.myCourses as Array<{status: CourseStatus}>).filter(course => course.status == "complete").length,
+      delegate.myCourses.length,
       delegate?.lastLogin,
       '2013-04-20T20:00:00+0800',
       classes,
       router
     )
   );
+  
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/delegates?offset=${(page - 1) * pageInfo.limit}&limit=${pageInfo.limit}`);
+  };
 
   return (
     <div className={classes.root}>
@@ -128,21 +146,42 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
         <div className={classes.search}>
           <UserSearch
             companyName={manager.company.name}
-            searchFunction={async (query: string) => {
-              return [
-                {
-                  key: 'Jim Smith',
-                  value: 'uuid-1'
-                },
-                {
-                  key: 'Bruce Willis',
-                  value: 'uuid-2'
-                },
-                {
-                  key: 'Tony Stark',
-                  value: 'uuid-3'
+            searchFunction={async (text: string) => {
+              const query = graphql`
+                query DelegatesPageQuery($name: String!) {
+                  delegates(filter: { name: $name }, page: { limit: 8 }) {
+                    edges {
+                      uuid
+                      TTC_ID
+                      firstName
+                      lastName
+                    }
+                  }
                 }
-              ];
+              `;
+
+              const variables = {
+                name: text
+              };
+
+              const data = (await fetchQuery(
+                environment,
+                query,
+                variables
+              )) as DelegatesPageQueryResponse;
+
+              if (!data || !data.delegates || !data.delegates.edges) {
+                console.error('Could not get data', data);
+                return [];
+              }
+
+              const results = data.delegates?.edges.map((delegate) => ({
+                uuid: delegate?.uuid ?? '',
+                key: `${delegate?.firstName} ${delegate?.lastName}`,
+                value: delegate?.TTC_ID ?? ''
+              }));
+
+              return results;
             }}
           />
         </div>
@@ -181,10 +220,11 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
       />
       <Spacer vertical spacing={3} />
       <Paginator
-        currentPage={1}
-        updatePage={() => {}}
-        numPages={10}
-        itemsPerPage={10}
+        currentPage={page.currentPage}
+        updatePage={onUpdatePage}
+        numPages={page.numPages}
+        itemsPerPage={pageInfo.limit}
+        showRange={page.numPages > 4 ? 4 : page.numPages}
       />
     </div>
   );
@@ -200,6 +240,9 @@ const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
         lastName
         lastLogin
         createdAt
+        myCourses {
+          status
+        }
       }
       pageInfo {
         total

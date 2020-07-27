@@ -28,17 +28,56 @@ export type ResultItem = {
   title: string;
   image: string;
   description: string;
-};
-type Props = {
-  results: ResultItem[];
+  onClick?: () => void;
 };
 
-function SearchResults({ results }: Props) {
+export type PageInfo = {
+  currentPage: number;
+  numPages: number;
+};
+
+export type Result = {
+  resultItems: ResultItem[];
+  pageInfo: PageInfo;
+};
+
+type Props = {
+  searchFunction: (query: string, offset: number) => Promise<Result>;
+  debounceTime?: number;
+};
+
+function SearchResults({ searchFunction, debounceTime = 400 }: Props) {
   const theme = useTheme();
   const classes = useStyles({
     theme
   });
   const [searchText, setSearchText] = React.useState<string>('');
+
+  const [results, setResults]: [ResultItem[], any] = React.useState([]);
+  const [pageInfo, setPageInfo]: [PageInfo | undefined, any] = React.useState();
+  const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
+
+  const onSearch = (text: string, offset: number) => {
+    clearTimeout(debouncer);
+    const timeout = setTimeout(async () => {
+      setSearchText(text);
+      if (text.length === 0 && results.length > 0) {
+        return;
+      }
+
+      const res = await searchFunction(text, offset);
+
+      setResults(res.resultItems);
+      setPageInfo(res.pageInfo);
+    }, debounceTime);
+    setDebouncer(timeout);
+  };
+
+  const onChange = (text: string) =>
+    onSearch(text, ((pageInfo?.currentPage ?? 1) - 1) * 4);
+
+  const onUpdatePage = (page: number) => onSearch(searchText, (page - 1) * 4);
+
   return (
     <div
       className={classes.searchRoot}
@@ -48,22 +87,30 @@ function SearchResults({ results }: Props) {
     >
       <SearchInput
         placeholder="Search for Courses..."
-        onChange={setSearchText}
+        onChange={onChange}
         value={searchText}
       />
       {searchText && (
         <>
           <div className={classes.searchList}>
             {results.map((item, index) => (
-              <SearchResultItem course={item} key={index} onClick={() => {}} />
+              <SearchResultItem
+                course={item}
+                key={index}
+                onClick={item.onClick ? item.onClick : () => {}}
+              />
             ))}
           </div>
           <Spacer vertical spacing={2} />
           <Paginator
-            currentPage={1}
-            updatePage={() => {}}
-            numPages={10}
-            itemsPerPage={10}
+            currentPage={pageInfo?.currentPage ?? 1}
+            updatePage={onUpdatePage}
+            numPages={pageInfo?.numPages ?? 1}
+            itemsPerPage={4}
+            showRange={
+              (pageInfo?.numPages ?? 1) > 4 ? 4 : pageInfo?.numPages ?? 1
+            }
+            showDropdown={false}
           />
         </>
       )}

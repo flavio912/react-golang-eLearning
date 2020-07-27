@@ -1,6 +1,7 @@
 import * as React from 'react';
 import Card, { PaddingOptions } from '../../core/Cards/Card';
 import { createUseStyles, useTheme } from 'react-jss';
+import { Background } from 'react-imgix';
 import classNames from 'classnames';
 import Button from '../../core/Input/Button';
 import Icon from '../../core/Icon';
@@ -15,15 +16,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     transition: '0.2s all',
     '&:hover': {
       boxShadow: '0 2px 12px 0 rgba(0,0,0,0.18)'
-    }
+    },
+    justifyContent: 'space-between'
   },
   noBorder: {
     borderRadius: `0 ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px ${theme.primaryBorderRadius}px`
   },
   mainContainer: {
     borderRadius: `0 ${theme.primaryBorderRadius}px 0 0`,
-    backgroundRepeat: 'no-repeat',
-    backgroundSize: 'cover'
+    height: 186
   },
   row: {
     display: 'flex',
@@ -55,7 +56,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   title: {
     color: theme.colors.primaryWhite,
     margin: '0 20px 30px 20px',
-    fontSize: theme.fontSizes.heading,
+    fontSize: '23px',
     fontWeight: '900'
   },
   lecture: {
@@ -92,7 +93,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
   description: {
     flex: 3,
     lineHeight: '1.5em',
-    height: '4.5em',
     overflow: 'hidden',
     fontWeight: '300',
     fontSize: theme.fontSizes.small,
@@ -179,12 +179,6 @@ function CourseCard({
   const classes = useStyles({ theme });
 
   const backgroundColor = { backgroundColor: course.colour };
-  const backgroundImage = {};
-  if (course.url)
-    backgroundImage[
-      'backgroundImage'
-    ] = `linear-gradient(#00000040, #00000040), url(${course.url})`;
-
   return (
     <Card
       className={classNames(
@@ -197,9 +191,10 @@ function CourseCard({
         onClick();
       }}
     >
-      <div
+      <Background
         className={classNames(classes.mainContainer)}
-        style={backgroundImage}
+        src={course.url}
+        imgixParams={{ w: 300, h: 200, bri: -23 }}
       >
         <div className={classNames(classes.row)}>
           <div className={classNames(classes.heading)} style={backgroundColor}>
@@ -216,13 +211,8 @@ function CourseCard({
             £{course.price?.toFixed(2)}
           </div>
         )}
-        <div
-          className={classNames(classes.title)}
-          style={{ marginTop: course.price ? 0 : '45px' }}
-        >
-          {course.title}
-        </div>
-      </div>
+        <div className={classNames(classes.title)}>{course.title}</div>
+      </Background>
 
       <div className={classNames(classes.column)}>
         {(course.modules || course.lessons || course.videoTime) && (

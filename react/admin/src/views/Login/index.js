@@ -1,21 +1,18 @@
 import React from 'react';
-import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
 import {
   Card,
   CardContent,
   CardMedia,
   Typography,
-  Divider,
-  Link,
-  Avatar
+  Divider
 } from '@material-ui/core';
 import LockIcon from '@material-ui/icons/Lock';
 import Page from 'src/components/Page';
 import gradients from 'src/utils/gradients';
 import LoginForm from './LoginForm';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     height: '100%',
     display: 'flex',
@@ -81,17 +78,11 @@ function Login() {
   const classes = useStyles();
 
   return (
-    <Page
-      className={classes.root}
-      title="Login"
-    >
+    <Page className={classes.root} title="Login">
       <Card className={classes.card}>
         <CardContent className={classes.content}>
           <LockIcon className={classes.icon} />
-          <Typography
-            gutterBottom
-            variant="h3"
-          >
+          <Typography gutterBottom variant="h3">
             Sign in
           </Typography>
           <Typography variant="subtitle2">
@@ -99,50 +90,15 @@ function Login() {
           </Typography>
           <LoginForm className={classes.loginForm} />
           <Divider className={classes.divider} />
-          <Link
-            align="center"
-            color="secondary"
-            component={RouterLink}
-            to="/auth/register"
-            underline="always"
-            variant="subtitle2"
-          >
-            Don&apos;t have an account?
-          </Link>
         </CardContent>
         <CardMedia
           className={classes.media}
           image="/images/auth.png"
           title="Cover"
         >
-          <Typography
-            color="inherit"
-            variant="subtitle1"
-          >
-            Hella narvwhal Cosby sweater McSweeney&apos;s, salvia kitsch before they
-            sold out High Life.
+          <Typography color="inherit" variant="subtitle1">
+            Login to the TTC Hub Admin platform
           </Typography>
-          <div className={classes.person}>
-            <Avatar
-              alt="Person"
-              className={classes.avatar}
-              src="/images/avatars/avatar_2.png"
-            />
-            <div>
-              <Typography
-                color="inherit"
-                variant="body1"
-              >
-                Ekaterina Tankova
-              </Typography>
-              <Typography
-                color="inherit"
-                variant="body2"
-              >
-                Manager at inVision
-              </Typography>
-            </div>
-          </div>
         </CardMedia>
       </Card>
     </Page>

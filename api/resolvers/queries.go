@@ -198,14 +198,14 @@ func (q *QueryResolver) User(ctx context.Context) (*UserResolver, error) {
 	})
 }
 
-func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID string }) (*LessonResolver, error) {
+func (q *QueryResolver) Lesson(ctx context.Context, args struct{ UUID gentypes.UUID }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
 		return &LessonResolver{}, &errors.ErrUnauthorized
 	}
 
 	return NewLessonResolver(ctx, NewLessonArgs{
-		UUID: args.UUID,
+		UUID: &args.UUID,
 	})
 }
 
@@ -298,6 +298,11 @@ func (q *QueryResolver) Questions(
 	})
 }
 
+func (q *QueryResolver) CertificateInfo(ctx context.Context, args struct{ Token string }) (gentypes.CertficateInfo, error) {
+	app := auth.AppFromContext(ctx)
+	return app.CourseApp.CertificateInfo(args.Token)
+}
+
 func (q *QueryResolver) Test(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TestResolver, error) {
 	return NewTestResolver(ctx, NewTestArgs{
 		TestUUID: &args.UUID,
@@ -326,5 +331,186 @@ func (q *QueryResolver) Tests(
 func (q *QueryResolver) Module(ctx context.Context, args struct{ UUID gentypes.UUID }) (*ModuleResolver, error) {
 	return NewModuleResolver(ctx, NewModuleArgs{
 		ModuleUUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Blog(ctx context.Context, args struct{ UUID string }) (*BlogResolver, error) {
+	return NewBlogResolver(ctx, NewBlogArgs{
+		UUID: args.UUID,
+	})
+}
+
+func (q *QueryResolver) Blogs(ctx context.Context, args struct {
+	Page    *gentypes.Page
+	OrderBy *gentypes.OrderBy
+}) (*BlogPageResolver, error) {
+	// app := auth.AppFromContext(ctx)
+	grant := auth.GrantFromContext(ctx)
+	if grant == nil {
+		return &BlogPageResolver{}, &errors.ErrUnauthorized
+	}
+
+	blogApp := application.NewBlogApp(grant)
+	blogs, page, err := blogApp.GetBlogs(args.Page, args.OrderBy)
+	var blogsResolvers []*BlogResolver
+	for _, blog := range blogs {
+		blogsResolvers = append(blogsResolvers, &BlogResolver{
+			Blog: blog,
+		})
+	}
+
+	return &BlogPageResolver{
+		edges: &blogsResolvers,
+		pageInfo: &PageInfoResolver{
+			&page,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Modules(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.ModuleFilter
+		OrderBy *gentypes.OrderBy
+	}) (*ModulePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	modules, pageInfo, err := app.CourseApp.Modules(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &ModulePageResolver{}, err
+	}
+
+	return NewModulePageResolver(ctx, NewModulePageArgs{
+		PageInfo: pageInfo,
+		Modules:  &modules,
+	})
+}
+
+func (q *QueryResolver) SearchSyllabus(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.SyllabusFilter
+	}) (*SearchSyllabusResultResolver, error) {
+	app := auth.AppFromContext(ctx)
+
+	results, pageInfo, err := app.CourseApp.SearchSyllabus(args.Page, args.Filter)
+
+	var syllabusResolvers []*SyllabusResolver
+
+	for _, res := range results {
+		switch res.Type {
+		case gentypes.ModuleType:
+			m, _ := NewModuleResolver(ctx, NewModuleArgs{
+				ModuleUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{m})
+		case gentypes.LessonType:
+			l, _ := NewLessonResolver(ctx, NewLessonArgs{
+				UUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{l})
+		case gentypes.TestType:
+			t, _ := NewTestResolver(ctx, NewTestArgs{
+				TestUUID: &res.UUID,
+			})
+			syllabusResolvers = append(syllabusResolvers, &SyllabusResolver{t})
+		}
+	}
+
+	return &SearchSyllabusResultResolver{
+		edges: &syllabusResolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, err
+}
+
+func (q *QueryResolver) Categories(
+	ctx context.Context,
+	args struct {
+		Page *gentypes.Page
+		Text *string
+	}) (*CategoryPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	categories, pageInfo, err := app.CourseApp.Categories(args.Page, args.Text)
+	if err != nil {
+		return &CategoryPageResolver{}, err
+	}
+
+	return NewCategoryPageResolver(ctx, NewCategoryPageArgs{
+		PageInfo:   pageInfo,
+		Categories: &categories,
+	})
+}
+
+func (q *QueryResolver) CertificateTypes(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.CertificateTypeFilter
+	}) (*CertificateTypePageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certTypes, pageInfo, err := app.CourseApp.CertificateTypes(args.Page, args.Filter)
+	if err != nil {
+		return &CertificateTypePageResolver{}, err
+	}
+
+	return NewCertificateTypePageResolver(ctx, NewCertificateTypePageArgs{
+		CertificateTypes: &certTypes,
+		PageInfo:         &pageInfo,
+	})
+}
+
+func (q *QueryResolver) CAANumbers(
+	ctx context.Context,
+	args struct {
+		Page   *gentypes.Page
+		Filter *gentypes.CAANumberFilter
+	}) (*CAANumberPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	numbers, pageInfo, err := app.CourseApp.CAANumbers(args.Page, args.Filter)
+
+	if err != nil {
+		return &CAANumberPageResolver{}, err
+	}
+
+	var resolvers []*CAANumberResolver
+	for _, no := range numbers {
+		resolvers = append(resolvers, &CAANumberResolver{
+			CAANumber: no,
+		})
+	}
+
+	return &CAANumberPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, nil
+}
+
+func (q *QueryResolver) Individual(ctx context.Context, args struct{ UUID gentypes.UUID }) (*IndividualResolver, error) {
+	return NewIndividualResolver(ctx, NewIndividualArgs{
+		IndividualUUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Individuals(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.IndividualFilter
+		OrderBy *gentypes.OrderBy
+	}) (*IndividualPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	inds, pageInfo, err := app.UsersApp.Individuals(args.Page, args.Filter, args.OrderBy)
+	if err != nil {
+		return &IndividualPageResolver{}, err
+	}
+
+	return NewIndividualPageResolver(ctx, NewIndividualPageArgs{
+		Individuals: &inds,
+		PageInfo:    pageInfo,
 	})
 }

@@ -4,7 +4,7 @@ const spacing = {
   2: 20,
   3: 50,
   4: 70,
-  5: 100
+  5: 100,
 };
 
 export type Theme = {
@@ -14,6 +14,7 @@ export type Theme = {
   buttonBorderRadius: number;
   primaryGradient: string;
   loginBackgroundGradient: string;
+  carouselImageBackgroundGradient: string;
   centerColumnWidth: number;
   colors: {
     primaryBlack: string;
@@ -69,6 +70,8 @@ const theme: Theme = {
   buttonBorderRadius: 4,
   primaryGradient: 'linear-gradient(50deg, #0b57ff 0%,#16C225 100%)',
   loginBackgroundGradient: 'linear-gradient(50deg, #0f6fcc 0%,#16a858 100%)',
+  carouselImageBackgroundGradient:
+    'linear-gradient(222.02deg, #16BB33 0%, #0E69DA 100%)',
   centerColumnWidth: 1200,
   colors: {
     primaryBlack: '#0C152E',
@@ -95,26 +98,26 @@ const theme: Theme = {
     approxZircon: '#E9EBEB',
     secondaryDanger: '#DB5C5D',
     navyBlue2: '#0E63E8',
-    silver: '#BFBFBF'
+    silver: '#BFBFBF',
   },
   shadows: {
     primary: '2px 2px 10px rgba(0,0,0,0.07)',
-    body: 'inset 0px -2px 10px 0px #0000001f'
+    body: 'inset 0px -2px 10px 0px #0000001f',
   },
   fontSizes: {
     extraLargeHeading: 34,
     heading: 25,
     smallHeading: 24,
     xSmallHeading: 21,
-    tinyHeading: 20,
+    tinyHeading: 18,
     extraLarge: 18,
     large: 16,
     default: 14,
     small: 13,
     xSmall: 12,
     tiny: 11,
-    xTiny: 9
-  }
+    xTiny: 9,
+  },
 };
 
 export default theme;

@@ -1,6 +1,7 @@
 type Module implements SyllabusItem {
   uuid: UUID!
   name: String!
+  type: StructureElement!
   bannerImageURL: String
   description: String!
   transcript: String!
@@ -8,6 +9,7 @@ type Module implements SyllabusItem {
   video: Video
   syllabus: [SyllabusItem!]
   complete: Boolean
+  tags: [Tag!]!
 }
 
 enum VideoType {
@@ -63,4 +65,18 @@ input UpdateModuleInput {
 
 type UpdateModulePayload {
   module: Module
+}
+
+input DeleteModuleInput {
+  uuid: UUID!
+}
+type ModulePage implements PaginatedQuery {
+  edges: [Module]
+  pageInfo: PageInfo
+}
+
+input ModuleFilter {
+  uuid: UUID
+  name: String
+  description: String
 }

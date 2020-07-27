@@ -29,6 +29,17 @@ func (u *usersRepoImpl) Delegate(uuid gentypes.UUID) (models.Delegate, error) {
 	return delegate, nil
 }
 
+func (u *usersRepoImpl) UserFromCourseTaker(takerUUID gentypes.UUID) (*models.Delegate, *models.Individual) {
+	var delegate models.Delegate
+	var individual models.Individual
+
+	// Check delegates
+	database.GormDB.Where("course_taker_uuid = ?", takerUUID).Find(&delegate)
+	database.GormDB.Where("course_taker_uuid = ?", takerUUID).Find(&individual)
+
+	return &delegate, &individual
+}
+
 func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
 	if filter != nil {
 		query = middleware.FilterUser(query, &filter.UserFilter)
@@ -141,9 +152,8 @@ func (u *usersRepoImpl) CreateDelegate(
 	}
 
 	// Add link manually because gorm doesn't like blank associations
-	var courseTaker = models.CourseTaker{}
-	if err := tx.Create(&courseTaker).Error; err != nil {
-		tx.Rollback()
+	courseTaker, err := u.createCourseTaker(tx)
+	if err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Unable to create courseTaker")
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}
@@ -177,6 +187,66 @@ func (u *usersRepoImpl) CreateDelegate(
 
 	if err := tx.Commit().Error; err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Error commiting create delegate transaction")
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	return delegate, nil
+}
+
+func (u *usersRepoImpl) UpdateDelegate(
+	details gentypes.UpdateDelegateInput,
+	s3UploadKey *string,
+	password *string,
+) (models.Delegate, error) {
+	// Validate input
+	if err := details.Validate(); err != nil {
+		return models.Delegate{}, err
+	}
+
+	delegate, err := u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Log(sentry.LevelWarning, err, "Unable to find delegate")
+		return models.Delegate{}, errors.ErrDelegateDoesNotExist(details.UUID.String())
+	}
+
+	updates := make(map[string]interface{})
+	if details.CompanyUUID != nil {
+		if !u.CompanyExists(*details.CompanyUUID) {
+			return models.Delegate{}, &errors.ErrCompanyNotFound
+		}
+		updates["company_uuid"] = *details.CompanyUUID
+	}
+	if details.FirstName != nil {
+		updates["first_name"] = *details.FirstName
+	}
+	if details.LastName != nil {
+		updates["last_name"] = *details.LastName
+	}
+	if details.JobTitle != nil {
+		updates["job_title"] = *details.JobTitle
+	}
+	if details.Email != nil {
+		updates["email"] = details.Email
+	}
+	if details.Telephone != nil {
+		updates["telephone"] = details.Telephone
+	}
+	if s3UploadKey != nil {
+		updates["profile_key"] = s3UploadKey
+	}
+	if password != nil {
+		updates["password"] = password
+	}
+
+	save := database.GormDB.Model(&delegate).Updates(updates)
+	if save.Error != nil {
+		u.Logger.Logf(sentry.LevelError, save.Error, "Unable to update delegate: %s", details.UUID)
+		return models.Delegate{}, &errors.ErrWhileHandling
+	}
+
+	delegate, err = u.Delegate(details.UUID)
+	if err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to get delegate after updating")
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}
 

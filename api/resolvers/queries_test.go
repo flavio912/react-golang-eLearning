@@ -1165,9 +1165,9 @@ func TestLessons(t *testing.T) {
 							},
 							{
 								"tags":[
-									{"uuid":"00000000-0000-0000-0000-000000000001"},
 									{"uuid":"00000000-0000-0000-0000-000000000002"},
-									{"uuid":"00000000-0000-0000-0000-000000000003"}
+									{"uuid":"00000000-0000-0000-0000-000000000003"},
+									{"uuid":"00000000-0000-0000-0000-000000000001"}
 								]
 							}
 						],
@@ -1263,15 +1263,178 @@ func TestGetCourses(t *testing.T) {
 						"edges": [
 							{"id":1},
 							{"id":2},
-							{"id":3},
 							{"id":4},
 							{"id":5}
 						],
 						"pageInfo": {
-							"total": 5,
+							"total": 4,
 							"offset": 0,
 							"limit": 100,
-							"given": 5
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
+	})
+}
+
+func TestBlog(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "get a lesson",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				{
+					blog(uuid: "00000000-0000-0000-0000-000000000003") {
+						uuid
+						createdAt
+						title
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"blog": {
+						"uuid": "00000000-0000-0000-0000-000000000003",
+						"createdAt": "2020-03-08T13:53:37Z",
+						"title": "How To Build A Custom Autoencoder"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{blog(uuid: "00000000-0000-0000-0000-000000000001") { uuid }}`,
+			Path:            []interface{}{"blog"},
+			MustAuth:        false,
+			AdminAllowed:    true,
+			ManagerAllowed:  true,
+			DelegateAllowed: true,
+		},
+	)
+}
+
+func TestBlogs(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all blogs",
+			Context: basePublicContext,
+			Schema:  schema,
+			Query: `
+				{
+					blogs {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"blogs":{
+						"edges": [
+							{"uuid":"00000000-0000-0000-0000-000000000003"},
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"limit": 100,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should order",
+			Context: basePublicContext,
+			Schema:  schema,
+			Query: `
+				{
+					blogs (orderBy: {
+						ascending: false
+						field: "created_at"
+					}) {
+						edges {
+							createdAt
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"blogs":{
+						"edges":[
+							{"createdAt":"2020-03-08T13:53:37Z"},
+							{"createdAt":"2020-01-08T13:53:37Z"},
+							{"createdAt":"2020-01-08T12:53:37Z"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"limit": 100,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should page",
+			Context: basePublicContext,
+			Schema:  schema,
+			Query: `
+				{
+					blogs (page: {
+						offset: 1
+						limit: 2
+					}) {
+						edges {
+							uuid
+						}
+						pageInfo {
+							total
+							offset
+							limit
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"blogs":{
+						"edges":[
+							{"uuid":"00000000-0000-0000-0000-000000000001"},
+							{"uuid":"00000000-0000-0000-0000-000000000002"}
+						],
+						"pageInfo": {
+							"given": 2,
+							"limit": 2,
+							"offset": 1,
+							"total": 3
 						}
 					}
 				}
@@ -1279,14 +1442,283 @@ func TestGetCourses(t *testing.T) {
 		},
 	})
 
-	// accessTest(
-	// 	t, schema, accessTestOpts{
-	// 		Query:           `{lessons { edges { uuid } }}`,
-	// 		Path:            []interface{}{"lessons"},
-	// 		MustAuth:        true,
-	// 		AdminAllowed:    true,
-	// 		ManagerAllowed:  false,
-	// 		DelegateAllowed: false,
-	// 	},
-	// )
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{blogs { edges { uuid } }}`,
+			Path:            []interface{}{"blogs"},
+			MustAuth:        false,
+			AdminAllowed:    true,
+			ManagerAllowed:  true,
+			DelegateAllowed: true,
+		},
+	)
+}
+
+func TestGetModules(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return filtered modules",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					modules(page: {}, filter: {name: "steve"}) {
+							edges {
+									uuid
+									name
+							}
+							pageInfo {
+									total
+									offset
+									given
+							}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"modules":{
+						"edges": [
+							{"uuid": "00000000-0000-0000-0000-000000000001", "name": "Module Steve"}
+						],
+						"pageInfo": {
+							"total": 1,
+							"offset": 0,
+							"given": 1
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should return all modules",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					modules {
+							edges {
+									uuid
+							}
+							pageInfo {
+									total
+									offset
+									given
+							}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"modules":{
+						"edges": [
+							{"uuid": "e9b02390-3d83-4100-b90e-ac29a68b473f"},
+							{"uuid": "00000000-0000-0000-0000-000000000002"},
+							{"uuid": "00000000-0000-0000-0000-000000000001"}
+						],
+						"pageInfo": {
+							"total": 3,
+							"offset": 0,
+							"given": 3
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(
+		t, schema, accessTestOpts{
+			Query:           `{modules { edges { uuid } }}`,
+			Path:            []interface{}{"modules"},
+			MustAuth:        true,
+			AdminAllowed:    true,
+			ManagerAllowed:  false,
+			DelegateAllowed: false,
+		},
+	)
+}
+
+func TestSearchSyllabus(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should search in all items",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {name: "cool"}) {
+						edges {
+							uuid
+							name
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"uuid": "2a7e551a-0291-422d-8508-c0ee8ff4c67e",
+								"name": "Cool test name"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000002",
+								"name": "Lorentz Invariance"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000002",
+								"name": "Module Joe"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000003",
+								"name": "Eigenvalues and Eigenvectors"
+							}
+						],
+						"pageInfo": {
+							"total": 4,
+							"offset": 0,
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should search in tests only",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {
+						name: "to"
+						excludeModule: true
+						excludeLesson: true
+					}) {
+						edges {
+							uuid
+							name
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"uuid":"2a56f8a8-1cd3-4e7b-bd10-c489b519828d",
+								"name":"Navier-Stokes equations"
+							},
+							{
+								"uuid": "c212859c-ddd3-433c-9bf5-15cdd1db32f9",
+								"name": "How to fibbonacci"
+							}
+						],
+						"pageInfo": {
+							"total": 2,
+							"offset": 0,
+							"given": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should show fields specific to type",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {
+						name: "ing"
+					}) {
+						edges {
+							__typename
+							... on SyllabusItem {
+								name
+							}
+							... on Lesson {
+								tags {
+									name
+								}
+							}
+							... on Module {
+								description
+							}
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"__typename": "Lesson",
+								"name": "Dynamic Programming",
+								"tags": []
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Lorentz Invariance",
+								"tags": [
+									{"name": "Handling cool things"},
+									{"name": "Fancy tag for cool people"},
+									{"name": "existing tag"}
+								]
+							},
+							{
+								"__typename": "Module",
+								"name":"Module Joe",
+								"description": "Loves pies, don't give him plants"
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Eigenvalues and Eigenvectors",
+								"tags":	[{"name":"Handling cool things"}]
+							}
+						],
+						"pageInfo": {
+							"total": 4,
+							"offset": 0,
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query:           `{searchSyllabus { edges { uuid } }}`,
+		Path:            []interface{}{"searchSyllabus"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
 }

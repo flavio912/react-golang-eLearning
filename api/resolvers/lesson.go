@@ -7,7 +7,6 @@ import (
 
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -20,7 +19,7 @@ type LessonResolver struct {
 }
 
 type NewLessonArgs struct {
-	UUID   string
+	UUID   *gentypes.UUID
 	Lesson gentypes.Lesson
 }
 
@@ -35,8 +34,8 @@ func NewLessonResolver(ctx context.Context, args NewLessonArgs) (*LessonResolver
 	)
 
 	switch {
-	case args.UUID != "":
-		lesson, err = loader.LoadLesson(ctx, args.UUID)
+	case args.UUID != nil:
+		lesson, err = loader.LoadLesson(ctx, *args.UUID)
 	case args.Lesson.UUID.String() != "":
 		lesson = args.Lesson
 	default:
@@ -81,19 +80,17 @@ func NewLessonResolvers(ctx context.Context, args NewLessonsArgs) (*[]*LessonRes
 
 func (l *LessonResolver) UUID() gentypes.UUID { return l.Lesson.UUID }
 func (l *LessonResolver) Name() string        { return l.Lesson.Name }
-func (l *LessonResolver) Text() string        { return l.Lesson.Text }
-func (l *LessonResolver) Complete() *bool     { return helpers.BoolPointer(false) } // TODO
-func (l *LessonResolver) Mp3URL() *string     { return helpers.StringPointer("/google.com") }
+func (l *LessonResolver) Type() gentypes.CourseElement {
+	return gentypes.LessonType
+}
+func (l *LessonResolver) Text() string    { return l.Lesson.Text }
+func (l *LessonResolver) Complete() *bool { return helpers.BoolPointer(false) } // TODO
+func (l *LessonResolver) Mp3URL() *string { return helpers.StringPointer("/google.com") }
 
 // TODO: Use dataloaders
 func (l *LessonResolver) Tags(ctx context.Context) (*[]*TagResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return nil, &errors.ErrUnauthorized
-	}
-
-	courseFuncs := course.NewCourseApp(grant)
-	tags, err := courseFuncs.GetTagsByLessonUUID(l.UUID().String())
+	app := auth.AppFromContext(ctx)
+	tags, err := app.CourseApp.GetTagsByLessonUUID(l.UUID().String())
 	if err != nil {
 		glog.Info("Unable to resolve tags")
 		return nil, err

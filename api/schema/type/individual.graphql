@@ -1,3 +1,19 @@
+type Individual {
+  uuid: UUID!
+  createdAt: String
+  email: String!
+  firstName: String!
+  lastName: String!
+  jobTitle: String
+  telephone: String
+  lastLogin: String!
+}
+
+type IndividualPage implements PaginatedQuery{
+  edges: [Individual]
+  pageInfo: PageInfo
+}
+
 input CreateIndividualInput {
   firstName: String!
   lastName: String!
@@ -9,4 +25,22 @@ input CreateIndividualInput {
 
 type CreateIndividualResponse {
   user: User
+}
+
+input UpdateIndividualInput {
+  uuid: UUID!
+  firstName: String
+  lastName: String
+  jobTitle: String
+  telephone: String
+  email: String
+  password: String
+}
+
+type UpdateIndividualResponse {
+  user: User
+}
+
+input DeleteIndividualInput {
+  uuid: UUID!
 }

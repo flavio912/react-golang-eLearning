@@ -48,6 +48,7 @@ export default function AddUser({
   open,
   className,
   company,
+  userType,
   ...rest
 }) {
   const classes = useStyles();
@@ -118,9 +119,10 @@ export default function AddUser({
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.delegate}
+                      checked={userType === 'delegate' ? true : false}
                       onChange={handleFieldChange}
                       name="delegate"
+                      disabled
                     />
                   }
                   label="Is Delegate"
@@ -128,9 +130,10 @@ export default function AddUser({
                 <FormControlLabel
                   control={
                     <Checkbox
-                      checked={values.manager}
+                      checked={userType === 'manager' ? true : false}
                       onChange={handleFieldChange}
                       name="manager"
+                      disabled
                     />
                   }
                   label="Is Manager"
@@ -142,7 +145,11 @@ export default function AddUser({
         <Divider />
         <CardActions className={classes.actions}>
           <Button onClick={onClose}>Close</Button>
-          <Button color="primary" onClick={onClose} variant="contained">
+          <Button
+            color="primary"
+            onClick={() => onClose(values)}
+            variant="contained"
+          >
             Save
           </Button>
         </CardActions>

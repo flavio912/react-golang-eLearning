@@ -32,7 +32,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginBottom: theme.spacing(2)
   },
   link: {
-    margin: [15, 0, 30, 0],
+    margin: '22px 0 19px 0',
     textAlign: 'center',
     color: theme.colors.textBlue,
     fontSize: theme.fontSizes.small
@@ -105,21 +105,28 @@ function LoginDialogue({ onSubmit }: Props) {
           Glad to have you back, please enter your login details to proceed
         </p>
         <p className={classes.errMessage}>{error}</p>
-        <FancyInput
-          label="Email"
-          labelColor={'#5CC301'}
-          type={'email'}
-          onChange={setEmail}
-        />
-        <FancyInput
-          label="Password"
-          labelColor={'#5CC301'}
-          type={'password'}
-          onChange={setPassword}
-        />
-        <FancyButton text="Login to TTC" onClick={onLogin} />
-        <a className={classes.link} href="https://example.com">
-          I don't have a TTC Hub account
+        <form
+          onSubmit={(evt) => {
+            evt.preventDefault();
+            onLogin();
+          }}
+        >
+          <FancyInput
+            label="Email"
+            labelColor={'#5CC301'}
+            type={'text'}
+            onChange={setEmail}
+          />
+          <FancyInput
+            label="Password"
+            labelColor={'#5CC301'}
+            type={'password'}
+            onChange={setPassword}
+          />
+          <FancyButton text="Login to TTC" onClick={onLogin} />
+        </form>
+        <a className={classes.link} href="//manager.ttc.devserver.london">
+          Manager login
         </a>
       </Card>
       <div className={classes.links}>

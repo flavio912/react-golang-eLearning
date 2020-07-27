@@ -138,10 +138,11 @@ func (c *coursesRepoImpl) CreateQuestion(input CreateQuestionArgs) (models.Quest
 }
 
 type UpdateAnswerArgs struct {
-	UUID      *gentypes.UUID
-	IsCorrect *bool
-	Text      *string
-	ImageKey  *string
+	AnswerType gentypes.AnswerType
+	UUID       *gentypes.UUID
+	IsCorrect  *bool
+	Text       *string
+	ImageKey   *string
 }
 
 type UpdateQuestionArgs struct {
@@ -213,12 +214,38 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 				updates := map[string]interface{}{
 					"rank": strconv.Itoa(i),
 				}
-				if ans.Text != nil {
+
+				switch ans.AnswerType {
+				case gentypes.TextAnswer:
+					updates["image_key"] = nil
+
+					if ans.Text == nil {
+						tx.Rollback()
+						return models.Question{}, errors.ErrInputValidation("Answers", "Text answer has no text")
+					}
 					updates["text"] = *ans.Text
-				}
-				if ans.ImageKey != nil {
+				case gentypes.ImageAnswer:
+					updates["text"] = nil
+
+					if ans.ImageKey == nil {
+						break
+					}
 					updates["image_key"] = *ans.ImageKey
+				case gentypes.TextImageAnswer:
+					if ans.Text == nil {
+						tx.Rollback()
+						return models.Question{}, errors.ErrInputValidation("Answers", "Text + Image answer has no text")
+					}
+					updates["text"] = *ans.Text
+
+					if ans.ImageKey != nil {
+						updates["image_key"] = *ans.ImageKey
+					}
+				default:
+					tx.Rollback()
+					return models.Question{}, errors.ErrInputValidation("Answers", "Invalid answer type")
 				}
+
 				if ans.IsCorrect != nil {
 					updates["is_correct"] = *ans.IsCorrect
 				}
@@ -283,4 +310,35 @@ func (c *coursesRepoImpl) UpdateQuestion(input UpdateQuestionArgs) (models.Quest
 	}
 
 	return question, nil
+}
+
+func (c *coursesRepoImpl) DeleteQuestion(input gentypes.UUID) (bool, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	var test_question_link models.TestQuestionsLink
+	if !tx.Model(&models.TestQuestionsLink{}).Where("question_uuid = ?", input).First(&test_question_link).RecordNotFound() {
+		err := errors.ErrUnableToDelete("Cannot delete question that is part of a test")
+		c.Logger.Log(sentry.LevelError, err, "Unable to delete question")
+		tx.Rollback()
+		return false, err
+	}
+
+	if err := tx.Delete(models.Question{}, "uuid = ?", input).Error; err != nil {
+		c.Logger.Logf(sentry.LevelError, err, "Unable to delete question: %s", input)
+		tx.Rollback()
+		return false, &errors.ErrDeleteFailed
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		c.Logger.Log(sentry.LevelError, err, "Unable to commit transaction")
+		tx.Rollback()
+		return false, &errors.ErrWhileHandling
+	}
+
+	return true, nil
 }

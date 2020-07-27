@@ -14,15 +14,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     justifyContent: 'center',
     color: theme.colors.primaryBlack,
-    paddingTop: 83
+    paddingTop: 83,
   },
-  appHolderRoot: {}
+  appHolderRoot: {},
 }));
 
 const defaultLink = {
   id: 0,
   name: 'Feature',
-  link: ''
+  link: '',
 };
 
 const defaultNew = {
@@ -31,8 +31,8 @@ const defaultNew = {
   link: '',
   alert: {
     type: 'new',
-    value: 'NEW'
-  }
+    value: 'NEW',
+  },
 };
 
 const defaultIncrease = {
@@ -41,8 +41,8 @@ const defaultIncrease = {
   link: '',
   alert: {
     type: 'increase',
-    value: '99.9%'
-  }
+    value: '99.9%',
+  },
 };
 
 const footerColumns = [
@@ -58,8 +58,8 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 1,
@@ -70,8 +70,8 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 2,
@@ -82,14 +82,20 @@ const footerColumns = [
       defaultLink,
       defaultLink,
       defaultLink,
-      defaultLink
-    ]
+      defaultLink,
+    ],
   },
   {
     id: 3,
     header: 'Get Help',
-    links: [defaultLink, defaultLink, defaultLink, defaultLink, defaultIncrease]
-  }
+    links: [
+      defaultLink,
+      defaultLink,
+      defaultLink,
+      defaultLink,
+      defaultIncrease,
+    ],
+  },
 ];
 
 export const AppHolder = ({ children }: Props) => {
@@ -97,14 +103,107 @@ export const AppHolder = ({ children }: Props) => {
   const classes = useStyles({ theme });
 
   const { match, router } = useRouter();
-  const tabs: Tab[] = [
-    { id: 0, title: 'Features', options: ['Some', 'Different', 'Options'] },
-    { id: 1, title: 'Courses', options: ['Some', 'Different', 'Options'] },
-    { id: 2, title: 'Resources', options: ['Some', 'Different', 'Options'] },
-    { id: 3, title: 'Consultancy' }
+  const tabs: Array<Tab> = [
+    {
+      id: 0,
+      title: 'Features',
+      options: [
+        {
+          id: 0,
+          title: 'For Companies',
+          text:
+            "We're training the finest minds in air, road and sea - are you on the list?",
+          link: '/register/company',
+        },
+        {
+          id: 1,
+          title: 'For Individuals',
+          text:
+            'Do you need trainingsolutions for your next role in Transport Compliance?',
+          link: '/register/individual',
+        },
+      ],
+    },
+    {
+      id: 1,
+      title: 'Courses',
+      options: [
+        {
+          id: 0,
+          title: 'Online Courses',
+          text:
+            'Training courses specifically designed for those who work in Aviation Security',
+          link: '/',
+        },
+        {
+          id: 1,
+          title: 'Classroom Courses',
+          text:
+            'All classroom courses are delivered in London at our purpose built facility',
+          options: [
+            {
+              id: 0,
+              title: 'Aviation Security',
+              text:
+                'Training courses specifically designed for those who work in Aviation Security',
+              link: '/courses',
+            },
+            {
+              id: 1,
+              title: 'Dangerous Goods',
+              text:
+                'Courses for both air and road, all in accordance with CAA Regulations',
+              link: '/',
+            },
+            {
+              id: 2,
+              title: 'Health & Safety',
+              text:
+                'All our courses can be taken online in conjunction withyour internal policies',
+              link: '/',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 2,
+      title: 'Resources',
+      options: [
+        {
+          id: 0,
+          title: 'News & Blog',
+          text:
+            'Stay in touch with all the industry news from the team at TTC Hub',
+          link: '/articles',
+        },
+        {
+          id: 1,
+          title: 'Book A Demo',
+          text:
+            'Looking for more information on our platform? Let us show you the ropes',
+          link: '/',
+        },
+        {
+          id: 2,
+          title: 'About Us',
+          text:
+            "We're a growing team of industry experts with 40+ years of experience",
+          link: '/aboutus',
+        },
+        {
+          id: 3,
+          title: 'Contact Us',
+          text:
+            "We're a growing team of industry experts with 100+ years of experience",
+          link: '/contact',
+        },
+      ],
+    },
+    { id: 3, title: 'Consultancy', link: '/consultancy' },
   ];
 
-  const selected = () => {
+  const selectedRoute = () => {
     const { routes } = match;
     const currentRouter = routes[routes.length - 1];
     switch (currentRouter.path) {
@@ -115,19 +214,17 @@ export const AppHolder = ({ children }: Props) => {
     }
   };
 
+  const [selected, setSelected] = React.useState<Tab | undefined>();
+
   return (
     <div className={classes.appHolderRoot}>
       <HeaderMenu
         tabs={tabs}
-        selected={selected()}
-        onClick={(tab) => {
-          switch (tab.id) {
-            case 0:
-              router.push('/app');
-              break;
-            default:
-              break;
-          }
+        selected={selected}
+        setSelected={(tab?: Tab) => setSelected(tab)}
+        onClick={(link) => {
+          setSelected(undefined);
+          router.push(link);
         }}
         onRegisterClick={() => {
           router.push('/register');

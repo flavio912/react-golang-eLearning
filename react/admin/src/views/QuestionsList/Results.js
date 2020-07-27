@@ -1,22 +1,17 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import getInitials from 'src/utils/getInitials';
 import {
   Card,
   CardActions,
   Table,
   TableBody,
-  Link,
   TableCell,
-  Avatar,
   TablePagination,
   TableHead,
   TableRow,
-  Chip,
   Button
 } from '@material-ui/core';
 

@@ -72,17 +72,21 @@ func TestUpdateQuestion(t *testing.T) {
 		ansId1 := gentypes.MustParseToUUID("8deab18c-824f-4a45-9b65-d533833d80bf")
 		answerArgs := []course.UpdateAnswerArgs{
 			course.UpdateAnswerArgs{
-				UUID:      &ansId,
-				IsCorrect: helpers.BoolPointer(false),
-				Text:      helpers.StringPointer("Cheesecake"),
+				UUID:       &ansId,
+				IsCorrect:  helpers.BoolPointer(false),
+				Text:       helpers.StringPointer("Cheesecake"),
+				AnswerType: gentypes.TextAnswer,
 			},
 			course.UpdateAnswerArgs{
-				IsCorrect: helpers.BoolPointer(true),
-				Text:      helpers.StringPointer("Liz"),
+				IsCorrect:  helpers.BoolPointer(true),
+				Text:       helpers.StringPointer("Liz"),
+				AnswerType: gentypes.TextAnswer,
 			},
 			course.UpdateAnswerArgs{
-				UUID:      &ansId1,
-				IsCorrect: helpers.BoolPointer(false),
+				UUID:       &ansId1,
+				IsCorrect:  helpers.BoolPointer(false),
+				Text:       helpers.StringPointer("Some cool text"),
+				AnswerType: gentypes.TextAnswer,
 			},
 		}
 
@@ -111,7 +115,34 @@ func TestUpdateQuestion(t *testing.T) {
 		assert.Equal(t, *answerArgs[1].Text, *answers[1].Text)
 		assert.Equal(t, *answerArgs[1].IsCorrect, answers[1].IsCorrect)
 
-		assert.Equal(t, "32 kcal", *answers[2].Text)
+		assert.Equal(t, *answerArgs[2].Text, *answers[2].Text)
 		assert.Equal(t, *answerArgs[2].IsCorrect, answers[2].IsCorrect)
+	})
+}
+
+func TestDeleteQuestion(t *testing.T) {
+	t.Run("Should not delete question that is part of a test", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("d8ff8501-4381-4217-a332-8e87a64b968c")
+		b, err := courseRepo.DeleteQuestion(uuid)
+
+		assert.NotNil(t, err)
+		assert.False(t, b)
+	})
+
+	t.Run("Deletes existing question", func(t *testing.T) {
+		prepareTestDatabase()
+
+		uuid := gentypes.MustParseToUUID("ba070bfb-d3d0-4ff7-a35d-6263180a43f9")
+		b, err := courseRepo.DeleteQuestion(uuid)
+
+		assert.Nil(t, err)
+		assert.True(t, b)
+
+		var answers []models.BasicAnswer
+		database.GormDB.Table("basic_answers").Where("question_uuid = ?", uuid).Find(&answers)
+
+		assert.Len(t, answers, 0)
 	})
 }

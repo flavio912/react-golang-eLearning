@@ -17,15 +17,12 @@ import OrderCard, {
 import AccountCard, {
   AccountDetails
 } from 'components/Overview/PaymentPage/AccountCard';
+import PageMargin from 'components/core/PageMargin';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
     width: '100%',
     backgroundColor: theme.colors.primaryWhite
-  },
-  centerer: {
-    display: 'flex',
-    justifyContent: 'center'
   },
   centered: {
     display: 'grid',
@@ -111,33 +108,31 @@ function PaymentPage({}: Props) {
         imageURL={require('assets/StripePayment.svg')}
       />
       <Spacer spacing={4} vertical />
-      <div className={classes.centerer}>
-        <div className={classes.centered}>
-          <div>
-            <AccountCard accountDetails={emptyAccountDetails} />
-            <Spacer vertical spacing={3} />
-            <BillingCard billingDetails={emptyBillingDetails} />
-            <Spacer vertical spacing={3} />
-            <OrderCard orderItems={defaultOrderItems} />
-            <Spacer vertical spacing={3} />
-          </div>
-          <div>
-            <Elements stripe={stripePromise}>
-              <PaymentCard total={336} card={null} />
-            </Elements>
-            <div className={classes.privacy}>
-              Pay securely using our credt card. All payments are 128-Bit
-              secured by Global Payments. Your personal data will be used to
-              process your order, support your experience through this website,
-              and for other purposes described in our
-              <span className={classes.underline} onClick={onPrivacy}>
-                privacy policy
-              </span>
-              .
-            </div>
+      <PageMargin centeredStyle={classes.centered}>
+        <div>
+          <AccountCard accountDetails={emptyAccountDetails} />
+          <Spacer vertical spacing={3} />
+          <BillingCard billingDetails={emptyBillingDetails} />
+          <Spacer vertical spacing={3} />
+          <OrderCard orderItems={defaultOrderItems} />
+          <Spacer vertical spacing={3} />
+        </div>
+        <div>
+          <Elements stripe={stripePromise}>
+            <PaymentCard total={336} card={null} />
+          </Elements>
+          <div className={classes.privacy}>
+            Pay securely using our credt card. All payments are 128-Bit
+            secured by Global Payments. Your personal data will be used to
+            process your order, support your experience through this website,
+            and for other purposes described in our{' '}
+            <span className={classes.underline} onClick={onPrivacy}>
+              privacy policy
+            </span>
+            .
           </div>
         </div>
-      </div>
+      </PageMargin>
     </div>
   );
 }

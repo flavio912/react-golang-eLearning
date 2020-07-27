@@ -47,6 +47,33 @@ input LessonFilter {
   tags: [UUID]
 }
 
+input SyllabusFilter {
+  name: String
+  excludeLesson: Boolean
+  excludeModule: Boolean
+  excludeTest: Boolean
+}
+
+input CertificateTypeFilter {
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+}
+
+input CAANumberFilter {
+  identifier: String
+  used: Boolean
+}
+
+input IndividualFilter {
+  uuid: UUID
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
+}
+
 interface PaginatedQuery {
   pageInfo: PageInfo
 }
@@ -60,26 +87,41 @@ type Query {
   info: String!
   admin(uuid: UUID): Admin
   admins(page: Page): AdminPage!
+
   manager(uuid: UUID): Manager
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage
+
   delegate(uuid: UUID!): Delegate
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
+
   company(uuid: UUID!): Company
   companies(page: Page, filter: CompanyFilter, orderBy: OrderBy): CompanyPage
+
   lesson(uuid: UUID!): Lesson
   lessons(page: Page, filter: LessonFilter, orderBy: OrderBy): LessonPage
+
+  blog(uuid: UUID!): Blog
+  blogs(page: Page, orderBy: OrderBy): BlogPage
+
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   course(id: Int!): Course
   user: User
+  individual(uuid: UUID!): Individual
+  individuals(page: Page, filter: IndividualFilter, orderBy: OrderBy): IndividualPage
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
   tests(page: Page, filter: TestFilter, orderBy: OrderBy): TestPage
   test(uuid: UUID!): Test
-  # modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
+  modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   module(uuid: UUID!): Module
 
-  # searchSyllabus(page: Page, filter: SyllabusFilter) // Allows searching modules, lessons and tests
-  # categories(level: Primary || Secondary, text: String) // Get all of the course categories
+  searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags
+  certificateInfo(token: String!): CertificateInfo!
+  certificateTypes(page: Page, filter: CertificateTypeFilter): CertificateTypePage
+  caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
+
+  categories(page: Page, text: String): CategoryPage
+  # secondaryCategories(page: Page, text: String): CategoryPage
 }

@@ -14,3 +14,7 @@
   text: Why do cowboys wear hats?
   randomise_answers: false
   question_type: SINGLE_CHOICE
+- uuid: ba070bfb-d3d0-4ff7-a35d-6263180a43f9
+  text: Why did chicken cross the street?
+  randomise_answers: false
+  question_type: SINGLE_CHOICE

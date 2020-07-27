@@ -1,24 +1,21 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
-import getInitials from 'src/utils/getInitials';
 import {
   Card,
   CardActions,
   Table,
   TableBody,
-  Link,
   TableCell,
-  Avatar,
   TablePagination,
   TableHead,
   TableRow,
   Chip,
-  Button
+  Button,
 } from '@material-ui/core';
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -90,27 +87,26 @@ function Results({ className, modules, ...rest }) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {modules.map(module => (
+          {modules && modules.map(module => (
             <TableRow key={module.uuid}>
               <TableCell className={classes.moduleName}>
                 {module.name}
               </TableCell>
               <TableCell>{module.numCoursesUsedIn}</TableCell>
-              <TableCell>{module.numLessons}</TableCell>
+              <TableCell>{module.syllabus.length}</TableCell>
               <TableCell>
-                {module.tags.map(tag => (
-                  <Chip color={tag.color} label={tag.name} />
+                {module.tags && module.tags.map(tag => (
+                  <Chip style={{ backgroundColor: tag.color }} label={tag.name} />
                 ))}
               </TableCell>
               <TableCell>
                 <Button
-                  color="primary"
+                  color="default"
                   component={RouterLink}
                   size="small"
-                  to={`/module/${module.uuid}/overview`}
-                  variant="outlined"
+                  to={`/modules/${module.uuid}/overview`}
                 >
-                  Edit
+                  <CreateOutlinedIcon />
                 </Button>
               </TableCell>
             </TableRow>
@@ -134,7 +130,7 @@ function Results({ className, modules, ...rest }) {
 
 Results.propTypes = {
   className: PropTypes.string,
-  modules: PropTypes.object
+  modules: PropTypes.array
 };
 
 export default Results;
