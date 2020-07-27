@@ -11,7 +11,7 @@ import TimeSpent from 'components/ActivityTable/TimeSpent';
 import ActivityName from 'components/ActivityTable/ActivityName';
 import classnames from 'classnames';
 import moment from 'moment';
-import { TrainingProgress_activity } from 'views/TrainingProgress/__generated__/TrainingProgress_activity.graphql';
+import { ActivityTable_activity } from './__generated__/ActivityTable_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   rootActivityTable: {},
@@ -96,15 +96,25 @@ type PageInfo = {
 
 type Props = {
   className?: string;
-  activity: TrainingProgress_activity;
-  pageInfo: PageInfo;
-  onUpdatePage: (page: number) => void;
+  activity: ActivityTable_activity;
+  onUpdatePage: (page: number, limit: number) => void;
 };
 
-const ActivityTable = ({ activity, className, pageInfo, onUpdatePage }: Props) => {
+const ActivityTable = ({ activity, className, onUpdatePage }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   
+  const pageProps = {
+    total: activity.pageInfo?.total ?? 0,
+    limit: activity.pageInfo?.limit ?? 10,
+    offset: activity.pageInfo?.offset ?? 0
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
+    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
+  };
+
   return (
     <div className={classnames(className, classes.rootActivityTable)}>
       <div className={classes.sectionTitleWrapper}>
@@ -149,7 +159,7 @@ const ActivityTable = ({ activity, className, pageInfo, onUpdatePage }: Props) =
               date: moment(activity?.createdAt).format('DD/MM/YY')
             },
             activity?.course
-              ? `${nameMap[activity.type]} the ${activity?.course?.name} Course`
+              ? `You ${nameMap[activity.type]} the ${activity?.course?.name} Course`
               : nameMap[activity?.type],
             {
               icon: iconMap[activity.type],
@@ -167,7 +177,7 @@ const ActivityTable = ({ activity, className, pageInfo, onUpdatePage }: Props) =
       <div className={classes.pagination}>
         <Paginator
           currentPage={pageInfo.currentPage}
-          updatePage={onUpdatePage}
+          updatePage={(page) => onUpdatePage(page, pageProps.limit)}
           numPages={pageInfo.totalPages}
           itemsPerPage={10}
           showRange={pageInfo.totalPages > 4 ? 4 : pageInfo.totalPages}
@@ -177,4 +187,22 @@ const ActivityTable = ({ activity, className, pageInfo, onUpdatePage }: Props) =
   );
 };
 
-export default ActivityTable;
+export default createFragmentContainer(ActivityTable, {
+  activity: graphql`
+    fragment ActivityTable_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+        limit
+        offset
+      }
+    }
+  `
+});
