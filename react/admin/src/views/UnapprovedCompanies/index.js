@@ -57,7 +57,7 @@ function UnapprovedCompanies({ match, history }) {
         limit: 100
       },
       filter: {
-        approved: true
+        approved: false
       },
       orderBy: {
         ascending: false,
