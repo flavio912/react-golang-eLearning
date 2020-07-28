@@ -56,10 +56,11 @@ function CompaniesManagementList() {
     variables: {
       page: {
         offset: page,
-        limit: rowsPerPage,
+        limit: rowsPerPage
       },
       filter: {
-        name: searchText
+        name: searchText,
+        approved: true
       },
       orderBy: {
         ascending: false,
