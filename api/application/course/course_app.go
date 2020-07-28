@@ -96,7 +96,6 @@ type CourseApp interface {
 		filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
 	UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (gentypes.CertificateType, error)
-	CertificateInfo(token string) (gentypes.CertficateInfo, error)
 	CAANumbers(
 		page *gentypes.Page,
 		filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error)
