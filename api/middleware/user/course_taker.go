@@ -251,7 +251,7 @@ func (u *usersRepoImpl) UpdateHistoricalCourse(input UpdateHistoricalCourseInput
 		updates["certificate_key"] = input.CertificateKey
 	}
 
-	if err := database.GormDB.Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
+	if err := database.GormDB.Model(models.HistoricalCourse{}).Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Unable to update historical course")
 		return &errors.ErrWhileHandling
 	}

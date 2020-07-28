@@ -1,15 +1,6 @@
-import * as React from "react";
-import { createUseStyles } from "react-jss";
-import { Theme } from "helpers/theme";
-
-type Props = {
-  certName: string,
-  moduleDeliver: string,
-  forEu: string,
-  certNo: string,
-  trainingDate: string,
-  expiryDate: string
-};
+import * as React from 'react';
+import { createUseStyles } from 'react-jss';
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
@@ -50,13 +41,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
+type Props = {
+  certName: string;
+  moduleDeliver: string;
+  forEu: string;
+  certNo: string;
+  trainingDate: string;
+  expiryDate: string;
+  caaNo?: string;
+};
+
 function CertInfo({
   certName,
   moduleDeliver,
   forEu,
   certNo,
   trainingDate,
-  expiryDate
+  expiryDate,
+  caaNo
 }: Props) {
   const classes = useStyles();
 
@@ -73,6 +75,13 @@ function CertInfo({
           <span className={classes.certInfoLabel}>Certificate No:</span>
           <span>{certNo}</span>
         </p>
+        {caaNo && (
+          <p className={classes.certInfoRow}>
+            <span className={classes.certInfoLabel}>CAA SRN:</span>
+            <span>{caaNo}</span>
+          </p>
+        )}
+
         <p className={classes.certInfoRow}>
           <span className={classes.certInfoLabel}>Date of Training:</span>
           <span>{trainingDate}</span>
