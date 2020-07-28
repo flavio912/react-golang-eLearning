@@ -106,6 +106,11 @@ export default [
         component: lazy(() => import('src/views/OrderManagementList'))
       },
       {
+        path: '/approve-companies',
+        exact: true,
+        component: lazy(() => import('src/views/UnapprovedCompanies'))
+      },
+      {
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementDetails'))

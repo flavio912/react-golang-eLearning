@@ -134,10 +134,6 @@ func (u *usersRepoImpl) GetManagerIDsByCompany(
 }
 
 func (u *usersRepoImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error) {
-	// if !g.IsAdmin {
-	// 	return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
-	// }
-
 	var companies []models.Company
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
