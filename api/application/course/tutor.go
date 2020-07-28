@@ -18,6 +18,14 @@ func (c *courseAppImpl) tutorToGentype(tutor models.Tutor) gentypes.Tutor {
 	}
 }
 
+func (c *courseAppImpl) tutorsToGentypes(tutors []models.Tutor) []gentypes.Tutor {
+	gens := make([]gentypes.Tutor, len(tutors))
+	for i, t := range tutors {
+		gens[i] = c.tutorToGentype(t)
+	}
+	return gens
+}
+
 func (c *courseAppImpl) CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error) {
 	if !c.grant.IsAdmin {
 		return gentypes.Tutor{}, &errors.ErrUnauthorized
@@ -116,4 +124,16 @@ func (c *courseAppImpl) Tutor(uuid gentypes.UUID) (gentypes.Tutor, error) {
 
 	tutor, err := c.coursesRepository.Tutor(uuid)
 	return c.tutorToGentype(tutor), err
+}
+
+func (c *courseAppImpl) Tutors(
+	page *gentypes.Page,
+	filter *gentypes.TutorFilter,
+	order *gentypes.OrderBy) ([]gentypes.Tutor, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.Tutor{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	tutors, pageInfo, err := c.coursesRepository.Tutors(page, filter, order)
+	return c.tutorsToGentypes(tutors), pageInfo, err
 }

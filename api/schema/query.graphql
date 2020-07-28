@@ -122,6 +122,7 @@ type Query {
   module(uuid: UUID!): Module
 
   tutor(uuid: UUID!): Tutor
+  tutors(page: Page, filter: TutorFilter, orderBy: OrderBy): TutorPage
 
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags

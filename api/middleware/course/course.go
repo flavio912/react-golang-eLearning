@@ -110,6 +110,10 @@ type CoursesRepository interface {
 	UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error)
 	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
 	Tutor(uuid gentypes.UUID) (models.Tutor, error)
+	Tutors(
+		page *gentypes.Page,
+		filter *gentypes.TutorFilter,
+		order *gentypes.OrderBy) ([]models.Tutor, gentypes.PageInfo, error)
 }
 
 type coursesRepoImpl struct {

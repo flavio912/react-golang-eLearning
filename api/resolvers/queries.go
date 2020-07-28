@@ -519,3 +519,23 @@ func (q *QueryResolver) Tutor(ctx context.Context, args struct{ UUID gentypes.UU
 		TutorUUID: &args.UUID,
 	})
 }
+
+func (q *QueryResolver) Tutors(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.TutorFilter
+		OrderBy *gentypes.OrderBy
+	}) (*TutorPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	tutors, pageInfo, err := app.CourseApp.Tutors(args.Page, args.Filter, args.OrderBy)
+
+	if err != nil {
+		return &TutorPageResolver{}, err
+	}
+
+	return NewTutorPageResolver(ctx, NewTutorPageArgs{
+		Tutors:   &tutors,
+		PageInfo: &pageInfo,
+	})
+}
