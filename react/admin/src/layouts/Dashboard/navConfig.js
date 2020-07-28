@@ -20,7 +20,7 @@ export default [
       },
       {
         title: 'Company requests',
-        href: 'approve-companies',
+        href: '/approve-companies',
         icon: BarChartIcon
       },
       {
