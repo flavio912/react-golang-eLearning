@@ -20,6 +20,7 @@ import { fetchQuery } from 'relay-runtime';
 import environment from 'api/environment';
 import { OrgOverviewDelegatesQueryResponse } from './__generated__/OrgOverviewDelegatesQuery.graphql';
 import { DelegatesPageQueryResponse } from './__generated__/DelegatesPageQuery.graphql';
+import { CourseStatus } from './__generated__/DelegateProfilePage_delegate.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -104,21 +105,34 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
   const classes = useStyles({ theme });
 
   const edges = delegates.edges ?? [];
-  const pageInfo = delegates.pageInfo;
+  const pageInfo = {
+    total: delegates.pageInfo?.total ?? 0,
+    limit: delegates.pageInfo?.limit ?? 10,
+    offset: delegates.pageInfo?.offset ?? 0,
+  };
+  const page = {
+    currentPage: Math.ceil(pageInfo.offset/ pageInfo.limit),
+    numPages: Math.ceil(pageInfo.total/ pageInfo.limit)
+  };
+
   const delegateComponents = edges.map((delegate: any) =>
     delegateRow(
       delegate?.uuid,
       `${delegate?.firstName} ${delegate?.lastName}`,
       '',
       delegate?.email,
-      3,
-      6,
+      (delegate.myCourses as Array<{status: CourseStatus}>).filter(course => course.status == "complete").length,
+      delegate.myCourses.length,
       delegate?.lastLogin,
       '2013-04-20T20:00:00+0800',
       classes,
       router
     )
   );
+  
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/delegates?offset=${(page - 1) * pageInfo.limit}&limit=${pageInfo.limit}`);
+  };
 
   return (
     <div className={classes.root}>
@@ -206,10 +220,11 @@ const DelegatesPage = ({ delegates, manager, router }: Props) => {
       />
       <Spacer vertical spacing={3} />
       <Paginator
-        currentPage={1}
-        updatePage={() => {}}
-        numPages={10}
-        itemsPerPage={10}
+        currentPage={page.currentPage}
+        updatePage={onUpdatePage}
+        numPages={page.numPages}
+        itemsPerPage={pageInfo.limit}
+        showRange={page.numPages > 4 ? 4 : page.numPages}
       />
     </div>
   );
@@ -225,6 +240,9 @@ const DelegatesPageFrag = createFragmentContainer(DelegatesPage, {
         lastName
         lastLogin
         createdAt
+        myCourses {
+          status
+        }
       }
       pageInfo {
         total

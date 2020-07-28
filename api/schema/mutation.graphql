@@ -41,6 +41,7 @@ type Mutation {
     recaptcha: String!
   ): Boolean!
   approveCompany(uuid: UUID!): Company
+  setCoursePublished(courseID: Int!, published: Boolean): Boolean!
 
   fulfilPendingOrder(clientSecret: String!): Boolean!
   saveOnlineCourse(input: SaveOnlineCourseInput!): Course # TODO allow link
@@ -52,11 +53,15 @@ type Mutation {
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
 
+  lessonBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createLesson(input: CreateLessonInput!): Lesson
   updateLesson(input: UpdateLessonInput!): Lesson
   deleteLesson(input: DeleteLessonInput!): Boolean!
 
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  updateIndividual(input: UpdateIndividualInput!): UpdateIndividualResponse
+  deleteIndividual(input: DeleteIndividualInput!): Boolean!
+
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   updateTest(input: UpdateTestInput!): UpdateTestPayload
@@ -68,13 +73,23 @@ type Mutation {
   deleteQuestion(input: DeleteQuestionInput!): Boolean!
 
   createModule(input: CreateModuleInput!): CreateModulePayload
+  moduleBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateModule(input: UpdateModuleInput!): UpdateModulePayload
   deleteModule(input: DeleteModuleInput!): Boolean!
+
+  voiceoverUploadRequest(input: UploadFileMeta!): UploadFileResp
 
   createTutor(input: CreateTutorInput!): Tutor
   updateTutor(input: UpdateTutorInput!): Tutor
   tutorSignatureImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateTutorSignature(input: UpdateTutorSignatureInput!): Tutor
+
+  createCertificateType(input: CreateCertificateTypeInput!): CertificateType
+  updateCertificateType(input: UpdateCertificateTypeInput!): CertificateType
+  certificateBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+
+  createCAANumber(input: CreateCAANumberInput!): CAANumber
+  updateCAANumber(input: UpdateCAANumberInput!): CAANumber
 
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse

@@ -21,16 +21,6 @@ interface SyllabusItem {
   complete: Boolean
 }
 
-type Lesson implements SyllabusItem {
-  name: String!
-  uuid: UUID!
-  type: StructureElement!
-  complete: Boolean
-  mp3URL: String
-  text: String!
-  tags: [Tag!]
-}
-
 type Course {
   id: Int!
   type: CourseType!
@@ -52,6 +42,8 @@ type Course {
   bannerImageURL: String
   expiresInMonths: Int!
   expirationToEndMonth: Boolean!
+  published: Boolean!
+  certificateType: CertificateType
 }
 
 type CoursePage implements PaginatedQuery {
@@ -135,7 +127,7 @@ input CreateCategoryInput {
 
 input PurchaseCoursesInput {
   courses: [Int!]!
-  users: [UUID!]! # List of delegates UUIDs
+  users: [UUID!] # List of delegates UUIDs
   extraInvoiceEmail: String
   acceptedTerms: Boolean!
   backgroundCheckConfirm: Boolean

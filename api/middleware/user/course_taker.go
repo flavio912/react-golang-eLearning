@@ -268,3 +268,17 @@ func (u *usersRepoImpl) SaveTestMarks(mark models.TestMark) error {
 
 	return nil
 }
+
+// createCourseTaker - creates a course taker in a transaction, the transaction is rolled back
+// if there is an error
+func (u *usersRepoImpl) createCourseTaker(tx *gorm.DB) (models.CourseTaker, error) {
+	// Add link manually because gorm doesn't like blank associations
+	var courseTaker = models.CourseTaker{}
+	if err := tx.Create(&courseTaker).Error; err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "createCourseTaker: Unable to create courseTaker")
+		return models.CourseTaker{}, err
+	}
+
+	return courseTaker, nil
+}

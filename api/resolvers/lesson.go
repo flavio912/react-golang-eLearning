@@ -7,7 +7,6 @@ import (
 
 	"github.com/getsentry/sentry-go"
 	"github.com/golang/glog"
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -84,19 +83,16 @@ func (l *LessonResolver) Name() string        { return l.Lesson.Name }
 func (l *LessonResolver) Type() gentypes.CourseElement {
 	return gentypes.LessonType
 }
-func (l *LessonResolver) Text() string    { return l.Lesson.Text }
-func (l *LessonResolver) Complete() *bool { return helpers.BoolPointer(false) } // TODO
-func (l *LessonResolver) Mp3URL() *string { return helpers.StringPointer("/google.com") }
+func (l *LessonResolver) Description() string     { return l.Lesson.Description }
+func (l *LessonResolver) Complete() *bool         { return helpers.BoolPointer(false) } // TODO
+func (l *LessonResolver) BannerImageURL() *string { return l.Lesson.BannerImageURL }
+func (l *LessonResolver) VoiceoverURL() *string   { return l.Lesson.VoiceoverURL }
+func (l *LessonResolver) Transcript() *string     { return l.Lesson.Transcript }
+func (l *LessonResolver) Video() *gentypes.Video  { return l.Lesson.Video }
 
-// TODO: Use dataloaders
 func (l *LessonResolver) Tags(ctx context.Context) (*[]*TagResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return nil, &errors.ErrUnauthorized
-	}
-
-	courseFuncs := course.NewCourseApp(grant)
-	tags, err := courseFuncs.GetTagsByLessonUUID(l.UUID().String())
+	app := auth.AppFromContext(ctx)
+	tags, err := app.CourseApp.GetTagsByLessonUUID(l.UUID().String())
 	if err != nil {
 		glog.Info("Unable to resolve tags")
 		return nil, err
