@@ -73,14 +73,6 @@ const APPROVE_COMPANY = gql`
 function CompanyManagementDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
-  const tabs = [
-    { value: 'summary', label: 'Summary' },
-    { value: 'Courses', label: 'Courses' },
-    { value: 'managers', label: 'Managers' },
-    { value: 'delegates', label: 'Delegates' },
-    { value: 'invoices', label: 'Invoices' },
-    { value: 'logs', label: 'Logs' }
-  ];
 
   const { loading, error, data, refetch } = useQuery(GET_COMPANY, {
     variables: {
@@ -94,6 +86,22 @@ function CompanyManagementDetails({ match, history }) {
   if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
   const company = data?.company;
+
+  let tabs = [
+    { value: 'summary', label: 'Summary' },
+    { value: 'Courses', label: 'Courses' },
+    { value: 'managers', label: 'Managers' },
+    { value: 'delegates', label: 'Delegates' },
+    { value: 'invoices', label: 'Invoices' },
+    { value: 'logs', label: 'Logs' }
+  ];
+
+  if (!company.approved) {
+    tabs = [
+      { value: 'summary', label: 'Summary' },
+      { value: 'managers', label: 'Managers' }
+    ];
+  }
 
   const handleTabsChange = (event, value) => {
     history.push(value);
@@ -137,7 +145,9 @@ function CompanyManagementDetails({ match, history }) {
         </Tabs>
         <Divider className={classes.divider} />
         <div className={classes.content}>
-          {currentTab === 'summary' && <Summary />}
+          {currentTab === 'summary' && (
+            <Summary approved={data.company.approved} />
+          )}
           {currentTab === 'invoices' && <Invoices />}
           {currentTab === 'managers' && (
             <Managers
