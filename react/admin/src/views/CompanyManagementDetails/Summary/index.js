@@ -26,7 +26,7 @@ function Summary({ className, ...rest }) {
           setCustomer(response.data.summary);
         }
       });
-    }
+    };
 
     fetchCustomer();
 
@@ -46,40 +46,13 @@ function Summary({ className, ...rest }) {
       container
       spacing={3}
     >
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
+      <Grid item lg={4} md={6} xl={3} xs={12}>
         <CustomerInfo customer={customer} />
       </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
-        <Invoices customer={customer} />
-      </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
+      <Grid item lg={4} md={6} xl={3} xs={12}>
         <SendEmails customer={customer} />
       </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
+      <Grid item lg={4} md={6} xl={3} xs={12}>
         <OtherActions />
       </Grid>
     </Grid>

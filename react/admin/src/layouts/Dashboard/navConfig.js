@@ -19,6 +19,11 @@ export default [
         icon: DashboardIcon
       },
       {
+        title: 'Company requests',
+        href: 'approve-companies',
+        icon: BarChartIcon
+      },
+      {
         title: 'Companies',
         href: '/companies',
         icon: BarChartIcon

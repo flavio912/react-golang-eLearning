@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import Page from 'src/components/Page';
 import Header from './Header';
@@ -13,6 +13,7 @@ import Invoices from './Invoices';
 import Managers from './Managers';
 import Delegates from './Delegates';
 import Logs from './Logs';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,6 +36,7 @@ const GET_COMPANY = gql`
     company(uuid: $id) {
       uuid
       name
+      approved
       managers {
         edges {
           email
@@ -60,6 +62,14 @@ const GET_COMPANY = gql`
   }
 `;
 
+const APPROVE_COMPANY = gql`
+  mutation ApproveCompany($uuid: UUID!) {
+    updateCompany(input: { uuid: $uuid, approved: true }) {
+      uuid
+    }
+  }
+`;
+
 function CompanyManagementDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
@@ -79,6 +89,8 @@ function CompanyManagementDetails({ match, history }) {
     fetchPolicy: 'cache-and-network',
     skip: !id
   });
+  const [approveCompany, { mutationErr }] = useMutation(APPROVE_COMPANY);
+
   if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
   const company = data?.company;
@@ -101,8 +113,17 @@ function CompanyManagementDetails({ match, history }) {
 
   return (
     <Page className={classes.root} title="Company Management Details">
+      <ErrorModal error={mutationErr} />
       <Container maxWidth={false}>
-        <Header companyName={data.company.name} />
+        <Header
+          companyName={data.company.name}
+          approved={data.company.approved}
+          onApprove={async () => {
+            approveCompany({
+              variables: { uuid: data.company.uuid }
+            });
+          }}
+        />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}

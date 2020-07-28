@@ -167,13 +167,8 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 	Filter  *gentypes.CompanyFilter
 	OrderBy *gentypes.OrderBy
 }) (*CompanyPageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &CompanyPageResolver{}, &errors.ErrUnauthorized
-	}
-
-	usersApp := users.NewUsersApp(grant)
-	companies, page, err := usersApp.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
+	app := auth.AppFromContext(ctx)
+	companies, page, err := app.UsersApp.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
 	if err != nil {
 		return &CompanyPageResolver{}, err
 	}
