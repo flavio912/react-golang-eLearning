@@ -30,7 +30,6 @@ const GET_LESSONS = gql`
       edges {
         uuid
         name
-        text
         type
         tags {
           uuid

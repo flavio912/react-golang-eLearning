@@ -143,7 +143,7 @@ var initState = {
   bannerImageURL: undefined,
   bannerImageSuccess: undefined,
   categoryUUID: { title: '', value: '' },
-  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }],
+  syllabus: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }],
   certificateType: { name: '', uuid: undefined },
   expiresInMonths: false,
   expirationToEndMonth: false

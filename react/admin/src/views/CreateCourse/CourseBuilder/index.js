@@ -118,7 +118,6 @@ function useModulesQuery(page) {
 }
 
 function useSearchQuery(text, filter, page) {
-  console.log('page: ', page);
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
@@ -196,7 +195,6 @@ function CourseBuilder({ state, setState }) {
       }
     });
   };
-
   console.log('strut: ', courseStructure);
   React.useEffect(() => {
     if (state.syllabus) {
@@ -204,13 +202,43 @@ function CourseBuilder({ state, setState }) {
     } else if (state.structure) {
       addModule(state.structure);
     }
-  });
+  }, [resultItems]);
 
   const onDelete = uuid => {
     setState({
       syllabus: state.syllabus.filter(item => item.uuid !== uuid)
     });
   };
+
+  const Module = (module) => (
+    <ReoderableDropdown
+      uuid={module.uuid}
+      title={module.name}
+      items={
+        module.syllabus &&
+        module.syllabus.map(item => ({
+          uuid: item.uuid,
+          item,
+          items: [],
+          component: (
+            <ReoderableListItem
+              uuid={item.uuid}
+              text={item.name}
+              onDelete={onDelete}
+            />
+          )
+        }))
+      }
+      setItems={items => {
+        console.log('syllabus', items)
+        const syllabus = items.map(({item}) => ({...item}));
+        const index = courseStructure.findIndex(x => x.uuid === module.uuid);
+        const temp = [...courseStructure];
+        temp[index] = {...module, syllabus};
+        setCourseStructure(temp);
+      }}
+    />
+  );
 
   return (
     <div className={classes.root}>
@@ -257,11 +285,12 @@ function CourseBuilder({ state, setState }) {
             <SuggestedTable
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
-              onAdd={({ uuid, name }) =>
+              onAdd={({ uuid, name, type }) => {
+                console.log(state.syllabus)
                 setState({
-                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
+                  syllabus: [...state.syllabus, { uuid, name, type }]
                 })
-              }
+              }}
             />
           </Grid>
           <Grid item>
@@ -270,38 +299,28 @@ function CourseBuilder({ state, setState }) {
               <Divider />
               <CardContent>
                 <ReoderableList
-                  items={courseStructure.map(module => ({
-                    id: module.uuid,
+                  multiple
+                  items={courseStructure.map(item => ({
+                    uuid: item.uuid,
+                    item,
+                    items: item.syllabus ? item.syllabus : [],
                     component: (
-                      <ReoderableDropdown
-                        title={module.name}
-                        items={
-                          module.syllabus &&
-                          module.syllabus.map(item => ({
-                            id: item.uuid,
-                            component: (
-                              <ReoderableListItem
-                                uuid={item.uuid}
-                                text={item.name}
-                                onDelete={onDelete}
-                              />
-                            )
-                          }))
-                        }
-                        setItems={items => {
-                          const newModule = {
-                            ...module,
-                            syllabus: items
-                          };
-                          setCourseStructure([
-                            ...courseStructure,
-                            ...newModule
-                          ]);
-                        }}
-                      />
+                      item.type === 'module' ?
+                        Module(item)
+                      :
+                        <ReoderableListItem
+                          uuid={item.uuid}
+                          text={item.name}
+                          onDelete={onDelete}
+                        />
                     )
                   }))}
-                  setItems={setCourseStructure}
+                  setItems={items => {
+                    console.log('items', items)
+                    setCourseStructure(
+                      items.map(({item}) => ({...item}))
+                    )
+                  }}
                 />
               </CardContent>
             </Card>
