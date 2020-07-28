@@ -4,58 +4,60 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const useStyles = makeStyles(theme => ({
   padding: {
-    padding: `${theme.spacing(1)}px 0`
+    padding: `${theme.spacing(2)}px 0`
   },
 }));
 
-export default function ReoderableList({ multiple, uuid, items, setItems }) {
+export default function ReoderableList({ multiple, uuid, items, setItems, newItem }) {
   const classes = useStyles();
 
-  const reorder = (list, uuid, startIndex, endIndex) => {
-    const result = Array.from(list);
-    if (result.find(x => x.uuid === uuid)) {
-      console.log('first layer', list, uuid)
-      const [removed] = result.splice(startIndex, 1);
-      result.splice(endIndex, 0, removed);
-      return result;
+  const getIndices = (list, location, id) => {
+    let topIndex, itemIndex, hasItems;
+    // if outermost
+    if (location.droppableId === 'droppable') {
+      topIndex = location.index;
+      hasItems = list.find(x => x.uuid === id)?.items?.length > 0;
+      // if top level item
+    } else if (list.find(x => x.uuid === location.droppableId)) {
+      itemIndex = list.findIndex(x => x.uuid === location.droppableId);
+      hasItems = list[itemIndex]?.items.findIndex(x => x.uuid === id) < 0;
     }
-    result.map(inner => {
-      console.log('inner layer', inner, uuid)
-      if (inner.items.find(x => x.uuid === uuid)) {
-        const [removed] = inner.items.splice(startIndex, 1);
-        inner.items.splice(endIndex, 0, removed);
-        return inner.items;
-      }
-    });
-    return [];
-  };
+    return {topIndex, itemIndex, hasItems};
+  }
+
+  const swap = (list, result) => {
+    const source = getIndices(list, result.source, result.draggableId);
+    let dest = getIndices(list, result.destination, result.draggableId);
+    let removed;
+
+    // Remove from top level
+    if (source.topIndex !== undefined) {
+      removed = list.splice(source.topIndex, 1);
+      // Remove from item's items
+    } else if (source.itemIndex !== undefined) {
+      removed = list[source.itemIndex].items.splice(result.source.index, 1)
+    }
+
+    // Update indices
+    dest = getIndices(list, result.destination, result.draggableId);
+    removed = removed && (removed[0]?.item ? removed[0].item : removed[0]);
+  
+    // Add to top level
+    if (removed && dest.topIndex !== undefined) {
+      list.splice(dest.topIndex, 0, newItem(removed));
+      // Add to item's items
+    } else if (removed && dest.itemIndex !== undefined && !source.hasItems && dest.hasItems) {
+      list[dest.itemIndex].items.splice(result.destination.index, 0, removed)
+    }
+    return list;
+  }
   
   const onDragEnd = (setItems, items, result) => {
-    console.log('dropped', result, items)
     // dropped outside the list
     if (!result.destination) {
       return;
     }
-
-    const temp = Array.from(items);
-
-    // moving between containers
-    if (result.source.droppableId !== result.destination.droppableId) {
-      console.log('swapped', result, items)
-      const sourceIndex = temp.findIndex(x => x.uuid === result.source.droppableId);
-      const destIndex = temp.findIndex(x => x.uuid === result.destination.droppableId);
-      console.log('ind', sourceIndex, destIndex)
-      const deleteIndex = temp[sourceIndex].items.find(x => x.uuid === result.draggableId);
-      const [removed] = temp[sourceIndex].items.splice(deleteIndex, 1)
-      temp[destIndex].items.push(removed);
-    }
-  
-    setItems(reorder(
-      temp,
-      result.draggableId,
-      result.source.index,
-      result.destination.index
-    ));
+    return setItems(swap(Array.from(items), result));
   }
 
   const Context = ({children}) => (
@@ -73,11 +75,11 @@ export default function ReoderableList({ multiple, uuid, items, setItems }) {
             {...provided.droppableProps}
             ref={provided.innerRef}
             >
-            {items.map((item, index) => (
+            {items && items.map((item, index) => (
               <Draggable
-                draggableId={item.uuid}
+                draggableId={item.item ? item.item.uuid : item.uuid}
                 index={index}
-                key={item.uuid}
+                key={item.item ? item.item.uuid : item.uuid}
               >
                 {(provided) => (
                   <div
@@ -87,7 +89,7 @@ export default function ReoderableList({ multiple, uuid, items, setItems }) {
                     {...provided.dragHandleProps}
                   >
                     {multiple ? (
-                      <Droppable droppableId={item.uuid}>
+                      <Droppable droppableId={item.item ? item.item.uuid : item.uuid}>
                         {(provided) => (
                           <div
                           {...provided.droppableProps}

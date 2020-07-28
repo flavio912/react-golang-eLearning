@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
+  },
+  structure: {
+    minHeight: '500px'
   }
 }));
 
@@ -204,41 +207,59 @@ function CourseBuilder({ state, setState }) {
     }
   }, [resultItems]);
 
-  const onDelete = uuid => {
-    setState({
-      syllabus: state.syllabus.filter(item => item.uuid !== uuid)
-    });
+  const onDelete = (uuid, moduleUUID) => {
+    const newStructure = [...courseStructure];
+    if (moduleUUID) {
+      const moduleIndex = courseStructure.findIndex(x => x.uuid === moduleUUID);
+      const index = courseStructure[moduleIndex].syllabus.findIndex(x => x.uuid === uuid);
+      newStructure[moduleIndex].syllabus.splice(index, 1);
+    } else {
+      const index = courseStructure.findIndex(x => x.uuid === uuid);
+      newStructure.splice(index, 1);
+      setState({syllabus: newStructure});
+    }
+    setCourseStructure(newStructure);
   };
 
-  const Module = (module) => (
-    <ReoderableDropdown
-      uuid={module.uuid}
-      title={module.name}
-      items={
-        module.syllabus &&
-        module.syllabus.map(item => ({
-          uuid: item.uuid,
-          item,
-          items: [],
-          component: (
-            <ReoderableListItem
-              uuid={item.uuid}
-              text={item.name}
-              onDelete={onDelete}
-            />
-          )
-        }))
-      }
-      setItems={items => {
-        console.log('syllabus', items)
-        const syllabus = items.map(({item}) => ({...item}));
-        const index = courseStructure.findIndex(x => x.uuid === module.uuid);
-        const temp = [...courseStructure];
-        temp[index] = {...module, syllabus};
-        setCourseStructure(temp);
-      }}
-    />
-  );
+  const newItem = (item) => ({
+    uuid: item.uuid,
+    item,
+    items: item.syllabus ? item.syllabus : [],
+    component: (
+      item.type === 'module' ?
+        <ReoderableDropdown
+          uuid={item.uuid}
+          title={item.name}
+          onDelete={onDelete}
+          items={
+            item.syllabus &&
+            item.syllabus.map(child => ({
+              uuid: child.uuid,
+              item: child.item,
+              component: (
+                <ReoderableListItem
+                  uuid={child.uuid}
+                  text={child.name}
+                  onDelete={
+                    (uuid) => 
+                      onDelete(
+                        uuid,
+                        item.uuid
+                      )
+                  }
+                />
+              )
+            }))
+          }
+        />
+      :
+        <ReoderableListItem
+          uuid={item.uuid}
+          text={item.name}
+          onDelete={onDelete}
+        />
+    )
+  })
 
   return (
     <div className={classes.root}>
@@ -272,10 +293,11 @@ function CourseBuilder({ state, setState }) {
                   setSearchFilters={setSearchFilters}
                   searchResults={searchResults.resultItems}
                   setSearchText={setSearchText}
-                  onChange={({ uuid, name, type }) => {
-                    setState({
-                      syllabus: [...state.syllabus, { uuid, name, type }]
-                    });
+                  onChange={(item) => {
+                    setCourseStructure([
+                      item,
+                      ...courseStructure,
+                    ])
                   }}
                 />
               </CardContent>
@@ -285,11 +307,8 @@ function CourseBuilder({ state, setState }) {
             <SuggestedTable
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
-              onAdd={({ uuid, name, type }) => {
-                console.log(state.syllabus)
-                setState({
-                  syllabus: [...state.syllabus, { uuid, name, type }]
-                })
+              onAdd={(module) => {
+                addModule([module])
               }}
             />
           </Grid>
@@ -297,29 +316,22 @@ function CourseBuilder({ state, setState }) {
             <Card>
               <CardHeader title="Course Structure" />
               <Divider />
-              <CardContent>
+              <CardContent className={classes.structure}>
                 <ReoderableList
                   multiple
-                  items={courseStructure.map(item => ({
-                    uuid: item.uuid,
-                    item,
-                    items: item.syllabus ? item.syllabus : [],
-                    component: (
-                      item.type === 'module' ?
-                        Module(item)
-                      :
-                        <ReoderableListItem
-                          uuid={item.uuid}
-                          text={item.name}
-                          onDelete={onDelete}
-                        />
-                    )
-                  }))}
+                  newItem={newItem}
+                  items={courseStructure.map(item => newItem(item))}
                   setItems={items => {
-                    console.log('items', items)
-                    setCourseStructure(
-                      items.map(({item}) => ({...item}))
-                    )
+                    const newStructure = [];
+                    items.map((item) => {
+                      newStructure.push(
+                        {
+                          ...item.item,
+                          syllabus: item.items,
+                        }
+                      )
+                    })
+                    setCourseStructure(newStructure)
                   }}
                 />
               </CardContent>
