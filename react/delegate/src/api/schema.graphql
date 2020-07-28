@@ -12,11 +12,30 @@ type Query {
   test(uuid: UUID!): Test
   lesson(uuid: UUID!): Lesson
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
+
+  certificateInfo(token: String!): CertificateInfo!
 }
 
 type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+}
+
+type CertificateInfo {
+  courseTitle: String!
+  expiryDate: String!
+  completionDate: String!
+  companyName: String
+  takerFirstName: String!
+  takerLastName: String!
+  certificateBodyURL: String
+  regulationText: String!
+  CAANo: String
+  title: String!
+  instructorName: String!
+  instructorCIN: String!
+  instructorSignatureURL: String
+  certificateNumber: String!
 }
 
 input QuestionAnswer {

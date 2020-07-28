@@ -1,6 +1,9 @@
 package course
 
 import (
+	"bytes"
+	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -15,6 +18,7 @@ import (
 
 	"github.com/asaskevich/govalidator"
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
@@ -64,34 +68,57 @@ func (c *courseAppImpl) caaNumbersToGentypes(numbers []models.CAANumber) []genty
 	return gens
 }
 
+func GeneratePdfFromURL(url string) (io.Reader, error) {
+	client := &http.Client{}
+
+	// TODO: Make key an envvar
+	var payload = []byte(
+		fmt.Sprintf(`{"url":"%s", "direct": true, "key": "dea9fe3bc2b5981dbb46001bac2e7aa324971384235861a0d9666c70110a016224971384235861a0d9666c70110a0162"}`, url),
+	)
+
+	req, err := http.NewRequest("POST", helpers.Config.PDF.ServerURL, bytes.NewBuffer(payload))
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	resp, err := client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.StatusCode != 200 {
+		return nil, &errors.ErrWhileHandling
+	}
+
+	return resp.Body, nil
+}
+
+func (c *courseAppImpl) RegenerateCertificate(historicalCourseUUID gentypes.UUID) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
+	go c.generateCertificate(historicalCourseUUID)
+	return nil
+}
+
+// generateCertificate updates a historicalCourse with its generated cert
 func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) {
 	token, err := auth.GenerateCertificateToken(historicalCourseUUID)
-
+	glog.Error(token)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to generate cert token - UUID: "+historicalCourseUUID.String())
 	}
 
-	generatorURL := helpers.Config.PDF.ServerURL +
-		"?url=" +
-		helpers.Config.PDF.RequestURL +
-		"%3Ftoken=" +
-		token
+	htmlPageURL := helpers.Config.PDF.RequestURL + "%3Ftoken=" + token
 
-	client := &http.Client{}
-
-	req, err := http.NewRequest("POST", generatorURL, nil)
-	if err != nil {
-		c.grant.Logger.Log(sentry.LevelError, err, "Unable to create request to PDF generator - UUID: "+historicalCourseUUID.String())
-		return
-	}
-
-	resp, err := client.Do(req)
+	pdf, err := GeneratePdfFromURL(htmlPageURL)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to make request to PDF generator - UUID: "+historicalCourseUUID.String())
 		return
 	}
 
-	key, err := uploads.UploadCertificate(resp.Body)
+	key, err := uploads.UploadCertificate(pdf)
 
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to upload certificate - UUID: "+historicalCourseUUID.String())
@@ -178,9 +205,10 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 		RegulationText:         regulationText,
 		CAANo:                  caaNo,
 		Title:                  certTitle,
-		InstructorName:         "",
-		InstructorCIN:          "",
+		InstructorName:         "Michelle Waddilove",
+		InstructorCIN:          "0123445",
 		InstructorSignatureURL: nil,
+		CertificateNumber:      "0001",
 	}, nil
 }
 

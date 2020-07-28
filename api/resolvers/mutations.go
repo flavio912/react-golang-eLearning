@@ -881,3 +881,15 @@ func (m *MutationResolver) LessonBannerImageUploadRequest(ctx context.Context, a
 		URL:          url,
 	}, err
 }
+
+func (m *MutationResolver) RegenerateCertificate(ctx context.Context, args struct {
+	Input struct{ HistoricalCourseUUID gentypes.UUID }
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	err := app.CourseApp.RegenerateCertificate(args.Input.HistoricalCourseUUID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}

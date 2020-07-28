@@ -16,6 +16,7 @@ type CertficateInfo struct {
 	InstructorName         string
 	InstructorCIN          string
 	InstructorSignatureURL *string
+	CertificateNumber      string
 }
 
 type CAANumber struct {

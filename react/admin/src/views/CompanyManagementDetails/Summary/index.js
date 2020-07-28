@@ -5,7 +5,6 @@ import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import axios from 'src/utils/axios';
 import CustomerInfo from './CustomerInfo';
-import Invoices from './Invoices';
 import SendEmails from './SendEmails';
 import OtherActions from './OtherActions';
 
@@ -13,7 +12,7 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-function Summary({ className, ...rest }) {
+function Summary({ className, approved, ...rest }) {
   const classes = useStyles();
   const [customer, setCustomer] = useState();
 
@@ -26,7 +25,7 @@ function Summary({ className, ...rest }) {
           setCustomer(response.data.summary);
         }
       });
-    }
+    };
 
     fetchCustomer();
 
@@ -46,40 +45,15 @@ function Summary({ className, ...rest }) {
       container
       spacing={3}
     >
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
+      <Grid item lg={4} md={6} xl={3} xs={12}>
         <CustomerInfo customer={customer} />
       </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
-        <Invoices customer={customer} />
-      </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
-        <SendEmails customer={customer} />
-      </Grid>
-      <Grid
-        item
-        lg={4}
-        md={6}
-        xl={3}
-        xs={12}
-      >
+      {approved && (
+        <Grid item lg={4} md={6} xl={3} xs={12}>
+          <SendEmails customer={customer} />
+        </Grid>
+      )}
+      <Grid item lg={4} md={6} xl={3} xs={12}>
         <OtherActions />
       </Grid>
     </Grid>

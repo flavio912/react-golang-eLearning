@@ -222,7 +222,34 @@ const Router = createFarceRouter({
           }}
         />
       </Route>
-      <Route path="/cert-generator" Component={CertGenerator} />
+      <Route
+        path="/cert-generator"
+        Component={CertGenerator}
+        query={graphql`
+          query App_Certificate_Query($token: String!) {
+            certificateInfo(token: $token) {
+              ...CertGenerator_certificateInfo
+            }
+          }
+        `}
+        render={(args: any) => {
+          console.log('argts', args);
+          if (!args.props) {
+            return <div></div>;
+          }
+          return (
+            <ErrorBoundary>
+              <CertGenerator {...args.props} />
+            </ErrorBoundary>
+          );
+        }}
+        prepareVariables={(params: any, { location }: any) => {
+          const { token } = location.query;
+          return {
+            token
+          };
+        }}
+      />
     </Route>
   ),
   render: createRender({})

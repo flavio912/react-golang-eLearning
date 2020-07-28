@@ -35,8 +35,8 @@ ENV SENTRY_ENVIRONMENT="dev"
 ENV STRIPE_PUBLISHABLE_KEY="pk_test_T5ZBhTO9Lq709gdga8c9aoPN00PnTm0tfU"
 ENV STRIPE_SECRET_KEY="sk_test_PfIjVtw1HYwp9vKgOmOHG9DJ00ogycW552"
 
-ENV PDF_SERVER_URL = "https://os19fj0k4c.execute-api.eu-west-2.amazonaws.com/production/pdf"
-ENV PDF_REQUEST_URL = "https://delegate.ttc.devserver.london/cert-generator"
+ENV PDF_SERVER_URL="https://os19fj0k4c.execute-api.eu-west-2.amazonaws.com/production/pdf"
+ENV PDF_REQUEST_URL="https://delegate.ttc.devserver.london/cert-generator"
 
 RUN ["chmod", "+x", "dev_env/entrypoint.sh"]
 

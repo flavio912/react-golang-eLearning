@@ -39,6 +39,7 @@ input CoursesFilter {
 input CompanyFilter {
   uuid: UUID
   name: String
+  approved: Boolean
 }
 
 input LessonFilter {
