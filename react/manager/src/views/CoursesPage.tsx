@@ -14,7 +14,7 @@ import SelectButton from 'components/core/Input/SelectButton';
 import CircleBorder from 'sharedComponents/core/CircleBorder';
 import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
-
+import { Router } from 'found';
 import { CoursesPage_courses } from './__generated__/CoursesPage_courses.graphql';
 
 const defaultCourse = {
@@ -48,6 +48,7 @@ const defaultOptions = [defaultOption, defaultOption, defaultOption];
 
 type Props = {
   courses?: CoursesPage_courses;
+  router: Router;
 };
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -84,7 +85,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-const CoursesPageComp = ({ courses }: Props) => {
+const CoursesPageComp = ({ courses, router }: Props) => {
   console.log('COURSES', courses);
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -95,18 +96,20 @@ const CoursesPageComp = ({ courses }: Props) => {
   let _courses: Course[] = [];
 
   if (courses && courses.edges) {
-    _courses = courses.edges.map((course: any) => ({
-      id: course.ident,
-      type: course.category.name,
-      colour: course?.category.color,
+    _courses = courses.edges.map((course) => ({
+      id: course?.ident || 1,
+      type: course?.category?.name || 'cat',
+      colour: course?.category?.color || 'blue',
       url:
-        course.bannerImageURL ||
+        course?.bannerImageURL ||
         '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
-      title: course.name,
-      price: course.price,
-      description: course.excerpt,
+      title: course?.name || 'title',
+      price: course?.price,
+      description: course?.excerpt || 'some description',
       assigned: 40,
       expiring: 9,
+      location: 'online',
+      date: '29/10/2020',
       modules: 5,
       lessons: 5,
       video_time: 5
@@ -118,8 +121,21 @@ const CoursesPageComp = ({ courses }: Props) => {
   const [category, setCategory] = React.useState<DropdownOption>();
   const [itemsPerPage, setItemsPerPage] = React.useState<DropdownOption>();
 
-  // Page number states
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
+  // Pagination
+  const pageProps = {
+    total: courses?.pageInfo?.total ?? 0,
+    limit: courses?.pageInfo?.limit ?? 10,
+    offset: courses?.pageInfo?.total ?? 0,
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/pageProps.limit),
+    numPages: Math.ceil(pageProps.total/pageProps.limit)
+  };
+
+  const onUpdatePage = (page: number) => {
+    router.push(`/app/courses?offset=${(page - 1) * pageProps.limit}&limit=${pageProps.limit}`);
+  };
 
   return (
     <div className={classes.root}>
@@ -167,10 +183,11 @@ const CoursesPageComp = ({ courses }: Props) => {
       <Spacer vertical spacing={3} />
       <div className={classes.row}>
         <Paginator
-          currentPage={currentPage}
-          updatePage={setCurrentPage}
-          numPages={10}
-          itemsPerPage={10}
+          currentPage={pageInfo.currentPage}
+          updatePage={onUpdatePage}
+          numPages={pageInfo.numPages}
+          itemsPerPage={pageProps.limit}
+          showRange={pageInfo.numPages > 4 ? 4 : pageInfo.numPages}
         />
       </div>
       <Spacer vertical spacing={3} />
