@@ -513,3 +513,9 @@ func (q *QueryResolver) Individuals(
 		PageInfo:    pageInfo,
 	})
 }
+
+func (q *QueryResolver) Tutor(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TutorResolver, error) {
+	return NewTutorResolver(ctx, NewTutorArgs{
+		TutorUUID: &args.UUID,
+	})
+}

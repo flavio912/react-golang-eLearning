@@ -108,3 +108,12 @@ func (c *courseAppImpl) UpdateTutorSignature(input gentypes.UpdateTutorSignature
 
 	return s3key, err
 }
+
+func (c *courseAppImpl) Tutor(uuid gentypes.UUID) (gentypes.Tutor, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Tutor{}, &errors.ErrUnauthorized
+	}
+
+	tutor, err := c.coursesRepository.Tutor(uuid)
+	return c.tutorToGentype(tutor), err
+}
