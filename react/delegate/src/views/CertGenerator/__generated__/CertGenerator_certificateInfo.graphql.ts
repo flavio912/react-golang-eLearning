@@ -17,6 +17,7 @@ export type CertGenerator_certificateInfo = {
     readonly instructorName: string;
     readonly instructorCIN: string;
     readonly instructorSignatureURL: string | null;
+    readonly certificateNumber: string;
     readonly " $refType": "CertGenerator_certificateInfo";
 };
 export type CertGenerator_certificateInfo$data = CertGenerator_certificateInfo;
@@ -124,8 +125,15 @@ const node: ReaderFragment = ({
             "name": "instructorSignatureURL",
             "args": null,
             "storageKey": null
+        },
+        {
+            "kind": "ScalarField",
+            "alias": null,
+            "name": "certificateNumber",
+            "args": null,
+            "storageKey": null
         }
     ]
 } as any);
-(node as any).hash = 'd18872338da906ec8f3139287883cc0e';
+(node as any).hash = '687d78ac064d0f84120e6baffb16bdca';
 export default node;

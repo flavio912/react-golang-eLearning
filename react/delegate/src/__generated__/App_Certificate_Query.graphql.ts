@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 3799b4d558dca3c452fe370a4c6c47a2 */
+/* @relayHash 9fc96a6410ef58b5e81dceb2efcbf06a */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -42,6 +42,7 @@ fragment CertGenerator_certificateInfo on CertificateInfo {
   instructorName
   instructorCIN
   instructorSignatureURL
+  certificateNumber
 }
 */
 
@@ -191,6 +192,13 @@ const node: ConcreteRequest = (function () {
                             "name": "instructorSignatureURL",
                             "args": null,
                             "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "certificateNumber",
+                            "args": null,
+                            "storageKey": null
                         }
                     ]
                 }
@@ -200,7 +208,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Certificate_Query",
             "id": null,
-            "text": "query App_Certificate_Query(\n  $token: String!\n) {\n  certificateInfo(token: $token) {\n    ...CertGenerator_certificateInfo\n  }\n}\n\nfragment CertGenerator_certificateInfo on CertificateInfo {\n  courseTitle\n  expiryDate\n  completionDate\n  companyName\n  takerFirstName\n  takerLastName\n  certificateBodyURL\n  regulationText\n  CAANo\n  title\n  instructorName\n  instructorCIN\n  instructorSignatureURL\n}\n",
+            "text": "query App_Certificate_Query(\n  $token: String!\n) {\n  certificateInfo(token: $token) {\n    ...CertGenerator_certificateInfo\n  }\n}\n\nfragment CertGenerator_certificateInfo on CertificateInfo {\n  courseTitle\n  expiryDate\n  completionDate\n  companyName\n  takerFirstName\n  takerLastName\n  certificateBodyURL\n  regulationText\n  CAANo\n  title\n  instructorName\n  instructorCIN\n  instructorSignatureURL\n  certificateNumber\n}\n",
             "metadata": {}
         }
     } as any;

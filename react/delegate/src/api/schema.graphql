@@ -35,6 +35,7 @@ type CertificateInfo {
   instructorName: String!
   instructorCIN: String!
   instructorSignatureURL: String
+  certificateNumber: String!
 }
 
 input QuestionAnswer {

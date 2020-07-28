@@ -6,8 +6,8 @@ import CertInfo from '../../components/Certificate/CertInfo';
 import Signature from '../../components/Certificate/Signature';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { ReactComponent as Logo } from '../../assets/logo/ttc-logo.svg';
-import CertLogoImg from '../../assets/large-1200px-Department_for_Transport.svg.png';
 import { CertGenerator_certificateInfo } from './__generated__/CertGenerator_certificateInfo.graphql';
+import moment from 'moment';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   certGeneratorRoot: {
@@ -156,12 +156,8 @@ function CertGenerator({ certificateInfo }: Props) {
   const cin = '00045618';
   const instructorSign = '';
   const certData = {
-    certName: 'General Security Awareness Training (GSAT)',
-    moduleDeliver: 'Module Delivered: 1-20',
-    forEu: 'For EU 1998/2015: 11.2.2',
-    certNo: '000000054321',
-    trainingDate: 'DD MMM YYYY',
-    expiryDate: 'DD MMM YYYY'
+    moduleDeliver: 'Modules Delivered: 1-20',
+    certNo: '000000054321'
   };
   const trainingCompany = {
     title: 'The Training and Compliance Hub Limited',
@@ -175,11 +171,16 @@ function CertGenerator({ certificateInfo }: Props) {
       <div>
         <FancyBorder paperSize="A4">
           <div className={classes.logoArea}>
-            <img src={CertLogoImg} className={classes.certLogo} />
+            {certificateInfo.certificateBodyURL && (
+              <img
+                src={certificateInfo.certificateBodyURL}
+                className={classes.certLogo}
+              />
+            )}
             <Logo className={classes.logo} />
           </div>
           <div className={classes.certHeader}>
-            <h1>{certificateInfo.courseTitle}</h1>
+            <h1>{certificateInfo.title}</h1>
             <p>This is to certify that</p>
             <h3>{`${certificateInfo.takerFirstName} ${certificateInfo.takerLastName}`}</h3>
             {certificateInfo.companyName && (
@@ -192,31 +193,41 @@ function CertGenerator({ certificateInfo }: Props) {
           <CertInfo
             certName={certificateInfo.courseTitle}
             moduleDeliver={certData.moduleDeliver}
-            forEu={certData.forEu}
-            certNo={certData.certNo}
-            trainingDate={certData.trainingDate}
-            expiryDate={certData.expiryDate}
+            forEu={certificateInfo.regulationText}
+            certNo={certificateInfo.certificateNumber}
+            caaNo={certificateInfo.CAANo ?? undefined}
+            trainingDate={moment(certificateInfo.completionDate).format(
+              'DD MM YYYY'
+            )}
+            expiryDate={moment(certificateInfo.expiryDate).format('DD MM YYYY')}
           />
           <div className={classes.certInfoFirst}>
             <div className={classes.certRowLeft}>
               <span className={classes.certLabel}>Instructor's Name:</span>
             </div>
             <div className={classes.certRowRight}>
-              <span>{instructorName}</span>
+              <span>{certificateInfo.instructorName}</span>
               <div>
                 <span className={classes.certLabel}>CIN:</span>
-                <span>{cin}</span>
+                <span>{certificateInfo.instructorCIN}</span>
               </div>
             </div>
           </div>
-          <div className={classes.certRow}>
-            <div className={classes.certRowLeft}>
-              <span className={classes.certLabel}>
-                Instructor's Signature:{' '}
-              </span>
+          {certificateInfo.instructorSignatureURL && (
+            <div className={classes.certRow}>
+              <div className={classes.certRowLeft}>
+                <span className={classes.certLabel}>
+                  Instructor's Signature:{' '}
+                </span>
+              </div>
+
+              <Signature
+                width={400}
+                height={50}
+                imgSrc={certificateInfo.instructorSignatureURL}
+              />
             </div>
-            <Signature width={400} height={50} imgSrc={instructorSign} />
-          </div>
+          )}
           <div className={classes.trainingCompany}>
             <div className={classes.certRowLeft}>
               <span className={classes.certLabel}>Training Company:</span>
@@ -260,6 +271,7 @@ export default createFragmentContainer(CertGenerator, {
       instructorName
       instructorCIN
       instructorSignatureURL
+      certificateNumber
     }
   `
 });

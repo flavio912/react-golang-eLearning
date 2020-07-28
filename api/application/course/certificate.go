@@ -16,6 +16,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
 
 	"github.com/getsentry/sentry-go"
+	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 )
@@ -57,7 +58,7 @@ func (c *courseAppImpl) RegenerateCertificate(historicalCourseUUID gentypes.UUID
 // generateCertificate updates a historicalCourse with its generated cert
 func (c *courseAppImpl) generateCertificate(historicalCourseUUID gentypes.UUID) {
 	token, err := auth.GenerateCertificateToken(historicalCourseUUID)
-
+	glog.Error(token)
 	if err != nil {
 		c.grant.Logger.Log(sentry.LevelError, err, "Unable to generate cert token - UUID: "+historicalCourseUUID.String())
 	}
@@ -157,8 +158,9 @@ func (c *courseAppImpl) CertificateInfo(token string) (gentypes.CertficateInfo, 
 		RegulationText:         regulationText,
 		CAANo:                  caaNo,
 		Title:                  certTitle,
-		InstructorName:         "",
-		InstructorCIN:          "",
+		InstructorName:         "Michelle Waddilove",
+		InstructorCIN:          "0123445",
 		InstructorSignatureURL: nil,
+		CertificateNumber:      "0001",
 	}, nil
 }
