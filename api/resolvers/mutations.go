@@ -872,3 +872,12 @@ func (m *MutationResolver) DeleteIndividual(ctx context.Context, args struct {
 	app := auth.AppFromContext(ctx)
 	return app.UsersApp.DeleteIndividual(args.Input)
 }
+
+func (m *MutationResolver) LessonBannerImageUploadRequest(ctx context.Context, args struct{ Input gentypes.UploadFileMeta }) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, token, err := app.CourseApp.LessonBannerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		SuccessToken: token,
+		URL:          url,
+	}, err
+}

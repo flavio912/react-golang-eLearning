@@ -42,6 +42,7 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
+	LessonBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 	Tests(

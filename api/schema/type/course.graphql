@@ -21,16 +21,6 @@ interface SyllabusItem {
   complete: Boolean
 }
 
-type Lesson implements SyllabusItem {
-  name: String!
-  uuid: UUID!
-  type: StructureElement!
-  complete: Boolean
-  mp3URL: String
-  text: String!
-  tags: [Tag!]
-}
-
 type Course {
   id: Int!
   type: CourseType!

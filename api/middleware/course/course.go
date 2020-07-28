@@ -56,11 +56,11 @@ type CoursesRepository interface {
 	LearnBullets(courseID uint) ([]models.WhatYouLearnBullet, error)
 
 	GetLessons(page *gentypes.Page, filter *gentypes.LessonFilter, orderBy *gentypes.OrderBy) ([]models.Lesson, gentypes.PageInfo, error)
-	CreateLesson(lesson gentypes.CreateLessonInput) (models.Lesson, error)
+	CreateLesson(lesson CreateLessonInput) (models.Lesson, error)
 	GetLessonByUUID(UUID gentypes.UUID) (models.Lesson, error)
 	GetLessonsByUUID(uuids []string) ([]models.Lesson, error)
-	UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error)
-	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
+	UpdateLesson(input UpdateLessonInput) (models.Lesson, error)
+	DeleteLesson(uuid gentypes.UUID) (bool, error)
 
 	CheckTagsExist(tags []gentypes.UUID) ([]models.Tag, error)
 	CreateTag(input gentypes.CreateTagInput) (models.Tag, error)
