@@ -145,7 +145,7 @@ var initState = {
   categoryUUID: { title: '', value: '' },
   syllabus: [],
   certificateType: { name: '', uuid: undefined },
-  expiresInMonths: false,
+  expiresInMonths: 0,
   expirationToEndMonth: false
 };
 
