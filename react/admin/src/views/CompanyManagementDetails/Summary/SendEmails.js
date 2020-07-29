@@ -40,20 +40,18 @@ const options = [
   'Send verification'
 ];
 
-function SendEmails({ customer, className, ...rest }) {
+function SendEmails({ company, className, ...rest }) {
   const classes = useStyles();
   const [option, setOption] = useState(options[0]);
 
-  const handleChange = (event) => {
+  const handleChange = event => {
     event.persist();
     setOption(event.target.value);
-  }
+  };
 
+  const emailTypes = [{}];
   return (
-    <Card
-      {...rest}
-      className={clsx(classes.root, className)}
-    >
+    <Card {...rest} className={clsx(classes.root, className)}>
       <CardHeader title="Send emails" />
       <Divider />
       <CardContent className={classes.content}>
@@ -68,35 +66,15 @@ function SendEmails({ customer, className, ...rest }) {
           variant="outlined"
         >
           {options.map(option => (
-            <option
-              key={option}
-              value={option}
-            >
+            <option key={option} value={option}>
               {option}
             </option>
           ))}
         </TextField>
-        <Button
-          className={classes.sendButton}
-          variant="contained"
-        >
+        <Button className={classes.sendButton} variant="contained">
           <MaiIcon className={classes.mailIcon} />
           Send email
         </Button>
-        <Table className={classes.table}>
-          <TableBody>
-            {customer.emails.map(email => (
-              <TableRow key={email.id}>
-                <TableCell className={classes.cell}>
-                  {moment(email.created_at).format('DD/MM/YYYY | HH:MM')}
-                </TableCell>
-                <TableCell className={classes.cell}>
-                  {email.description}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
       </CardContent>
     </Card>
   );
@@ -104,7 +82,7 @@ function SendEmails({ customer, className, ...rest }) {
 
 SendEmails.propTypes = {
   className: PropTypes.string,
-  customer: PropTypes.object.isRequired
+  company: PropTypes.object.isRequired
 };
 
 export default SendEmails;

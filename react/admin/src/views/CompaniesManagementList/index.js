@@ -26,6 +26,7 @@ const GET_COMPANIES = gql`
         uuid
         name
         isContract
+        contactEmail
         managers {
           edges {
             email
@@ -74,8 +75,8 @@ function CompaniesManagementList() {
   const companies = data?.companies?.edges.map(comp => ({
     id: comp.uuid,
     name: comp.name,
-    email: comp.managers?.edges[0]?.email,
-    logo: 'https://cdn.cnn.com/cnnnext/dam/assets/180301124611-fedex-logo.png',
+    email: comp.contactEmail,
+    logo: '',
     noDelegates: comp.delegates?.pageInfo?.total,
     noManagers: comp.managers?.pageInfo?.total,
     paymentType: comp.isContract ? 'Contract' : 'Pay as you go'

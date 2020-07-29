@@ -64,6 +64,7 @@ const mutation = graphql`
         county: $county
         postCode: $postcode
         country: $country
+        contactEmail: $email
       }
       manager: {
         firstName: $firstName
