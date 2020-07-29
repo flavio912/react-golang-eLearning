@@ -13,12 +13,13 @@ func (u *usersAppImpl) companyToGentype(company models.Company) gentypes.Company
 	if u.grant.ManagesCompany(company.UUID) {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
-			CreatedAt:  &createdAt,
-			Approved:   &company.Approved,
-			UUID:       company.UUID,
-			Name:       company.Name,
-			AddressID:  company.AddressID,
-			IsContract: company.IsContract,
+			CreatedAt:    &createdAt,
+			Approved:     &company.Approved,
+			UUID:         company.UUID,
+			Name:         company.Name,
+			AddressID:    company.AddressID,
+			IsContract:   company.IsContract,
+			ContactEmail: company.ContactEmail,
 		}
 	}
 

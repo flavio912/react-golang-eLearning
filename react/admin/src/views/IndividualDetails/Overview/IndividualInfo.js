@@ -44,6 +44,9 @@ const UPDATE_INDIVIDUAL = gql`
     $email: String
     $firstName: String
     $lastName: String
+    $jobTitle: String
+    $telephone: String
+    $password: String
   ) {
     updateIndividual(
       input: {
@@ -51,12 +54,19 @@ const UPDATE_INDIVIDUAL = gql`
         email: $email
         firstName: $firstName
         lastName: $lastName
+        jobTitle: $jobTitle
+        telephone: $telephone
+        password: $password
       }
     ) {
-      uuid
-      email
-      firstName
-      lastName
+      user {
+        email
+        firstName
+        lastName
+        telephone
+        jobTitle
+      }
+      
     }
   }
 `;
@@ -92,6 +102,8 @@ function IndividualInfo({ individual, className, ...rest }) {
           email: values.email,
           firstName: values.firstName,
           lastName: values.lastName,
+          jobTitle: values.jobTitle,
+          telephone: values.telephone,
           password: values.password
         }
       });

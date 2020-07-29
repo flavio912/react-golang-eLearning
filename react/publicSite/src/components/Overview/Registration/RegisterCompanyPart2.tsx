@@ -26,6 +26,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.primaryWhite,
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)',
   },
+  backButton: {
+    width: '100%',
+    height: '52px',
+    fontSize: theme.fontSizes.large,
+    fontWeight: '600',
+  },
   form: {
     display: 'grid',
     width: '100%',
@@ -57,43 +63,45 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-const initState: State = {
-  fname: '',
-  lname: '',
-  email: '',
-  password: '',
-  telephone: '',
-  companyName: '',
+const initState = {
+  address1: '',
+  address2: '',
+  county: '',
+  postcode: '',
+  country: '',
 };
 
 type StateUpdate = {
-  fname?: string;
-  lname?: string;
-  email?: string;
-  password?: string;
-  telephone?: string;
-  companyName?: string;
-};
-
-type State = {
-  fname: string;
-  lname: string;
-  email: string;
-  password: string;
-  telephone: string;
-  companyName: string;
+  address1?: string;
+  address2?: string;
+  county?: string;
+  postcode?: string;
+  country?: string;
 };
 
 type Props = {
   onLogoClick?: () => void;
-  onChange: (value: State) => void;
+  onChange: (value: {
+    address1: string;
+    address2: string;
+    county: string;
+    postcode: string;
+    country: string;
+  }) => void;
   onNext: () => void;
+  onBack: () => void;
 };
 
-function RegisterCompany({ onLogoClick, onChange, onNext }: Props) {
+function RegisterCompanyPart2({
+  onLogoClick,
+  onChange,
+  onNext,
+  onBack,
+}: Props) {
   const classes = useStyles();
 
   const [inputData, setInput] = React.useState(initState);
+  const [termsAgreed, setTermsAgreed] = React.useState(false);
 
   const onUpdate = (updates: StateUpdate) => {
     const newState = { ...inputData, ...updates };
@@ -104,6 +112,10 @@ function RegisterCompany({ onLogoClick, onChange, onNext }: Props) {
   let isComplete = true;
 
   for (const key in inputData) {
+    if (!termsAgreed) {
+      isComplete = false;
+      break;
+    }
     if (!inputData[key]) {
       isComplete = false;
       break;
@@ -122,60 +134,70 @@ function RegisterCompany({ onLogoClick, onChange, onNext }: Props) {
       <Spacer vertical spacing={3} />
       <div className={classes.form}>
         <CoreInput
-          placeholder="First Name"
+          placeholder="Address Line 1"
           type="text"
-          onChange={(val) => onUpdate({ fname: val })}
-          value={'fname'}
-          className={classes.input}
+          onChange={(val) => onUpdate({ address1: val })}
+          value={'address1'}
+          className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
-          placeholder="Last Name"
+          placeholder="Address Line 2"
           type="text"
-          onChange={(val) => onUpdate({ lname: val })}
-          value={'lname'}
-          className={classes.input}
+          onChange={(val) => onUpdate({ address2: val })}
+          value={'address2'}
+          className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
-          placeholder="Company Name"
+          placeholder="County"
           type="text"
-          onChange={(val) => onUpdate({ companyName: val })}
-          value={'company'}
+          onChange={(val) => onUpdate({ county: val })}
+          value={'county'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
-          placeholder="Company Email"
-          type="email"
-          onChange={(val) => onUpdate({ email: val })}
-          value={'email'}
+          placeholder="Post Code"
+          type="text"
+          onChange={(val) => onUpdate({ postcode: val })}
+          value={'postcode'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
-          placeholder="Password"
-          type="password"
-          onChange={(val) => onUpdate({ password: val })}
-          value={'password'}
+          placeholder="Country"
+          type="text"
+          onChange={(val) => onUpdate({ country: val })}
+          value={'country'}
           className={classnames(classes.input, classes.fullWidth)}
         />
-        <CoreInput
-          placeholder="Telephone Number"
-          type="tel"
-          onChange={(val) => onUpdate({ telephone: val })}
-          value={'telephone'}
-          className={classnames(classes.input, classes.fullWidth)}
+        <CheckboxSingle
+          size={18}
+          onChange={(termsAgreed) => {
+            setTermsAgreed(termsAgreed);
+          }}
+          fontStyle={classes.checkboxText}
+          className={classes.fullWidth}
+          label="By checking this box you confirm you are happy for our team to contact you during the registration period"
         />
       </div>
       <Spacer vertical spacing={3} />
       <Button
         archetype="submit"
         className={classes.button}
-        disabled={!isComplete}
         onClick={onNext}
+        disabled={!isComplete}
       >
-        Next
+        Register with TTC
+      </Button>
+      <Spacer vertical spacing={2} />
+      <Button
+        archetype="default"
+        className={classes.backButton}
+        onClick={onBack}
+      >
+        Back
       </Button>
       <Spacer vertical spacing={3} />
     </div>
   );
 }
 
-export default RegisterCompany;
+export default RegisterCompanyPart2;

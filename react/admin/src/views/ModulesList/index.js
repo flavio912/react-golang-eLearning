@@ -1,12 +1,15 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container } from '@material-ui/core';
+import { Container, Button, Chip } from '@material-ui/core';
+import CreateOutlinedIcon from '@material-ui/icons/CreateOutlined';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { Link as RouterLink } from 'react-router-dom';
 import Page from 'src/components/Page';
+import SearchBar from 'src/components/SearchBar';
+import Results from 'src/components/Results';
 import Header from './Header';
-import Results from './Results';
-import Filter from 'src/components/Filter';
+
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -16,8 +19,12 @@ const useStyles = makeStyles(theme => ({
   results: {
     marginTop: theme.spacing(3)
   },
-  filter: {
-    marginTop: theme.spacing(3)
+  row: {
+    display: 'flex',
+  },
+  icon: {
+    marginTop: 7,
+    marginRight: 5,
   }
 }));
 
@@ -47,51 +54,54 @@ const GET_MODULES = gql`
   }
 `;
 
-function useSearchQuery(text, page) {
-  const { error, data } = useQuery(GET_MODULES, {
-    variables: {
-      name: text,
-      page: page
-    }
-  });
-
-  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo) {
-    console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
-  }
-
-  console.log(data);
-
-  const resultItems = data.modules.edges.map(module => ({
-    uuid: module?.uuid ?? '',
-    name: module?.name ?? '',
-    syllabus: module?.syllabus ?? ''
-  }));
-
-  const pageInfo = {
-    total: data.modules.pageInfo?.total,
-    offset: data.modules.pageInfo.offset,
-    limit: data.modules.pageInfo.limit,
-    given: data.modules.pageInfo.given
-  };
-
-  return { resultItems, pageInfo };
-}
-
 function ModulesList({ match, history }) {
   const classes = useStyles();
-
   const [searchText, setSearchText] = React.useState('');
-  const [page] = React.useState({ limit: 20, offset: 0 });
-  const searchResults = useSearchQuery(searchText, page);
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const { error, data } = useQuery(GET_MODULES, {
+    variables: {
+      name: searchText,
+      page: {
+        offset: page,
+        limit: rowsPerPage,
+      },
+    },
+    fetchPolicy: 'cache-and-network'
+  });
+
+  if (error) return <div>{error.message}</div>;
+
+  // Results methods
+  const handleChangePage = (event, page) => {
+    setPage(page);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(event.target.value);
+  };
+
+  // Results table
+  const headers = ['Name', 'Courses Linked', 'Lessons', 'Tags', 'Actions'];
+  const cells = [
+    { field: 'name' }, { field: 'numCoursesUsedIn' },
+    { component: (result) =>  result.syllabus.length},
+    { component: (result) => (
+      result.tags && result.tags.map(tag => (
+        <Chip style={{ backgroundColor: tag.color }} label={tag.name} />
+      ))
+    )},
+    { component: (result) => (
+      <Button
+        color="default"
+        component={RouterLink}
+        size="small"
+        to={`/modules/${result.uuid}/overview`}
+      >
+        <CreateOutlinedIcon />
+      </Button>
+    )}
+  ]
 
   return (
     <Page className={classes.root} title="Modules">
@@ -101,16 +111,15 @@ function ModulesList({ match, history }) {
             history.push('/modules/create/overview');
           }}
         />
-        <Filter
-          className={classes.filter}
-          onChange={text => setSearchText(text)}
+        <SearchBar setSearchText={setSearchText} />
+        <Results
+          className={classes.results}
+          results={data?.modules}
+          headers={headers}
+          cells={cells}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
         />
-        {searchResults && (
-          <Results
-            className={classes.results}
-            modules={searchResults.resultItems}
-          />
-        )}
       </Container>
     </Page>
   );

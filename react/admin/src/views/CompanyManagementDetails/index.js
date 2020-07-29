@@ -37,6 +37,8 @@ const GET_COMPANY = gql`
       uuid
       name
       approved
+      contactEmail
+      isContract
       managers {
         edges {
           email
@@ -57,6 +59,13 @@ const GET_COMPANY = gql`
         pageInfo {
           total
         }
+      }
+      address {
+        addressLine1
+        addressLine2
+        county
+        postCode
+        country
       }
     }
   }
@@ -146,7 +155,12 @@ function CompanyManagementDetails({ match, history }) {
         <Divider className={classes.divider} />
         <div className={classes.content}>
           {currentTab === 'summary' && (
-            <Summary approved={data.company.approved} />
+            <Summary
+              company={data.company}
+              onUpdate={() => {
+                refetch();
+              }}
+            />
           )}
           {currentTab === 'invoices' && <Invoices />}
           {currentTab === 'managers' && (
