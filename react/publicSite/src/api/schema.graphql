@@ -8,6 +8,15 @@ schema {
 type Query {
   info: String!
   manager(uuid: UUID): Manager
+  courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
+  course(id: Int!): Course
+  category(uuid: UUID!): Category
+  categories(page: Page, text: String): CategoryPage
+}
+
+type CategoryPage implements PaginatedQuery {
+  edges: [Category]
+  pageInfo: PageInfo
 }
 
 type Mutation {
@@ -18,6 +27,71 @@ type Mutation {
     manager: CreateManagerInput!
     recaptcha: String!
   ): Boolean!
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
+}
+
+input PurchaseCoursesInput {
+  courses: [Int!]!
+  users: [UUID!] # List of delegates UUIDs
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
+}
+
+enum AccessType {
+  restricted
+  open
+}
+
+enum CourseType {
+  online
+  classroom
+}
+
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+input CoursesFilter {
+  name: String
+  accessType: AccessType
+  backgroundCheck: Boolean
+  price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
+  categoryUUID: UUID
+}
+
+type Course {
+  id: Int!
+  type: CourseType!
+  name: String!
+  backgroundCheck: Boolean
+  accessType: AccessType!
+  price: Float!
+  color: String
+  excerpt: String
+  introduction: String
+  howToComplete: String
+  hoursToComplete: Float
+  whatYouLearn: [String!]
+  requirements: [String!]
+  specificTerms: String
+  category: Category
+  allowedToBuy: Boolean
+  bannerImageURL: String
+  expiresInMonths: Int!
+}
+
+type CoursePage implements PaginatedQuery {
+  edges: [Course]
+  pageInfo: PageInfo
 }
 
 input CreateManagerInput {
@@ -36,6 +110,7 @@ input CreateCompanyInput {
   county: String!
   postCode: String!
   country: String!
+  contactEmail: String!
 }
 
 input CreateIndividualInput {

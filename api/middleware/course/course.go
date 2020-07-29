@@ -470,6 +470,9 @@ func filterCourse(query *gorm.DB, filter *gentypes.CourseFilter, fullyApproved b
 		if filter.Price != nil {
 			query = query.Where("price = ?", *filter.Price)
 		}
+		if filter.CategoryUUID != nil {
+			query = query.Where("category_uuid = ?", *filter.CategoryUUID)
+		}
 		if filter.AllowedToBuy != nil && *filter.AllowedToBuy {
 			if !fullyApproved {
 				query = query.Where("access_type = ?", gentypes.Open)
