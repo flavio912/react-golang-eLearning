@@ -41,7 +41,13 @@ const GET_COMPANY = gql`
       isContract
       managers {
         edges {
+          uuid
           email
+          firstName
+          lastName
+          profileImageUrl
+          createdAt
+          lastLogin
         }
         pageInfo {
           total
@@ -54,6 +60,7 @@ const GET_COMPANY = gql`
           firstName
           lastName
           lastLogin
+          profileImageUrl
           createdAt
         }
         pageInfo {
