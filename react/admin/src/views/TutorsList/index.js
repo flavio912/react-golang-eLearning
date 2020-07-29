@@ -1,10 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Link } from '@material-ui/core';
-// import gql from 'graphql-tag';
-// import { useQuery } from '@apollo/react-hooks';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
 import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Results from 'src/components/Results';
@@ -17,26 +16,60 @@ const useStyles = makeStyles(theme => ({
   },
   results: {
     marginTop: theme.spacing(3)
+  },
+  imageContainer: {
+    display: 'flex',
+    justifyContent: 'left'
+  },
+  image: {
+    maxWidth: 200,
+    width: 'auto',
+    maxHeight: 70,
+    height: 'auto'
   }
 }));
+
+const GET_TUTORS = gql`
+  query GetTutors($page: Page, $filter: TutorFilter, $orderBy: OrderBy) {
+    tutors(page: $page, filter: $filter, orderBy: $orderBy) {
+      edges {
+        uuid
+        name
+        cin
+        signatureURL
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
+    }
+  }
+`;
 
 function TutorsList() {
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  // TODO: Add tutors query
-  // const { error, data, refetch } = useQuery(GET_INDIVIDUALS, {
-  //   variables: {
-  //     name: searchText,
-  //     page: {
-  //       offset: page,
-  //       limit: rowsPerPage,
-  //     },
-  //   },
-  //   fetchPolicy: 'cache-and-network'
-  // });
-  // if (error) return <div>{error.message}</div>;
+  const { error, data, refetch } = useQuery(GET_TUTORS, {
+    variables: {
+      page: {
+        offset: page,
+        limit: rowsPerPage,
+      },
+      filter: {
+        name: searchText
+      },
+      orderBy: {
+        ascending: true,
+        field: 'name'
+      }
+    },
+    fetchPolicy: 'cache-and-network'
+  });
+  if (error) return <div>{error.message}</div>;
 
   // Results methods
   const handleChangePage = (event, page) => {
@@ -48,7 +81,7 @@ function TutorsList() {
   };
 
   // Results table
-  const headers = ['User', 'CIN Number', 'Last Login', 'Created At'];
+  const headers = ['User', 'CIN Number', 'Signature URL'];
   const cells = [
     {
       component: result => (
@@ -56,41 +89,27 @@ function TutorsList() {
           <Link
             color="inherit"
             component={RouterLink}
-            to="/companies/1"
+            to={`/tutors/${result.uuid}/overview`}
             variant="h6"
           >
-            {result.fullName}
+            {result.name}
           </Link>
-          <div>{result.email}</div>
         </div>
       )
     },
     { field: 'cin' },
-    { component: result => moment(result.lastLogin.date).format('LLL') },
-    { component: result => moment(result.createdAt).format('LLL') }
-  ];
-
-  const data = {
-    tutors: {
-      edges: [
-        {
-          fullName: 'Alexandria Tutor',
-          email: 'alexandria@tutor.com',
-          lastLogin: {
-            date: '10/2/2020'
-          },
-          createdAt: '4/1/2020',
-          cin: '1000345323898'
-        }
-      ],
-      pageInfo: {
-        given: 1,
-        total: 1,
-        offset: 0,
-        limit: 10
-      }
+    {
+      component: result => (
+        <div className={classes.imageContainer}>
+          <img
+            alt="Signature Image"
+            className={classes.image}
+            src={result.signatureURL}
+          />
+        </div>
+      )
     }
-  };
+  ];
 
   return (
     <Page className={classes.root} title="Tutors">
