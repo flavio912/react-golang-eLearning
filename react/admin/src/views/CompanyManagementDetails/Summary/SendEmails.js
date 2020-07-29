@@ -34,11 +34,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const options = [
-  'Resend last invoice',
-  'Send password reset',
-  'Send verification'
-];
+const options = ['Send password reset'];
 
 function SendEmails({ company, className, ...rest }) {
   const classes = useStyles();

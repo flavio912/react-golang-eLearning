@@ -19,19 +19,9 @@ export default [
         icon: DashboardIcon
       },
       {
-        title: 'Company requests',
-        href: '/approve-companies',
-        icon: BarChartIcon
-      },
-      {
         title: 'Companies',
         href: '/companies',
         icon: BarChartIcon
-      },
-      {
-        title: 'Admins',
-        href: '/admins',
-        icon: AssignmentInd
       },
       {
         title: 'Individuals',
@@ -42,6 +32,11 @@ export default [
         title: 'Delegates',
         href: '/delegates',
         icon: AssignmentInd
+      },
+      {
+        title: 'Company requests',
+        href: '/approve-companies',
+        icon: BarChartIcon
       }
     ]
   },
@@ -49,7 +44,7 @@ export default [
     subheader: 'Courses',
     items: [
       {
-        title: 'Online Courses',
+        title: 'Courses',
         href: '/courses',
         icon: LibraryBooks,
         items: [
@@ -81,11 +76,6 @@ export default [
         icon: CardMembershipIcon
       },
       {
-        title: 'Classroom Courses',
-        href: '/classroom-courses',
-        icon: Class
-      },
-      {
         title: 'Tutors',
         href: '/tutors',
         icon: AssignmentInd
@@ -93,8 +83,13 @@ export default [
     ]
   },
   {
-    subheader: 'Page Settings',
+    subheader: 'Admin Settings',
     items: [
+      {
+        title: 'Admins',
+        href: '/admins',
+        icon: AssignmentInd
+      },
       {
         title: 'Page Editor',
         href: '/page-editor',

@@ -35,6 +35,7 @@ const GET_DELEGATE = gql`
       jobTitle
       email
       telephone
+      profileImageUrl
       company {
         uuid
         name

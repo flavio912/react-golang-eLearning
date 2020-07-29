@@ -12,13 +12,14 @@ import {
   Table,
   TableBody,
   TableRow,
+  Avatar,
   TableCell,
   colors
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import gql from 'graphql-tag';
+import getInitials from 'src/utils/getInitials';
 import { useMutation } from '@apollo/react-hooks';
-import Label from 'src/components/Label';
 import DelegateEditModal from './DelegateEditModal';
 
 const useStyles = makeStyles(theme => ({
@@ -46,9 +47,9 @@ const UPDATE_DELEGATE = gql`
     $jobTitle: String!
     $telephone: String
     $email: String
-    $profileImageUrl: String
     $companyUUID: UUID
     $newPassword: String
+    $profileUploadToken: String
   ) {
     updateDelegate(
       input: {
@@ -58,7 +59,7 @@ const UPDATE_DELEGATE = gql`
         jobTitle: $jobTitle
         telephone: $telephone
         email: $email
-        profileImageUploadToken: $profileImageUrl
+        profileImageUploadToken: $profileUploadToken
         companyUUID: $companyUUID
         newPassword: $newPassword
       }
@@ -112,7 +113,8 @@ function DelegateInfo({ delegate, className, ...rest }) {
           telephone: values.telephone,
           email: values.email,
           companyUUID: values.company.uuid,
-          generatePassword: values.generatePassword
+          generatePassword: values.generatePassword,
+          profileUploadToken: values.profileUploadToken
         }
       });
       setDelegateInfo({ ...data.updateDelegate });
@@ -135,22 +137,7 @@ function DelegateInfo({ delegate, className, ...rest }) {
           <TableBody>
             <TableRow>
               <TableCell>Email</TableCell>
-              <TableCell>
-                {delegateInfo.email}
-                <div>
-                  <Label
-                    color={
-                      delegateInfo.verified
-                        ? colors.green[600]
-                        : colors.orange[600]
-                    }
-                  >
-                    {delegateInfo.verified
-                      ? 'Email verified'
-                      : 'Email not verified'}
-                  </Label>
-                </div>
-              </TableCell>
+              <TableCell>{delegateInfo.email}</TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>First Name</TableCell>
@@ -160,7 +147,7 @@ function DelegateInfo({ delegate, className, ...rest }) {
               <TableCell>Last Name</TableCell>
               <TableCell>{delegateInfo.lastName}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow selected>
               <TableCell>Job Title</TableCell>
               <TableCell>{delegateInfo.jobTitle}</TableCell>
             </TableRow>
@@ -168,9 +155,20 @@ function DelegateInfo({ delegate, className, ...rest }) {
               <TableCell>Telephone</TableCell>
               <TableCell>{delegateInfo.telephone}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow selected>
               <TableCell>Company</TableCell>
               <TableCell>{delegateInfo.company.name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Profile Image</TableCell>
+              <TableCell>
+                <Avatar
+                  className={classes.avatar}
+                  src={delegate.profileImageUrl + '?w=100'}
+                >
+                  {getInitials(`${delegate.firstName} ${delegate.lastName}`)}
+                </Avatar>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>

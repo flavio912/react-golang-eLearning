@@ -22,6 +22,7 @@ import {
 import validate from 'validate.js';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -85,6 +86,17 @@ const GET_COMPANIES = gql`
           }
         }
       }
+    }
+  }
+`;
+
+const UPLOAD_REQUEST = gql`
+  mutation UploadRequest($fileType: String!, $contentLength: Int!) {
+    profileImageUploadRequest(
+      input: { fileType: $fileType, contentLength: $contentLength }
+    ) {
+      url
+      successToken
     }
   }
 `;
@@ -283,6 +295,20 @@ function DelegateEditModal({ open, onClose, delegate, className, ...rest }) {
                   type="password"
                   value={formState.values.password || ''}
                   variant="outlined"
+                />
+              </Grid>
+              <Grid item md={6} xs={12}>
+                <UploadFile
+                  uploadMutation={UPLOAD_REQUEST}
+                  onUploaded={(token, url) => {
+                    setFormState(prevFormState => ({
+                      ...prevFormState,
+                      values: {
+                        ...prevFormState.values,
+                        profileUploadToken: token
+                      }
+                    }));
+                  }}
                 />
               </Grid>
             </Grid>

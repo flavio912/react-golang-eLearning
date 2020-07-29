@@ -24,11 +24,11 @@ function Summary({ className, company, onUpdate, ...rest }) {
       <Grid item lg={4} md={6} xl={3} xs={12}>
         <CompanyInfo company={company} onUpdate={onUpdate} />
       </Grid>
-      {company.approved && (
+      {/* {company.approved && (
         <Grid item lg={4} md={6} xl={3} xs={12}>
           <SendEmails company={company} />
         </Grid>
-      )}
+      )} */}
       <Grid item lg={4} md={6} xl={3} xs={12}>
         <OtherActions />
       </Grid>
