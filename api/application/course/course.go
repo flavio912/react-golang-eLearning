@@ -6,6 +6,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
@@ -65,24 +66,39 @@ func (c *courseAppImpl) courseToGentype(courseInfo models.Course) gentypes.Cours
 	}
 
 	return gentypes.Course{
-		ID:              courseInfo.ID,
-		Name:            courseInfo.Name,
-		AccessType:      courseInfo.AccessType,
-		BackgroundCheck: courseInfo.BackgroundCheck,
-		Price:           courseInfo.Price,
-		Color:           courseInfo.Color,
-		Introduction:    courseInfo.Introduction,
-		HowToComplete:   courseInfo.HowToComplete,
-		HoursToComplete: courseInfo.HoursToComplete,
-		WhatYouLearn:    learnBullets,
-		Requirements:    requirementBullets,
-		Excerpt:         courseInfo.Excerpt,
-		SpecificTerms:   courseInfo.SpecificTerms,
-		CategoryUUID:    courseInfo.CategoryUUID,
-		AllowedToBuy:    allowedToBuy,
-		CourseType:      courseInfo.CourseType,
-		BannerImageURL:  bannerUrl,
+		ID:                   courseInfo.ID,
+		Name:                 courseInfo.Name,
+		AccessType:           courseInfo.AccessType,
+		BackgroundCheck:      courseInfo.BackgroundCheck,
+		Price:                courseInfo.Price,
+		Color:                courseInfo.Color,
+		Introduction:         courseInfo.Introduction,
+		HowToComplete:        courseInfo.HowToComplete,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		WhatYouLearn:         learnBullets,
+		Requirements:         requirementBullets,
+		Excerpt:              courseInfo.Excerpt,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		CategoryUUID:         courseInfo.CategoryUUID,
+		AllowedToBuy:         allowedToBuy,
+		CourseType:           courseInfo.CourseType,
+		BannerImageURL:       bannerUrl,
+		ExpiresInMonths:      courseInfo.ExpiresInMonths,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		Published:            courseInfo.Published,
+		CertificateTypeUUID:  courseInfo.CertificateTypeUUID,
 	}
+}
+
+func (c *courseAppImpl) SetCoursePublished(courseID uint, published bool) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
+	_, err := c.coursesRepository.UpdateCourse(courseID, course.CourseInput{
+		Published: &published,
+	})
+	return err
 }
 
 // TODO: Bulk load rather than making a million db calls
@@ -96,16 +112,32 @@ func (c *courseAppImpl) coursesToGentypes(courses []models.Course) []gentypes.Co
 
 func (c *courseAppImpl) Course(courseID uint) (gentypes.Course, error) {
 	course, err := c.coursesRepository.Course(courseID)
+
+	// Only admins can view unpublished courses
+	if course.Published != true && !c.grant.IsAdmin {
+		return gentypes.Course{}, &errors.ErrUnauthorized
+	}
+
 	return c.courseToGentype(course), err
 }
 
 func (c *courseAppImpl) Courses(courseIDs []uint) ([]gentypes.Course, error) {
-	courses, err := c.coursesRepository.Courses(courseIDs)
+	showUnpublished := false
+	if c.grant.IsAdmin {
+		showUnpublished = true
+	}
+
+	courses, err := c.coursesRepository.Courses(courseIDs, showUnpublished)
 	return c.coursesToGentypes(courses), err
 }
 
 func (c *courseAppImpl) GetCourses(page *gentypes.Page, filter *gentypes.CourseFilter, orderBy *gentypes.OrderBy) ([]gentypes.Course, gentypes.PageInfo, error) {
-	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, application.IsFullyApproved(&c.usersRepository, c.grant))
+	showUnpublished := false
+	if c.grant.IsAdmin {
+		showUnpublished = true
+	}
+
+	courses, pageInfo, err := c.coursesRepository.GetCourses(page, filter, orderBy, application.IsFullyApproved(&c.usersRepository, c.grant), showUnpublished)
 
 	return c.coursesToGentypes(courses), pageInfo, err
 }
@@ -165,12 +197,60 @@ func (c *courseAppImpl) SaveClassroomCourse(courseInfo gentypes.SaveClassroomCou
 }
 
 func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, error) {
-	return []gentypes.CourseItem{
-		gentypes.CourseItem{
-			Type: gentypes.TestType,
-			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		},
-	}, nil
+	if !application.GrantCanViewSyllabus(&c.usersRepository, c.grant, courseID) {
+		return []gentypes.CourseItem{}, &errors.ErrUnauthorized
+	}
+
+	// Check that its an online course
+	onlineCourse, err := c.coursesRepository.OnlineCourse(courseID)
+	if err != nil {
+		return []gentypes.CourseItem{}, err
+	}
+
+	structures, structErr := c.coursesRepository.OnlineCourseStructure(onlineCourse.UUID)
+
+	if structErr != nil {
+		return []gentypes.CourseItem{}, structErr
+	}
+
+	courseItems := make([]gentypes.CourseItem, len(structures))
+	for i, structure := range structures {
+		switch {
+		case structure.ModuleUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.ModuleType,
+				UUID: *structure.ModuleUUID,
+			}
+		case structure.LessonUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.LessonType,
+				UUID: *structure.LessonUUID,
+			}
+		case structure.TestUUID != nil:
+			courseItems[i] = gentypes.CourseItem{
+				Type: gentypes.TestType,
+				UUID: *structure.TestUUID,
+			}
+		default:
+			c.grant.Logger.LogMessage(sentry.LevelFatal, "Structure element not recognised")
+			return []gentypes.CourseItem{}, &errors.ErrWhileHandling
+		}
+	}
+
+	return courseItems, nil
+}
+
+func (c *courseAppImpl) SearchSyllabus(
+	page *gentypes.Page,
+	filter *gentypes.SyllabusFilter,
+) ([]gentypes.CourseItem, gentypes.PageInfo, error) {
+	if !c.grant.IsAdmin {
+		return []gentypes.CourseItem{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	results, pageInfo, err := c.coursesRepository.SearchSyllabus(page, filter)
+
+	return results, pageInfo, err
 }
 
 func (c *courseAppImpl) DeleteCourse(input gentypes.DeleteCourseInput) (bool, error) {
@@ -191,12 +271,12 @@ func (c *courseAppImpl) CourseBannerImageUploadRequest(imageMeta gentypes.Upload
 	}
 
 	url, successToken, err := uploads.GenerateUploadURL(
-		imageMeta.FileType,      // The actual file type
-		imageMeta.ContentLength, // The actual file content length
-		[]string{"jpg", "png"},  // Allowed file types
-		int32(20000000),         // Max file size = 20MB
-		"courseBanners",         // Save files in the "answers" s3 directory
-		"courseBannerImage",     // Unique identifier for this type of upload request
+		imageMeta.FileType,             // The actual file type
+		imageMeta.ContentLength,        // The actual file content length
+		[]string{"jpg", "png", "jpeg"}, // Allowed file types
+		int32(20000000),                // Max file size = 20MB
+		"courseBanners",                // Save files in the "answers" s3 directory
+		"courseBannerImage",            // Unique identifier for this type of upload request
 	)
 
 	return url, successToken, err

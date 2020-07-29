@@ -1,50 +1,50 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import { Theme } from "helpers/theme";
-import UserResults from "../UserResults";
-import CoreInput from "components/core/Input/CoreInput";
-import { ResultItem } from "../UserSearch";
-import IdentTag from "components/IdentTag";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import { Theme } from 'helpers/theme';
+import UserResults from '../UserResults';
+import CoreInput from 'components/core/Input/CoreInput';
+import { ResultItem } from '../UserSearch';
+import IdentTag from 'sharedComponents/IdentTag';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
-    border: [1, "solid", theme.colors.borderGrey],
+    border: [1, 'solid', theme.colors.borderGrey],
     borderRadius: theme.primaryBorderRadius,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    background: "white",
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    background: 'white'
   },
   rootFocused: {
-    extend: "root",
-    boxShadow: theme.shadows.primary,
+    extend: 'root',
+    boxShadow: theme.shadows.primary
   },
   search: {
-    display: "flex",
-    alignItems: "center",
-    flex: 1,
+    display: 'flex',
+    alignItems: 'center',
+    flex: 1
   },
   searchInput: {
     fontSize: theme.fontSizes.default,
-    fontWeight: 200,
+    fontWeight: 200
   },
   openDelegate: {
     background: theme.colors.primaryBlue,
-    color: "white",
-    alignItems: "center",
+    color: 'white',
+    alignItems: 'center',
     padding: [0, 38],
-    display: "flex",
+    display: 'flex',
     fontWeight: 600,
     fontSize: theme.fontSizes.default,
     borderRadius: [0, theme.primaryBorderRadius, theme.primaryBorderRadius, 0],
-    cursor: "pointer",
+    cursor: 'pointer'
   },
   buttonCont: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: theme.spacing(1),
-  },
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: theme.spacing(1)
+  }
 }));
 
 type Props = {
@@ -58,7 +58,7 @@ function SingleUserSearch({
   searchFunction,
   selection,
   setSelection,
-  debounceTime = 600,
+  debounceTime = 600
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -66,16 +66,16 @@ function SingleUserSearch({
   const [loading, setLoading]: [boolean, any] = React.useState(false);
   const [focus, setFocus]: [boolean, any] = React.useState(false);
   const [results, setResults]: [ResultItem[], any] = React.useState([]);
-  const [input, setInput]: [string, any] = React.useState("");
+  const [input, setInput]: [string, any] = React.useState('');
   const [debouncer, setDebouncer]: [number | undefined, any] = React.useState();
 
   const onFocus = () => {
     setFocus(true);
-    onChange("");
+    onChange('');
 
     // Reset the input when focusing again
     if (selection !== undefined) {
-      setInput("");
+      setInput('');
       setSelection(undefined);
     }
   };

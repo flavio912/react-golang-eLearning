@@ -159,6 +159,7 @@ func TestCreateDelegate(t *testing.T) {
 		assert.Equal(t, inp.FirstName, d.FirstName)
 		assert.Equal(t, inp.LastName, d.LastName)
 		assert.Equal(t, inp.Email, d.Email)
+		assert.NotEqual(t, gentypes.UUID{}, d.CourseTakerUUID)
 	})
 
 }

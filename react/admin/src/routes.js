@@ -13,6 +13,14 @@ import ModulesList from './views/ModulesList';
 import QuestionsList from './views/QuestionsList';
 import CreateQuestion from './views/Question/CreateQuestion';
 import UpdateQuestion from './views/Question/UpdateQuestion';
+import CreateModule from './views/Module/CreateModule';
+import UpdateModule from './views/Module/UpdateModule';
+import TestsList from './views/TestsList';
+import CreateTest from './views/Test/CreateTest';
+import UpdateTest from './views/Test/UpdateTest';
+import CertificateTypes from './views/CertificateTypesList';
+import CreateCertificateType from './views/CertificateType/CreateCertificateType';
+import UpdateCertificateType from './views/CertificateType/UpdateCertificateType';
 
 export default [
   {
@@ -98,6 +106,11 @@ export default [
         component: lazy(() => import('src/views/OrderManagementList'))
       },
       {
+        path: '/approve-companies',
+        exact: true,
+        component: lazy(() => import('src/views/UnapprovedCompanies'))
+      },
+      {
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementDetails'))
@@ -116,6 +129,21 @@ export default [
         path: '/admins/:id/:tab',
         exact: true,
         component: lazy(() => import('src/views/AdminDetails'))
+      },
+      {
+        path: '/individuals',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualsList'))
+      },
+      {
+        path: '/individuals/:id',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
+        path: '/individuals/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/IndividualDetails'))
       },
       {
         path: '/delegates',
@@ -163,9 +191,34 @@ export default [
         component: CreateCourse
       },
       {
+        path: '/tests',
+        exact: true,
+        component: TestsList
+      },
+      {
+        path: '/test/create/:tab',
+        exact: true,
+        component: CreateTest
+      },
+      {
+        path: '/test/:ident/:tab',
+        exact: true,
+        component: UpdateTest
+      },
+      {
         path: '/modules',
         exact: true,
         component: ModulesList
+      },
+      {
+        path: '/modules/create/:tab',
+        exact: true,
+        component: CreateModule
+      },
+      {
+        path: '/modules/:ident/:tab',
+        exact: true,
+        component: UpdateModule
       },
       {
         path: '/questions',
@@ -181,6 +234,21 @@ export default [
         path: '/question/:ident/:tab',
         exact: true,
         component: UpdateQuestion
+      },
+      {
+        path: '/certificateTypes',
+        exact: true,
+        component: CertificateTypes
+      },
+      {
+        path: '/certificateTypes/create/:tab',
+        exact: true,
+        component: CreateCertificateType
+      },
+      {
+        path: '/certificateTypes/:ident/:tab',
+        exact: true,
+        component: UpdateCertificateType
       },
       {
         path: '/settings',

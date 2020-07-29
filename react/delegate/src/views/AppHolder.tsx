@@ -6,13 +6,15 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import SearchResults from 'components/Search/SearchResults';
 import { Theme } from 'helpers/theme';
-import { createFragmentContainer, graphql } from 'react-relay';
+import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
+import environment from 'api/environment';
+import { AppHolderQueryResponse } from './__generated__/AppHolderQuery.graphql';
+import { SideModalProvider, useSideModalDispatch } from './SideModalProvider';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
     display: 'flex',
-    padding: '42px 60px',
     justifyContent: 'center',
     position: 'relative'
   },
@@ -30,30 +32,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     background: theme.searchBackground
   }
 }));
-
-const results = [
-  {
-    id: 1,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  },
-  {
-    id: 2,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  },
-  {
-    id: 3,
-    title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-    image: 'https://www.gstatic.com/webp/gallery/1.jpg',
-    description:
-      'This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…This course is for those who screen air cargo and mail, to provide them with the knowledge and skills needed to deliver effective screening in visual check, hand search…'
-  }
-];
 
 type Props = {
   children?: React.ReactChildren;
@@ -96,6 +74,8 @@ const AppHolder = ({ children, user }: Props) => {
   );
   const onToggleSearchModal = () => setIsShowSearchModal(!isShowSearchModal);
   const hideSearch = () => setIsShowSearchModal(false);
+
+  const dispatchModal = useSideModalDispatch();
   return (
     <div className={classes.appHolderRoot}>
       <SideMenu
@@ -120,12 +100,103 @@ const AppHolder = ({ children, user }: Props) => {
       <HeaderMenu
         user={{ name: `${user?.firstName} ${user?.lastName}`, url: '' }}
         onToggleSearchModal={onToggleSearchModal}
+        showSearch={user?.type === 'individual'}
       />
       <div className={classes.appHolder}>
         {children}
         {isShowSearchModal && (
           <div className={classes.appHolderSearch} onClick={hideSearch}>
-            <SearchResults results={results} />
+            <SearchResults
+              searchFunction={async (text: string, offset: number) => {
+                const query = graphql`
+                  query AppHolderQuery($name: String!, $offset: Int!) {
+                    courses(
+                      filter: { name: $name }
+                      page: { limit: 4, offset: $offset }
+                    ) {
+                      edges {
+                        ident: id
+                        name
+                        bannerImageURL
+                        introduction
+                        price
+                      }
+                      pageInfo {
+                        total
+                        limit
+                        offset
+                        given
+                      }
+                    }
+                  }
+                `;
+
+                const variables = {
+                  name: text,
+                  offset: offset
+                };
+
+                const data = (await fetchQuery(
+                  environment,
+                  query,
+                  variables
+                )) as AppHolderQueryResponse;
+                if (
+                  !data ||
+                  !data.courses ||
+                  !data.courses.edges ||
+                  !data.courses.pageInfo
+                ) {
+                  console.error('Could not get data', data);
+                  return {
+                    resultItems: [],
+                    pageInfo: {
+                      currentPage: 1,
+                      numPages: 1
+                    }
+                  };
+                }
+
+                const resultItems = data.courses.edges.map((course) => ({
+                  id: course?.ident ?? '',
+                  title: course?.name ?? '',
+                  image: course?.bannerImageURL ?? '',
+                  description: course?.introduction ?? '',
+                  onClick: () => {
+                    if (
+                      course?.ident === undefined ||
+                      course?.name === undefined ||
+                      course?.price === undefined
+                    ) {
+                      console.error('Unable to get course', course);
+                      return;
+                    }
+
+                    dispatchModal({
+                      type: 'show',
+                      courses: [
+                        {
+                          id: course.ident,
+                          name: course.name,
+                          price: course.price
+                        }
+                      ]
+                    });
+                  }
+                }));
+
+                const pageInfo = {
+                  currentPage: Math.ceil(data.courses.pageInfo.offset / 4 + 1),
+                  numPages: Math.ceil(data.courses.pageInfo.total / 4)
+                };
+                const result = {
+                  resultItems: resultItems,
+                  pageInfo: pageInfo
+                };
+
+                return result;
+              }}
+            />
           </div>
         )}
       </div>
@@ -136,6 +207,7 @@ const AppHolder = ({ children, user }: Props) => {
 export default createFragmentContainer(AppHolder, {
   user: graphql`
     fragment AppHolder_user on User {
+      type
       firstName
       lastName
     }

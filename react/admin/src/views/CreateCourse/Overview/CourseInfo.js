@@ -4,18 +4,47 @@ import {
   CardHeader,
   TextField,
   CardContent,
-  Button,
   Grid,
   Divider
 } from '@material-ui/core';
+import gql from 'graphql-tag';
+import { useQuery } from '@apollo/react-hooks';
 import { Autocomplete } from '@material-ui/lab';
 import TagsInput from 'src/components/TagsInput';
+import ErrorModal from 'src/components/ErrorModal';
+
+const GET_CATEGORIES = gql`
+  query GetCategories($limit: Int!, $text: String) {
+    categories(page: { limit: $limit }, text: $text) {
+      edges {
+        uuid
+        name
+        color
+      }
+    }
+  }
+`;
 
 function CourseInfo({ state, setState }) {
-  const categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
+  let categoryOptions = [{ title: 'Aviation Security', value: 'avsec' }];
+
+  const { loading, error, data } = useQuery(GET_CATEGORIES, {
+    variables: {
+      limit: 100
+    },
+    fetchPolicy: 'cache-and-network'
+  });
+
+  if (!loading && !error) {
+    categoryOptions = data.categories.edges.map(category => ({
+      title: category.name,
+      value: category.uuid
+    }));
+  }
 
   return (
     <Card>
+      <ErrorModal error={error} />
       <CardHeader title={'Course Info'} />
       <Divider />
       <CardContent>
@@ -35,12 +64,18 @@ function CourseInfo({ state, setState }) {
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
+              <Grid item xs={12}>
                 <Autocomplete
+                  value={state.category}
                   options={categoryOptions}
-                  getOptionLabel={option => option.title}
+                  loading={loading}
+                  getOptionLabel={option => option.title ?? option.name}
                   onChange={(event, newValue) => {
-                    setState({ primaryCategory: newValue.value });
+                    console.log('new', newValue);
+                    if (!newValue) return;
+                    setState({
+                      category: { uuid: newValue.value, name: newValue.title }
+                    });
                   }}
                   renderInput={params => (
                     <TextField
@@ -51,14 +86,11 @@ function CourseInfo({ state, setState }) {
                   )}
                 />
               </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
-              </Grid>
             </Grid>
           </Grid>
           <Grid item>
             <Grid container spacing={1} alignItems={'center'}>
-              <Grid item xs={11}>
+              <Grid item xs={12}>
                 <Autocomplete
                   options={categoryOptions}
                   getOptionLabel={option => option.title}
@@ -73,9 +105,6 @@ function CourseInfo({ state, setState }) {
                     />
                   )}
                 />
-              </Grid>
-              <Grid item xs={1}>
-                <Button>+ Add</Button>
               </Grid>
             </Grid>
           </Grid>

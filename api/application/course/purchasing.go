@@ -17,7 +17,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		return &gentypes.PurchaseCoursesResponse{}, err
 	}
 
-	courseModels, err := c.coursesRepository.Courses(helpers.Int32sToUints(input.Courses))
+	courseModels, err := c.coursesRepository.Courses(helpers.Int32sToUints(input.Courses), false)
 	if err != nil {
 		return &gentypes.PurchaseCoursesResponse{}, err
 	}
@@ -46,7 +46,11 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 
 	// Managers can only purchase for users that exist and that they are manager of
 	if c.grant.IsManager {
-		for _, uuid := range input.Users {
+		if input.Users == nil {
+			return nil, &errors.ErrUserNotFound
+		}
+
+		for _, uuid := range *input.Users {
 			delegate, err := c.usersRepository.Delegate(uuid)
 			if err != nil {
 				return &gentypes.PurchaseCoursesResponse{}, errors.ErrDelegateDoesNotExist(uuid.String())
@@ -73,6 +77,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 	// Create a pending order
 	err = c.ordersRepository.CreatePendingOrder(intent.ClientSecret, helpers.Int32sToUints(input.Courses), courseTakerIDs, input.ExtraInvoiceEmail)
 	if err != nil {
+		c.grant.Logger.Log(sentry.LevelError, err, "Unable to create pending order")
 		return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 	}
 
@@ -89,8 +94,8 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		}
 
 		if company.IsContract {
-			err := c.ordersRepository.FulfilPendingOrder(intent.ClientSecret)
-			if err != nil {
+			success, err := c.FulfilPendingOrder(intent.ClientSecret)
+			if err != nil || !success {
 				c.grant.Logger.Log(sentry.LevelError, err, "Unable to fulfil contract order")
 				return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
 			}
@@ -114,7 +119,27 @@ func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
 		return false, &errors.ErrUnauthorized
 	}
 
-	err := c.ordersRepository.FulfilPendingOrder(clientSecret)
+	activeCourses, err := c.ordersRepository.FulfilPendingOrder(clientSecret)
+	if err != nil {
+		return false, err
+	}
+
+	for _, activeCourse := range activeCourses {
+		_, err := c.usersRepository.CreateTakerActivity(activeCourse.CourseTakerUUID, gentypes.ActivityNewCourse, &activeCourse.CourseID)
+		if err != nil {
+			c.grant.Logger.Log(sentry.LevelWarning, err, "FulfilPendingOrder: Unable to create taker activity")
+		}
+	}
+
+	return true, nil
+}
+
+func (c *courseAppImpl) CancelPendingOrder(clientSecret string) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	err := c.ordersRepository.CancelPendingOrder(clientSecret)
 	if err != nil {
 		return false, err
 	}

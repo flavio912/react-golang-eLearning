@@ -16,6 +16,7 @@ import Pricing from './Pricing';
 import CourseBuilder from './CourseBuilder';
 import { gql } from 'apollo-boost';
 import { useMutation, useQuery } from '@apollo/react-hooks';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -48,6 +49,12 @@ const SAVE_ONLINE_COURSE = gql`
     $whatYouLearn: [String!]
     $requirements: [String!]
     $bannerImageSuccess: String
+    $categoryUUID: UUID
+    $structure: [CourseItem!]
+    $expiresInMonths: Int
+    $expirationToEndMonth: Boolean
+    $certificateType: UUID
+    $specificTerms: String
   ) {
     saveOnlineCourse(
       input: {
@@ -62,10 +69,22 @@ const SAVE_ONLINE_COURSE = gql`
         whatYouLearn: $whatYouLearn
         requirements: $requirements
         bannerImageSuccess: $bannerImageSuccess
+        categoryUUID: $categoryUUID
+        structure: $structure
+        expiresInMonths: $expiresInMonths
+        expirationToEndMonth: $expirationToEndMonth
+        specificTerms: $specificTerms
+        certificateType: $certificateType
       }
     ) {
       id
     }
+  }
+`;
+
+const SET_PUBLISHED = gql`
+  mutation SetPublished($courseID: Int!, $published: Boolean) {
+    setCoursePublished(courseID: $courseID, published: $published)
   }
 `;
 
@@ -84,13 +103,30 @@ const GET_COURSE = gql`
       whatYouLearn
       requirements
       bannerImageURL
+      published
+      expiresInMonths
+      expirationToEndMonth
+      specificTerms
+      certificateType {
+        uuid
+        name
+      }
+      category {
+        name
+        uuid
+      }
+      syllabus {
+        uuid
+        name
+        type
+      }
     }
   }
 `;
 
 var initState = {
   name: '',
-  primaryCategory: {},
+  category: {},
   secondaryCategory: {},
   tags: [],
   excerpt: '',
@@ -103,8 +139,14 @@ var initState = {
   hoursToComplete: 0,
   price: 0,
   priceType: 'paid',
+  published: false,
   bannerImageURL: undefined,
-  bannerImageSuccess: undefined
+  bannerImageSuccess: undefined,
+  categoryUUID: { title: '', value: '' },
+  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }],
+  certificateType: { name: '', uuid: undefined },
+  expiresInMonths: false,
+  expirationToEndMonth: false
 };
 
 function CreateCourse({ match, history }) {
@@ -115,15 +157,20 @@ function CreateCourse({ match, history }) {
     { value: 'overview', label: 'Overview' },
     { value: 'about', label: 'About' },
     { value: 'builder', label: 'Course Builder' },
-    { value: 'pricing', label: 'Pricing' }
+    { value: 'pricing', label: 'Pricing + Certificates' }
   ];
 
-  const handleTabsChange = (event, value) => {
+  const handleTabsChange = (_, value) => {
     history.push(value);
   };
 
   const [state, setState] = useState(initState);
-  const [saveOnlineCourse] = useMutation(SAVE_ONLINE_COURSE);
+  const [saveOnlineCourse, { error: saveError }] = useMutation(
+    SAVE_ONLINE_COURSE
+  );
+  const [setPublishedMutation, { error: publishError }] = useMutation(
+    SET_PUBLISHED
+  );
   const { loading, error, data, refetch } = useQuery(GET_COURSE, {
     variables: {
       id: parseInt(ident)
@@ -131,6 +178,7 @@ function CreateCourse({ match, history }) {
     fetchPolicy: 'cache-and-network',
     skip: !ident
   });
+
   useEffect(() => {
     if (loading || error) return;
     if (!data) return;
@@ -145,8 +193,18 @@ function CreateCourse({ match, history }) {
       hoursToComplete: data.course.hoursToComplete,
       whatYouLearn: data.course.whatYouLearn,
       requirements: data.course.requirements,
+      published: data.course.published,
       bannerImageURL: data.course.bannerImageURL,
-      price: data.course.price
+      price: data.course.price,
+      category: data.course.category,
+      syllabus: data.course.syllabus,
+      expiresInMonths: data.course.expiresInMonths,
+      expirationToEndMonth: data.course.expirationToEndMonth,
+      specificTerms: data.course.specificTerms,
+      certificateType: {
+        name: data.course.certificateType?.name,
+        uuid: data.course.certificateType?.uuid
+      }
     });
   }, [data, loading, error]);
 
@@ -175,7 +233,13 @@ function CreateCourse({ match, history }) {
           whatYouLearn: state.whatYouLearn,
           requirements: state.requirements,
           bannerImageSuccess: state.bannerImageSuccess,
-          price: state.price
+          categoryUUID: state.category?.uuid,
+          price: state.price,
+          structure: state.structure,
+          expiresInMonths: state.expiresInMonths,
+          expirationToEndMonth: state.expirationToEndMonth,
+          certificateType: state.certificateType?.uuid,
+          specificTerms: state.specificTerms
         }
       });
 
@@ -188,9 +252,20 @@ function CreateCourse({ match, history }) {
     refetch();
   };
 
-  // if (!currentTab) {
-  //   return <Redirect to={`/courses/create/overview`} />;
-  // }
+  const setPublish = async published => {
+    if (!ident) {
+      alert('Must save the course before publishing');
+      return;
+    }
+
+    await setPublishedMutation({
+      variables: {
+        published: published,
+        courseID: parseInt(ident)
+      }
+    });
+    refetch();
+  };
 
   if (!tabs.find(tab => tab.value === currentTab)) {
     return <Redirect to="/errors/error-404" />;
@@ -198,8 +273,14 @@ function CreateCourse({ match, history }) {
 
   return (
     <Page className={classes.root} title="Create Course">
+      <ErrorModal error={saveError || publishError || error} />
       <Container maxWidth={false}>
-        <Header onSaveDraft={saveDraft} />
+        <Header
+          onSaveDraft={saveDraft}
+          setPublish={setPublish}
+          isSaved={ident ?? undefined}
+          published={state.published}
+        />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -222,7 +303,9 @@ function CreateCourse({ match, history }) {
           {currentTab === 'pricing' && (
             <Pricing state={state} setState={updateState} />
           )}
-          {currentTab === 'builder' && <CourseBuilder />}
+          {currentTab === 'builder' && (
+            <CourseBuilder state={state} setState={updateState} />
+          )}
         </div>
       </Container>
     </Page>

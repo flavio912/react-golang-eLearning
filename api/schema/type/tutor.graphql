@@ -1,0 +1,34 @@
+type Tutor {
+  uuid: UUID!
+  name: String!
+  cin: String!
+  signatureURL: String!
+}
+
+type TutorPage implements PaginatedQuery {
+  edges: [Tutor]
+  pageInfo: PageInfo
+}
+
+input CreateTutorInput {
+  name: String!
+  cin: String!
+  signatureToken: String
+}
+
+input UpdateTutorSignatureInput {
+  fileSuccess: UploadFileSuccess!
+  tutorUUID: UUID!
+}
+
+input UpdateTutorInput {
+  uuid: UUID!
+  name: String
+  cin: String
+  signatureToken: String
+}
+
+input TutorFilter {
+  name: String
+  cin: String
+}

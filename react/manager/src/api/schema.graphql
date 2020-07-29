@@ -34,7 +34,7 @@ type Delegate {
   company: Company!
   profileImageUrl: String
   activity(page: Page): ActivityPage
-  activeCourses: [ActiveCourse!]
+  myCourses: [MyCourse!]
 }
 
 input CreateDelegateInput {
@@ -236,10 +236,16 @@ type Activity {
   course: Course
 }
 
+enum CourseStatus {
+  complete
+  failed
+  incomplete
+}
+
 # # A course currently being taken by a user
-type ActiveCourse {
+type MyCourse {
+  status: CourseStatus!
   course: Course!
-  currentAttempt: Int!
   minutesTracked: Float!
 }
 

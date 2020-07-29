@@ -38,5 +38,8 @@ ENV SENTRY_ENVIRONMENT=""
 ENV STRIPE_PUBLISHABLE_KEY=""
 ENV STRIPE_SECRET_KEY=""
 
+ENV PDF_SERVER_URL="https://os19fj0k4c.execute-api.eu-west-2.amazonaws.com/production/pdf"
+ENV PDF_REQUEST_URL="https://delegate.ttc.devserver.london/cert-generator"
+
 RUN go mod download
 RUN go get github.com/go-delve/delve/cmd/dlv

@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/course"
+
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/logging"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
@@ -14,7 +16,10 @@ import (
 	"github.com/stripe/stripe-go"
 )
 
-var ordersRepository = middleware.NewOrdersRepository(&logging.Logger{Hub: sentry.CurrentHub()})
+var courseApp = course.NewCourseApp(&middleware.Grant{
+	IsAdmin: true,
+	Logger:  logging.Logger{Hub: sentry.CurrentHub()},
+})
 
 func ServeStripeWebook() http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
@@ -47,7 +52,7 @@ func ServeStripeWebook() http.Handler {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if err := ordersRepository.FulfilPendingOrder(paymentIntent.ClientSecret); err != nil {
+			if _, err := courseApp.FulfilPendingOrder(paymentIntent.ClientSecret); err != nil {
 				sentry.CaptureException(err)
 				sentry.CaptureMessage(fmt.Sprintf("Unable to fulfil order from stripe: %s", paymentIntent.ClientSecret))
 				w.WriteHeader(http.StatusInternalServerError)
@@ -62,7 +67,7 @@ func ServeStripeWebook() http.Handler {
 				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			if err := ordersRepository.CancelPendingOrder(paymentIntent.ClientSecret); err != nil {
+			if _, err := courseApp.CancelPendingOrder(paymentIntent.ClientSecret); err != nil {
 				sentry.CaptureException(err)
 				sentry.CaptureMessage(fmt.Sprintf("Unable to cancel order from stripe: %s", paymentIntent.ClientSecret))
 				w.WriteHeader(http.StatusInternalServerError)

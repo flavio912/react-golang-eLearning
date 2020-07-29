@@ -925,6 +925,7 @@ func TestCreateCompany(t *testing.T) {
 						county: "Coolington"
 						postCode: "CO0L3ST"
 						country: "UK"
+						contactEmail: "email@email.com"
 					}) {
 						approved
 						name
@@ -935,6 +936,7 @@ func TestCreateCompany(t *testing.T) {
 							postCode
 							country
 						}
+						contactEmail
 					}
 				}
 			`,
@@ -949,7 +951,8 @@ func TestCreateCompany(t *testing.T) {
 							"postCode":"CO0L3ST"
 						},
 						"approved":true,
-						"name":"Cool Co"
+						"name":"Cool Co",
+						"contactEmail":"email@email.com"
 					}
 				}
 			`,
@@ -967,6 +970,7 @@ func TestCreateCompany(t *testing.T) {
 						county: ""
 						postCode: "reallylong"
 						country: ""
+						contactEmail: "email@email.com"
 					}) {
 						name
 					}
@@ -989,7 +993,8 @@ func TestCreateCompany(t *testing.T) {
 					addressLine2: ""
 					county: ""
 					postCode: "1234567"
-					country: ""
+					country: "",
+					contactEmail: "email@email.com"
 				}) {
 					name
 				}
@@ -1118,33 +1123,6 @@ func TestUpdateCompany(t *testing.T) {
 				{
 					ResolverError: &errors.ErrCompanyNotFound,
 					Path:          []interface{}{"updateCompany"},
-				},
-			},
-		},
-		{
-			Name:    "Fail validation",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-				mutation {
-					updateCompany(input: {
-						uuid: "00000000-0000-0000-0000-000000000001"
-						country: "123!"
-						county: "not^%!£$*"
-					}) {
-						uuid
-					}
-				}
-			`,
-			ExpectedResult: `
-				{
-					"updateCompany": null
-				}
-			`,
-			ExpectedErrors: []gqltest.TestQueryError{
-				{
-					Message: helpers.StringPointer("County: not^%!£$* does not validate as alpha;Country: 123! does not validate as alpha"),
-					Path:    []interface{}{"updateCompany"},
 				},
 			},
 		},
@@ -1361,7 +1339,7 @@ func TestCreateTest(t *testing.T) {
                 "passPercentage": 30,
                 "questionsToAnswer": 7,
                 "randomiseAnswers": false,
-                "questions": null
+                "questions": []
             }
         	}
 				}
@@ -1407,12 +1385,12 @@ func TestUpdateLesson(t *testing.T) {
 					updateLesson(input: {
 						uuid: "00000000-0000-0000-0000-000000000003"
 						name: "Jacobian Matrix"
-						text: "{\"space\":\"time\"}"
+						description: "{\"space\":\"time\"}"
 						tags: ["00000000-0000-0000-0000-000000000001"]
 					}) {
 						uuid
 						name
-						text
+						description
 						tags {
 							uuid
 						}
@@ -1424,7 +1402,7 @@ func TestUpdateLesson(t *testing.T) {
 					"updateLesson" : {
 						"uuid" : "00000000-0000-0000-0000-000000000003",
 						"name": "Jacobian Matrix",
-						"text": "{\"space\":\"time\"}",
+						"description": "{\"space\":\"time\"}",
 						"tags": [
 							{
 								"uuid": "00000000-0000-0000-0000-000000000001"
@@ -1474,7 +1452,7 @@ func TestUpdateLesson(t *testing.T) {
 						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
 							uuid
 							name
-							text
+							description
 							tags {
 								name
 								uuid
@@ -1495,7 +1473,7 @@ func TestUpdateLesson(t *testing.T) {
 								}
 							],
 							"name": "Eigenvalues and Eigenvectors",
-							"text": "{}"
+							"description": "{}"
 						}
 					}
 				`,
@@ -1509,12 +1487,12 @@ func TestUpdateLesson(t *testing.T) {
 						updateLesson(input: {
 							uuid: "00000000-0000-0000-0000-000000000003"
 							name: "Jacobian Matrix"
-							text: "space time"
+							description: "space time"
 							tags: ["00000000-0000-0000-0000-000000000001"]
 						}) {
 							uuid
 							name
-							text
+							description
 							tags {
 								uuid
 							}
@@ -1526,7 +1504,7 @@ func TestUpdateLesson(t *testing.T) {
 						"updateLesson" : {
 							"uuid" : "00000000-0000-0000-0000-000000000003",
 							"name": "Jacobian Matrix",
-							"text": "space time",
+							"description": "space time",
 							"tags": [
 								{
 									"uuid": "00000000-0000-0000-0000-000000000001"
@@ -1545,7 +1523,7 @@ func TestUpdateLesson(t *testing.T) {
 						lesson(uuid: "00000000-0000-0000-0000-000000000003") {
 							uuid
 							name
-							text
+							description
 							tags {
 								name
 								uuid
@@ -1566,7 +1544,7 @@ func TestUpdateLesson(t *testing.T) {
 								}
 							],
 							"name": "Jacobian Matrix",
-							"text": "space time"
+							"description": "space time"
 						}
 					}
 				`,
@@ -2097,4 +2075,160 @@ func TestDeleteQuestion(t *testing.T) {
 	// 	ManagerAllowed:  false,
 	// 	DelegateAllowed: false,
 	// })
+}
+
+func TestCreateTutor(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Creates tutor",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					createTutor(input: {
+						name: "Walter White"
+						cin: "420"
+					}) {
+						name
+						cin
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"createTutor": {
+						"name": "Walter White",
+						"cin": "420"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				createTutor(input: {
+					name: "Savage"
+					cin: "21"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"createTutor"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestUpdateTutor(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update some fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateTutor(input: {
+						uuid: "386bd256-82e0-4d8a-91af-b4a117e0eda8"
+						name: "Richard Feynman"
+						cin: "69"
+					}) {
+						name
+						cin
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateTutor": {
+						"name": "Richard Feynman",
+						"cin": "69"
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateTutor(input: {
+					uuid: "386bd256-82e0-4d8a-91af-b4a117e0eda8"
+				}) {
+					uuid
+				}
+			}
+		`,
+		Path:            []interface{}{"updateTutor"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
+}
+
+func TestUpdateIndividual(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Update some fields",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				mutation {
+					updateIndividual(input: {
+						uuid: "00000000-0000-0000-0000-000000000012"
+						firstName: "Steve"
+						lastName: "Jobs"
+						email: "steve.jobs@apple.com"
+					}) {
+						user {
+							firstName
+							lastName
+							email	
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"updateIndividual": {
+						"user":{
+							"firstName": "Steve",
+							"lastName": "Jobs",
+							"email": "steve.jobs@apple.com"
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query: `
+			mutation {
+				updateIndividual(input: {
+					uuid: "00000000-0000-0000-0000-000000000012"
+				}){
+					user {
+						firstName
+					}
+				}
+			}
+		`,
+		Path:            []interface{}{"updateIndividual"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
 }

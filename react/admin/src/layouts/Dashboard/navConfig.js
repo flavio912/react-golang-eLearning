@@ -7,6 +7,7 @@ import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import Class from '@material-ui/icons/Class';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Layers from '@material-ui/icons/Layers';
+import CardMembershipIcon from '@material-ui/icons/CardMembership';
 
 export default [
   {
@@ -18,6 +19,11 @@ export default [
         icon: DashboardIcon
       },
       {
+        title: 'Company requests',
+        href: '/approve-companies',
+        icon: BarChartIcon
+      },
+      {
         title: 'Companies',
         href: '/companies',
         icon: BarChartIcon
@@ -25,6 +31,11 @@ export default [
       {
         title: 'Admins',
         href: '/admins',
+        icon: AssignmentInd
+      },
+      {
+        title: 'Individuals',
+        href: '/individuals',
         icon: AssignmentInd
       },
       {
@@ -63,6 +74,11 @@ export default [
             href: '/lessons'
           }
         ]
+      },
+      {
+        title: 'Certificate Types',
+        href: '/certificateTypes',
+        icon: CardMembershipIcon
       },
       {
         title: 'Classroom Courses',

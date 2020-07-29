@@ -8,10 +8,50 @@ schema {
 type Query {
   info: String!
   user: User
+  module(uuid: UUID!): Module
+  test(uuid: UUID!): Test
+  lesson(uuid: UUID!): Lesson
+  courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
+
+  certificateInfo(token: String!): CertificateInfo!
 }
 
 type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
+  submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+}
+
+type CertificateInfo {
+  courseTitle: String!
+  expiryDate: String!
+  completionDate: String!
+  companyName: String
+  takerFirstName: String!
+  takerLastName: String!
+  certificateBodyURL: String
+  regulationText: String!
+  CAANo: String
+  title: String!
+  instructorName: String!
+  instructorCIN: String!
+  instructorSignatureURL: String
+  certificateNumber: String!
+}
+
+input QuestionAnswer {
+  questionUUID: UUID! # UUID of the question being answered
+  answerUUID: UUID! # UUID of the selected answer
+}
+
+input SubmitTestInput {
+  courseID: Int! # ID of the course the user is taking the test in
+  testUUID: UUID! # UUID of the test you are answering
+  answers: [QuestionAnswer!]! # Your answers to the test
+}
+
+type SubmitTestPayload {
+  courseStatus: CourseStatus!
+  passed: Boolean! # True if the user passed the test
 }
 
 type PageInfo {
@@ -82,6 +122,14 @@ type CoursePage implements PaginatedQuery {
   pageInfo: PageInfo
 }
 
+input CoursesFilter {
+  name: String
+  accessType: AccessType
+  backgroundCheck: Boolean
+  price: Float
+  allowedToBuy: Boolean # Show only courses that you are authorized to book
+}
+
 enum UserType {
   manager
   individual
@@ -102,7 +150,8 @@ type User {
   company: Company
   profileImageUrl: String
   activity(page: Page): ActivityPage
-  activeCourses: [ActiveCourse!]
+  myCourses: [MyCourse!]
+  myActiveCourse(id: Int!): MyCourse # Get my course from courseID
   # certificates
   # address: Address
 }
@@ -126,16 +175,19 @@ type Activity {
   course: Course
 }
 
-# type ActiveCoursePage implements PaginatedQuery {
-#   edges: [ActiveCourse]
-#   pageInfo: PageInfo
-# }
+enum CourseStatus {
+  complete
+  failed
+  incomplete
+}
 
 # # A course currently being taken by a user
-type ActiveCourse {
+type MyCourse {
+  status: CourseStatus!
   course: Course!
-  currentAttempt: Int!
   minutesTracked: Float!
+  enrolledAt: String!
+  upTo: UUID
 }
 
 type AuthToken {
@@ -161,7 +213,8 @@ enum CourseType {
 interface SyllabusItem {
   name: String!
   uuid: UUID!
-  complete: Boolean
+  type: StructureElement!
+  complete: Boolean # Only shown for courseTaker users (delegates and individuals)
 }
 
 type Lesson implements SyllabusItem {
@@ -170,11 +223,62 @@ type Lesson implements SyllabusItem {
   complete: Boolean
   mp3URL: String
   text: String!
-  tags: [Tag!]
+}
+
+type Module implements SyllabusItem {
+  uuid: UUID!
+  name: String!
+  type: StructureElement!
+  bannerImageURL: String
+  description: String!
+  transcript: String!
+  voiceoverURL: String
+  video: Video
+  syllabus: [SyllabusItem!]
+  complete: Boolean
+}
+
+type Test implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  type: StructureElement!
+  complete: Boolean
+  attemptsAllowed: Int
+  passPercentage: Float
+  questionsToAnswer: Int
+  randomiseAnswers: Boolean
+  questions: [Question!]
+}
+
+type Question {
+  uuid: UUID!
+  text: String!
+  questionType: QuestionType!
+  answers: [Answer!]
+}
+
+type Answer {
+  uuid: UUID!
+  isCorrect: Boolean
+  text: String
+  imageURL: String
+}
+
+enum QuestionType {
+  SINGLE_CHOICE
 }
 
 type Category {
   uuid: UUID
   name: String!
   color: String!
+}
+
+enum VideoType {
+  WISTIA
+}
+
+type Video {
+  type: VideoType!
+  url: String!
 }

@@ -118,6 +118,25 @@ func (u *usersRepoImpl) TakerHasActiveCourse(courseTaker gentypes.UUID, courseID
 	return false, nil
 }
 
+func (u *usersRepoImpl) TakerActiveCourse(courseTaker gentypes.UUID, courseID uint) (models.ActiveCourse, error) {
+	var activeCourse models.ActiveCourse
+	query := database.GormDB.
+		Model(&models.ActiveCourse{}).
+		Where("course_taker_uuid = ? AND course_id = ?", courseTaker, courseID).
+		Find(&activeCourse)
+
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.ActiveCourse{}, &errors.ErrNotFound
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable get active course")
+		return models.ActiveCourse{}, &errors.ErrWhileHandling
+	}
+
+	return activeCourse, nil
+}
+
 func (u *usersRepoImpl) TakerActiveCourses(courseTaker gentypes.UUID) ([]models.ActiveCourse, error) {
 	var activeCourses []models.ActiveCourse
 	query := database.GormDB.Where("course_taker_uuid = ?", courseTaker).Find(&activeCourses)
@@ -131,6 +150,21 @@ func (u *usersRepoImpl) TakerActiveCourses(courseTaker gentypes.UUID) ([]models.
 	}
 
 	return activeCourses, nil
+}
+
+func (u *usersRepoImpl) TakerHistoricalCourses(courseTaker gentypes.UUID) ([]models.HistoricalCourse, error) {
+	var historicalCourses []models.HistoricalCourse
+	query := database.GormDB.Where("course_taker_uuid = ?", courseTaker).Find(&historicalCourses)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return []models.HistoricalCourse{}, nil
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "Unable to get taker historical courses")
+		return []models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return historicalCourses, nil
 }
 
 // TakerHasSubmittedTest gets the testMarks for a particular course and taker
@@ -147,4 +181,104 @@ func (u *usersRepoImpl) TakerTestMarks(courseTaker gentypes.UUID, courseID uint)
 	}
 
 	return marks, nil
+}
+
+func (u *usersRepoImpl) HistoricalCourse(uuid gentypes.UUID) (models.HistoricalCourse, error) {
+	var course models.HistoricalCourse
+	query := database.GormDB.Where("uuid = ?", uuid).Find(&course)
+	if query.Error != nil {
+		if query.RecordNotFound() {
+			return models.HistoricalCourse{}, &errors.ErrNotFound
+		}
+
+		u.Logger.Log(sentry.LevelError, query.Error, "HistoricalCourse: Unable to fetch")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return course, nil
+}
+
+// CreateHistoricalCourse deletes any activeCourse for the taker and creates a historicalCourse in its place
+func (u *usersRepoImpl) CreateHistoricalCourse(course models.HistoricalCourse) (models.HistoricalCourse, error) {
+	tx := database.GormDB.Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Remove any test marks for this user
+	query := tx.
+		Where("course_taker_uuid = ? AND course_id = ?", course.CourseTakerUUID, course.CourseID).
+		Delete(models.TestMark{})
+	if query.Error != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, query.Error, "CreateHistoricalCourse: Unable to delete testmarks")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	query = tx.Where("course_taker_uuid = ? AND course_id = ?", course.CourseTakerUUID, course.CourseID).
+		Delete(models.ActiveCourse{})
+	if query.Error != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, query.Error, "CreateHistoricalCourse: Unable to delete active course")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Create(&course).Error; err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "CreateHistoricalCourse: Unable to create historical course")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "CreateHistoricalCourse: Unable to commit historical course")
+		return models.HistoricalCourse{}, &errors.ErrWhileHandling
+	}
+
+	return course, nil
+}
+
+type UpdateHistoricalCourseInput struct {
+	UUID           gentypes.UUID
+	CertificateKey *string
+}
+
+func (u *usersRepoImpl) UpdateHistoricalCourse(input UpdateHistoricalCourseInput) error {
+	updates := make(map[string]interface{})
+
+	if input.CertificateKey != nil {
+		updates["certificate_key"] = input.CertificateKey
+	}
+
+	if err := database.GormDB.Model(models.HistoricalCourse{}).Where("uuid = ?", input.UUID).Updates(updates).Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to update historical course")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}
+
+func (u *usersRepoImpl) SaveTestMarks(mark models.TestMark) error {
+	err := database.GormDB.Save(&mark).Error
+	if err != nil {
+		u.Logger.Log(sentry.LevelError, err, "Unable to save test marks")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}
+
+// createCourseTaker - creates a course taker in a transaction, the transaction is rolled back
+// if there is an error
+func (u *usersRepoImpl) createCourseTaker(tx *gorm.DB) (models.CourseTaker, error) {
+	// Add link manually because gorm doesn't like blank associations
+	var courseTaker = models.CourseTaker{}
+	if err := tx.Create(&courseTaker).Error; err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "createCourseTaker: Unable to create courseTaker")
+		return models.CourseTaker{}, err
+	}
+
+	return courseTaker, nil
 }

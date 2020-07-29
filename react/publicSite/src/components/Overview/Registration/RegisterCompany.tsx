@@ -16,7 +16,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   registerCompanyRoot: {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     width: '100%',
@@ -24,16 +24,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontSize: theme.fontSizes.large,
     fontWeight: '600',
     color: theme.colors.primaryWhite,
-    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)'
+    boxShadow: '0 1px 4px 0 rgba(0,0,0,0.43)',
   },
   form: {
     display: 'grid',
     width: '100%',
     gridGap: theme.spacing(2),
-    gridTemplateColumns: '1fr 1fr'
+    gridTemplateColumns: '1fr 1fr',
   },
   fullWidth: {
-    gridColumn: '1 / 3'
+    gridColumn: '1 / 3',
   },
   input: {
     fontSize: theme.fontSizes.default,
@@ -41,54 +41,74 @@ const useStyles = createUseStyles((theme: Theme) => ({
     border: ['1px', 'solid', theme.colors.borderGrey],
     borderRadius: theme.buttonBorderRadius,
     '&::placeholder': {
-      color: theme.colors.secondaryBlack
-    }
+      color: theme.colors.secondaryBlack,
+    },
   },
   dropdownText: {
     fontSize: theme.fontSizes.default,
     fontWeight: '400',
-    color: theme.colors.secondaryBlack
+    color: theme.colors.secondaryBlack,
   },
   dropdown: {
-    flex: 1
+    flex: 1,
   },
   checkboxText: {
-    color: theme.colors.textGrey
-  }
+    color: theme.colors.textGrey,
+  },
 }));
 
-type Props = {
-  onSubmit: (
-    fname: string,
-    lname: string,
-    email: string,
-    telephone: string,
-    role: string,
-    compType: string
-  ) => void;
-  onLogoClick?: () => void;
+const initState: State = {
+  fname: '',
+  lname: '',
+  email: '',
+  password: '',
+  telephone: '',
+  companyName: '',
 };
 
-function RegisterCompany({ onSubmit, onLogoClick }: Props) {
+type StateUpdate = {
+  fname?: string;
+  lname?: string;
+  email?: string;
+  password?: string;
+  telephone?: string;
+  companyName?: string;
+};
+
+type State = {
+  fname: string;
+  lname: string;
+  email: string;
+  password: string;
+  telephone: string;
+  companyName: string;
+};
+
+type Props = {
+  onLogoClick?: () => void;
+  onChange: (value: State) => void;
+  onNext: () => void;
+};
+
+function RegisterCompany({ onLogoClick, onChange, onNext }: Props) {
   const classes = useStyles();
 
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [telephone, setTelephone] = React.useState('');
-  const [role, setRole] = React.useState({
-    id: 0,
-    title: 'What role best describes you'
-  });
-  const [compType, setCompType] = React.useState({
-    id: 0,
-    title: 'Type of company'
-  });
-  const [agreedTerms, setAgreedTerms] = React.useState(false);
+  const [inputData, setInput] = React.useState(initState);
 
-  const submitInfo = () => {
-    onSubmit(firstName, lastName, email, telephone, role.title, compType.title);
+  const onUpdate = (updates: StateUpdate) => {
+    const newState = { ...inputData, ...updates };
+    setInput(newState);
+    onChange(newState);
   };
+
+  let isComplete = true;
+
+  for (const key in inputData) {
+    if (!inputData[key]) {
+      isComplete = false;
+      break;
+    }
+  }
 
   return (
     <div className={classes.registerCompanyRoot}>
@@ -104,62 +124,54 @@ function RegisterCompany({ onSubmit, onLogoClick }: Props) {
         <CoreInput
           placeholder="First Name"
           type="text"
-          onChange={setFirstName}
+          onChange={(val) => onUpdate({ fname: val })}
           value={'fname'}
           className={classes.input}
         />
         <CoreInput
           placeholder="Last Name"
           type="text"
-          onChange={setLastName}
+          onChange={(val) => onUpdate({ lname: val })}
           value={'lname'}
           className={classes.input}
         />
         <CoreInput
+          placeholder="Company Name"
+          type="text"
+          onChange={(val) => onUpdate({ companyName: val })}
+          value={'company'}
+          className={classnames(classes.input, classes.fullWidth)}
+        />
+        <CoreInput
           placeholder="Company Email"
           type="email"
-          onChange={setEmail}
+          onChange={(val) => onUpdate({ email: val })}
           value={'email'}
+          className={classnames(classes.input, classes.fullWidth)}
+        />
+        <CoreInput
+          placeholder="Password"
+          type="password"
+          onChange={(val) => onUpdate({ password: val })}
+          value={'password'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
           placeholder="Telephone Number"
           type="tel"
-          onChange={setTelephone}
+          onChange={(val) => onUpdate({ telephone: val })}
           value={'telephone'}
           className={classnames(classes.input, classes.fullWidth)}
-        />
-        <Dropdown
-          placeholder="Type of Company"
-          options={[{ id: 0, title: 'Default Option' }]}
-          selected={compType}
-          fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setCompType(selected)}
-          className={classnames(classes.dropdown, classes.fullWidth)}
-        />
-        <Dropdown
-          placeholder="What role best describes you"
-          options={[{ id: 0, title: 'Default Option' }]}
-          selected={role}
-          fontStyle={classes.dropdownText}
-          setSelected={(selected: DropdownOption) => setRole(selected)}
-          className={classnames(classes.dropdown, classes.fullWidth)}
-        />
-        <CheckboxSingle
-          size={18}
-          onChange={() => {}}
-          fontStyle={classes.checkboxText}
-          className={classes.fullWidth}
-          label="By checking this box you confirm you are happy for our team to contact you during the registration period"
         />
       </div>
       <Spacer vertical spacing={3} />
       <Button
         archetype="submit"
         className={classes.button}
-        onClick={submitInfo}
+        disabled={!isComplete}
+        onClick={onNext}
       >
-        Register with TTC
+        Next
       </Button>
       <Spacer vertical spacing={3} />
     </div>

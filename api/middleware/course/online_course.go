@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/getsentry/sentry-go"
-	"github.com/jinzhu/gorm"
 
 	"github.com/golang/glog"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
@@ -15,6 +14,38 @@ import (
 )
 
 /* Online Course CRUD */
+
+// ManyOnlineCourseStructures maps many given onlineCourseUUID to a slice of their respective course structures
+func (c *coursesRepoImpl) ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error) {
+	var structureItems []models.CourseStructure
+	query := database.GormDB.Where("online_course_uuid IN (?)", onlineCourseUUIDs).Order("online_course_uuid, rank ASC").Find(&structureItems)
+	if query.Error != nil {
+		c.Logger.Log(sentry.LevelError, query.Error, "Unable to get online course structures")
+		return map[gentypes.UUID][]models.CourseStructure{}, &errors.ErrWhileHandling
+	}
+
+	var syllabuses = make(map[gentypes.UUID][]models.CourseStructure)
+	for _, item := range structureItems {
+		id := item.OnlineCourseUUID
+		syllabuses[id] = append(syllabuses[id], item)
+	}
+
+	return syllabuses, nil
+}
+
+// OnlineCourseStructure gets ordered structure items for a course
+func (c *coursesRepoImpl) OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error) {
+	structures, err := c.ManyOnlineCourseStructures([]gentypes.UUID{onlineCourseUUID})
+	if err != nil {
+		return []models.CourseStructure{}, err
+	}
+
+	if _, ok := structures[onlineCourseUUID]; ok {
+		return structures[onlineCourseUUID], nil
+	}
+
+	return []models.CourseStructure{}, nil
+}
 
 // OnlineCourse gets an onlineCourse from the courseID
 func (c *coursesRepoImpl) OnlineCourse(courseID uint) (models.OnlineCourse, error) {
@@ -36,19 +67,28 @@ func (c *coursesRepoImpl) CreateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 
 	// Get courseInfo model
 	var courseType = gentypes.OnlineCourseType
+	var expMonths *uint
+	if courseInfo.ExpiresInMonths != nil {
+		l := uint(*courseInfo.ExpiresInMonths)
+		expMonths = &l
+	}
+
 	infoModel, err := c.ComposeCourse(CourseInput{
-		Name:            courseInfo.Name,
-		Price:           courseInfo.Price,
-		Color:           courseInfo.Color,
-		Tags:            courseInfo.Tags,
-		Excerpt:         courseInfo.Excerpt,
-		Introduction:    courseInfo.Introduction,
-		HowToComplete:   courseInfo.HowToComplete,
-		HoursToComplete: courseInfo.HoursToComplete,
-		WhatYouLearn:    courseInfo.WhatYouLearn,
-		Requirements:    courseInfo.Requirements,
-		SpecificTerms:   courseInfo.SpecificTerms,
-		CourseType:      &courseType,
+		Name:                 courseInfo.Name,
+		Price:                courseInfo.Price,
+		Color:                courseInfo.Color,
+		Tags:                 courseInfo.Tags,
+		Excerpt:              courseInfo.Excerpt,
+		Introduction:         courseInfo.Introduction,
+		HowToComplete:        courseInfo.HowToComplete,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		WhatYouLearn:         courseInfo.WhatYouLearn,
+		Requirements:         courseInfo.Requirements,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		CourseType:           &courseType,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		ExpiresInMonths:      expMonths,
+		CertificateType:      courseInfo.CertificateType,
 	})
 
 	if err != nil {
@@ -91,22 +131,30 @@ func (c *coursesRepoImpl) UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCours
 	}
 
 	// TODO: think about putting these two in a transaction
+	var expMonths *uint
+	if courseInfo.ExpiresInMonths != nil {
+		l := uint(*courseInfo.ExpiresInMonths)
+		expMonths = &l
+	}
 	course, err := c.UpdateCourse(uint(*courseInfo.ID), CourseInput{
 		Name:         courseInfo.Name,
 		Price:        courseInfo.Price,
 		Color:        courseInfo.Color,
 		CategoryUUID: courseInfo.CategoryUUID,
 		// TAGS
-		Excerpt:           courseInfo.Excerpt,
-		Introduction:      courseInfo.Introduction,
-		HoursToComplete:   courseInfo.HoursToComplete,
-		HowToComplete:     courseInfo.HowToComplete,
-		WhatYouLearn:      courseInfo.WhatYouLearn,
-		Requirements:      courseInfo.Requirements,
-		AccessType:        courseInfo.AccessType,
-		ImageSuccessToken: courseInfo.BannerImageSuccess,
-		BackgroundCheck:   courseInfo.BackgroundCheck,
-		SpecificTerms:     courseInfo.SpecificTerms,
+		Excerpt:              courseInfo.Excerpt,
+		Introduction:         courseInfo.Introduction,
+		HoursToComplete:      courseInfo.HoursToComplete,
+		HowToComplete:        courseInfo.HowToComplete,
+		WhatYouLearn:         courseInfo.WhatYouLearn,
+		Requirements:         courseInfo.Requirements,
+		AccessType:           courseInfo.AccessType,
+		ImageSuccessToken:    courseInfo.BannerImageSuccess,
+		BackgroundCheck:      courseInfo.BackgroundCheck,
+		SpecificTerms:        courseInfo.SpecificTerms,
+		ExpirationToEndMonth: courseInfo.ExpirationToEndMonth,
+		ExpiresInMonths:      expMonths,
+		CertificateType:      courseInfo.CertificateType,
 	})
 
 	if err != nil {
@@ -147,7 +195,7 @@ func (c *coursesRepoImpl) saveOnlineCourseStructure(courseUUID gentypes.UUID, st
 
 	// Naive Implementation of ordering, just delete and re-add everything
 	// Should use JIRA method
-	query := tx.Where("online_course_id = ?", courseUUID).Delete(models.CourseStructure{})
+	query := tx.Where("online_course_uuid = ?", courseUUID).Delete(models.CourseStructure{})
 	if query.Error != nil {
 		tx.Rollback()
 		c.Logger.Log(sentry.LevelError, query.Error, "Course delete before re add failed")
@@ -183,33 +231,4 @@ func (c *coursesRepoImpl) saveOnlineCourseStructure(courseUUID gentypes.UUID, st
 		return &errors.ErrWhileHandling
 	}
 	return nil
-}
-
-// filterCoursesFromInfo takes a join of course_infos and online_courses or classroom_courses
-// and filters by course info
-func filterCoursesFromInfo(query *gorm.DB, filter *gentypes.CourseFilter, showUnpublished bool, showRestricted bool) *gorm.DB {
-	// Non-admins can only see published courses
-	if !showUnpublished {
-		query = query.Where("course_infos.published = ?", true)
-	}
-
-	// Filter course info
-	if filter != nil {
-		if filter.Name != nil {
-			query = query.Where("course_infos.name ILIKE ?", "%%"+*filter.Name+"%%")
-		}
-		if filter.AccessType != nil {
-			query = query.Where("course_infos.access_type = ?", *filter.AccessType)
-		}
-		if filter.BackgroundCheck != nil {
-			query = query.Where("course_infos.background_check = ?", *filter.BackgroundCheck)
-		}
-		if filter.Price != nil {
-			query = query.Where("course_infos.price = ?", *filter.Price)
-		}
-		if filter.AllowedToBuy != nil && showRestricted {
-			query = query.Not("course_infos.access_type = ?", gentypes.Restricted)
-		}
-	}
-	return query
 }

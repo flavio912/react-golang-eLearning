@@ -20,6 +20,15 @@ type Module struct {
 	Structure    []ModuleStructure
 }
 
+type ModuleTag struct {
+	ModuleUUID gentypes.UUID
+	TagUUID    gentypes.UUID
+}
+
+func (ModuleTag) TableName() string {
+	return "module_tags_link"
+}
+
 type ModuleStructure struct {
 	Module     Module
 	ModuleUUID gentypes.UUID `gorm:"primary_key;type:uuid;"`

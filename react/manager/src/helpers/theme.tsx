@@ -40,7 +40,7 @@ export type Theme = {
     textNavyBlue2: string;
     textGrey2: string;
     textGrey3: string;
-    lightGreen: string
+    lightGreen: string;
   };
   shadows: {
     primary: string;
@@ -109,7 +109,7 @@ const theme: Theme = {
     tinyHeading: 20,
     extraLarge: 18,
     large: 16,
-    smallLarge: 15,
+    smallLarge: 15, // NOT A HELPFUL NAME!
     default: 14,
     small: 13,
     xSmall: 12,

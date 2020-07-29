@@ -9,11 +9,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function UploadFile({ uploadMutation, onUploaded }) {
+export default function UploadFile({
+  title = 'Upload Image',
+  uploadMutation,
+  onUploaded,
+  acceptType = 'image/*'
+}) {
   const classes = useStyles();
 
   const [uploadRequest] = useMutation(uploadMutation);
-  const [uploadText, setUploadText] = useState('Upload Image');
+  const [uploadText, setUploadText] = useState(title);
 
   const mutationName =
     uploadMutation?.definitions[0].selectionSet?.selections[0].name?.value;
@@ -25,8 +30,8 @@ export default function UploadFile({ uploadMutation, onUploaded }) {
   const uploadChange = async evt => {
     // Attempt to get upload request
     const file = evt.target.files[0];
-    const fType = file.type.replace('image/', '');
-
+    const split = file.name.split('.');
+    const fType = split[split.length - 1];
     setUploadText(<CircularProgress />);
     try {
       const resp = await uploadRequest({
@@ -45,6 +50,8 @@ export default function UploadFile({ uploadMutation, onUploaded }) {
 
       if (uploadResp.status !== 200) {
         console.log('Unable to upload');
+        setUploadText('Unable to upload, try again');
+        return;
       }
 
       setUploadText(file.name);
@@ -58,7 +65,7 @@ export default function UploadFile({ uploadMutation, onUploaded }) {
   return (
     <>
       <input
-        accept="image/*"
+        accept={acceptType}
         className={classes.input}
         id="contained-button-file"
         onChange={uploadChange}

@@ -977,7 +977,7 @@ func TestLesson(t *testing.T) {
 							color
 						}
 						name
-						text
+						description
 					}
 				}
 			`,
@@ -993,7 +993,7 @@ func TestLesson(t *testing.T) {
 							}
 						],
 						"name": "Eigenvalues and Eigenvectors",
-						"text": "{}"
+						"description": "{}"
 					}
 				}
 			`,
@@ -1165,9 +1165,9 @@ func TestLessons(t *testing.T) {
 							},
 							{
 								"tags":[
-									{"uuid":"00000000-0000-0000-0000-000000000001"},
 									{"uuid":"00000000-0000-0000-0000-000000000002"},
-									{"uuid":"00000000-0000-0000-0000-000000000003"}
+									{"uuid":"00000000-0000-0000-0000-000000000003"},
+									{"uuid":"00000000-0000-0000-0000-000000000001"}
 								]
 							}
 						],
@@ -1263,15 +1263,14 @@ func TestGetCourses(t *testing.T) {
 						"edges": [
 							{"id":1},
 							{"id":2},
-							{"id":3},
 							{"id":4},
 							{"id":5}
 						],
 						"pageInfo": {
-							"total": 5,
+							"total": 4,
 							"offset": 0,
 							"limit": 100,
-							"given": 5
+							"given": 4
 						}
 					}
 				}
@@ -1543,4 +1542,183 @@ func TestGetModules(t *testing.T) {
 			DelegateAllowed: false,
 		},
 	)
+}
+
+func TestSearchSyllabus(t *testing.T) {
+	prepareTestDatabase()
+
+	gqltest.RunTests(t, []*gqltest.Test{
+		{
+			Name:    "Should search in all items",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {name: "cool"}) {
+						edges {
+							uuid
+							name
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"uuid": "2a7e551a-0291-422d-8508-c0ee8ff4c67e",
+								"name": "Cool test name"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000002",
+								"name": "Lorentz Invariance"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000002",
+								"name": "Module Joe"
+							},
+							{
+								"uuid": "00000000-0000-0000-0000-000000000003",
+								"name": "Eigenvalues and Eigenvectors"
+							}
+						],
+						"pageInfo": {
+							"total": 4,
+							"offset": 0,
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should search in tests only",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {
+						name: "to"
+						excludeModule: true
+						excludeLesson: true
+					}) {
+						edges {
+							uuid
+							name
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"uuid":"2a56f8a8-1cd3-4e7b-bd10-c489b519828d",
+								"name":"Navier-Stokes equations"
+							},
+							{
+								"uuid": "c212859c-ddd3-433c-9bf5-15cdd1db32f9",
+								"name": "How to fibbonacci"
+							}
+						],
+						"pageInfo": {
+							"total": 2,
+							"offset": 0,
+							"given": 2
+						}
+					}
+				}
+			`,
+		},
+		{
+			Name:    "Should show fields specific to type",
+			Context: adminContext(),
+			Schema:  schema,
+			Query: `
+				query {
+					searchSyllabus(page: {}, filter: {
+						name: "ing"
+					}) {
+						edges {
+							__typename
+							... on SyllabusItem {
+								name
+							}
+							... on Lesson {
+								tags {
+									name
+								}
+							}
+							... on Module {
+								description
+							}
+						}
+						pageInfo {
+							total
+							offset
+							given
+						}
+					}
+				}
+			`,
+			ExpectedResult: `
+				{
+					"searchSyllabus": {
+						"edges": [
+							{
+								"__typename": "Lesson",
+								"name": "Dynamic Programming",
+								"tags": []
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Lorentz Invariance",
+								"tags": [
+									{"name": "Handling cool things"},
+									{"name": "Fancy tag for cool people"},
+									{"name": "existing tag"}
+								]
+							},
+							{
+								"__typename": "Module",
+								"name":"Module Joe",
+								"description": "Loves pies, don't give him plants"
+							},
+							{
+								"__typename": "Lesson",
+								"name": "Eigenvalues and Eigenvectors",
+								"tags":	[{"name":"Handling cool things"}]
+							}
+						],
+						"pageInfo": {
+							"total": 4,
+							"offset": 0,
+							"given": 4
+						}
+					}
+				}
+			`,
+		},
+	})
+
+	accessTest(t, schema, accessTestOpts{
+		Query:           `{searchSyllabus { edges { uuid } }}`,
+		Path:            []interface{}{"searchSyllabus"},
+		MustAuth:        true,
+		AdminAllowed:    true,
+		ManagerAllowed:  false,
+		DelegateAllowed: false,
+	})
 }
