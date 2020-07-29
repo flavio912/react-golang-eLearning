@@ -27,7 +27,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function ReoderableDropdown({ uuid, title, items, setItems, onDelete }) {
+/**
+ * To allow dragging inside a list, 'newItem' must be provided
+ * To allow dragging between lists, a 'uuid' must be provided
+ */
+export default function ReoderableDropdown({ uuid, newItem, title, items, setItems, onDelete }) {
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false);
 
@@ -66,17 +70,19 @@ export default function ReoderableDropdown({ uuid, title, items, setItems, onDel
               : <ExpandMoreIcon />}
           </IconButton>
         </ListItemIcon>
-        <ListItemIcon>
-          <IconButton
-          onClick={() => onDelete(uuid)}
-          edge="end"
-          >
-            <DeleteIcon color="disabled" />
-          </IconButton>
-        </ListItemIcon>
+        {onDelete && 
+          <ListItemIcon>
+            <IconButton
+            onClick={() => onDelete(uuid)}
+            edge="end"
+            >
+              <DeleteIcon color="disabled" />
+            </IconButton>
+          </ListItemIcon>
+        }
       </ListItem>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <ReoderableList uuid={uuid} items={items} setItems={setItems} />
+        <ReoderableList uuid={uuid} newItem={newItem} items={items} setItems={setItems} />
       </Collapse>
     </Card>
   );

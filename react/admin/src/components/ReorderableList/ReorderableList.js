@@ -8,6 +8,10 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+/**
+ * To allow dragging inside a list, 'newItem' must be provided
+ * To allow dragging between lists, a 'uuid' must be provided
+ */
 export default function ReoderableList({ multiple, uuid, items, setItems, newItem }) {
   const classes = useStyles();
 
@@ -29,7 +33,6 @@ export default function ReoderableList({ multiple, uuid, items, setItems, newIte
     const source = getIndices(list, result.source, result.draggableId);
     let dest = getIndices(list, result.destination, result.draggableId);
     let removed;
-
     // Remove from top level
     if (source.topIndex !== undefined) {
       removed = list.splice(source.topIndex, 1);
@@ -37,17 +40,17 @@ export default function ReoderableList({ multiple, uuid, items, setItems, newIte
     } else if (source.itemIndex !== undefined) {
       removed = list[source.itemIndex].items.splice(result.source.index, 1)
     }
-
-    // Update indices
-    dest = getIndices(list, result.destination, result.draggableId);
+    // Get removed
     removed = removed && (removed[0]?.item ? removed[0].item : removed[0]);
-  
     // Add to top level
     if (removed && dest.topIndex !== undefined) {
       list.splice(dest.topIndex, 0, newItem(removed));
       // Add to item's items
-    } else if (removed && dest.itemIndex !== undefined && !source.hasItems && dest.hasItems) {
-      list[dest.itemIndex].items.splice(result.destination.index, 0, removed)
+    } else if (uuid && removed && dest.itemIndex !== undefined && !source.hasItems && dest.hasItems) {
+      list[dest.itemIndex].items.splice(result.destination.index, 0, removed);
+      // Otherwise add back to the main list
+    } else {
+      list.splice(dest.itemIndex, 0, newItem(removed));
     }
     return list;
   }
@@ -80,6 +83,7 @@ export default function ReoderableList({ multiple, uuid, items, setItems, newIte
                 draggableId={item.item ? item.item.uuid : item.uuid}
                 index={index}
                 key={item.item ? item.item.uuid : item.uuid}
+                isDragDisabled={newItem === undefined}
               >
                 {(provided) => (
                   <div

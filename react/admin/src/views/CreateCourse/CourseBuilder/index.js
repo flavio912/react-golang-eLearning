@@ -24,13 +24,13 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2)
   },
   structure: {
-    minHeight: '500px'
+    padding: theme.spacing(3)
   }
 }));
 
 const GET_MODULES = gql`
-  query SearchModules($page: Page!) {
-    modules(page: $page) {
+  query SearchModules {
+    modules {
       edges {
         uuid
         name
@@ -39,12 +39,6 @@ const GET_MODULES = gql`
           uuid
           name
         }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
@@ -56,7 +50,6 @@ const SEARCH = gql`
     $excludeLesson: Boolean
     $excludeTest: Boolean
     $excludeModule: Boolean
-    $page: Page!
   ) {
     searchSyllabus(
       filter: {
@@ -65,59 +58,36 @@ const SEARCH = gql`
         excludeTest: $excludeTest
         excludeModule: $excludeModule
       }
-      page: $page
     ) {
       edges {
         uuid
         name
         type
-        complete
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
 `;
 
-function useModulesQuery(page) {
-  const { error, data } = useQuery(GET_MODULES, {
-    variables: {
-      page
-    }
-  });
-
-  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo) {
+const cleanResult = (data, error) => {
+  if (!data || !data.edges) {
     error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
+    return [];
   }
 
-  const resultItems = data.modules.edges.map(module => ({
-    uuid: module?.uuid ?? '',
-    name: module?.name ?? '',
-    type: module?.type ?? '',
-    syllabus: module?.syllabus ?? ''
+  const resultItems = data.edges.map(item => ({
+    uuid: item?.uuid ?? '',
+    name: item?.name ?? '',
+    type: item?.type ?? '',
+    text: item?.text ?? '',
+    syllabus: item?.syllabus ?? ''
   }));
 
-  const pageInfo = {
-    total: data.modules.pageInfo?.total,
-    offset: data.modules.pageInfo.offset,
-    limit: data.modules.pageInfo.limit,
-    given: data.modules.pageInfo.given
-  };
+  return resultItems;
+}
 
-  return { resultItems, pageInfo };
+function useModulesQuery() {
+  const { error, data } = useQuery(GET_MODULES);
+  return cleanResult(data && data.modules, error);
 }
 
 function useSearchQuery(text, filter, page) {
@@ -130,41 +100,7 @@ function useSearchQuery(text, filter, page) {
       page: page
     }
   });
-
-  if (
-    !data ||
-    !data.searchSyllabus ||
-    !data.searchSyllabus.edges ||
-    !data.searchSyllabus.pageInfo
-  ) {
-    error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
-  }
-
-  const resultItems = data.searchSyllabus.edges.map(syllabus => ({
-    uuid: syllabus?.uuid ?? '',
-    name: syllabus?.name ?? '',
-    text: syllabus?.text ?? '',
-    type: syllabus?.type ?? '',
-    tags: syllabus?.tags ?? ''
-  }));
-
-  const pageInfo = {
-    total: data.searchSyllabus.pageInfo?.total,
-    offset: data.searchSyllabus.pageInfo.offset,
-    limit: data.searchSyllabus.pageInfo.limit,
-    given: data.searchSyllabus.pageInfo.given
-  };
-
-  return { resultItems, pageInfo };
+  return cleanResult(data && data.searchSyllabus, error);
 }
 
 function CourseBuilder({ state, setState }) {
@@ -181,44 +117,35 @@ function CourseBuilder({ state, setState }) {
     ]
   });
   const [searchText, setSearchText] = React.useState('');
-  const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, searchFilters, page);
+  const searchResults = useSearchQuery(searchText, searchFilters);
+  const resultItems = useModulesQuery();
 
-  const [courseStructure, setCourseStructure] = React.useState([]);
-  const { resultItems } = useModulesQuery(page);
-
-  // Add module syllabus and name
-  const addModule = array => {
-    array.forEach(element => {
-      if (element.type === 'module') {
+  React.useEffect(() => {
+    state.syllabus.forEach(element => {
+      // Add module syllabus and name
+      if (element.type === 'module' && element.syllabus === undefined) {
         const module = resultItems.find(x => x.uuid === element.uuid);
-        if (module && !courseStructure.find(x => x.uuid === module.uuid)) {
-          setCourseStructure([...courseStructure, module]);
+        const index = module && state.syllabus.findIndex(x => x.uuid === module.uuid);
+        if (index > -1) {
+          const syllabus = [...state.syllabus];
+          syllabus[index] = module;
+          setState({ syllabus });
         }
       }
     });
-  };
-  console.log('strut: ', courseStructure);
-  React.useEffect(() => {
-    if (state.syllabus) {
-      addModule(state.syllabus);
-    } else if (state.structure) {
-      addModule(state.structure);
-    }
   }, [resultItems]);
 
   const onDelete = (uuid, moduleUUID) => {
-    const newStructure = [...courseStructure];
+    const newStructure = [...state.syllabus];
     if (moduleUUID) {
-      const moduleIndex = courseStructure.findIndex(x => x.uuid === moduleUUID);
-      const index = courseStructure[moduleIndex].syllabus.findIndex(x => x.uuid === uuid);
+      const moduleIndex = state.syllabus.findIndex(x => x.uuid === moduleUUID);
+      const index = state.syllabus[moduleIndex].syllabus.findIndex(x => x.uuid === uuid);
       newStructure[moduleIndex].syllabus.splice(index, 1);
     } else {
-      const index = courseStructure.findIndex(x => x.uuid === uuid);
+      const index = state.syllabus.findIndex(x => x.uuid === uuid);
       newStructure.splice(index, 1);
-      setState({syllabus: newStructure});
     }
-    setCourseStructure(newStructure);
+    setState({ syllabus: newStructure });
   };
 
   const newItem = (item) => ({
@@ -228,7 +155,6 @@ function CourseBuilder({ state, setState }) {
     component: (
       item.type === 'module' ?
         <ReoderableDropdown
-          uuid={item.uuid}
           title={item.name}
           onDelete={onDelete}
           items={
@@ -291,13 +217,13 @@ function CourseBuilder({ state, setState }) {
                   placeholder="Search Modules, Lessons or Tests"
                   searchFilters={searchFilters}
                   setSearchFilters={setSearchFilters}
-                  searchResults={searchResults.resultItems}
+                  searchResults={searchResults}
                   setSearchText={setSearchText}
                   onChange={(item) => {
-                    setCourseStructure([
-                      item,
-                      ...courseStructure,
-                    ])
+                    // No duplicates
+                    if (module && !state.syllabus.find(x => x.uuid === item.uuid)) {
+                      setState({ syllabus: [...state.syllabus, item] });
+                    }
                   }}
                 />
               </CardContent>
@@ -308,7 +234,11 @@ function CourseBuilder({ state, setState }) {
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
               onAdd={(module) => {
-                addModule([module])
+                const toAdd = resultItems.find(x => x.uuid === module.uuid);
+                // No duplicates
+                if (module && !state.syllabus.find(x => x.uuid === module.uuid)) {
+                  setState({ syllabus: [...state.syllabus, toAdd] });
+                }
               }}
             />
           </Grid>
@@ -320,7 +250,7 @@ function CourseBuilder({ state, setState }) {
                 <ReoderableList
                   multiple
                   newItem={newItem}
-                  items={courseStructure.map(item => newItem(item))}
+                  items={state.syllabus.map(item => newItem(item))}
                   setItems={items => {
                     const newStructure = [];
                     items.map((item) => {
@@ -330,8 +260,8 @@ function CourseBuilder({ state, setState }) {
                           syllabus: item.items,
                         }
                       )
-                    })
-                    setCourseStructure(newStructure)
+                    });
+                    setState({ syllabus: newStructure });
                   }}
                 />
               </CardContent>
