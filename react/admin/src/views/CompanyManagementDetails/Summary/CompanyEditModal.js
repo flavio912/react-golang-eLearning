@@ -89,7 +89,7 @@ function CompanyEditModal({ open, onClose, company, className, ...rest }) {
 
   const onUpdate = async () => {
     try {
-      const resp = await updateCompany({
+      await updateCompany({
         variables: {
           ...values
         }

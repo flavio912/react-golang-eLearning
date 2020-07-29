@@ -13,8 +13,6 @@ import {
   TextField,
   Button,
   FormControl,
-  FormControlLabel,
-  Checkbox,
   InputLabel,
   Select,
   MenuItem

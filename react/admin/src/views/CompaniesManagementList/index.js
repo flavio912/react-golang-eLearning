@@ -53,7 +53,7 @@ function CompaniesManagementList() {
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { loading, error, data } = useQuery(GET_COMPANIES, {
+  const { error, data } = useQuery(GET_COMPANIES, {
     variables: {
       page: {
         offset: page,

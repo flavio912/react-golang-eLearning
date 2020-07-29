@@ -4,7 +4,6 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import DashboardIcon from '@material-ui/icons/DashboardOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import Class from '@material-ui/icons/Class';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Layers from '@material-ui/icons/Layers';
 import CardMembershipIcon from '@material-ui/icons/CardMembership';

@@ -4,7 +4,6 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Grid } from '@material-ui/core';
 import CompanyInfo from './CompanyInfo';
-import SendEmails from './SendEmails';
 import OtherActions from './OtherActions';
 
 const useStyles = makeStyles(() => ({

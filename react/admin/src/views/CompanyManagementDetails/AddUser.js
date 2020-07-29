@@ -10,11 +10,7 @@ import {
   Grid,
   Divider,
   TextField,
-  Typography,
-  FormLabel,
-  Checkbox,
-  FormControlLabel,
-  FormGroup
+  Typography
 } from '@material-ui/core';
 import clsx from 'clsx';
 

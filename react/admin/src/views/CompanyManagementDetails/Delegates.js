@@ -13,7 +13,6 @@ import {
   Table,
   TableBody,
   Link,
-  Button,
   TableCell,
   Avatar,
   TablePagination,
@@ -134,10 +133,6 @@ function Delegates({ className, company, onUpdateCompany, ...rest }) {
       }
     });
     onUpdateCompany();
-  };
-
-  const openAddUserModal = () => {
-    setAddUserModalOpen(true);
   };
 
   return (
