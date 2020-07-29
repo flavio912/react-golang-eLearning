@@ -1,6 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container, Avatar, Link } from '@material-ui/core';
+import { Container, Avatar, Link, Button } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
 import { Link as RouterLink } from 'react-router-dom';
@@ -9,6 +9,7 @@ import Page from 'src/components/Page';
 import SearchBar from 'src/components/SearchBar';
 import Results from 'src/components/Results';
 import Header from './Header';
+import CategorySaveModal from './CategorySaveModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -44,6 +45,11 @@ const GET_CATEGORIES = gql`
 
 function CategoriesList() {
   const classes = useStyles();
+
+  const [modal, setModal] = React.useState({
+    open: false,
+    categoryUUID: undefined
+  });
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const { error, data, refetch } = useQuery(GET_CATEGORIES, {
@@ -73,7 +79,7 @@ function CategoriesList() {
   };
 
   // Results table
-  const headers = ['Name', 'Color'];
+  const headers = ['Name', 'Color', 'Actions'];
   const cells = [
     {
       field: 'name'
@@ -87,13 +93,25 @@ function CategoriesList() {
           ></div>
         </div>
       )
+    },
+    {
+      component: result => (
+        <Button
+          variant={'outlined'}
+          size="small"
+          color="primary"
+          onClick={() => setModal({ open: true, categoryUUID: result.uuid })}
+        >
+          Edit
+        </Button>
+      )
     }
   ];
 
   return (
     <Page className={classes.root} title="Categories">
       <Container maxWidth={false}>
-        <Header onCreateNewIndividual={handleNewIndividual} />
+        <Header onAddCategory={() => setModal({ open: true })} />
         <Results
           className={classes.results}
           results={data?.categories}
@@ -102,6 +120,15 @@ function CategoriesList() {
           noPagination
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+        <CategorySaveModal
+          onClose={() => setModal({ open: false })}
+          onSave={() => {
+            setModal({ open: false });
+            refetch();
+          }}
+          categoryUUID={modal.categoryUUID}
+          open={modal.open}
         />
       </Container>
     </Page>
