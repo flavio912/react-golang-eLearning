@@ -1,0 +1,16 @@
+type Category {
+  uuid: UUID
+  name: String!
+  color: String!
+}
+
+input CreateCategoryInput {
+  name: String!
+  color: String!
+}
+
+input UpdateCategoryInput {
+  uuid: UUID!
+  name: String
+  color: String
+}

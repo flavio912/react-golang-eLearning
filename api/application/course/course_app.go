@@ -26,7 +26,9 @@ type CourseApp interface {
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+
 	Categories(page *gentypes.Page, text *string) ([]gentypes.Category, gentypes.PageInfo, error)
+	UpdateCategory(input gentypes.UpdateCategoryInput) (gentypes.Category, error)
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
 	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)

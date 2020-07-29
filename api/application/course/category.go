@@ -1,6 +1,7 @@
 package course
 
 import (
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -27,4 +28,17 @@ func (c *courseAppImpl) Categories(page *gentypes.Page, text *string) ([]gentype
 
 	categories, pageInfo, err := c.coursesRepository.Categories(page, text)
 	return categoriesToGentypes(categories), pageInfo, err
+}
+
+func (c *courseAppImpl) UpdateCategory(input gentypes.UpdateCategoryInput) (gentypes.Category, error) {
+	if !c.grant.IsAdmin {
+		return gentypes.Category{}, &errors.ErrUnauthorized
+	}
+
+	if err := input.Validate(); err != nil {
+		return gentypes.Category{}, err
+	}
+
+	category, err := c.coursesRepository.UpdateCategory(input)
+	return categoryToGentype(category), err
 }
