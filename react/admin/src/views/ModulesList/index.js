@@ -10,7 +10,6 @@ import SearchBar from 'src/components/SearchBar';
 import Results from 'src/components/Results';
 import Header from './Header';
 
-
 const useStyles = makeStyles(theme => ({
   root: {
     paddingTop: theme.spacing(3),
@@ -20,11 +19,11 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3)
   },
   row: {
-    display: 'flex',
+    display: 'flex'
   },
   icon: {
     marginTop: 7,
-    marginRight: 5,
+    marginRight: 5
   }
 }));
 
@@ -64,8 +63,8 @@ function ModulesList({ match, history }) {
       name: searchText,
       page: {
         offset: page,
-        limit: rowsPerPage,
-      },
+        limit: rowsPerPage
+      }
     },
     fetchPolicy: 'cache-and-network'
   });
@@ -82,26 +81,33 @@ function ModulesList({ match, history }) {
   };
 
   // Results table
-  const headers = ['Name', 'Courses Linked', 'Lessons', 'Tags', 'Actions'];
+  const headers = ['Name', 'Lessons', 'Tags', 'Actions'];
   const cells = [
-    { field: 'name' }, { field: 'numCoursesUsedIn' },
-    { component: (result) =>  result.syllabus.length},
-    { component: (result) => (
-      result.tags && result.tags.map(tag => (
-        <Chip style={{ backgroundColor: tag.color }} label={tag.name} />
-      ))
-    )},
-    { component: (result) => (
-      <Button
-        color="default"
-        component={RouterLink}
-        size="small"
-        to={`/modules/${result.uuid}/overview`}
-      >
-        <CreateOutlinedIcon />
-      </Button>
-    )}
-  ]
+    { field: 'name' },
+    { component: result => result.syllabus.length },
+    {
+      component: result =>
+        result.tags &&
+        result.tags.map(tag => (
+          <Chip
+            style={{ backgroundColor: tag.color, color: 'white' }}
+            label={tag.name}
+          />
+        ))
+    },
+    {
+      component: result => (
+        <Button
+          color="default"
+          component={RouterLink}
+          size="small"
+          to={`/modules/${result.uuid}/overview`}
+        >
+          <CreateOutlinedIcon />
+        </Button>
+      )
+    }
+  ];
 
   return (
     <Page className={classes.root} title="Modules">

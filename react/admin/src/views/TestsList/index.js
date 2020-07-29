@@ -47,7 +47,7 @@ function TestsList({ match, history }) {
     variables: {
       page: {
         offset: page,
-        limit: rowsPerPage,
+        limit: rowsPerPage
       },
       filter: {
         name: searchText
@@ -74,19 +74,23 @@ function TestsList({ match, history }) {
   // Results table
   const headers = ['Name', 'Pass Percentage', 'Attempts Allowed', 'Actions'];
   const cells = [
-    { field: 'testName' }, { field: 'passPercentage' }, { field: 'attemptsAllowed' },
-    { component: (result) => (
-      <Button
-        color="primary"
-        component={RouterLink}
-        size="small"
-        to={`/test/${result.uuid}/overview`}
-        variant="outlined"
-      >
-        Edit
-      </Button>
-    )}
-  ]
+    { field: 'name' },
+    { field: 'passPercentage' },
+    { field: 'attemptsAllowed' },
+    {
+      component: result => (
+        <Button
+          color="primary"
+          component={RouterLink}
+          size="small"
+          to={`/test/${result.uuid}/overview`}
+          variant="outlined"
+        >
+          Edit
+        </Button>
+      )
+    }
+  ];
 
   return (
     <Page className={classes.root} title="Tests">
