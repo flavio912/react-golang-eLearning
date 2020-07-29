@@ -12,14 +12,14 @@ import {
   Table,
   TableBody,
   TableRow,
-  TableCell,
-  colors
+  Avatar,
+  TableCell
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
 import gql from 'graphql-tag';
+import getInitials from 'src/utils/getInitials';
 import { useMutation } from '@apollo/react-hooks';
-import Label from 'src/components/Label';
-import IndividualEditModal from './IndividualEditModal';
+import DelegateEditModal from './DelegateEditModal';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -38,52 +38,59 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const UPDATE_INDIVIDUAL = gql`
-  mutation UpdateIndividual(
+const UPDATE_DELEGATE = gql`
+  mutation UpdateDelegate(
     $uuid: UUID!
-    $email: String
-    $firstName: String
-    $lastName: String
-    $jobTitle: String
+    $firstName: String!
+    $lastName: String!
+    $jobTitle: String!
     $telephone: String
-    $password: String
+    $email: String
+    $companyUUID: UUID
+    $newPassword: String
+    $profileUploadToken: String
   ) {
-    updateIndividual(
+    updateDelegate(
       input: {
         uuid: $uuid
-        email: $email
         firstName: $firstName
         lastName: $lastName
         jobTitle: $jobTitle
         telephone: $telephone
-        password: $password
+        email: $email
+        profileImageUploadToken: $profileUploadToken
+        companyUUID: $companyUUID
+        newPassword: $newPassword
       }
     ) {
-      user {
-        email
-        firstName
-        lastName
-        telephone
-        jobTitle
+      uuid
+      firstName
+      lastName
+      jobTitle
+      telephone
+      email
+      profileImageUrl
+      company {
+        uuid
+        name
       }
-      
     }
   }
 `;
 
-function IndividualInfo({ individual, className, ...rest }) {
+function DelegateInfo({ delegate, className, ...rest }) {
   const classes = useStyles();
-  const [individualInfo, setIndividualInfo] = useState(individual);
+  const [delegateInfo, setDelegateInfo] = useState(delegate);
   const [openEdit, setOpenEdit] = useState(false);
-  const [saveIndividual] = useMutation(UPDATE_INDIVIDUAL);
+  const [saveDelegate] = useMutation(UPDATE_DELEGATE);
 
   useEffect(() => {
-    setIndividualInfo({
-      ...individual,
+    setDelegateInfo({
+      ...delegate,
       isValid: true,
       errorMsg: null
     });
-  }, [individual]);
+  }, [delegate]);
 
   const handleEditOpen = () => {
     setOpenEdit(true);
@@ -96,22 +103,24 @@ function IndividualInfo({ individual, className, ...rest }) {
     }
 
     try {
-      const { data } = await saveIndividual({
+      const { data } = await saveDelegate({
         variables: {
           uuid: values.uuid,
-          email: values.email,
           firstName: values.firstName,
           lastName: values.lastName,
           jobTitle: values.jobTitle,
           telephone: values.telephone,
-          password: values.password
+          email: values.email,
+          companyUUID: values.company.uuid,
+          generatePassword: values.generatePassword,
+          profileUploadToken: values.profileUploadToken
         }
       });
-      setIndividualInfo({ ...data.updateIndividual });
+      setDelegateInfo({ ...data.updateDelegate });
       setOpenEdit(false);
     } catch (err) {
-      setIndividualInfo({
-        ...individual,
+      setDelegateInfo({
+        ...delegate,
         isValid: false,
         errorMsg: err?.graphQLErrors[0]?.message
       });
@@ -120,45 +129,45 @@ function IndividualInfo({ individual, className, ...rest }) {
 
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
-      <CardHeader title="Individual info" />
+      <CardHeader title="Delegate info" />
       <Divider />
       <CardContent className={classes.content}>
         <Table>
           <TableBody>
             <TableRow>
               <TableCell>Email</TableCell>
-              <TableCell>
-                {individualInfo.email}
-                <div>
-                  <Label
-                    color={
-                      individualInfo.verified
-                        ? colors.green[600]
-                        : colors.orange[600]
-                    }
-                  >
-                    {individualInfo.verified
-                      ? 'Email verified'
-                      : 'Email not verified'}
-                  </Label>
-                </div>
-              </TableCell>
+              <TableCell>{delegateInfo.email}</TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>First Name</TableCell>
-              <TableCell>{individualInfo.firstName}</TableCell>
+              <TableCell>{delegateInfo.firstName}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Last Name</TableCell>
-              <TableCell>{individualInfo.lastName}</TableCell>
+              <TableCell>{delegateInfo.lastName}</TableCell>
             </TableRow>
-            <TableRow>
+            <TableRow selected>
               <TableCell>Job Title</TableCell>
-              <TableCell>{individualInfo.jobTitle}</TableCell>
+              <TableCell>{delegateInfo.jobTitle}</TableCell>
             </TableRow>
             <TableRow>
-              <TableCell>Phone Number</TableCell>
-              <TableCell>{individualInfo.telephone}</TableCell>
+              <TableCell>Telephone</TableCell>
+              <TableCell>{delegateInfo.telephone}</TableCell>
+            </TableRow>
+            <TableRow selected>
+              <TableCell>Company</TableCell>
+              <TableCell>{delegateInfo.company.name}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Profile Image</TableCell>
+              <TableCell>
+                <Avatar
+                  className={classes.avatar}
+                  src={delegate.profileImageUrl + '?w=100'}
+                >
+                  {getInitials(`${delegate.firstName} ${delegate.lastName}`)}
+                </Avatar>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -169,8 +178,8 @@ function IndividualInfo({ individual, className, ...rest }) {
           Edit
         </Button>
       </CardActions>
-      <IndividualEditModal
-        individual={individualInfo}
+      <DelegateEditModal
+        delegate={delegateInfo}
         onClose={values => handleEditClose(values)}
         open={openEdit}
       />
@@ -178,9 +187,9 @@ function IndividualInfo({ individual, className, ...rest }) {
   );
 }
 
-IndividualInfo.propTypes = {
+DelegateInfo.propTypes = {
   className: PropTypes.string,
-  individual: PropTypes.object.isRequired
+  delegate: PropTypes.object.isRequired
 };
 
-export default IndividualInfo;
+export default DelegateInfo;

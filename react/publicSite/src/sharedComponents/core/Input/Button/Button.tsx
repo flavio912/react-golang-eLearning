@@ -1,34 +1,34 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import classNames from "classnames";
-import { Theme } from "helpers/theme";
-import Icon, { IconNames } from "../../Icon";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import classNames from 'classnames';
+import { Theme } from 'helpers/theme';
+import Icon, { IconNames } from '../../Icon';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   button: {
     borderRadius: theme.buttonBorderRadius,
     padding: [0, theme.spacing(2)],
-    border: "1px solid",
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    cursor: "pointer",
+    border: '1px solid',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    cursor: 'pointer',
     height: 40,
-    justifyContent: "center",
+    justifyContent: 'center',
     fontSize: theme.fontSizes.default,
-    transition: "0.1s ease",
-    transitionProperty: "border-colour, background-color",
-    outline: "none",
+    transition: '0.1s ease',
+    transitionProperty: 'border-colour, background-color',
+    outline: 'none',
     // it would be nice to have a light blue hover state
-    "&:focus": {
+    '&:focus': {
       borderColor: theme.colors.primaryBlue,
     },
-    "&::-moz-focus-inner": {
+    '&::-moz-focus-inner': {
       border: 0,
     },
   },
   bold: {
-    fontWeight: "bold !important",
+    fontWeight: 'bold !important',
   },
   small: {
     padding: [0, theme.spacing(1)],
@@ -36,7 +36,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   default: {
     color: theme.colors.primaryBlack,
     borderColor: theme.colors.borderGrey,
-    backgroundColor: "white",
+    backgroundColor: 'white',
     fontWeight: 200,
     borderRadius: 4,
   },
@@ -46,26 +46,30 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.backgroundGrey,
   },
   submit: {
-    color: "white",
+    color: 'white',
     borderColor: theme.colors.primaryBlue,
     backgroundColor: theme.colors.primaryBlue,
-    "&:focus": {
-      borderColor: "#0044db",
-      backgroundColor: "#0044db",
+    '&:focus': {
+      borderColor: '#0044db',
+      backgroundColor: '#0044db',
     },
   },
   gradient: {
-    color: "white",
+    color: 'white',
     backgroundImage: `linear-gradient(45deg,
       ${theme.colors.primaryBlue}, ${theme.colors.primaryGreen})`,
     fontWeight: 800,
     fontSize: theme.fontSizes.large,
     borderRadius: 4,
-    border: "none",
+    border: 'none',
+  },
+  disabled: {
+    opacity: 0.5,
+    cursor: 'initial !important',
   },
 }));
 
-export type Archetypes = "default" | "grey" | "submit" | "gradient";
+export type Archetypes = 'default' | 'grey' | 'submit' | 'gradient';
 
 interface Props {
   archetype?: Archetypes;
@@ -75,6 +79,8 @@ interface Props {
   small?: boolean;
   className?: string;
   noIconPadding?: boolean;
+  disabled?: Boolean;
+  onClick?: () => void;
 }
 
 function Button({
@@ -85,21 +91,27 @@ function Button({
   bold,
   small,
   children,
-  className = "",
+  className = '',
+  disabled,
+  onClick,
   ...props
-}: Props & React.PropsWithoutRef<JSX.IntrinsicElements["button"]>) {
+}: Props & React.PropsWithoutRef<JSX.IntrinsicElements['button']>) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <button
       className={classNames(
+        disabled && classes.disabled,
         classes.button,
-        classes[archetype || "default"],
+        classes[archetype || 'default'],
         bold && classes.bold,
         small && classes.small,
-        className
+        className,
       )}
+      onClick={() => {
+        if (!disabled && onClick) onClick();
+      }}
       {...props}
     >
       {/* replace with actual icon */}

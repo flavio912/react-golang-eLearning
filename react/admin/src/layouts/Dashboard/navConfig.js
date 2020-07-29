@@ -4,7 +4,6 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import DashboardIcon from '@material-ui/icons/DashboardOutlined';
 import SettingsIcon from '@material-ui/icons/SettingsOutlined';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
-import Class from '@material-ui/icons/Class';
 import AssignmentInd from '@material-ui/icons/AssignmentInd';
 import Layers from '@material-ui/icons/Layers';
 import CardMembershipIcon from '@material-ui/icons/CardMembership';
@@ -19,24 +18,24 @@ export default [
         icon: DashboardIcon
       },
       {
-        title: 'Company requests',
-        href: '/approve-companies',
-        icon: BarChartIcon
-      },
-      {
         title: 'Companies',
         href: '/companies',
         icon: BarChartIcon
       },
       {
-        title: 'Admins',
-        href: '/admins',
-        icon: AssignmentInd
-      },
-      {
         title: 'Individuals',
         href: '/individuals',
         icon: AssignmentInd
+      },
+      {
+        title: 'Delegates',
+        href: '/delegates',
+        icon: AssignmentInd
+      },
+      {
+        title: 'Company requests',
+        href: '/approve-companies',
+        icon: BarChartIcon
       }
     ]
   },
@@ -44,7 +43,7 @@ export default [
     subheader: 'Courses',
     items: [
       {
-        title: 'Online Courses',
+        title: 'Courses',
         href: '/courses',
         icon: LibraryBooks,
         items: [
@@ -76,11 +75,6 @@ export default [
         icon: CardMembershipIcon
       },
       {
-        title: 'Classroom Courses',
-        href: '/classroom-courses',
-        icon: Class
-      },
-      {
         title: 'Tutors',
         href: '/tutors',
         icon: AssignmentInd
@@ -88,8 +82,13 @@ export default [
     ]
   },
   {
-    subheader: 'Page Settings',
+    subheader: 'Admin Settings',
     items: [
+      {
+        title: 'Admins',
+        href: '/admins',
+        icon: AssignmentInd
+      },
       {
         title: 'Page Editor',
         href: '/page-editor',

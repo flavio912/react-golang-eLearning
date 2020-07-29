@@ -4,6 +4,7 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import { Theme } from 'helpers/theme';
 import Footer from 'components/Menu/Footer';
+import { delegateLogin } from 'api/config';
 
 type Props = {
   children?: React.ReactChildren;
@@ -233,6 +234,9 @@ export const AppHolder = ({ children }: Props) => {
           router.push('/');
         }}
         onCheckout={() => console.log('Checkout')}
+        onLoginClick={() => {
+          window.location.href = delegateLogin;
+        }}
       />
       <div className={classes.appHolder}>{children}</div>
       <Footer columns={footerColumns} />

@@ -103,6 +103,11 @@ type CourseApp interface {
 	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
 	CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
+	Tutor(uuid gentypes.UUID) (gentypes.Tutor, error)
+	Tutors(
+		page *gentypes.Page,
+		filter *gentypes.TutorFilter,
+		order *gentypes.OrderBy) ([]gentypes.Tutor, gentypes.PageInfo, error)
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
 	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
