@@ -34,6 +34,7 @@ input CoursesFilter {
   backgroundCheck: Boolean
   price: Float
   allowedToBuy: Boolean # Show only courses that you are authorized to book
+  categoryUUID: UUID
 }
 
 input CompanyFilter {
@@ -136,5 +137,6 @@ type Query {
   caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
 
   categories(page: Page, text: String): CategoryPage
+  category(uuid: UUID!): Category
   # secondaryCategories(page: Page, text: String): CategoryPage
 }

@@ -251,7 +251,7 @@ type MyCourse {
 
 input PurchaseCoursesInput {
   courses: [Int!]!
-  users: [UUID!]! # List of delegates UUIDs
+  users: [UUID!] # List of delegates UUIDs
   extraInvoiceEmail: String
   acceptedTerms: Boolean!
   backgroundCheckConfirm: Boolean

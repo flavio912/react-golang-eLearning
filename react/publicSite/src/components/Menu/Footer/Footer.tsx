@@ -12,7 +12,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'column',
     backgroundColor: theme.colors.footerBlue,
     padding: '35px 75px 30px 50px',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   row: {
     display: 'flex',
@@ -22,13 +22,13 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'flex-start',
     '@media (max-width: 650px)': {
       flexDirection: 'column',
-      alignItems: 'center'
-    }
+      alignItems: 'center',
+    },
   },
   border: {
     paddingBottom: '100px',
     marginBottom: '20px',
-    borderBottom: ['1px', 'solid', theme.colors.footerGrey]
+    borderBottom: ['1px', 'solid', theme.colors.footerGrey],
     //alignItems: 'flex-start',
   },
   column: {
@@ -39,20 +39,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '25px 25px',
     //marginRight: '50px',
     '@media (max-width: 650px)': {
-      alignItems: 'center'
-    }
+      alignItems: 'center',
+    },
   },
   header: {
     fontSize: theme.fontSizes.extraLarge,
     color: theme.colors.primaryWhite,
     fontWeight: 'bold',
-    marginBottom: '10px'
+    marginBottom: '10px',
   },
   link: {
     cursor: 'pointer',
     fontSize: theme.fontSizes.large,
     color: theme.colors.footerGrey,
-    margin: '5px 0'
+    margin: '5px 0',
   },
   alert: {
     height: '17px',
@@ -60,7 +60,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: '3px',
     fontSize: theme.fontSizes.xTiny,
     fontWeight: '800',
-    color: theme.colors.primaryWhite
+    color: theme.colors.primaryWhite,
   },
   triangle: {
     width: 0,
@@ -68,46 +68,46 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '2px 4px 0 0',
     borderLeft: '3px solid transparent',
     borderRight: '3px solid transparent',
-    borderBottom: ['6px', 'solid', theme.colors.primaryWhite]
+    borderBottom: ['6px', 'solid', theme.colors.primaryWhite],
   },
   new: {
     width: '33px',
-    backgroundColor: theme.colors.navyBlue
+    backgroundColor: theme.colors.navyBlue,
   },
   increase: {
     width: '49px',
-    backgroundColor: theme.colors.primaryGreen
+    backgroundColor: theme.colors.primaryGreen,
   },
   center: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   centered: {
     maxWidth: theme.centerColumnWidth,
-    width: '100%'
+    width: '100%',
   },
   message: {
     fontSize: theme.fontSizes.smallHeading,
     color: theme.colors.primaryWhite,
     maxWidth: '275px',
-    margin: '10px 0 50px 0'
+    margin: '10px 0 50px 0',
   },
   copyright: {
     fontSize: theme.fontSizes.xSmall,
     color: theme.colors.footerGrey,
     '@media (max-width: 650px)': {
       marginTop: '25px',
-      textAlign: 'center'
-    }
+      textAlign: 'center',
+    },
   },
   mobileBorder: {
     '@media (max-width: 650px)': {
       borderBottom: ['1px', 'solid', theme.colors.footerGrey],
-      paddingBottom: '25px'
-    }
-  }
+      paddingBottom: '25px',
+    },
+  },
 }));
 
 export type Column = {
@@ -158,13 +158,13 @@ function Footer({ columns, className }: Props) {
             />
           </div>
           {columns &&
-            columns.map((column: Column) => (
-              <div key={column.id} className={classes.column}>
+            columns.map((column: Column, j) => (
+              <div key={j} className={classes.column}>
                 <div className={classes.header}>{column.header}</div>
                 {column.links &&
-                  column.links.map((link: Link) => (
+                  column.links.map((link: Link, index) => (
                     <div
-                      key={link.id}
+                      key={index}
                       className={classNames(classes.row, classes.center)}
                     >
                       <div
@@ -178,7 +178,7 @@ function Footer({ columns, className }: Props) {
                           className={classNames(
                             classes.alert,
                             classes.center,
-                            classes[link.alert.type]
+                            classes[link.alert.type],
                           )}
                         >
                           {link.alert.type === 'increase' && (

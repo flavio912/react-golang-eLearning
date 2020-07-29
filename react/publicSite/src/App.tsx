@@ -8,7 +8,7 @@ import {
   Route,
   RouteRenderArgs,
   RenderErrorArgs,
-  RedirectException
+  RedirectException,
 } from 'found';
 //@ts-ignore
 import { Resolver } from 'found-relay';
@@ -16,7 +16,7 @@ import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
-import { AppHolder } from 'views/AppHolder';
+import AppHolder from 'views/AppHolder';
 import { Redirect } from 'react-router-dom';
 import Home from 'views/Home';
 import AboutUs from 'views/AboutUs';
@@ -32,7 +32,6 @@ import ContactUs from 'views/ContactUs';
 import RegisterCalendar from 'views/RegisterCalendar';
 import ArticleLandingPage from 'views/ArticleLandingPage';
 import Article from 'views/Article';
-
 
 const ExamplePageQuery = graphql`
   query App_Query {
@@ -52,7 +51,18 @@ const Router = createFarceRouter({
       <Route
         Component={AppHolder}
         //query={ExamplePageQuery}
+        query={graphql`
+          query App_AppHolder_Query {
+            categories {
+              ...AppHolder_categories
+            }
+          }
+        `}
         render={({ props, error }: any) => {
+          window.scrollTo(0, 0);
+          if (!props) {
+            return <div></div>;
+          }
           // Check if user is logged in, if not redirect to login
           // if (props?.manager) return <AppHolder {...props} />;
           // if (error) {
@@ -66,7 +76,38 @@ const Router = createFarceRouter({
         <Route path="/aboutus" Component={AboutUs} />
         <Route path="/payment" Component={PaymentPage} />
         <Route path="/course" Component={CourseDetailsPage} />
-        <Route path="/courses" Component={Courses} />
+        <Route
+          path="/courses/:categoryUUID"
+          Component={Courses}
+          query={graphql`
+            query App_Courses_Query(
+              $page: Page
+              $filter: CoursesFilter
+              $categoryUUID: UUID!
+            ) {
+              courses(page: $page, filter: $filter) {
+                ...Courses_courses
+              }
+              category(uuid: $categoryUUID) {
+                ...Courses_category
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { categoryUUID } = params;
+            return {
+              ...params,
+              page: {
+                offset: 0,
+                limit: 5,
+              },
+              filter: {
+                categoryUUID,
+              },
+              categoryUUID,
+            };
+          }}
+        />
         <Route path="/consultancy" Component={Consultancy} />
         <Route path="/contact" Component={ContactUs} />
         <Route path="/privacypolicy" Component={PrivacyPolicy} />
@@ -77,9 +118,9 @@ const Router = createFarceRouter({
       <Route path="/register/individual" Component={RegisterIndividual} />
       <Route path="/register/company" Component={RegisterCompany} />
       <Route path="/register/calendar" Component={RegisterCalendar} />
-    </Route>
+    </Route>,
   ),
-  render: createRender({})
+  render: createRender({}),
 });
 
 const App = () => (

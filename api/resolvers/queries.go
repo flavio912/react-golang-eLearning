@@ -539,3 +539,10 @@ func (q *QueryResolver) Tutors(
 		PageInfo: &pageInfo,
 	})
 }
+
+func (q *QueryResolver) Category(
+	ctx context.Context, args struct{ UUID gentypes.UUID }) (*CategoryResolver, error) {
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		UUID: args.UUID,
+	})
+}

@@ -1,12 +1,12 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 8c4eea5edab6019d9dc9ba61c3f92afa */
+/* @relayHash 8e201af2e86a3fbe58ac2b84dae85a32 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type App_QueryVariables = {};
 export type App_QueryResponse = {
     readonly manager: {
-        readonly uuid: unknown;
+        readonly uuid: string;
         readonly firstName: string;
         readonly lastName: string;
     } | null;
