@@ -35,14 +35,16 @@ export default function ReoderableListItem({ uuid, text, onDelete  }) {
           </Typography>
         }
       />
-      <ListItemIcon>
-        <IconButton
-          onClick={() => onDelete(uuid)}
-          edge="end"
-        >
-          <DeleteIcon color="disabled" />
-        </IconButton>
-      </ListItemIcon>
+      {onDelete && (
+        <ListItemIcon>
+          <IconButton
+            onClick={() => onDelete(uuid)}
+            edge="end"
+          >
+            <DeleteIcon color="disabled" />
+          </IconButton>
+        </ListItemIcon>
+      )}
     </ListItem>
   );
 }

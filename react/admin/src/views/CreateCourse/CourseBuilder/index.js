@@ -135,16 +135,10 @@ function CourseBuilder({ state, setState }) {
     });
   }, [resultItems]);
 
-  const onDelete = (uuid, moduleUUID) => {
+  const onDelete = (uuid) => {
     const newStructure = [...state.syllabus];
-    if (moduleUUID) {
-      const moduleIndex = state.syllabus.findIndex(x => x.uuid === moduleUUID);
-      const index = state.syllabus[moduleIndex].syllabus.findIndex(x => x.uuid === uuid);
-      newStructure[moduleIndex].syllabus.splice(index, 1);
-    } else {
-      const index = state.syllabus.findIndex(x => x.uuid === uuid);
-      newStructure.splice(index, 1);
-    }
+    const index = state.syllabus.findIndex(x => x.uuid === uuid);
+    newStructure.splice(index, 1);
     setState({ syllabus: newStructure });
   };
 
@@ -166,13 +160,6 @@ function CourseBuilder({ state, setState }) {
                 <ReoderableListItem
                   uuid={child.uuid}
                   text={child.name}
-                  onDelete={
-                    (uuid) => 
-                      onDelete(
-                        uuid,
-                        item.uuid
-                      )
-                  }
                 />
               )
             }))
