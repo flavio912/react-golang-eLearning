@@ -156,7 +156,7 @@ function CourseBuilder({ state, setState }) {
       item.type === 'module' ?
         <ReoderableDropdown
           title={item.name}
-          onDelete={onDelete}
+          onDelete={() => onDelete(item.uuid)}
           items={
             item.syllabus &&
             item.syllabus.map(child => ({
