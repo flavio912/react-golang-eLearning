@@ -75,6 +75,11 @@ export default [
         icon: CardMembershipIcon
       },
       {
+        title: 'Categories',
+        href: '/categories',
+        icon: CardMembershipIcon
+      },
+      {
         title: 'Tutors',
         href: '/tutors',
         icon: AssignmentInd

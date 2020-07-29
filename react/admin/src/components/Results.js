@@ -16,50 +16,63 @@ const useStyles = makeStyles(theme => ({
   actions: {
     padding: theme.spacing(1),
     justifyContent: 'flex-end'
-  },
+  }
 }));
 
-function Results({ results, handleChangePage, handleChangeRowsPerPage, headers, cells, className, ...rest }) {
+function Results({
+  results,
+  handleChangePage,
+  handleChangeRowsPerPage,
+  headers,
+  cells,
+  className,
+  noPagination,
+  ...rest
+}) {
   const classes = useStyles();
 
-  if (!results) return <div>Loading...</div>
+  if (!results) return <div>Loading...</div>;
 
   return (
     <Card {...rest} className={className}>
       <Table>
         <TableHead>
           <TableRow>
-            {headers && headers.map((header, i) => (
-              <TableCell key={i}>{header}</TableCell>
-            ))}
+            {headers &&
+              headers.map((header, i) => (
+                <TableCell key={i}>{header}</TableCell>
+              ))}
           </TableRow>
         </TableHead>
         <TableBody>
-          {results.edges && results.edges.map(result => (
-            <TableRow key={result.uuid}>
-              {cells && cells.map((cell, i) => (
-                <TableCell key={i}>
-                  {cell.component
-                    ? cell.component(result)
-                    : result[cell.field]
-                  }
-                </TableCell>
-              ))}
-            </TableRow>
-          ))}
+          {results.edges &&
+            results.edges.map(result => (
+              <TableRow key={result.uuid}>
+                {cells &&
+                  cells.map((cell, i) => (
+                    <TableCell key={i}>
+                      {cell.component
+                        ? cell.component(result)
+                        : result[cell.field]}
+                    </TableCell>
+                  ))}
+              </TableRow>
+            ))}
         </TableBody>
       </Table>
-      <CardActions className={classes.actions}>
-        <TablePagination
-          component="div"
-          count={results.pageInfo && results.pageInfo.total}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-          page={results.pageInfo && results.pageInfo.offset}
-          rowsPerPage={results.pageInfo && results.pageInfo.limit}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
-      </CardActions>
+      {!noPagination && (
+        <CardActions className={classes.actions}>
+          <TablePagination
+            component="div"
+            count={results.pageInfo && results.pageInfo.total}
+            onChangePage={handleChangePage}
+            onChangeRowsPerPage={handleChangeRowsPerPage}
+            page={results.pageInfo && results.pageInfo.offset}
+            rowsPerPage={results.pageInfo && results.pageInfo.limit}
+            rowsPerPageOptions={[5, 10, 25]}
+          />
+        </CardActions>
+      )}
     </Card>
   );
 }
@@ -72,9 +85,9 @@ Results.propTypes = {
       offset: PropTypes.number,
       limit: PropTypes.number,
       given: PropTypes.number,
-      __typename: PropTypes.string,
+      __typename: PropTypes.string
     }),
-    __typename: PropTypes.string,
+    __typename: PropTypes.string
   }),
   className: PropTypes.string,
   headers: PropTypes.array,
