@@ -1269,6 +1269,36 @@ func (_m *CoursesRepository) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
 	return r0, r1
 }
 
+// Tutors provides a mock function with given fields: page, filter, order
+func (_m *CoursesRepository) Tutors(page *gentypes.Page, filter *gentypes.TutorFilter, order *gentypes.OrderBy) ([]models.Tutor, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter, order)
+
+	var r0 []models.Tutor
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) []models.Tutor); ok {
+		r0 = rf(page, filter, order)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Tutor)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) gentypes.PageInfo); ok {
+		r1 = rf(page, filter, order)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) error); ok {
+		r2 = rf(page, filter, order)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // UpdateCAANumber provides a mock function with given fields: input
 func (_m *CoursesRepository) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (models.CAANumber, error) {
 	ret := _m.Called(input)
