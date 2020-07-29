@@ -5,7 +5,9 @@ import { Redirect } from 'react-router-dom';
 import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
-import TutorsView from './views/TutorsList';
+import TutorsList from './views/TutorsList';
+import CreateTutor from './views/Tutor/CreateTutor';
+import UpdateTutor from './views/Tutor/UpdateTutor';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';
 import CreateCourse from './views/CreateCourse';
@@ -163,7 +165,17 @@ export default [
       {
         path: '/tutors',
         exact: true,
-        component: TutorsView
+        component: TutorsList
+      },
+      {
+        path: '/tutor/create/:tab',
+        exact: true,
+        component: CreateTutor
+      },
+      {
+        path: '/tutor/:ident/:tab',
+        exact: true,
+        component: UpdateTutor
       },
       {
         path: '/overview',

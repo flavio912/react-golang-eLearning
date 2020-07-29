@@ -20,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function TutorsList() {
+function TutorsList({ match, history }) {
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState(0);
@@ -95,7 +95,11 @@ function TutorsList() {
   return (
     <Page className={classes.root} title="Tutors">
       <Container maxWidth={false}>
-        <Header />
+        <Header
+          onAdd={() => {
+            history.push('/tutor/create/overview');
+          }}
+        />
         <SearchBar setSearchText={setSearchText} />
         <Results
           className={classes.results}
