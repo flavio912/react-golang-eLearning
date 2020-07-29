@@ -9,13 +9,13 @@ import Button from 'sharedComponents/core/Input/Button';
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   tabBar: {
     flexWrap: 'wrap',
     borderBottom: ['1px', 'solid', theme.colors.borderGrey],
     justifyContent: 'space-evenly',
-    backgroundColor: theme.colors.primaryWhite
+    backgroundColor: theme.colors.primaryWhite,
   },
   tab: {
     cursor: 'pointer',
@@ -27,23 +27,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
     opacity: 0.4,
     transition: 'opacity 0.5s linear',
     '@media (max-width: 700px)': {
-      width: '30%'
-    }
+      width: '30%',
+    },
   },
   selected: {
     borderBottom: ['3.5px', 'solid', theme.colors.primaryGreen],
     opacity: 1,
-    transition: 'opacity 0.5s linear'
+    transition: 'opacity 0.5s linear',
   },
   noMargin: {
-    marginRight: 0
+    marginRight: 0,
   },
   list: {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     backgroundColor: '#F7F9FB',
-    padding: '0 15px'
+    padding: '0 15px',
   },
   listOptions: {
     maxWidth: '1003px',
@@ -52,26 +52,29 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    margin: '57px 0 52px 0'
+    margin: '57px 0 52px 0',
   },
   dropDown: {
-    marginLeft: '25px'
+    marginLeft: '25px',
   },
   listItem: {
-    maxWidth: '1083px',
-    marginBottom: '30px'
+    maxWidth: '1003px',
+    marginBottom: '30px',
+    '@media (min-width: 1050px)': {
+      width: '1003px',
+    },
   },
   searchText: {
     display: 'flex',
     color: theme.colors.primaryBlack,
     fontSize: theme.fontSizes.smallHeading,
     fontWeight: '800',
-    marginLeft: '10px'
+    marginLeft: '10px',
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   button: {
     height: '52px',
@@ -79,18 +82,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     margin: '0 20px',
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)',
     fontSize: theme.fontSizes.large,
-    fontWeight: '800'
+    fontWeight: '800',
   },
   line: {
     borderBottom: ['1.5px', 'solid', theme.colors.borderGrey],
     width: '400px',
     '@media (min-width: 700px) and (max-width: 1050px)': {
-      width: '225px'
+      width: '225px',
     },
     '@media (max-width: 700px)': {
-      width: '100px'
-    }
-  }
+      width: '100px',
+    },
+  },
 }));
 
 export type Tab = {
@@ -106,19 +109,29 @@ type Props = {
   moreToShow: boolean;
   onMore: () => void;
   className?: string;
+  totalCourses: React.ReactNode;
 };
 
-function CourseSearch({ tabs, selectedTab, onChangeTab, courses, moreToShow, onMore, className }: Props) {
+function CourseSearch({
+  tabs,
+  selectedTab,
+  onChangeTab,
+  courses,
+  moreToShow,
+  onMore,
+  className,
+  totalCourses,
+}: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   const [showFilter, setShowFilter] = React.useState({
     id: 0,
-    title: 'Show All'
+    title: 'Show All',
   });
   const [priceFilter, setPriceFilter] = React.useState({
     id: 0,
-    title: 'Inital'
+    title: 'Inital',
   });
 
   // TODO: Find out list search filters
@@ -133,7 +146,7 @@ function CourseSearch({ tabs, selectedTab, onChangeTab, courses, moreToShow, onM
             className={classNames(
               classes.tab,
               index === tabs.length - 1 && classes.noMargin,
-              selectedTab === tab && classes.selected
+              selectedTab === tab && classes.selected,
             )}
             onClick={() => onChangeTab(tab)}
           >
@@ -145,7 +158,7 @@ function CourseSearch({ tabs, selectedTab, onChangeTab, courses, moreToShow, onM
         <div className={classes.listOptions}>
           <div
             className={classes.searchText}
-          >{`${courses.length} ${selectedTab.value} Courses Available`}</div>
+          >{`${totalCourses} ${selectedTab.value} Courses Available`}</div>
           <div className={classes.row}>
             <Dropdown
               placeholder="Show All"
@@ -166,29 +179,26 @@ function CourseSearch({ tabs, selectedTab, onChangeTab, courses, moreToShow, onM
             />
           </div>
         </div>
-        {courses && courses.map((courseItem: CourseProps) => (
-          <div className={classes.listItem}>
-            <CourseItem
-              title={courseItem.title}
-              description={courseItem.description}
-              price={courseItem.price}
-              type={courseItem.type}
-              colour={courseItem.colour}
-              imageURL={courseItem.imageURL}
-              className={courseItem?.className}
-              viewCourse={courseItem.viewCourse}
-              addToBasket={courseItem.addToBasket}
-            />
-          </div>
-        ))}
+        {courses &&
+          courses.map((courseItem: CourseProps) => (
+            <div className={classes.listItem}>
+              <CourseItem
+                title={courseItem.title}
+                description={courseItem.description}
+                price={courseItem.price}
+                type={courseItem.type}
+                colour={courseItem.colour}
+                imageURL={courseItem.imageURL}
+                className={courseItem?.className}
+                viewCourse={courseItem.viewCourse}
+                addToBasket={courseItem.addToBasket}
+              />
+            </div>
+          ))}
         {moreToShow && (
           <div className={classes.row}>
             <div className={classes.line} />
-            <Button
-              className={classes.button}
-              small
-              onClick={onMore}
-            >
+            <Button className={classes.button} small onClick={onMore}>
               {`Show More`}
             </Button>
             <div className={classes.line} />

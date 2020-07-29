@@ -11,7 +11,7 @@ import { GraphError } from 'types/general';
 import {
   RegisterCompany_CompanyRequestMutationVariables,
   RegisterCompany_CompanyRequestMutationResponse,
-} from '__generated__/RegisterCompany_CompanyRequestMutation.graphql';
+} from './__generated__/RegisterCompany_CompanyRequestMutation.graphql';
 import environment from 'api/environment';
 import RegisterCompanyPart2 from 'components/Overview/Registration/RegisterCompanyPart2';
 import RegisterCompanySuccess from 'components/Overview/Registration/RegisterCompanySuccess';

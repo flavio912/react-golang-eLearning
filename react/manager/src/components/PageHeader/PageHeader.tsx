@@ -71,7 +71,7 @@ const PageHeader = ({
           <Button
             bold
             archetype="submit"
-            onClick={(_) => {
+            onClick={() => {
               setOpenDelegateSlideIn(true);
             }}
           >

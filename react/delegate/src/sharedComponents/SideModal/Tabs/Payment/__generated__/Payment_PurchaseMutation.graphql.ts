@@ -1,11 +1,11 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash eda6c0a3a3ce74e4c7730525f4af8cff */
+/* @relayHash 666fe375cd10da4c0717984fa0f8f487 */
 
 import { ConcreteRequest } from "relay-runtime";
 export type Payment_PurchaseMutationVariables = {
     courses: Array<number>;
-    users: Array<string>;
+    users?: Array<string> | null;
     extraEmail?: string | null;
 };
 export type Payment_PurchaseMutationResponse = {
@@ -24,7 +24,7 @@ export type Payment_PurchaseMutation = {
 /*
 mutation Payment_PurchaseMutation(
   $courses: [Int!]!
-  $users: [UUID!]!
+  $users: [UUID!]
   $extraEmail: String
 ) {
   purchaseCourses(input: {courses: $courses, users: $users, extraInvoiceEmail: $extraEmail, acceptedTerms: true, backgroundCheckConfirm: true}) {
@@ -45,7 +45,7 @@ const node: ConcreteRequest = (function () {
         ({
             "kind": "LocalArgument",
             "name": "users",
-            "type": "[UUID!]!",
+            "type": "[UUID!]",
             "defaultValue": null
         } as any),
         ({
@@ -133,10 +133,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "mutation",
             "name": "Payment_PurchaseMutation",
             "id": null,
-            "text": "mutation Payment_PurchaseMutation(\n  $courses: [Int!]!\n  $users: [UUID!]!\n  $extraEmail: String\n) {\n  purchaseCourses(input: {courses: $courses, users: $users, extraInvoiceEmail: $extraEmail, acceptedTerms: true, backgroundCheckConfirm: true}) {\n    transactionComplete\n    stripeClientSecret\n  }\n}\n",
+            "text": "mutation Payment_PurchaseMutation(\n  $courses: [Int!]!\n  $users: [UUID!]\n  $extraEmail: String\n) {\n  purchaseCourses(input: {courses: $courses, users: $users, extraInvoiceEmail: $extraEmail, acceptedTerms: true, backgroundCheckConfirm: true}) {\n    transactionComplete\n    stripeClientSecret\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '5e0417c00d7e4cc564983dbddebaeb17';
+(node as any).hash = '0c99830638316b851b6eb5f59217824c';
 export default node;

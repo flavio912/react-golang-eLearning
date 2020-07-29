@@ -98,6 +98,7 @@ type CourseFilter struct {
 	BackgroundCheck *bool
 	Price           *float64
 	AllowedToBuy    *bool
+	CategoryUUID    *UUID
 }
 
 type PurchaseCoursesInput struct {

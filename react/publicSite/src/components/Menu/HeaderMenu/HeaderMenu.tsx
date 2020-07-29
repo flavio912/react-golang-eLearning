@@ -167,8 +167,9 @@ function HeaderMenu({
               />
               <div className={classes.tabs}>
                 {tabs &&
-                  tabs.map((tab) => (
+                  tabs.map((tab, index) => (
                     <TabOption
+                      key={index}
                       tab={tab}
                       selected={selected}
                       setSelected={setSelected}
