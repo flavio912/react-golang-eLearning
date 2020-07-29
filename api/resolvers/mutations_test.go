@@ -925,6 +925,7 @@ func TestCreateCompany(t *testing.T) {
 						county: "Coolington"
 						postCode: "CO0L3ST"
 						country: "UK"
+						contactEmail: "email@email.com"
 					}) {
 						approved
 						name
@@ -935,6 +936,7 @@ func TestCreateCompany(t *testing.T) {
 							postCode
 							country
 						}
+						contactEmail
 					}
 				}
 			`,
@@ -949,7 +951,8 @@ func TestCreateCompany(t *testing.T) {
 							"postCode":"CO0L3ST"
 						},
 						"approved":true,
-						"name":"Cool Co"
+						"name":"Cool Co",
+						"contactEmail":"email@email.com"
 					}
 				}
 			`,
@@ -967,6 +970,7 @@ func TestCreateCompany(t *testing.T) {
 						county: ""
 						postCode: "reallylong"
 						country: ""
+						contactEmail: "email@email.com"
 					}) {
 						name
 					}
@@ -989,7 +993,8 @@ func TestCreateCompany(t *testing.T) {
 					addressLine2: ""
 					county: ""
 					postCode: "1234567"
-					country: ""
+					country: "",
+					contactEmail: "email@email.com"
 				}) {
 					name
 				}
@@ -1118,33 +1123,6 @@ func TestUpdateCompany(t *testing.T) {
 				{
 					ResolverError: &errors.ErrCompanyNotFound,
 					Path:          []interface{}{"updateCompany"},
-				},
-			},
-		},
-		{
-			Name:    "Fail validation",
-			Context: adminContext(),
-			Schema:  schema,
-			Query: `
-				mutation {
-					updateCompany(input: {
-						uuid: "00000000-0000-0000-0000-000000000001"
-						country: "123!"
-						county: "not^%!£$*"
-					}) {
-						uuid
-					}
-				}
-			`,
-			ExpectedResult: `
-				{
-					"updateCompany": null
-				}
-			`,
-			ExpectedErrors: []gqltest.TestQueryError{
-				{
-					Message: helpers.StringPointer("County: not^%!£$* does not validate as alpha;Country: 123! does not validate as alpha"),
-					Path:    []interface{}{"updateCompany"},
 				},
 			},
 		},
