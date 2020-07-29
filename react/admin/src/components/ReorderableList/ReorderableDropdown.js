@@ -16,9 +16,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import ReoderableList from './ReorderableList';
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    flexGrow: 1,
-  },
   bold: {
     fontWeight: 'bold'
   },
@@ -31,14 +28,13 @@ const useStyles = makeStyles(theme => ({
  * To allow dragging inside a list, 'newItem' must be provided
  * To allow dragging between lists, a 'uuid' must be provided
  */
-export default function ReoderableDropdown({ uuid, newItem, title, items, setItems, onDelete }) {
+export default function ReoderableDropdown({ className, uuid, newItem, title, items, setItems, onDelete }) {
   const classes = useStyles();
   const [ expanded, setExpanded ] = React.useState(false);
 
   return (
-    <Card>
+    <Card className={className}>
       <ListItem
-        className={classes.root}
         button
         onClick={() => setExpanded((previousState) => !previousState)}
       >

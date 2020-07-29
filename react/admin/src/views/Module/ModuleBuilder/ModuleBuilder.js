@@ -21,6 +21,12 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
+  },
+  marginBottom: {
+    marginBottom: '100px',
+  },
+  padding: {
+    padding: theme.spacing(2),
   }
 }));
 
@@ -40,13 +46,21 @@ const GET_LESSONS = gql`
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!) {
-    searchSyllabus(filter: { name: $name, excludeModule: true }) {
+  query SearchSyllabus(
+    $name: String!
+    $excludeLesson: Boolean
+    $excludeTest: Boolean
+  ) {
+    searchSyllabus(filter: {
+      name: $name
+      excludeLesson: $excludeLesson
+      excludeTest: $excludeTest
+      excludeModule: true
+    }) {
       edges {
         uuid
         name
         type
-        complete
       }
     }
   }
@@ -69,22 +83,22 @@ const cleanResult = (data, error) => {
   return resultItems;
 }
 
-function useSuggestedQuery(text, page) {
+function useSuggestedQuery(text) {
   const { error, data } = useQuery(GET_LESSONS, {
     variables: {
       name: text,
-      page: page
     }
   });
 
   return cleanResult(data && data.lessons, error);
 }
 
-function useSearchQuery(text, page) {
+function useSearchQuery(text, filter) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
-      page: page
+      excludeLesson: filter.excludeLesson,
+      excludeTest: filter.excludeTest,
     }
   });
 
@@ -94,8 +108,16 @@ function useSearchQuery(text, page) {
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
+  const [searchFilters, setSearchFilters] = React.useState({
+    excludeLesson: false,
+    excludeTest: false,
+    filters: [
+      { name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest' },
+      { name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson' },
+    ]
+  });
   const [searchText, setSearchText] = React.useState('');
-  const searchResults = useSearchQuery(searchText);
+  const searchResults = useSearchQuery(searchText, searchFilters);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
   const onDelete = uuid => {
@@ -145,8 +167,8 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
                 <SyllabusSearch
                   placeholder="Search Lessons or Tests"
-                  searchFilters={{ filters: [] }}
-                  setSearchFilters={() => {}}
+                  searchFilters={searchFilters}
+                  setSearchFilters={setSearchFilters}
                   searchResults={searchResults}
                   setSearchText={setSearchText}
                   onChange={({ uuid, name, type }) => {
@@ -175,33 +197,21 @@ function ModuleBuilder({ state, setState }) {
               }}
             />
           </Grid>
-          <Grid item>
+          <Grid item className={classes.marginBottom}>
             <Card>
               <CardHeader title="Module Structure" />
               <Divider />
-              <CardContent>
-                <ReoderableDropdown
-                  newItem={newItem}
-                  title={state.name ?? ''}
-                  items={state.syllabus.map((item) => (
-                    newItem(item)
-                  ))}
-                  setItems={items => {
-                    const newStructure = [];
-                    items.map((item) => {
-                      newStructure.push(
-                        {
-                          ...item.item,
-                          syllabus: item.items,
-                        }
-                      )
-                    })
-                    setState({
-                      syllabus: newStructure
-                    })
-                  }}
-                />
-              </CardContent>
+              <ReoderableDropdown
+                className={classes.padding}
+                newItem={newItem}
+                title={state.name ?? ''}
+                items={state.syllabus.map((item) => (
+                  newItem(item)
+                ))}
+                setItems={items => {
+                  setState({ syllabus: items.map(({item}) => item)})
+                }}
+              />
             </Card>
           </Grid>
         </Grid>

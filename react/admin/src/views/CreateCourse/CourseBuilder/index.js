@@ -23,8 +23,14 @@ const useStyles = makeStyles(theme => ({
   heading: {
     margin: theme.spacing(2)
   },
-  structure: {
-    padding: theme.spacing(3)
+  margin: {
+    margin: `${theme.spacing(2)}px 0`,
+  },
+  marginBottom: {
+    marginBottom: '100px',
+  },
+  padding: {
+    padding: theme.spacing(2),
   }
 }));
 
@@ -90,14 +96,13 @@ function useModulesQuery() {
   return cleanResult(data && data.modules, error);
 }
 
-function useSearchQuery(text, filter, page) {
+function useSearchQuery(text, filter) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
       excludeLesson: filter.excludeLesson,
       excludeTest: filter.excludeTest,
       excludeModule: filter.excludeModule,
-      page: page
     }
   });
   return cleanResult(data && data.searchSyllabus, error);
@@ -149,6 +154,7 @@ function CourseBuilder({ state, setState }) {
     component: (
       item.type === 'module' ?
         <ReoderableDropdown
+          className={classes.margin}
           title={item.name}
           onDelete={() => onDelete(item.uuid)}
           items={
@@ -158,6 +164,7 @@ function CourseBuilder({ state, setState }) {
               item: child.item,
               component: (
                 <ReoderableListItem
+                  className={classes.margin}
                   uuid={child.uuid}
                   text={child.name}
                 />
@@ -229,29 +236,18 @@ function CourseBuilder({ state, setState }) {
               }}
             />
           </Grid>
-          <Grid item>
+          <Grid item className={classes.marginBottom}>
             <Card>
               <CardHeader title="Course Structure" />
               <Divider />
-              <CardContent className={classes.structure}>
                 <ReoderableList
-                  multiple
+                  className={classes.padding}
                   newItem={newItem}
                   items={state.syllabus.map(item => newItem(item))}
                   setItems={items => {
-                    const newStructure = [];
-                    items.map((item) => {
-                      newStructure.push(
-                        {
-                          ...item.item,
-                          syllabus: item.items,
-                        }
-                      )
-                    });
-                    setState({ syllabus: newStructure });
+                    setState({ syllabus: items.map(({item}) => item)});
                   }}
                 />
-              </CardContent>
             </Card>
           </Grid>
         </Grid>

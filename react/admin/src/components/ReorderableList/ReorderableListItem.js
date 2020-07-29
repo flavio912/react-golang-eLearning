@@ -16,11 +16,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ReoderableListItem({ uuid, text, onDelete  }) {
+export default function ReoderableListItem({ className, uuid, text, onDelete  }) {
   const classes = useStyles();
 
   return (
-    <ListItem button>
+    <ListItem button className={className}>
       <ListItemIcon>
         <DragHandleIcon />
       </ListItemIcon>

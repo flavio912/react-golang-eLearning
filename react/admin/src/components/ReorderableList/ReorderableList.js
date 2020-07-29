@@ -1,19 +1,11 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/styles';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-
-const useStyles = makeStyles(theme => ({
-  padding: {
-    padding: `${theme.spacing(2)}px 0`
-  },
-}));
 
 /**
  * To allow dragging inside a list, 'newItem' must be provided
  * To allow dragging between lists, a 'uuid' must be provided
  */
-export default function ReoderableList({ multiple, uuid, items, setItems, newItem }) {
-  const classes = useStyles();
+export default function ReoderableList({ className, multiple, uuid, items, setItems, newItem }) {
 
   const getIndices = (list, location, id) => {
     let topIndex, itemIndex, hasItems;
@@ -75,8 +67,9 @@ export default function ReoderableList({ multiple, uuid, items, setItems, newIte
       <Droppable droppableId={uuid ? uuid : 'droppable'}>
         {(provided) => (
             <div
-            {...provided.droppableProps}
-            ref={provided.innerRef}
+              {...provided.droppableProps}
+              ref={provided.innerRef}
+              className={className}
             >
             {items && items.map((item, index) => (
               <Draggable
@@ -85,28 +78,28 @@ export default function ReoderableList({ multiple, uuid, items, setItems, newIte
                 key={item.item ? item.item.uuid : item.uuid}
                 isDragDisabled={newItem === undefined}
               >
-                {(provided) => (
+                {(DraggableProvided) => (
                   <div
-                    className={classes.padding}
-                    ref={provided.innerRef}
-                    {...provided.draggableProps}
-                    {...provided.dragHandleProps}
+                    ref={DraggableProvided.innerRef}
+                    {...DraggableProvided.draggableProps}
+                    {...DraggableProvided.dragHandleProps}
+                    style={DraggableProvided.draggableProps.style}
                   >
                     {multiple ? (
                       <Droppable droppableId={item.item ? item.item.uuid : item.uuid}>
-                        {(provided) => (
+                        {(DroppableProvided) => (
                           <div
-                          {...provided.droppableProps}
-                          ref={provided.innerRef}
+                          {...DroppableProvided.droppableProps}
+                          ref={DroppableProvided.innerRef}
                           >
                             {item.component}
-                            {provided.placeholder}
                           </div>
                         )}
                       </Droppable>
                     ) : (
                       item.component
                     )}
+                    {provided.placeholder}
                   </div>
                 )}
               </Draggable>
