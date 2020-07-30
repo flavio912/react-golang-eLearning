@@ -47,6 +47,12 @@ func NewIndividualResolver(ctx context.Context, args NewIndividualArgs) (*Indivi
 	}
 }
 
+func (i *IndividualResolver) MyCourses(ctx context.Context) (*[]*MyCourseResolver, error) {
+	return NewMyCoursesResolvers(ctx, NewMyCoursesArgs{
+		TakerUUID: &i.Individual.CourseTakerUUID,
+	})
+}
+
 type IndividualPageResolver struct {
 	edges    *[]*IndividualResolver
 	pageInfo *PageInfoResolver
