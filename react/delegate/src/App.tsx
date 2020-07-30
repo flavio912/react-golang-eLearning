@@ -16,6 +16,7 @@ import { Resolver } from 'found-relay';
 import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
 import LoginPage from 'views/Login';
+import FinaliseLogin from 'views/FinaliseLogin';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
@@ -48,6 +49,7 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/(finalise)?" Component={FinaliseLogin} />
       <Route
         path="/app"
         Component={AppHolder}
