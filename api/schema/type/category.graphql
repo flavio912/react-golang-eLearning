@@ -14,3 +14,7 @@ input UpdateCategoryInput {
   name: String
   color: String
 }
+
+input DeleteCategoryInput {
+  uuid: UUID!
+}

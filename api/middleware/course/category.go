@@ -59,3 +59,14 @@ func (c *coursesRepoImpl) UpdateCategory(input gentypes.UpdateCategoryInput) (mo
 
 	return category, nil
 }
+
+func (c *coursesRepoImpl) DeleteCategory(uuid gentypes.UUID) error {
+	err := database.GormDB.Where("uuid = ?", uuid).Delete(models.Category{}).Error
+
+	if err != nil {
+		c.Logger.Log(sentry.LevelError, err, "DeleteCategory: Unable to delete category")
+		return &errors.ErrWhileHandling
+	}
+
+	return nil
+}

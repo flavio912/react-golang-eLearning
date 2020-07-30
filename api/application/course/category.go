@@ -42,3 +42,16 @@ func (c *courseAppImpl) UpdateCategory(input gentypes.UpdateCategoryInput) (gent
 	category, err := c.coursesRepository.UpdateCategory(input)
 	return categoryToGentype(category), err
 }
+
+func (c *courseAppImpl) DeleteCategory(input gentypes.DeleteCategoryInput) error {
+	if !c.grant.IsAdmin {
+		return &errors.ErrUnauthorized
+	}
+
+	err := c.coursesRepository.DeleteCategory(input.UUID)
+	if err != nil {
+		return &errors.ErrDeleteFailed
+	}
+
+	return nil
+}

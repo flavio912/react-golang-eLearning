@@ -30,8 +30,10 @@ type CoursesRepository interface {
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
 	AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error)
+
 	Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error)
 	UpdateCategory(input gentypes.UpdateCategoryInput) (models.Category, error)
+	DeleteCategory(uuid gentypes.UUID) error
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)

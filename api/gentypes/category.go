@@ -23,3 +23,7 @@ func (c *UpdateCategoryInput) Validate() error {
 	_, err := govalidator.ValidateStruct(c)
 	return err
 }
+
+type DeleteCategoryInput struct {
+	UUID UUID
+}

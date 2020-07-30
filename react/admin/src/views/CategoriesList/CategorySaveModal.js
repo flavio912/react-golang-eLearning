@@ -33,7 +33,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: '100%'
   },
   actions: {
-    justifyContent: 'flex-end'
+    justifyContent: 'space-between'
   }
 }));
 
@@ -50,6 +50,12 @@ const UPDATE_CATEGORY = gql`
     updateCategory(input: { uuid: $uuid, name: $name, color: $color }) {
       uuid
     }
+  }
+`;
+
+const DELETE_CATEGORY = gql`
+  mutation DeleteCategory($uuid: UUID!) {
+    deleteCategory(input: { uuid: $uuid })
   }
 `;
 
@@ -91,6 +97,7 @@ function CategorySaveModal({
   );
   const [createCategory, { error: createErr }] = useMutation(CREATE_CATEGORY);
   const [updateCategory, { error: updateErr }] = useMutation(UPDATE_CATEGORY);
+  const [deleteCategory, { error: deleteErr }] = useMutation(DELETE_CATEGORY);
 
   useEffect(() => {
     if (!open) return;
@@ -125,6 +132,23 @@ function CategorySaveModal({
     } catch (err) {}
   };
 
+  const handleDeleteCategory = async event => {
+    if (
+      !window.confirm(
+        `Are you sure you want to delete the '${formState.name}' category?`
+      )
+    )
+      return;
+    try {
+      await deleteCategory({
+        variables: {
+          uuid: categoryUUID
+        }
+      });
+      onSave();
+    } catch (err) {}
+  };
+
   if (loading) {
     return <div></div>;
   }
@@ -132,7 +156,7 @@ function CategorySaveModal({
   return (
     <Modal onClose={onClose} open={open}>
       <Card {...rest} className={clsx(classes.root, className)}>
-        <ErrorModal error={fetchErr || createErr || updateErr} />
+        <ErrorModal error={fetchErr || createErr || updateErr || deleteErr} />
         <form>
           <CardHeader title={`${categoryUUID ? 'Edit' : 'Create'} Category`} />
           <Divider />
@@ -164,16 +188,32 @@ function CategorySaveModal({
           </CardContent>
           <Divider />
           <CardActions className={classes.actions}>
-            <Button onClick={onClose}>Close</Button>
-            <Button
-              color="primary"
-              onClick={
-                categoryUUID ? handleUpdateCategory : handleCreateCategory
-              }
-              variant="contained"
-            >
-              Save
-            </Button>
+            {categoryUUID && (
+              <div>
+                <Button onClick={handleDeleteCategory} variant="outlined">
+                  Delete
+                </Button>
+              </div>
+            )}
+
+            <div className={classes.actions}>
+              <Grid container spacing={2}>
+                <Grid item>
+                  <Button onClick={onClose}>Close</Button>
+                </Grid>
+                <Grid item>
+                  <Button
+                    color="primary"
+                    onClick={
+                      categoryUUID ? handleUpdateCategory : handleCreateCategory
+                    }
+                    variant="contained"
+                  >
+                    Save
+                  </Button>
+                </Grid>
+              </Grid>
+            </div>
           </CardActions>
         </form>
       </Card>
