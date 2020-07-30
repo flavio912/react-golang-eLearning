@@ -29,6 +29,7 @@ import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
 import Test from 'views/Test/Test';
 import { SideModalProvider } from 'views/SideModalProvider';
+import RecoverPassword from 'views/RecoverPassword/RecoverPassword';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -49,6 +50,7 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/(password)?" Component={RecoverPassword} />
       <Route path="/(finalise)?" Component={FinaliseLogin} />
       <Route
         path="/app"

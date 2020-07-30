@@ -5,7 +5,7 @@ import FancyButton from './FancyButton';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import { ReactComponent as Logo } from '../../assets/logo/ttc-logo.svg';
-import { Link } from 'react-router-dom';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   loginDialogueRoot: {},
   root: {
@@ -21,7 +21,6 @@ const useStyles = createUseStyles((theme: Theme) => ({
     height: 70
   },
   heading: {
-    fontSize: 25,
     fontWeight: 800,
     color: theme.colors.primaryBlack
   },
@@ -33,13 +32,14 @@ const useStyles = createUseStyles((theme: Theme) => ({
     marginBottom: theme.spacing(2)
   },
   link: {
+    cursor: 'pointer',
     margin: '22px 0 19px 0',
     textAlign: 'center',
     color: theme.colors.textBlue,
     fontSize: theme.fontSizes.small
   },
   errMessage: {
-    color: theme.colors.secondaryDanger,
+    color: '#43454a',
     fontWeight: 200,
     fontSize: 15,
     textAlign: 'center',
@@ -48,24 +48,21 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  email: string;
+  onBack: () => void;
   onSubmit: (
     email: string,
-    password: string,
-    passwordRepeat: string,
     errorCallback: (err: string) => void
   ) => void;
 };
 
-function FinaliseDialogue({ email, onSubmit }: Props) {
+function PasswordDialogue({ onBack, onSubmit }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
-  const [password, setPassword] = React.useState('');
-  const [passwordRepeat, setPasswordRepeat] = React.useState('');
+  const [email, setEmail] = React.useState('');
   const [error, setError] = React.useState('');
-  const onLogin = () => {
-    onSubmit(email, password, passwordRepeat, (err) => {
+  const onRecover = () => {
+    onSubmit(email, (err) => {
       setError(err);
     });
   };
@@ -75,41 +72,31 @@ function FinaliseDialogue({ email, onSubmit }: Props) {
         <div className={classes.logoContainer}>
           <Logo className={classes.logo} />
         </div>
-        <h1 className={classes.heading}>Finalise your account</h1>
+        <h1 className={classes.heading}>Password recovery</h1>
         <p className={classes.subheading}>
-          Please enter your new password
+          Please enter your e-mail address below to recover your password
         </p>
+        <p className={classes.errMessage}>{error}</p>
         <form
           onSubmit={(evt) => {
             evt.preventDefault();
-            onLogin();
+            onRecover();
           }}
         >
           <FancyInput
             label="Email"
             labelColor={'#5CC301'}
             type={'text'}
-            placeholder={email}
-            disabled
+            onChange={setEmail}
           />
-          <FancyInput
-            label="New Password"
-            labelColor={'#5CC301'}
-            type={'password'}
-            onChange={setPassword}
-          />
-          <FancyInput
-            label="New Password Repeated"
-            labelColor={'#5CC301'}
-            type={'password'}
-            onChange={setPasswordRepeat}
-          />
-          <p className={classes.errMessage}>{error}</p>
-          <FancyButton text="Save and Login" onClick={onLogin} />
+          <FancyButton text="Recover password" onClick={onRecover} />
         </form>
+        <a className={classes.link} onClick={onBack}>
+          Back
+        </a>
       </Card>
     </div>
   );
 }
 
-export default FinaliseDialogue;
+export default PasswordDialogue;
