@@ -361,6 +361,26 @@ func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Inpu
 	})
 }
 
+func (m *MutationResolver) UpdateCategory(ctx context.Context, args struct{ Input gentypes.UpdateCategoryInput }) (*CategoryResolver, error) {
+	app := auth.AppFromContext(ctx)
+	category, err := app.CourseApp.UpdateCategory(args.Input)
+	if err != nil {
+		return &CategoryResolver{}, err
+	}
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		Category: category,
+	})
+}
+
+func (m *MutationResolver) DeleteCategory(ctx context.Context, args struct{ Input gentypes.DeleteCategoryInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	err := app.CourseApp.DeleteCategory(args.Input)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input gentypes.CreateLessonInput }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {

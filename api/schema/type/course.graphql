@@ -114,17 +114,6 @@ type Tag {
   color: String!
 }
 
-type Category {
-  uuid: UUID
-  name: String!
-  color: String!
-}
-
-input CreateCategoryInput {
-  name: String!
-  color: String!
-}
-
 input PurchaseCoursesInput {
   courses: [Int!]!
   users: [UUID!] # List of delegates UUIDs

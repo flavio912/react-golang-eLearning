@@ -118,6 +118,11 @@ export default [
         component: lazy(() => import('src/views/OrderManagementDetails'))
       },
       {
+        path: '/categories',
+        exact: true,
+        component: lazy(() => import('src/views/CategoriesList'))
+      },
+      {
         path: '/admins',
         exact: true,
         component: lazy(() => import('src/views/AdminsList'))

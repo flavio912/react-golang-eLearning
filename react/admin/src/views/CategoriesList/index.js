@@ -1,13 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container, Link } from '@material-ui/core';
+import { Container, Button } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Link as RouterLink } from 'react-router-dom';
 import Page from 'src/components/Page';
-import SearchBar from 'src/components/SearchBar';
 import Results from 'src/components/Results';
 import Header from './Header';
+import CategorySaveModal from './CategorySaveModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,26 +16,19 @@ const useStyles = makeStyles(theme => ({
   results: {
     marginTop: theme.spacing(3)
   },
-  imageContainer: {
-    display: 'flex',
-    justifyContent: 'left'
-  },
-  image: {
-    maxWidth: 200,
-    width: 'auto',
-    maxHeight: 70,
-    height: 'auto'
+  colorBox: {
+    width: 60,
+    height: 30
   }
 }));
 
-const GET_TUTORS = gql`
-  query GetTutors($page: Page, $filter: TutorFilter, $orderBy: OrderBy) {
-    tutors(page: $page, filter: $filter, orderBy: $orderBy) {
+const GET_CATEGORIES = gql`
+  query GetCategories($name: String, $page: Page) {
+    categories(text: $name, page: $page) {
       edges {
         uuid
         name
-        cin
-        signatureURL
+        color
       }
       pageInfo {
         total
@@ -48,27 +40,25 @@ const GET_TUTORS = gql`
   }
 `;
 
-function TutorsList({ match, history }) {
+function CategoriesList() {
   const classes = useStyles();
-  const [searchText, setSearchText] = React.useState('');
+
+  const [modal, setModal] = React.useState({
+    open: false,
+    categoryUUID: undefined
+  });
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { error, data } = useQuery(GET_TUTORS, {
+  const { error, data, refetch } = useQuery(GET_CATEGORIES, {
     variables: {
       page: {
         offset: page,
         limit: rowsPerPage
-      },
-      filter: {
-        name: searchText
-      },
-      orderBy: {
-        ascending: true,
-        field: 'name'
       }
     },
     fetchPolicy: 'cache-and-network'
   });
+
   if (error) return <div>{error.message}</div>;
 
   // Results methods
@@ -81,56 +71,60 @@ function TutorsList({ match, history }) {
   };
 
   // Results table
-  const headers = ['User', 'CIN Number', 'Signature URL'];
+  const headers = ['Name', 'Color', 'Actions'];
   const cells = [
+    {
+      field: 'name'
+    },
     {
       component: result => (
         <div>
-          <Link
-            color="inherit"
-            component={RouterLink}
-            to={`/tutors/${result.uuid}/overview`}
-            variant="h6"
-          >
-            {result.name}
-          </Link>
+          <div
+            style={{ backgroundColor: result.color }}
+            className={classes.colorBox}
+          ></div>
         </div>
       )
     },
-    { field: 'cin' },
     {
       component: result => (
-        <div className={classes.imageContainer}>
-          <img
-            alt="Signature"
-            className={classes.image}
-            src={result.signatureURL}
-          />
-        </div>
+        <Button
+          variant={'outlined'}
+          size="small"
+          color="primary"
+          onClick={() => setModal({ open: true, categoryUUID: result.uuid })}
+        >
+          Edit
+        </Button>
       )
     }
   ];
 
   return (
-    <Page className={classes.root} title="Tutors">
+    <Page className={classes.root} title="Categories">
       <Container maxWidth={false}>
-        <Header
-          onAdd={() => {
-            history.push('/tutor/create/overview');
-          }}
-        />
-        <SearchBar setSearchText={setSearchText} />
+        <Header onAddCategory={() => setModal({ open: true })} />
         <Results
           className={classes.results}
-          results={data?.tutors}
+          results={data?.categories}
           headers={headers}
           cells={cells}
+          noPagination
           handleChangePage={handleChangePage}
           handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
+        <CategorySaveModal
+          onClose={() => setModal({ open: false })}
+          onSave={() => {
+            setModal({ open: false });
+            refetch();
+          }}
+          categoryUUID={modal.categoryUUID}
+          open={modal.open}
         />
       </Container>
     </Page>
   );
 }
 
-export default TutorsList;
+export default CategoriesList;
