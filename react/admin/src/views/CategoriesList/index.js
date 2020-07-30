@@ -1,12 +1,9 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container, Avatar, Link, Button } from '@material-ui/core';
+import { Container, Button } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
-import { Link as RouterLink } from 'react-router-dom';
-import moment from 'moment';
 import Page from 'src/components/Page';
-import SearchBar from 'src/components/SearchBar';
 import Results from 'src/components/Results';
 import Header from './Header';
 import CategorySaveModal from './CategorySaveModal';
@@ -63,11 +60,6 @@ function CategoriesList() {
   });
 
   if (error) return <div>{error.message}</div>;
-
-  const handleNewIndividual = data => {
-    if (!data.createIndividual) return;
-    refetch();
-  };
 
   // Results methods
   const handleChangePage = (event, page) => {

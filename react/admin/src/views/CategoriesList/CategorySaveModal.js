@@ -84,7 +84,7 @@ function CategorySaveModal({
 }) {
   const classes = useStyles();
 
-  const { data, error: fetchErr, refetch, loading } = useQuery(GET_CATEGORY, {
+  const { data, error: fetchErr, loading } = useQuery(GET_CATEGORY, {
     variables: {
       uuid: categoryUUID
     },
@@ -103,7 +103,7 @@ function CategorySaveModal({
     if (!open) return;
 
     setFormState(categoryUUID && !loading ? data.category : initialState);
-  }, [open, categoryUUID, loading]);
+  }, [open, categoryUUID, loading, data]);
 
   const handleCreateCategory = async event => {
     event.preventDefault();
