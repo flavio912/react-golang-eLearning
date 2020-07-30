@@ -5,13 +5,13 @@ import {
   CardHeader,
   CardContent,
   Divider,
-  TextField,
+  TextField
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
 import UploadFile from 'src/components/UploadFile';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
   },
@@ -78,7 +78,7 @@ function Overview({ state, setState }) {
                         label="Tutor Name"
                         value={state.name}
                         variant="outlined"
-                        onChange={(inp) => {
+                        onChange={inp => {
                           setState({ name: inp.target.value });
                         }}
                       />
@@ -89,7 +89,7 @@ function Overview({ state, setState }) {
                         label="CIN Number"
                         value={state.cin}
                         variant="outlined"
-                        onChange={(inp) => {
+                        onChange={inp => {
                           setState({ cin: inp.target.value });
                         }}
                       />
@@ -108,7 +108,7 @@ function Overview({ state, setState }) {
               {state.signatureURL && (
                 <img
                   src={state.signatureURL}
-                  className={classes.preview}
+                  className={classes.previewImage}
                   alt="preview"
                 />
               )}

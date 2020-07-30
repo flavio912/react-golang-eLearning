@@ -81,7 +81,7 @@ function TutorsList({ match, history }) {
   };
 
   // Results table
-  const headers = ['User', 'CIN Number', 'Signature URL'];
+  const headers = ['User', 'CIN Number', 'Signature'];
   const cells = [
     {
       component: result => (
