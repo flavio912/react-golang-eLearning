@@ -53,11 +53,11 @@ function TutorsList() {
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const { error, data, refetch } = useQuery(GET_TUTORS, {
+  const { error, data } = useQuery(GET_TUTORS, {
     variables: {
       page: {
         offset: page,
-        limit: rowsPerPage,
+        limit: rowsPerPage
       },
       filter: {
         name: searchText
@@ -102,7 +102,7 @@ function TutorsList() {
       component: result => (
         <div className={classes.imageContainer}>
           <img
-            alt="Signature Image"
+            alt="Signature"
             className={classes.image}
             src={result.signatureURL}
           />
