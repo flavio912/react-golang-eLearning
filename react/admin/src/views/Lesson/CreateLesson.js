@@ -16,13 +16,13 @@ const CREATE_LESSON = gql`
   ) {
     createLesson(
       input: {
-        name: $name,
-        tags: $tags,
-        description: $description,
-        bannerImageToken: $bannerImageToken,
-        voiceoverToken: $voiceoverToken,
-        transcript: $transcript,
-        video: $video,
+        name: $name
+        tags: $tags
+        description: $description
+        bannerImageToken: $bannerImageToken
+        voiceoverToken: $voiceoverToken
+        transcript: $transcript
+        video: $video
       }
     ) {
       uuid
@@ -45,7 +45,7 @@ function CreateLesson({ match, history }) {
     bannerImageToken: undefined,
     voiceoverToken: undefined,
     transcript: '',
-    video: { type: 'WISTIA', url: '' },
+    video: { type: 'WISTIA', url: '' }
   };
 
   const [state, setState] = useState(initState);
@@ -65,7 +65,6 @@ function CreateLesson({ match, history }) {
       const res = await createLesson({
         variables: {
           name: state.name,
-          name: state.name,
           type: state.type,
           complete: state.complete,
           description: state.description,
@@ -73,7 +72,7 @@ function CreateLesson({ match, history }) {
           bannerImageURL: state.bannerImageURL,
           voiceoverURL: state.voiceoverURL,
           transcript: state.transcript,
-          video: state.video,
+          video: state.video
         }
       });
       if (res.data?.createLesson?.uuid) {

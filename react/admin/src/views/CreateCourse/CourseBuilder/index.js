@@ -24,13 +24,13 @@ const useStyles = makeStyles(theme => ({
     margin: theme.spacing(2)
   },
   margin: {
-    margin: `${theme.spacing(2)}px 0`,
+    margin: `${theme.spacing(2)}px 0`
   },
   marginBottom: {
-    marginBottom: '100px',
+    marginBottom: '100px'
   },
   padding: {
-    padding: theme.spacing(2),
+    padding: theme.spacing(2)
   }
 }));
 
@@ -89,7 +89,7 @@ const cleanResult = (data, error) => {
   }));
 
   return resultItems;
-}
+};
 
 function useModulesQuery() {
   const { error, data } = useQuery(GET_MODULES);
@@ -102,7 +102,7 @@ function useSearchQuery(text, filter) {
       name: text,
       excludeLesson: filter.excludeLesson,
       excludeTest: filter.excludeTest,
-      excludeModule: filter.excludeModule,
+      excludeModule: filter.excludeModule
     }
   });
   return cleanResult(data && data.searchSyllabus, error);
@@ -130,7 +130,8 @@ function CourseBuilder({ state, setState }) {
       // Add module syllabus and name
       if (element.type === 'module' && element.syllabus === undefined) {
         const module = resultItems.find(x => x.uuid === element.uuid);
-        const index = module && state.syllabus.findIndex(x => x.uuid === module.uuid);
+        const index =
+          module && state.syllabus.findIndex(x => x.uuid === module.uuid);
         if (index > -1) {
           const syllabus = [...state.syllabus];
           syllabus[index] = module;
@@ -138,21 +139,21 @@ function CourseBuilder({ state, setState }) {
         }
       }
     });
-  }, [resultItems]);
+  }, [resultItems, setState, state]);
 
-  const onDelete = (uuid) => {
+  const onDelete = uuid => {
     const newStructure = [...state.syllabus];
     const index = state.syllabus.findIndex(x => x.uuid === uuid);
     newStructure.splice(index, 1);
     setState({ syllabus: newStructure });
   };
 
-  const newItem = (item) => ({
+  const newItem = item => ({
     uuid: item.uuid,
     item,
     items: item.syllabus ? item.syllabus : [],
-    component: (
-      item.type === 'module' ?
+    component:
+      item.type === 'module' ? (
         <ReoderableDropdown
           className={classes.margin}
           title={item.name}
@@ -172,14 +173,14 @@ function CourseBuilder({ state, setState }) {
             }))
           }
         />
-      :
+      ) : (
         <ReoderableListItem
           uuid={item.uuid}
           text={item.name}
           onDelete={onDelete}
         />
-    )
-  })
+      )
+  });
 
   return (
     <div className={classes.root}>
@@ -213,9 +214,12 @@ function CourseBuilder({ state, setState }) {
                   setSearchFilters={setSearchFilters}
                   searchResults={searchResults}
                   setSearchText={setSearchText}
-                  onChange={(item) => {
+                  onChange={item => {
                     // No duplicates
-                    if (module && !state.syllabus.find(x => x.uuid === item.uuid)) {
+                    if (
+                      module &&
+                      !state.syllabus.find(x => x.uuid === item.uuid)
+                    ) {
                       setState({ syllabus: [...state.syllabus, item] });
                     }
                   }}
@@ -227,10 +231,13 @@ function CourseBuilder({ state, setState }) {
             <SuggestedTable
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
-              onAdd={(module) => {
+              onAdd={module => {
                 const toAdd = resultItems.find(x => x.uuid === module.uuid);
                 // No duplicates
-                if (module && !state.syllabus.find(x => x.uuid === module.uuid)) {
+                if (
+                  module &&
+                  !state.syllabus.find(x => x.uuid === module.uuid)
+                ) {
                   setState({ syllabus: [...state.syllabus, toAdd] });
                 }
               }}
@@ -240,14 +247,14 @@ function CourseBuilder({ state, setState }) {
             <Card>
               <CardHeader title="Course Structure" />
               <Divider />
-                <ReoderableList
-                  className={classes.padding}
-                  newItem={newItem}
-                  items={state.syllabus.map(item => newItem(item))}
-                  setItems={items => {
-                    setState({ syllabus: items.map(({item}) => item)});
-                  }}
-                />
+              <ReoderableList
+                className={classes.padding}
+                newItem={newItem}
+                items={state.syllabus.map(item => newItem(item))}
+                setItems={items => {
+                  setState({ syllabus: items.map(({ item }) => item) });
+                }}
+              />
             </Card>
           </Grid>
         </Grid>
