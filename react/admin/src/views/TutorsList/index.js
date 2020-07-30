@@ -48,7 +48,7 @@ const GET_TUTORS = gql`
   }
 `;
 
-function TutorsList() {
+function TutorsList({ match, history }) {
   const classes = useStyles();
   const [searchText, setSearchText] = React.useState('');
   const [page, setPage] = React.useState(0);
@@ -81,7 +81,7 @@ function TutorsList() {
   };
 
   // Results table
-  const headers = ['User', 'CIN Number', 'Signature URL'];
+  const headers = ['User', 'CIN Number', 'Signature'];
   const cells = [
     {
       component: result => (
@@ -114,7 +114,11 @@ function TutorsList() {
   return (
     <Page className={classes.root} title="Tutors">
       <Container maxWidth={false}>
-        <Header />
+        <Header
+          onAdd={() => {
+            history.push('/tutor/create/overview');
+          }}
+        />
         <SearchBar setSearchText={setSearchText} />
         <Results
           className={classes.results}

@@ -4,11 +4,16 @@ import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import { Grid, Typography, Button } from '@material-ui/core';
 
-const useStyles = makeStyles(() => ({
-  root: {}
+const useStyles = makeStyles((theme) => ({
+  root: {},
+  publish: {
+    marginLeft: theme.spacing(2)
+  }
 }));
 
-function Header({ className, onAdd, ...rest }) {
+function Header({
+  className, onSave, title, ...rest
+}) {
   const classes = useStyles();
 
   return (
@@ -16,15 +21,15 @@ function Header({ className, onAdd, ...rest }) {
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
           <Typography component="h2" gutterBottom variant="overline">
-            Courses
+            Tutors
           </Typography>
           <Typography component="h1" variant="h3">
-            Tutors
+            {title}
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained" onClick={onAdd}>
-            Add tutor
+          <Button color="primary" variant="contained" onClick={onSave}>
+            Save Tutor
           </Button>
         </Grid>
       </Grid>
@@ -34,7 +39,8 @@ function Header({ className, onAdd, ...rest }) {
 
 Header.propTypes = {
   className: PropTypes.string,
-  onAdd: PropTypes.func
+  onSave: PropTypes.func,
+  title: PropTypes.string
 };
 
 export default Header;
