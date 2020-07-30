@@ -16,6 +16,11 @@ import ExpandableListView, {
   ExpandItemType,
 } from 'components/Misc/ExpandableListView';
 import PageMargin from 'components/core/PageMargin';
+import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
+import { Courses_courses } from './__generated__/Courses_courses.graphql';
+import { Courses_category } from './__generated__/Courses_category.graphql';
+import environment from 'api/environment';
+import { CoursesQueryResponse } from './__generated__/CoursesQuery.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
@@ -102,28 +107,6 @@ const defaultImagePanels: Panel[] = [
   },
 ];
 
-const defaultCourseItem: CourseProps = {
-  title: 'Cargo Manager (CM) – VC, HS, XRY, EDS',
-  description:
-    'We have over 100 Aviation Security Courses lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-  price: '£310.00',
-  type: 'Regulated Agents',
-  colour: '#8C1CB4',
-  imageURL: require('assets/SampleImage_ClassroomCoursesDetail_Feat.png'),
-  viewCourse: () => {
-    window.location.href = '/course';
-  },
-  addToBasket: () => console.log('Add to Basket'),
-};
-
-const defaultCourseItems: CourseProps[] = [
-  defaultCourseItem,
-  defaultCourseItem,
-  defaultCourseItem,
-  defaultCourseItem,
-  defaultCourseItem,
-];
-
 const defaultStack: Row[] = [
   {
     iconName: 'CourseCertificates',
@@ -180,22 +163,85 @@ const FAQFive: ExpandItemType = {
   isExpanded: false,
 };
 
-type Props = {};
+const getMore = async (categoryUUID: string, offset: number) => {
+  const query = graphql`
+    query CoursesQuery($categoryUUID: UUID, $offset: Int!) {
+      courses(
+        filter: { categoryUUID: $categoryUUID }
+        page: { limit: 5, offset: $offset }
+      ) {
+        edges {
+          ident: id
+          name
+          price
+          excerpt
+          introduction
+          bannerImageURL
+        }
+        pageInfo {
+          total
+          offset
+          limit
+          given
+        }
+      }
+    }
+  `;
 
-function Courses({}: Props) {
+  const variables = {
+    offset,
+    categoryUUID,
+  };
+
+  const data = (await fetchQuery(environment, query, variables)) as {
+    courses: Courses_courses;
+  };
+
+  if (!data || !data.courses || !data.courses.edges || !data.courses.pageInfo) {
+    console.error('Could not get data', data);
+    return undefined;
+  }
+
+  return data.courses;
+};
+
+type Props = {
+  courses: Courses_courses;
+  category: Courses_category;
+};
+
+function Courses({ courses, category }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
+  const [currentCourses, setCourses] = React.useState<Courses_courses['edges']>(
+    courses.edges,
+  );
   const [selectedTab, setSelectedTab] = React.useState(defaultTabs[0]);
+
+  React.useEffect(() => {
+    setCourses(courses.edges);
+  }, [courses]);
+
+  const courseItems = (currentCourses || []).map((course) => ({
+    title: course?.name ?? '',
+    description: course?.excerpt ?? '',
+    price: `£${course?.price}`,
+    type: category.name,
+    colour: category.color,
+    imageURL: course?.bannerImageURL ?? '',
+    viewCourse: () => {},
+    addToBasket: () => {},
+  }));
 
   return (
     <div className={classes.courseRoot}>
       <PageHeader
-        title="Aviation Security Courses"
+        title={`${category.name} Courses`}
         description="Aviation security is a combination of human and material resources to safeguard civil aviation against unlawful interference. Unlawful interference could be acts of terrorism, sabotage, threat to life and property, communication of false threat, bombing, etc."
         archetype="buttons"
         buttons={defaultButtons}
-        history={['Courses', 'Aviation Security']}
+        history={['Courses', category.name]}
       />
       <Spacer spacing={4} vertical />
       <PageMargin>
@@ -208,28 +254,36 @@ function Courses({}: Props) {
           noBorders
         />
         <div className={classes.margin}>
-          <div className={classes.heading}>
-            Explore Aviation Security Courses
-          </div>
+          <div className={classes.heading}>Explore {category.name} Courses</div>
           <div className={classes.text}>
-            We have over 100 Aviation Security Courses lorem ipsum dolor sit
-            amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-            ut labore et dolore magna aliqua
+            We have over 100 {category.name} Courses lorem ipsum dolor sit amet,
+            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+            labore et dolore magna aliqua
           </div>
         </div>
       </PageMargin>
       <CourseSearch
         className={classes.courseSearch}
         tabs={defaultTabs}
-        courses={defaultCourseItems}
+        courses={courseItems}
         selectedTab={selectedTab}
         onChangeTab={(tab: Tab) => setSelectedTab(tab)}
-        moreToShow={true}
-        onMore={() => console.log('More')}
+        moreToShow={courses.pageInfo?.total != currentCourses?.length}
+        totalCourses={courses.pageInfo?.total}
+        onMore={async () => {
+          const more = await getMore(
+            category.uuid ?? '',
+            (currentCourses ?? []).length,
+          );
+          if (more) {
+            if (!currentCourses || !more.edges) return;
+            setCourses([...currentCourses, ...more.edges]);
+          }
+        }}
       />
       <PageMargin>
         <div className={classNames(classes.heading, classes.margin)}>
-          Frequently Asked Questions about Aviation Security
+          Frequently Asked Questions about {category.name}
         </div>
         <ExpandableListView
           data={[FAQOne, FAQTwo, FAQThree, FAQFour, FAQFive]}
@@ -260,4 +314,30 @@ function Courses({}: Props) {
   );
 }
 
-export default Courses;
+export default createFragmentContainer(Courses, {
+  courses: graphql`
+    fragment Courses_courses on CoursePage {
+      edges {
+        ident: id
+        name
+        price
+        excerpt
+        introduction
+        bannerImageURL
+      }
+      pageInfo {
+        total
+        offset
+        limit
+        given
+      }
+    }
+  `,
+  category: graphql`
+    fragment Courses_category on Category {
+      uuid
+      name
+      color
+    }
+  `,
+});

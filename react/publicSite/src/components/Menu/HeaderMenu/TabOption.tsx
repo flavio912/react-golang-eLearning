@@ -7,7 +7,7 @@ import Icon from 'sharedComponents/core/Icon';
 const useStyles = createUseStyles((theme: Theme) => ({
   tabRoot: {
     position: 'absolute',
-    top: '75px'
+    top: '75px',
   },
   offset: {
     top: '-75px',
@@ -23,23 +23,23 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundColor: theme.colors.primaryWhite,
     paddingTop: '5px',
     paddingbottom: '5px',
-    boxShadow: '0px 3px 10px #0000001f'
+    boxShadow: '0px 3px 10px #0000001f',
   },
   tabOption: {
-    margin: '20px'
+    margin: '20px',
   },
   selectedOption: {
-    opacity: 0.5
+    opacity: 0.5,
   },
   tabTitle: {
     fontSize: theme.fontSizes.large,
     fontWeight: '500',
-    marginBottom: '5px'
+    marginBottom: '5px',
   },
   tabText: {
     fontSize: theme.fontSizes.small,
     fontWeight: '400',
-    color: theme.colors.textGrey
+    color: theme.colors.textGrey,
   },
   tab: {
     fontFamily: 'Muli',
@@ -50,16 +50,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   title: {
     fontSize: theme.fontSizes.large,
-    fontWeight: 300
-  }
+    fontWeight: 300,
+  },
 }));
 
 export interface Tab {
-  id: number;
+  id: number | string;
   title: string;
   text?: string;
   link?: string;
@@ -77,39 +77,47 @@ function TabOption({ tab, selected, setSelected, onClick }: Props) {
   const classes = useStyles();
 
   const OptionDropdown = (options: Tab[], offset?: boolean) => (
-    <div className={classes.tabRoot}> 
+    <div className={classes.tabRoot}>
       <div
-        className={classNames(
-          classes.tabDropdown,
-          offset && classes.offset
-        )}
+        className={classNames(classes.tabDropdown, offset && classes.offset)}
       >
-        {options && options.map((option) => (
-          Option(option)
-        ))}
+        {options && options.map((option) => Option(option))}
       </div>
     </div>
   );
 
-  const Option = ({id, title, text, link, options}: Tab) => React.createElement(() => {
-    const [selected, setSelected] = React.useState(false);
-    return (
-      <div
-        key={id}
-        className={classes.tabOption}
-        onClick={() => {
-          link && onClick(link);
-          options && setSelected(!selected);
-        }}
-      >
-        <div className={classNames(classes.tabTitle, selected && classes.selectedOption)}>{title}</div>
-        <div className={classNames(classes.tabText, selected && classes.selectedOption)}>{text}</div>
-        {selected && options && (
-          OptionDropdown(options, true)
-        )}
-      </div>
-    )
-  });
+  const Option = ({ id, title, text, link, options }: Tab) =>
+    React.createElement(() => {
+      const [selected, setSelected] = React.useState(false);
+      return (
+        <div
+          key={id}
+          className={classes.tabOption}
+          onClick={() => {
+            link && onClick(link);
+            options && setSelected(!selected);
+          }}
+        >
+          <div
+            className={classNames(
+              classes.tabTitle,
+              selected && classes.selectedOption,
+            )}
+          >
+            {title}
+          </div>
+          <div
+            className={classNames(
+              classes.tabText,
+              selected && classes.selectedOption,
+            )}
+          >
+            {text}
+          </div>
+          {selected && options && OptionDropdown(options, true)}
+        </div>
+      );
+    });
 
   return (
     <div key={tab.id} className={classes.tab}>
@@ -134,9 +142,10 @@ function TabOption({ tab, selected, setSelected, onClick }: Props) {
           style={{ cursor: 'pointer', marginLeft: '5px' }}
         />
       )}
-      {selected && tab.id === selected.id && tab.options && (
-        OptionDropdown(tab.options)
-      )}
+      {selected &&
+        tab.id === selected.id &&
+        tab.options &&
+        OptionDropdown(tab.options)}
     </div>
   );
 }

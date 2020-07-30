@@ -26,7 +26,10 @@ type CourseApp interface {
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+
 	Categories(page *gentypes.Page, text *string) ([]gentypes.Category, gentypes.PageInfo, error)
+	UpdateCategory(input gentypes.UpdateCategoryInput) (gentypes.Category, error)
+	DeleteCategory(input gentypes.DeleteCategoryInput) error
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
 	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)
@@ -42,6 +45,7 @@ type CourseApp interface {
 	) ([]gentypes.Lesson, gentypes.PageInfo, error)
 	UpdateLesson(input gentypes.UpdateLessonInput) (gentypes.Lesson, error)
 	DeleteLesson(input gentypes.DeleteLessonInput) (bool, error)
+	LessonBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
 	Test(testUUID gentypes.UUID) (gentypes.Test, error)
 	Tests(
@@ -95,7 +99,6 @@ type CourseApp interface {
 		filter *gentypes.CertificateTypeFilter) ([]gentypes.CertificateType, gentypes.PageInfo, error)
 	CreateCertificateType(input gentypes.CreateCertificateTypeInput) (gentypes.CertificateType, error)
 	UpdateCertificateType(input gentypes.UpdateCertificateTypeInput) (gentypes.CertificateType, error)
-	CertificateInfo(token string) (gentypes.CertficateInfo, error)
 	CAANumbers(
 		page *gentypes.Page,
 		filter *gentypes.CAANumberFilter) ([]gentypes.CAANumber, gentypes.PageInfo, error)
@@ -103,10 +106,18 @@ type CourseApp interface {
 	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
 	CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
+	Tutor(uuid gentypes.UUID) (gentypes.Tutor, error)
+	Tutors(
+		page *gentypes.Page,
+		filter *gentypes.TutorFilter,
+		order *gentypes.OrderBy) ([]gentypes.Tutor, gentypes.PageInfo, error)
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
 	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	UpdateTutorSignature(input gentypes.UpdateTutorSignatureInput) (string, error)
+
+	CertificateInfo(token string) (gentypes.CertficateInfo, error)
+	RegenerateCertificate(historicalCourseUUID gentypes.UUID) error
 }
 
 type courseAppImpl struct {

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import clsx from 'clsx';
-import moment from 'moment';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import {
@@ -9,12 +8,12 @@ import {
   CardActions,
   Table,
   TableBody,
-  Link,
   TableCell,
-  Avatar,
   TablePagination,
   TableHead,
-  TableRow
+  TableRow,
+  Button,
+  Link
 } from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
@@ -56,11 +55,13 @@ const useStyles = makeStyles(theme => ({
     height: 42,
     width: 42,
     marginRight: theme.spacing(2)
-  }
+  },
+  moduleName: {}
 }));
 
-function Results({ individuals, className, ...rest }) {
+function Results({ className, companies, onApprove, ...rest }) {
   const classes = useStyles();
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -72,41 +73,39 @@ function Results({ individuals, className, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
-  const resultsPerPage = (offset) => (page + offset) * rowsPerPage;
-  const results = individuals.slice(resultsPerPage(0), resultsPerPage(1));
-
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell>Email</TableCell>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
-            <TableCell>Created At</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Actions</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {results && results.map(individual => (
-            <TableRow key={individual.uuid}>
-              <TableCell>
-                <div className={classes.nameCell}>
-                  <Avatar className={classes.avatar} src={individual.logo}>
-                    {/* {getInitials(individual.fullName)} */}
-                  </Avatar>
-                  <Link
-                    color="inherit"
-                    component={RouterLink}
-                    to={`/individuals/${individual.uuid}/overview`}
-                    variant="h6"
-                  >
-                    {individual.email}
-                  </Link>
-                </div>
+          {companies.map(company => (
+            <TableRow key={company.uuid}>
+              <TableCell className={classes.name}>
+                <Link
+                  color="inherit"
+                  component={RouterLink}
+                  to={`/companies/${company.uuid}`}
+                  variant="h6"
+                >
+                  {company.name}
+                </Link>
               </TableCell>
-              <TableCell>{individual.firstName}</TableCell>
-              <TableCell>{individual.lastName}</TableCell>
-              <TableCell>{moment(individual.createdAt).format('LLL')}</TableCell>
+              <TableCell>
+                <Button
+                  color="primary"
+                  component={RouterLink}
+                  size="small"
+                  onClick={() => onApprove(company.uuid)}
+                  variant="outlined"
+                >
+                  Approve
+                </Button>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -114,7 +113,7 @@ function Results({ individuals, className, ...rest }) {
       <CardActions className={classes.actions}>
         <TablePagination
           component="div"
-          count={individuals.length}
+          count={companies.length}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           page={page}
@@ -128,7 +127,7 @@ function Results({ individuals, className, ...rest }) {
 
 Results.propTypes = {
   className: PropTypes.string,
-  avatars: PropTypes.array.isRequired
+  companies: PropTypes.object
 };
 
 export default Results;

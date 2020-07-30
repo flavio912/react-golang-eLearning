@@ -346,18 +346,18 @@ func (_m *CoursesRepository) CreateClassroomCourse(courseInfo gentypes.SaveClass
 }
 
 // CreateLesson provides a mock function with given fields: lesson
-func (_m *CoursesRepository) CreateLesson(lesson gentypes.CreateLessonInput) (models.Lesson, error) {
+func (_m *CoursesRepository) CreateLesson(lesson course.CreateLessonInput) (models.Lesson, error) {
 	ret := _m.Called(lesson)
 
 	var r0 models.Lesson
-	if rf, ok := ret.Get(0).(func(gentypes.CreateLessonInput) models.Lesson); ok {
+	if rf, ok := ret.Get(0).(func(course.CreateLessonInput) models.Lesson); ok {
 		r0 = rf(lesson)
 	} else {
 		r0 = ret.Get(0).(models.Lesson)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.CreateLessonInput) error); ok {
+	if rf, ok := ret.Get(1).(func(course.CreateLessonInput) error); ok {
 		r1 = rf(lesson)
 	} else {
 		r1 = ret.Error(1)
@@ -492,6 +492,20 @@ func (_m *CoursesRepository) CreateTutor(details gentypes.CreateTutorInput) (mod
 	return r0, r1
 }
 
+// DeleteCategory provides a mock function with given fields: uuid
+func (_m *CoursesRepository) DeleteCategory(uuid gentypes.UUID) error {
+	ret := _m.Called(uuid)
+
+	var r0 error
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) error); ok {
+		r0 = rf(uuid)
+	} else {
+		r0 = ret.Error(0)
+	}
+
+	return r0
+}
+
 // DeleteCourse provides a mock function with given fields: ID
 func (_m *CoursesRepository) DeleteCourse(ID uint) (bool, error) {
 	ret := _m.Called(ID)
@@ -513,20 +527,20 @@ func (_m *CoursesRepository) DeleteCourse(ID uint) (bool, error) {
 	return r0, r1
 }
 
-// DeleteLesson provides a mock function with given fields: input
-func (_m *CoursesRepository) DeleteLesson(input gentypes.DeleteLessonInput) (bool, error) {
-	ret := _m.Called(input)
+// DeleteLesson provides a mock function with given fields: uuid
+func (_m *CoursesRepository) DeleteLesson(uuid gentypes.UUID) (bool, error) {
+	ret := _m.Called(uuid)
 
 	var r0 bool
-	if rf, ok := ret.Get(0).(func(gentypes.DeleteLessonInput) bool); ok {
-		r0 = rf(input)
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) bool); ok {
+		r0 = rf(uuid)
 	} else {
 		r0 = ret.Get(0).(bool)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.DeleteLessonInput) error); ok {
-		r1 = rf(input)
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(uuid)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -1269,6 +1283,36 @@ func (_m *CoursesRepository) Tutor(uuid gentypes.UUID) (models.Tutor, error) {
 	return r0, r1
 }
 
+// Tutors provides a mock function with given fields: page, filter, order
+func (_m *CoursesRepository) Tutors(page *gentypes.Page, filter *gentypes.TutorFilter, order *gentypes.OrderBy) ([]models.Tutor, gentypes.PageInfo, error) {
+	ret := _m.Called(page, filter, order)
+
+	var r0 []models.Tutor
+	if rf, ok := ret.Get(0).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) []models.Tutor); ok {
+		r0 = rf(page, filter, order)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]models.Tutor)
+		}
+	}
+
+	var r1 gentypes.PageInfo
+	if rf, ok := ret.Get(1).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) gentypes.PageInfo); ok {
+		r1 = rf(page, filter, order)
+	} else {
+		r1 = ret.Get(1).(gentypes.PageInfo)
+	}
+
+	var r2 error
+	if rf, ok := ret.Get(2).(func(*gentypes.Page, *gentypes.TutorFilter, *gentypes.OrderBy) error); ok {
+		r2 = rf(page, filter, order)
+	} else {
+		r2 = ret.Error(2)
+	}
+
+	return r0, r1, r2
+}
+
 // UpdateCAANumber provides a mock function with given fields: input
 func (_m *CoursesRepository) UpdateCAANumber(input gentypes.UpdateCAANumberInput) (models.CAANumber, error) {
 	ret := _m.Called(input)
@@ -1282,6 +1326,27 @@ func (_m *CoursesRepository) UpdateCAANumber(input gentypes.UpdateCAANumberInput
 
 	var r1 error
 	if rf, ok := ret.Get(1).(func(gentypes.UpdateCAANumberInput) error); ok {
+		r1 = rf(input)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// UpdateCategory provides a mock function with given fields: input
+func (_m *CoursesRepository) UpdateCategory(input gentypes.UpdateCategoryInput) (models.Category, error) {
+	ret := _m.Called(input)
+
+	var r0 models.Category
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCategoryInput) models.Category); ok {
+		r0 = rf(input)
+	} else {
+		r0 = ret.Get(0).(models.Category)
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCategoryInput) error); ok {
 		r1 = rf(input)
 	} else {
 		r1 = ret.Error(1)
@@ -1354,18 +1419,18 @@ func (_m *CoursesRepository) UpdateCourse(courseID uint, infoChanges course.Cour
 }
 
 // UpdateLesson provides a mock function with given fields: input
-func (_m *CoursesRepository) UpdateLesson(input gentypes.UpdateLessonInput) (models.Lesson, error) {
+func (_m *CoursesRepository) UpdateLesson(input course.UpdateLessonInput) (models.Lesson, error) {
 	ret := _m.Called(input)
 
 	var r0 models.Lesson
-	if rf, ok := ret.Get(0).(func(gentypes.UpdateLessonInput) models.Lesson); ok {
+	if rf, ok := ret.Get(0).(func(course.UpdateLessonInput) models.Lesson); ok {
 		r0 = rf(input)
 	} else {
 		r0 = ret.Get(0).(models.Lesson)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.UpdateLessonInput) error); ok {
+	if rf, ok := ret.Get(1).(func(course.UpdateLessonInput) error); ok {
 		r1 = rf(input)
 	} else {
 		r1 = ret.Error(1)

@@ -5,10 +5,14 @@ import (
 )
 
 type Lesson struct {
-	UUID UUID
-	Name string
-	Tags []Tag
-	Text string
+	UUID           UUID
+	Name           string
+	Tags           []Tag
+	Description    string
+	BannerImageURL *string
+	VoiceoverURL   *string
+	Transcript     *string
+	Video          *Video
 }
 
 type LessonFilter struct {
@@ -23,9 +27,13 @@ func (l *LessonFilter) Validate() error {
 }
 
 type CreateLessonInput struct {
-	Name string `valid:"required"`
-	Tags *[]UUID
-	Text string
+	Name             string `valid:"required"`
+	Tags             *[]UUID
+	Description      string
+	BannerImageToken *string
+	VoiceoverToken   *string
+	Transcript       *string
+	Video            *Video
 }
 
 func (c *CreateLessonInput) Validate() error {
@@ -34,10 +42,14 @@ func (c *CreateLessonInput) Validate() error {
 }
 
 type UpdateLessonInput struct {
-	UUID UUID `valid:"required"`
-	Name *string
-	Text *string
-	Tags *[]UUID
+	UUID             UUID `valid:"required"`
+	Name             *string
+	Description      *string
+	Tags             *[]UUID
+	BannerImageToken *string
+	VoiceoverToken   *string
+	Transcript       *string
+	Video            *Video
 }
 
 func (u *UpdateLessonInput) Validate() error {

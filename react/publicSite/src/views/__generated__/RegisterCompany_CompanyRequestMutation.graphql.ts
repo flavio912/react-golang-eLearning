@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash cf2aa6302ad814ff8fce95a886735863 */
+/* @relayHash 94bc53d93a4c82c12f483cd0d72c6e3f */
 
 import { ConcreteRequest } from "relay-runtime";
 export type RegisterCompany_CompanyRequestMutationVariables = {
@@ -38,7 +38,7 @@ mutation RegisterCompany_CompanyRequestMutation(
   $email: String!
   $password: String!
 ) {
-  createCompanyRequest(company: {companyName: $companyName, addressLine1: $addr1, addressLine2: $addr2, county: $county, postCode: $postcode, country: $country}, manager: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: "", telephone: "", password: $password}, recaptcha: "")
+  createCompanyRequest(company: {companyName: $companyName, addressLine1: $addr1, addressLine2: $addr2, county: $county, postCode: $postcode, country: $country, contactEmail: $email}, manager: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: "", telephone: "", password: $password}, recaptcha: "")
 }
 */
 
@@ -131,6 +131,11 @@ const node: ConcreteRequest = (function () {
                         },
                         {
                             "kind": "Variable",
+                            "name": "contactEmail",
+                            "variableName": "email"
+                        },
+                        {
+                            "kind": "Variable",
                             "name": "country",
                             "variableName": "country"
                         },
@@ -211,10 +216,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "mutation",
             "name": "RegisterCompany_CompanyRequestMutation",
             "id": null,
-            "text": "mutation RegisterCompany_CompanyRequestMutation(\n  $companyName: String!\n  $addr1: String!\n  $addr2: String!\n  $county: String!\n  $postcode: String!\n  $country: String!\n  $firstName: String!\n  $lastName: String!\n  $email: String!\n  $password: String!\n) {\n  createCompanyRequest(company: {companyName: $companyName, addressLine1: $addr1, addressLine2: $addr2, county: $county, postCode: $postcode, country: $country}, manager: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: \"\", telephone: \"\", password: $password}, recaptcha: \"\")\n}\n",
+            "text": "mutation RegisterCompany_CompanyRequestMutation(\n  $companyName: String!\n  $addr1: String!\n  $addr2: String!\n  $county: String!\n  $postcode: String!\n  $country: String!\n  $firstName: String!\n  $lastName: String!\n  $email: String!\n  $password: String!\n) {\n  createCompanyRequest(company: {companyName: $companyName, addressLine1: $addr1, addressLine2: $addr2, county: $county, postCode: $postcode, country: $country, contactEmail: $email}, manager: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: \"\", telephone: \"\", password: $password}, recaptcha: \"\")\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '29d3b31f0f4b207f6156fbf489ca5536';
+(node as any).hash = 'cbb84b3bff02684da62cba9669b4f856';
 export default node;

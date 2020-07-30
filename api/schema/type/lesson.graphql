@@ -1,3 +1,16 @@
+type Lesson implements SyllabusItem {
+  name: String!
+  uuid: UUID!
+  type: StructureElement!
+  complete: Boolean
+  description: String!
+  tags: [Tag!]
+  bannerImageURL: String
+  voiceoverURL: String
+  transcript: String
+  video: Video
+}
+
 type LessonPage implements PaginatedQuery {
   edges: [Lesson]
   pageInfo: PageInfo
@@ -6,14 +19,22 @@ type LessonPage implements PaginatedQuery {
 input CreateLessonInput {
   name: String!
   tags: [UUID!]
-  text: String!
+  description: String!
+  bannerImageToken: String
+  voiceoverToken: String
+  transcript: String
+  video: VideoInput
 }
 
 input UpdateLessonInput {
   uuid: UUID!
   name: String
-  text: String
+  description: String
   tags: [UUID!]
+  bannerImageToken: String
+  voiceoverToken: String
+  transcript: String
+  video: VideoInput
 }
 
 input DeleteLessonInput {

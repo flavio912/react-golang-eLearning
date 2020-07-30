@@ -167,13 +167,8 @@ func (q *QueryResolver) Companies(ctx context.Context, args struct {
 	Filter  *gentypes.CompanyFilter
 	OrderBy *gentypes.OrderBy
 }) (*CompanyPageResolver, error) {
-	grant := auth.GrantFromContext(ctx)
-	if grant == nil {
-		return &CompanyPageResolver{}, &errors.ErrUnauthorized
-	}
-
-	usersApp := users.NewUsersApp(grant)
-	companies, page, err := usersApp.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
+	app := auth.AppFromContext(ctx)
+	companies, page, err := app.UsersApp.GetCompanyUUIDs(args.Page, args.Filter, args.OrderBy)
 	if err != nil {
 		return &CompanyPageResolver{}, err
 	}
@@ -516,5 +511,38 @@ func (q *QueryResolver) Individuals(
 	return NewIndividualPageResolver(ctx, NewIndividualPageArgs{
 		Individuals: &inds,
 		PageInfo:    pageInfo,
+	})
+}
+
+func (q *QueryResolver) Tutor(ctx context.Context, args struct{ UUID gentypes.UUID }) (*TutorResolver, error) {
+	return NewTutorResolver(ctx, NewTutorArgs{
+		TutorUUID: &args.UUID,
+	})
+}
+
+func (q *QueryResolver) Tutors(
+	ctx context.Context,
+	args struct {
+		Page    *gentypes.Page
+		Filter  *gentypes.TutorFilter
+		OrderBy *gentypes.OrderBy
+	}) (*TutorPageResolver, error) {
+	app := auth.AppFromContext(ctx)
+	tutors, pageInfo, err := app.CourseApp.Tutors(args.Page, args.Filter, args.OrderBy)
+
+	if err != nil {
+		return &TutorPageResolver{}, err
+	}
+
+	return NewTutorPageResolver(ctx, NewTutorPageArgs{
+		Tutors:   &tutors,
+		PageInfo: &pageInfo,
+	})
+}
+
+func (q *QueryResolver) Category(
+	ctx context.Context, args struct{ UUID gentypes.UUID }) (*CategoryResolver, error) {
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		UUID: args.UUID,
 	})
 }

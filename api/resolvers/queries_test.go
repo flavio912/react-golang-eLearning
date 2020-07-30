@@ -977,7 +977,7 @@ func TestLesson(t *testing.T) {
 							color
 						}
 						name
-						text
+						description
 					}
 				}
 			`,
@@ -993,7 +993,7 @@ func TestLesson(t *testing.T) {
 							}
 						],
 						"name": "Eigenvalues and Eigenvectors",
-						"text": "{}"
+						"description": "{}"
 					}
 				}
 			`,

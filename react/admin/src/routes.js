@@ -109,9 +109,19 @@ export default [
         component: lazy(() => import('src/views/OrderManagementList'))
       },
       {
+        path: '/approve-companies',
+        exact: true,
+        component: lazy(() => import('src/views/UnapprovedCompanies'))
+      },
+      {
         path: '/management/orders/:id',
         exact: true,
         component: lazy(() => import('src/views/OrderManagementDetails'))
+      },
+      {
+        path: '/categories',
+        exact: true,
+        component: lazy(() => import('src/views/CategoriesList'))
       },
       {
         path: '/admins',
@@ -142,6 +152,21 @@ export default [
         path: '/individuals/:id/:tab',
         exact: true,
         component: lazy(() => import('src/views/IndividualDetails'))
+      },
+      {
+        path: '/delegates',
+        exact: true,
+        component: lazy(() => import('src/views/DelegatesList'))
+      },
+      {
+        path: '/delegates/:id',
+        exact: true,
+        component: lazy(() => import('src/views/DelegateDetails'))
+      },
+      {
+        path: '/delegates/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/DelegateDetails'))
       },
       {
         path: '/tutors',

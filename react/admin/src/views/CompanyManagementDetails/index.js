@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/styles';
 import { Container, Tabs, Tab, Divider, colors } from '@material-ui/core';
 import gql from 'graphql-tag';
-import { useQuery } from '@apollo/react-hooks';
+import { useQuery, useMutation } from '@apollo/react-hooks';
 
 import Page from 'src/components/Page';
 import Header from './Header';
@@ -13,6 +13,7 @@ import Invoices from './Invoices';
 import Managers from './Managers';
 import Delegates from './Delegates';
 import Logs from './Logs';
+import ErrorModal from 'src/components/ErrorModal';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -35,9 +36,18 @@ const GET_COMPANY = gql`
     company(uuid: $id) {
       uuid
       name
+      approved
+      contactEmail
+      isContract
       managers {
         edges {
+          uuid
           email
+          firstName
+          lastName
+          profileImageUrl
+          createdAt
+          lastLogin
         }
         pageInfo {
           total
@@ -50,12 +60,28 @@ const GET_COMPANY = gql`
           firstName
           lastName
           lastLogin
+          profileImageUrl
           createdAt
         }
         pageInfo {
           total
         }
       }
+      address {
+        addressLine1
+        addressLine2
+        county
+        postCode
+        country
+      }
+    }
+  }
+`;
+
+const APPROVE_COMPANY = gql`
+  mutation ApproveCompany($uuid: UUID!) {
+    updateCompany(input: { uuid: $uuid, approved: true }) {
+      uuid
     }
   }
 `;
@@ -63,14 +89,6 @@ const GET_COMPANY = gql`
 function CompanyManagementDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
-  const tabs = [
-    { value: 'summary', label: 'Summary' },
-    { value: 'Courses', label: 'Courses' },
-    { value: 'managers', label: 'Managers' },
-    { value: 'delegates', label: 'Delegates' },
-    { value: 'invoices', label: 'Invoices' },
-    { value: 'logs', label: 'Logs' }
-  ];
 
   const { loading, error, data, refetch } = useQuery(GET_COMPANY, {
     variables: {
@@ -79,9 +97,27 @@ function CompanyManagementDetails({ match, history }) {
     fetchPolicy: 'cache-and-network',
     skip: !id
   });
+  const [approveCompany, { mutationErr }] = useMutation(APPROVE_COMPANY);
+
   if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
   const company = data?.company;
+
+  let tabs = [
+    { value: 'summary', label: 'Summary' },
+    { value: 'Courses', label: 'Courses' },
+    { value: 'managers', label: 'Managers' },
+    { value: 'delegates', label: 'Delegates' },
+    { value: 'invoices', label: 'Invoices' },
+    { value: 'logs', label: 'Logs' }
+  ];
+
+  if (!company.approved) {
+    tabs = [
+      { value: 'summary', label: 'Summary' },
+      { value: 'managers', label: 'Managers' }
+    ];
+  }
 
   const handleTabsChange = (event, value) => {
     history.push(value);
@@ -101,8 +137,17 @@ function CompanyManagementDetails({ match, history }) {
 
   return (
     <Page className={classes.root} title="Company Management Details">
+      <ErrorModal error={mutationErr} />
       <Container maxWidth={false}>
-        <Header companyName={data.company.name} />
+        <Header
+          companyName={data.company.name}
+          approved={data.company.approved}
+          onApprove={async () => {
+            approveCompany({
+              variables: { uuid: data.company.uuid }
+            });
+          }}
+        />
         <Tabs
           className={classes.tabs}
           onChange={handleTabsChange}
@@ -116,7 +161,14 @@ function CompanyManagementDetails({ match, history }) {
         </Tabs>
         <Divider className={classes.divider} />
         <div className={classes.content}>
-          {currentTab === 'summary' && <Summary />}
+          {currentTab === 'summary' && (
+            <Summary
+              company={data.company}
+              onUpdate={() => {
+                refetch();
+              }}
+            />
+          )}
           {currentTab === 'invoices' && <Invoices />}
           {currentTab === 'managers' && (
             <Managers

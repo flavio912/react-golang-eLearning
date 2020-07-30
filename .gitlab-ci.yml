@@ -45,8 +45,6 @@ build-admin:
   only:
     changes:
       - react/admin/**/*
-  tags:
-    - big
   artifacts:
     expire_in: 3d
     paths:

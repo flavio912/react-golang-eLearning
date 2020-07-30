@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Results({ admins, className, ...rest }) {
+function Results({ delegates, className, ...rest }) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -78,32 +78,38 @@ function Results({ admins, className, ...rest }) {
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
+            <TableCell>Job Title</TableCell>
+            <TableCell>Telephone</TableCell>
+            <TableCell>Company</TableCell>
             <TableCell>Created At</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {admins.map(admin => (
-            <TableRow key={admin.uuid}>
+          {delegates.map(delegate => (
+            <TableRow key={delegate.uuid}>
               <TableCell>
                 <div className={classes.nameCell}>
-                  <Avatar className={classes.avatar} src={admin.logo}>
-                    {/* {getInitials(admin.fullName)} */}
+                  <Avatar className={classes.avatar} src={delegate.logo}>
+                    {delegate.firstName.charAt(0).toUpperCase()}
+                    {delegate.lastName.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Link
-                    color="inherit"
-                    component={RouterLink}
-                    to={`/admins/${admin.uuid}/overview`}
-                    variant="h6"
-                  >
-                    {admin.email}
-                  </Link>
+                  <div>
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      to={`/delegates/${delegate.uuid}/overview`}
+                      variant="h6"
+                    >
+                      {delegate.firstName} {delegate.lastName}
+                    </Link>
+                    <div>{delegate.email}</div>
+                  </div>
                 </div>
               </TableCell>
-              <TableCell>{admin.firstName}</TableCell>
-              <TableCell>{admin.lastName}</TableCell>
-              <TableCell>{moment(admin.createdAt).format('LLL')}</TableCell>
+              <TableCell>{delegate.jobTitle}</TableCell>
+              <TableCell>{delegate.telephone}</TableCell>
+              <TableCell>{delegate.company.name}</TableCell>
+              <TableCell>{moment(delegate.createdAt).format('LLL')}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -111,7 +117,7 @@ function Results({ admins, className, ...rest }) {
       <CardActions className={classes.actions}>
         <TablePagination
           component="div"
-          count={admins.length}
+          count={delegates.length}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           page={page}
@@ -124,8 +130,7 @@ function Results({ admins, className, ...rest }) {
 }
 
 Results.propTypes = {
-  className: PropTypes.string,
-  avatars: PropTypes.array.isRequired
+  className: PropTypes.string
 };
 
 export default Results;
