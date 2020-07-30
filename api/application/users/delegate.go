@@ -123,9 +123,11 @@ func (u *usersAppImpl) CreateDelegate(delegateDetails gentypes.CreateDelegateInp
 		// If not generated password, send an email to the user
 		if !needsGeneratePass {
 			token, err := auth.GenerateFinaliseDelegateToken(auth.FinaliseDelegateClaims{
-				UUID: delegate.UUID,
-				Email: delegate.Email,
+				UUID:   delegate.UUID,
+				Email:  *delegate.Email,
+				TTC_ID: delegate.TtcId,
 			})
+
 			if err != nil {
 				u.grant.Logger.Log(sentry.LevelError, err, "Unable to generate finalise delegate token")
 				return false
@@ -188,16 +190,24 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 	return u.delegateToGentype(delegate), err
 }
 
-func (u *usersAppImpl) FinaliseDelegate(input gentypes.FinaliseDelegateInput) error {
+func (u *usersAppImpl) FinaliseDelegate(input gentypes.FinaliseDelegateInput) (string, error) {
 	finaliseClaims, err := auth.ValidateFinaliseDelegateToken(input.Token)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	delegate, err := u.usersRepository.UpdateDelegate(gentypes.UpdateDelegateInput{
 		UUID: finaliseClaims.UUID,
 	}, nil, &input.Password)
 	if err != nil {
-		return 
+		return "", err
 	}
+
+	loginToken, err := delegate.GenerateToken(input.Password)
+	if err != nil {
+		u.grant.Logger.Log(sentry.LevelError, err, "FinaliseDelegate: Unable to generate token")
+		return "", err
+	}
+
+	return loginToken, nil
 }

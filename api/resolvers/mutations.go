@@ -913,3 +913,18 @@ func (m *MutationResolver) RegenerateCertificate(ctx context.Context, args struc
 
 	return true, nil
 }
+
+func (m *MutationResolver) FinaliseDelegate(ctx context.Context, args struct {
+	Input gentypes.FinaliseDelegateInput
+}) (*gentypes.AuthToken, error) {
+	app := auth.AppFromContext(ctx)
+	token, err := app.UsersApp.FinaliseDelegate(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	auth.SetAuthCookies(ctx, token)
+	return &gentypes.AuthToken{
+		Token: token,
+	}, nil
+}

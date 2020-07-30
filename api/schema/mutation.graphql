@@ -50,6 +50,8 @@ type Mutation {
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   deleteCourse(input: DeleteCourseInput!): Boolean!
 
+  finaliseDelegate(input: FinaliseDelegateInput): AuthToken
+
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
   updateCategory(input: UpdateCategoryInput!): Category
