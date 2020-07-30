@@ -53,7 +53,7 @@ function LessonsList({ history }) {
         limit: rowsPerPage
       },
       filter: {
-        name: searchText,
+        name: searchText
       }
     },
     fetchPolicy: 'cache-and-network'
@@ -61,42 +61,42 @@ function LessonsList({ history }) {
 
   if (error) return <div>{error.message}</div>;
 
-    // Results methods
-    const handleChangePage = (event, page) => {
-      setPage(page);
-    };
-  
-    const handleChangeRowsPerPage = event => {
-      setRowsPerPage(event.target.value);
-    };
-  
-    // Results table
-    const headers = ['Name', 'Courses Linked', 'Modules Linked', 'Tags', 'Actions'];
-    const cells = [
-      { field: 'name' },{ field: 'numCoursesLinked' },{ field: 'numModulesLinked' },
-      {
-        component: result =>
-          result.tags &&
-          result.tags.map(tag => (
-            <Chip
-              style={{ backgroundColor: tag.color, color: 'white' }}
-              label={tag.name}
-            />
-          ))
-      },
-      {
-        component: result => (
-          <Button
-            color="default"
-            component={RouterLink}
-            size="small"
-            to={`/lesson/${result.uuid}/overview`}
-          >
-            Edit
-          </Button>
-        )
-      }
-    ];
+  // Results methods
+  const handleChangePage = (event, page) => {
+    setPage(page);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(event.target.value);
+  };
+
+  // Results table
+  const headers = ['Name', 'Tags', 'Actions'];
+  const cells = [
+    { field: 'name' },
+    {
+      component: result =>
+        result.tags &&
+        result.tags.map(tag => (
+          <Chip
+            style={{ backgroundColor: tag.color, color: 'white' }}
+            label={tag.name}
+          />
+        ))
+    },
+    {
+      component: result => (
+        <Button
+          color="default"
+          component={RouterLink}
+          size="small"
+          to={`/lesson/${result.uuid}/overview`}
+        >
+          Edit
+        </Button>
+      )
+    }
+  ];
 
   return (
     <Page className={classes.root} title="Lessons">
