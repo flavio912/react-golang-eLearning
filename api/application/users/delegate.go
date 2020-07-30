@@ -124,6 +124,7 @@ func (u *usersAppImpl) CreateDelegate(delegateDetails gentypes.CreateDelegateInp
 		if !needsGeneratePass {
 			token, err := auth.GenerateFinaliseDelegateToken(auth.FinaliseDelegateClaims{
 				UUID: delegate.UUID,
+				Email: delegate.Email,
 			})
 			if err != nil {
 				u.grant.Logger.Log(sentry.LevelError, err, "Unable to generate finalise delegate token")
@@ -185,4 +186,18 @@ func (u *usersAppImpl) UpdateDelegate(input gentypes.UpdateDelegateInput) (genty
 	delegate, err := u.usersRepository.UpdateDelegate(input, s3UploadKey, password)
 
 	return u.delegateToGentype(delegate), err
+}
+
+func (u *usersAppImpl) FinaliseDelegate(input gentypes.FinaliseDelegateInput) error {
+	finaliseClaims, err := auth.ValidateFinaliseDelegateToken(input.Token)
+	if err != nil {
+		return err
+	}
+
+	delegate, err := u.usersRepository.UpdateDelegate(gentypes.UpdateDelegateInput{
+		UUID: finaliseClaims.UUID,
+	}, nil, &input.Password)
+	if err != nil {
+		return 
+	}
 }

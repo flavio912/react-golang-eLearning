@@ -136,7 +136,8 @@ func GenerateToken(claims UserClaims, expiresInHours float64) (string, error) {
 }
 
 type FinaliseDelegateClaims struct {
-	UUID gentypes.UUID
+	UUID  gentypes.UUID
+	Email string
 }
 
 type CSRFClaims struct {
