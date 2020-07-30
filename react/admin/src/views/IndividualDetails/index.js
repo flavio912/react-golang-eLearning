@@ -9,6 +9,7 @@ import { useQuery } from '@apollo/react-hooks';
 import Page from 'src/components/Page';
 import Header from './Header';
 import Overview from './Overview';
+import Courses from './Courses';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -42,7 +43,10 @@ const GET_INDIVIDUAL = gql`
 function IndividualDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'courses', label: 'Courses' }
+  ];
 
   const { loading, error, data } = useQuery(GET_INDIVIDUAL, {
     variables: {
@@ -85,6 +89,7 @@ function IndividualDetails({ match, history }) {
         <Divider className={classes.divider} />
         <div className={classes.content}>
           {currentTab === 'overview' && <Overview individual={individual} />}
+          {currentTab === 'courses' && <Courses individual={individual} />}
         </div>
       </Container>
     </Page>

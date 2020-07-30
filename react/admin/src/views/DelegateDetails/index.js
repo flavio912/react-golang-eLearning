@@ -9,6 +9,7 @@ import { useQuery } from '@apollo/react-hooks';
 import Page from 'src/components/Page';
 import Header from './Header';
 import Overview from './Overview';
+import Courses from './Courses';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -47,7 +48,10 @@ const GET_DELEGATE = gql`
 function DelegateDetails({ match, history }) {
   const classes = useStyles();
   const { id, tab: currentTab } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'courses', label: 'Courses' }
+  ];
 
   const { loading, error, data } = useQuery(GET_DELEGATE, {
     variables: {
@@ -90,6 +94,7 @@ function DelegateDetails({ match, history }) {
         <Divider className={classes.divider} />
         <div className={classes.content}>
           {currentTab === 'overview' && <Overview delegate={delegate} />}
+          {currentTab === 'courses' && <Courses delegate={delegate} />}
         </div>
       </Container>
     </Page>
