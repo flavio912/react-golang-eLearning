@@ -19,12 +19,19 @@ const useStyles = makeStyles(theme => ({
   },
   lessonName: {
     marginBottom: 20
+  },
+  shortDescription: {
+    width: '100%'
+  },
+  preview: {
+    height: 300,
+    width: '100%'
   }
 }));
 
 const UPLOAD_REQUEST = gql`
   mutation UploadRequest($fileType: String!, $contentLength: Int!) {
-    answerImageUploadRequest(
+    lessonBannerImageUploadRequest(
       input: { fileType: $fileType, contentLength: $contentLength }
     ) {
       url
@@ -36,71 +43,81 @@ const UPLOAD_REQUEST = gql`
 function Overview({ state, setState }) {
   const classes = useStyles();
 
-  const handleTags = () => {};
-
-  const handleUploadImage = (successToken, url) => {
-    console.log(successToken, url);
+  const onUploaded = (token, url) => {
+    setState({ bannerImageURL: url, bannerImageToken: token });
   };
 
   return (
     <div className={classes.root}>
-      <Grid container spacing={4}>
+      <Grid container spacing={2}>
         <Grid item sm={8}>
-          <Card>
-            <CardHeader title={'About this Lesson'} />
-            <Divider />
-            <CardContent>
-              <Grid item className={classes.lessonName}>
-                <TextField
-                  fullWidth
-                  label="Name"
-                  name="lesson"
-                  value={state.name}
-                  onChange={inp => {
-                    setState({ name: inp.target.value });
-                  }}
-                  placeholder="Lesson Name"
-                  variant="outlined"
-                />
-              </Grid>
-              <TagsInput onChange={handleTags} />
-            </CardContent>
-          </Card>
+          <Grid container spacing={2} direction={'column'}>
+            <Grid item>
+              <Card>
+                <CardHeader title={'About this Lesson'} />
+                <Divider />
+                <CardContent>
+                  <Grid item className={classes.lessonName}>
+                    <TextField
+                      fullWidth
+                      label="Name"
+                      name="lesson"
+                      value={state.name}
+                      onChange={inp => {
+                        setState({ name: inp.target.value });
+                      }}
+                      placeholder="Lesson Name"
+                      variant="outlined"
+                    />
+                  </Grid>
+                  <TagsInput
+                    onChange={tags => {
+                      setState({ tags });
+                    }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+            <Grid item>
+              <Card>
+                <CardHeader title="Lesson Description" />
+                <Divider />
+                <CardContent>
+                  <Grid item>
+                    <TextField
+                      label="Description"
+                      multiline
+                      className={classes.shortDescription}
+                      rows={5}
+                      value={state.description}
+                      onChange={inp => {
+                        setState({ description: inp.target.value });
+                      }}
+                      placeholder="Lesson Description"
+                      variant="outlined"
+                    />
+                  </Grid>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Grid>
-        <Grid item sm={4}>
+        <Grid item xs={4}>
           <Card>
-            <CardHeader title={'Lessons banner Image'} />
+            <CardHeader title="Lessons banner Image" />
             <Divider />
             <CardContent>
+              {state.bannerImageURL && (
+                <img
+                  src={state.bannerImageURL}
+                  className={classes.preview}
+                  alt="preview"
+                />
+              )}
               <UploadFile
                 uploadMutation={UPLOAD_REQUEST}
-                onUploaded={(successToken, url) =>
-                  handleUploadImage(successToken, url)
-                }
+                onUploaded={onUploaded}
               />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item sm={8}>
-          <Card>
-            <CardHeader title={'Lesson Description'} />
-            <Divider />
-            <CardContent>
-              <Grid item>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={8}
-                  label="Description"
-                  name="description"
-                  value={state.text}
-                  onChange={inp => {
-                    setState({ text: inp.target.value });
-                  }}
-                  placeholder="Lesson Description"
-                  variant="outlined"
-                />
-              </Grid>
             </CardContent>
           </Card>
         </Grid>

@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container } from '@material-ui/core';
-import Page from 'src/components/Page';
-import SearchBar from 'src/components/SearchBar';
-import Header from './Header';
-import Results from './Results';
+import { Container, Button, Chip } from '@material-ui/core';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { Link as RouterLink } from 'react-router-dom';
+import Page from 'src/components/Page';
+import SearchBar from 'src/components/SearchBar';
+import Results from 'src/components/Results';
+import Header from './Header';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -24,37 +25,78 @@ const GET_LESSONS = gql`
       edges {
         uuid
         name
-        text
+        tags {
+          uuid
+          name
+          color
+        }
       }
       pageInfo {
-        given
         total
+        limit
+        offset
+        given
       }
     }
   }
 `;
 
-function LessonsList({ match, history }) {
+function LessonsList({ history }) {
   const classes = useStyles();
-
-  const handleFilter = () => {};
-  const handleSearch = () => {};
-
-  const { loading, error, data, refetch } = useQuery(GET_LESSONS, {
+  const [searchText, setSearchText] = React.useState('');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const { error, data } = useQuery(GET_LESSONS, {
     variables: {
       page: {
-        offset: 0,
-        limit: 100
+        offset: page,
+        limit: rowsPerPage
       },
-      filter: {}
-    }
+      filter: {
+        name: searchText,
+      }
+    },
+    fetchPolicy: 'cache-and-network'
   });
 
-  useEffect(() => {
-    if (!data || loading || error) return;
+  if (error) return <div>{error.message}</div>;
 
-    refetch();
-  }, [data]);
+    // Results methods
+    const handleChangePage = (event, page) => {
+      setPage(page);
+    };
+  
+    const handleChangeRowsPerPage = event => {
+      setRowsPerPage(event.target.value);
+    };
+  
+    // Results table
+    const headers = ['Name', 'Courses Linked', 'Modules Linked', 'Tags', 'Actions'];
+    const cells = [
+      { field: 'name' },{ field: 'numCoursesLinked' },{ field: 'numModulesLinked' },
+      {
+        component: result =>
+          result.tags &&
+          result.tags.map(tag => (
+            <Chip
+              style={{ backgroundColor: tag.color, color: 'white' }}
+              label={tag.name}
+            />
+          ))
+      },
+      {
+        component: result => (
+          <Button
+            color="default"
+            component={RouterLink}
+            size="small"
+            to={`/lesson/${result.uuid}/overview`}
+          >
+            Edit
+          </Button>
+        )
+      }
+    ];
 
   return (
     <Page className={classes.root} title="Lessons">
@@ -64,10 +106,15 @@ function LessonsList({ match, history }) {
             history.push('/lessons/create/overview');
           }}
         />
-        <SearchBar onFilter={handleFilter} onSearch={handleSearch} />
-        {data?.lessons && (
-          <Results className={classes.results} lessons={data.lessons.edges} />
-        )}
+        <SearchBar setSearchText={setSearchText} />
+        <Results
+          className={classes.results}
+          results={data?.lessons}
+          headers={headers}
+          cells={cells}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </Container>
     </Page>
   );

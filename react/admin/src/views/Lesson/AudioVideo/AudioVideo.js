@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Grid,
   Card,
@@ -6,30 +6,36 @@ import {
   CardContent,
   Divider,
   TextField,
-  InputLabel,
-  Select,
-  MenuItem,
-  FormControl,
   Typography,
-  Box
+  Select,
+  MenuItem
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import { gql } from 'apollo-boost';
-
 import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1
   },
-  formControl: {
-    minWidth: 240
-  },
-  cardContent: {
+  padding: {
+    padding: theme.spacing(3),
     paddingTop: 0
   },
-  uploadButton: {
-    marginTop: theme.spacing(2)
+  margin: {
+    margin: `0 ${theme.spacing(3)}px`
+  },
+  thinInput: {
+    width: '30%'
+  },
+  shortDescription: {
+    width: '100%'
+  },
+  filename: {
+    display: 'inline',
+    fontWeight: '400',
+    fontStyle: 'italic',
+    marginLeft: theme.spacing(1)
   }
 }));
 
@@ -44,100 +50,121 @@ const UPLOAD_REQUEST = gql`
   }
 `;
 
+const voiceoverOptions = [{ title: 'Upload Voiceover', uuid: '0' }];
+const videoOptions = [{ title: 'Wistia URL', uuid: '0' }];
+
 function AudioVideo({ state, setState }) {
   const classes = useStyles();
-  const [voiceOver, setVoiceOver] = useState('');
-  const [wistiaUrl, setWistiaUrl] = useState('');
-
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item sm={12} spacing={4}>
-          <Card>
-            <CardHeader title={'Audio Voiceover'} />
-            <CardContent className={classes.cardContent}>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="demo-simple-select-outlined-label">
-                  Upload Voiceover
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-outlined-label"
-                  id="demo-simple-select-outlined"
-                  value={voiceOver}
-                  onChange={event => {
-                    setVoiceOver(event.target.value);
-                  }}
-                  label="Upload Voiceover"
-                >
-                  <MenuItem value={10}>Upload Voiceover</MenuItem>
-                </Select>
-              </FormControl>
-              <Grid item sm={12} className={classes.uploadButton}>
-                <UploadFile
-                  uploadMutation={UPLOAD_REQUEST}
-                  onUploaded={(successToken, url) => {
-                    setState({ voiceoverSuccessToken: '' });
-                  }}
-                />
+        <Grid container spacing={4} direction={'column'}>
+          <Grid item>
+            <Card>
+              <CardHeader title="Audio Voiceover" />
+              <Grid
+                container
+                spacing={2}
+                direction={'column'}
+                className={classes.padding}
+              >
+                <Grid item>
+                  <Select
+                    value={voiceoverOptions[0]}
+                    variant="outlined"
+                    className={classes.thinInput}
+                  >
+                    {voiceoverOptions.map(option => (
+                      <MenuItem key={option.uuid} value={option}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid item>
+                  <UploadFile
+                    title="Upload MP3"
+                    uploadMutation={UPLOAD_REQUEST}
+                    acceptType="audio/mp3"
+                    onUploaded={(successToken, url) => {
+                      setState({
+                        voiceoverSuccessToken: successToken,
+                        voiceoverURL: url
+                      });
+                    }}
+                  />
+                </Grid>
               </Grid>
-            </CardContent>
-            <Divider />
-            <CardHeader title={'Video Source'} />
-            <CardContent className={classes.cardContent}>
-              <FormControl variant="outlined" className={classes.formControl}>
-                <InputLabel id="demo-simple-select-outlined-label">
-                  Wistia URL
-                </InputLabel>
-                <Select
-                  labelId="demo-simple-select-outlined-label"
-                  id="demo-simple-select-outlined"
-                  value={wistiaUrl}
-                  onChange={event => {
-                    setWistiaUrl(event.target.value);
-                  }}
-                  label="Wistia URL"
-                >
-                  <MenuItem value={10}>Wistia URL</MenuItem>
-                </Select>
-              </FormControl>
-              <Typography>
-                <Box fontStyle="italic" my={2}>
-                  Select your preferred video type (.mp4, YouTube, Vimeo etc.).
-                  Not when adding a video both the Audio Player + Module Banner
-                  Image will be hidden.
-                </Box>
-              </Typography>
-              <TextField
-                fullWidth
-                label="Wisita Video URL"
-                name="wisita"
-                onChange={inp => {}}
-                placeholder="Enter Wisita Video URL"
-                variant="outlined"
-              />
-            </CardContent>
-          </Card>
-        </Grid>
-        <Grid item sm={12}>
-          <Card>
-            <CardHeader title={'Video Transcript'} />
-            <Divider />
-            <CardContent>
-              <Grid item>
+              <Divider className={classes.margin} />
+              <CardHeader title="Video Source" />
+              <Grid
+                container
+                spacing={2}
+                direction={'column'}
+                className={classes.padding}
+              >
+                <Grid item>
+                  <Select
+                    value={videoOptions[0]}
+                    variant="outlined"
+                    className={classes.thinInput}
+                  >
+                    {videoOptions.map(option => (
+                      <MenuItem key={option.uuid} value={option}>
+                        {option.title}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </Grid>
+                <Grid item>
+                  <Typography
+                    variant="body2"
+                    color="textPrimary"
+                    className={classes.filename}
+                  >
+                    Select your preferred video type (.mp4, Youtube Viemo, etc).
+                    Note when adding a video both the Audio Player + Module
+                    Banner Image will be hidden
+                  </Typography>
+                </Grid>
+                <Grid item>
+                  <TextField
+                    fullWidth
+                    label=""
+                    name="modulename"
+                    onChange={inp => {
+                      setState({
+                        video: { type: 'WISTIA', url: inp.target.value }
+                      });
+                    }}
+                    placeholder="Enter Wisita Video URL"
+                    value={state.video.url}
+                    variant="outlined"
+                  />
+                </Grid>
+              </Grid>
+            </Card>
+          </Grid>
+          <Grid item>
+            <Card>
+              <CardHeader title="Video Transcript" />
+              <Divider />
+              <CardContent>
                 <TextField
-                  fullWidth
+                  label=""
                   multiline
-                  rows={8}
-                  label="Transcript"
-                  name="transcript"
+                  className={classes.shortDescription}
+                  rows={5}
+                  value={state.transcript}
                   onChange={inp => {
                     setState({ transcript: inp.target.value });
                   }}
+                  placeholder="Description"
                   variant="outlined"
                 />
-              </Grid>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Grid>
         </Grid>
       </Grid>
     </div>

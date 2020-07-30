@@ -5,11 +5,27 @@ import { useMutation } from '@apollo/react-hooks';
 import LessonPage from './LessonPage';
 
 const CREATE_LESSON = gql`
-  mutation CreateLesson($name: String!, $text: String!) {
-    createLesson(input: { name: $name, text: $text }) {
+  mutation CreateLesson(
+    $name: String!
+    $tags: [UUID!]
+    $description: String!
+    $bannerImageToken: String
+    $voiceoverToken: String
+    $transcript: String
+    $video: VideoInput
+  ) {
+    createLesson(
+      input: {
+        name: $name,
+        tags: $tags,
+        description: $description,
+        bannerImageToken: $bannerImageToken,
+        voiceoverToken: $voiceoverToken,
+        transcript: $transcript,
+        video: $video,
+      }
+    ) {
       uuid
-      name
-      text
     }
   }
 `;
@@ -24,7 +40,12 @@ function CreateLesson({ match, history }) {
   var initState = {
     name: '',
     description: '',
-    tags: []
+    tags: [],
+    bannerImageURL: '',
+    bannerImageToken: undefined,
+    voiceoverToken: undefined,
+    transcript: '',
+    video: { type: 'WISTIA', url: '' },
   };
 
   const [state, setState] = useState(initState);
@@ -44,12 +65,20 @@ function CreateLesson({ match, history }) {
       const res = await createLesson({
         variables: {
           name: state.name,
-          text: state.description
+          name: state.name,
+          type: state.type,
+          complete: state.complete,
+          description: state.description,
+          tags: state.tags,
+          bannerImageURL: state.bannerImageURL,
+          voiceoverURL: state.voiceoverURL,
+          transcript: state.transcript,
+          video: state.video,
         }
       });
       if (res.data?.createLesson?.uuid) {
         console.log(res.data);
-        history.push('/lessons');
+        history.push(`/lesson/${res.data?.createLesson?.uuid}/overview`);
       } else {
         console.warn('Unable to get save params');
       }

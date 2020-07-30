@@ -17,25 +17,61 @@ const GET_LESSON = gql`
     lesson(uuid: $uuid) {
       uuid
       name
-      text
+      type
+      complete
+      description
+      tags {
+        uuid
+        name
+        color
+      }
+      bannerImageURL
+      voiceoverURL
+      transcript
+      video {
+        url
+      }
     }
   }
 `;
 
 const UPDATE_LESSON = gql`
-  mutation UpdateLesson($uuid: UUID!, $name: String, $text: String) {
-    updateLesson(input: { uuid: $uuid, name: $name, text: $text }) {
+  mutation UpdateLesson(
+    $uuid: UUID!,
+    $name: String,
+    $description: String
+    $tags: [UUID!]
+    $bannerImageToken: String
+    $voiceoverToken: String
+    $transcript: String
+    $video: VideoInput
+  ) {
+    updateLesson(
+      input: {
+        uuid: $uuid,
+        name: $name,
+        description: $description,
+        tags: $tags,
+        bannerImageToken: $bannerImageToken,
+        voiceoverToken: $voiceoverToken,
+        transcript: $transcript,
+        video: $video,
+      }
+    ) {
       uuid
-      name
-      text
     }
   }
 `;
 
 const initState = {
   name: '',
-  text: '',
-  tags: []
+  description: '',
+  tags: [],
+  bannerImageURL: '',
+  bannerImageToken: undefined,
+  voiceoverToken: undefined,
+  transcript: '',
+  video: { type: 'WISTIA', url: '' },
 };
 
 function UpdateLesson({ match, history }) {
@@ -69,7 +105,13 @@ function UpdateLesson({ match, history }) {
     setState({
       ...initState,
       name: queryData.lesson.name,
-      text: queryData.lesson.text
+      tags: queryData.lesson.tags,
+      bannerImageURL: queryData.lesson.bannerImageURL,
+      description: queryData.lesson.description,
+      transcript: queryData.lesson.transcript,
+      voiceoverURL: queryData.lesson.voiceoverURL,
+      video: queryData.lesson.video,
+      complete: queryData.lesson.complete
     });
   }, [queryData, loading, error]);
 
@@ -79,12 +121,20 @@ function UpdateLesson({ match, history }) {
   }
 
   const onUpdate = async () => {
+    console.log(state)
     try {
       await updateLesson({
         variables: {
           uuid: ident,
           name: state.name,
-          text: state.text
+          type: state.type,
+          complete: state.complete,
+          description: state.description,
+          tags: state.tags,
+          bannerImageURL: state.bannerImageURL,
+          voiceoverURL: state.voiceoverURL,
+          transcript: state.transcript,
+          video: state.video,
         }
       });
       refetch();
