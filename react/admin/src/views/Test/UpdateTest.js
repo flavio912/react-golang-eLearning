@@ -68,9 +68,9 @@ const UPDATE_TEST = gql`
 const initState = {
   name: '',
   tags: [],
-  attemptsAllowed: false,
-  passPercentage: false,
-  questionsToAnswer: false,
+  attemptsAllowed: 1,
+  passPercentage: 0.0,
+  questionsToAnswer: 0,
   randomiseAnswers: false,
   questions: []
 };
@@ -79,7 +79,10 @@ function UpdateTest({ match, history }) {
   const classes = useStyles();
 
   const { tab: currentTab, ident } = match.params;
-  const tabs = [{ value: 'overview', label: 'Overview' }];
+  const tabs = [
+    { value: 'overview', label: 'Overview' },
+    { value: 'test-builder', label: 'Test Builder' }
+  ];
 
   const { loading, error, data: queryData, refetch } = useQuery(GET_TEST, {
     variables: {
@@ -119,6 +122,7 @@ function UpdateTest({ match, history }) {
 
   const onUpdate = async () => {
     try {
+      console.log('update', state, state.questions.map(({uuid}) => uuid))
       await updateTest({
         variables: {
           uuid: ident,
@@ -128,7 +132,7 @@ function UpdateTest({ match, history }) {
           passPercentage: state.passPercentage,
           questionsToAnswer: state.questionsToAnswer,
           randomiseAnswers: state.randomiseAnswers,
-          questions: state.questions
+          questions: state.questions.map(({uuid}) => uuid)
         }
       });
       refetch();
