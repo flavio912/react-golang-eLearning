@@ -48,16 +48,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  email: string;
+  TTC_ID: string;
   onSubmit: (
-    email: string,
     password: string,
     passwordRepeat: string,
     errorCallback: (err: string) => void
   ) => void;
 };
 
-function FinaliseDialogue({ email, onSubmit }: Props) {
+function FinaliseDialogue({ TTC_ID, onSubmit }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
@@ -65,7 +64,7 @@ function FinaliseDialogue({ email, onSubmit }: Props) {
   const [passwordRepeat, setPasswordRepeat] = React.useState('');
   const [error, setError] = React.useState('');
   const onLogin = () => {
-    onSubmit(email, password, passwordRepeat, (err) => {
+    onSubmit(password, passwordRepeat, (err) => {
       setError(err);
     });
   };
@@ -86,10 +85,10 @@ function FinaliseDialogue({ email, onSubmit }: Props) {
           }}
         >
           <FancyInput
-            label="Email"
+            label="TTC ID"
             labelColor={'#5CC301'}
             type={'text'}
-            placeholder={email}
+            placeholder={TTC_ID}
             disabled
           />
           <FancyInput

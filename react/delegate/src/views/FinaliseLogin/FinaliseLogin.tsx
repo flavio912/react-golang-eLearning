@@ -25,25 +25,24 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-// const mutation = graphql`
-//   mutation LoginPage_LoginMutation($ttcId: String!, $password: String!) {
-//     delegateLogin(input: { TTC_ID: $ttcId, password: $password }) {
-//       token
-//     }
-//   }
-// `;
+const mutation = graphql`
+  mutation FinaliseLogin_FinaliseMutation($token: String!, $password: String!) {
+    finaliseDelegate(input: { token: $token, password: $password }) {
+      token
+    }
+  }
+`;
 
-const AttemptLogin = (router: Router) => (
-  email: string,
+const AttemptLogin = (router: Router, token: String) => (
   password: string,
   passwordRepeat: string,
   errorCallback: (err: string) => void
 ) => {
   const variables = {
-    ttcId: email,
+    token,
     password
   };
-  console.log(email, password, passwordRepeat)
+  console.log(token, password, passwordRepeat)
   if (!password || !passwordRepeat) {
     return errorCallback('Please enter password twice');
   }
@@ -51,23 +50,23 @@ const AttemptLogin = (router: Router) => (
     return errorCallback('Passwords are not the same');
   }
 
-  // commitMutation(environment, {
-  //   mutation,
-  //   variables,
-  //   onCompleted: (
-  //     response: { delegateLogin: { token: string } },
-  //     errors: GraphError[]
-  //   ) => {
-  //     if (errors) {
-  //       // Display error
-  //       errorCallback(`${errors[0]?.extensions?.message}`);
-  //       return;
-  //     }
-  //     console.log('Response received from server.', response, errors);
-  //     window.location.href = '/app';
-  //   },
-  //   onError: (err) => console.error(err)
-  // });
+  commitMutation(environment, {
+    mutation,
+    variables,
+    onCompleted: (
+      response: { delegateLogin: { token: string } },
+      errors: GraphError[]
+    ) => {
+      if (errors) {
+        // Display error
+        errorCallback(`${errors[0]?.extensions?.message}`);
+        return;
+      }
+      console.log('Response received from server.', response, errors);
+      router.push('/app');
+    },
+    onError: (err) => console.error(err)
+  });
 };
 
 const FinaliseLogin = ({ data }: Props) => {
@@ -75,13 +74,15 @@ const FinaliseLogin = ({ data }: Props) => {
   const classes = useStyles({ theme });
   const { router, match } = useRouter();
   const { token } = match?.location?.query
-  var decoded = jwt.decode(token);
-  console.log(match, token)
+  const decoded = jwt.decode(token, { json: true });
+  const { TTC_ID } = decoded ? decoded : { TTC_ID: 'Invalid TTC ID'};
+  console.log(match, token, TTC_ID)
+
   return (
     <>
       {/* <RedirectRequest/> */}
       <div className={classes.root}>
-        <FinaliseDialogue /*onSubmit={AttemptLogin(router)}*/ email="email" onSubmit={AttemptLogin(router)} />
+        <FinaliseDialogue TTC_ID={TTC_ID} onSubmit={AttemptLogin(router, token)} />
       </div>
     </>
   );

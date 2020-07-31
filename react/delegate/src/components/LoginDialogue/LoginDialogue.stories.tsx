@@ -14,7 +14,7 @@ export const normal = () => {
 };
 
 export const finalise = () => {
-  return <FinaliseDialogue email="email" onSubmit={() => {}} />;
+  return <FinaliseDialogue TTC_ID="TTC_ID" onSubmit={() => {}} />;
 };
 
 export const password = () => {
