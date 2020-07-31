@@ -16,6 +16,8 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 
 import { CoursesPage_courses } from './__generated__/CoursesPage_courses.graphql';
+import MultiUser from 'components/MultiUser';
+import { Course as DropdownCourse } from 'sharedComponents/core/Input/SearchableDropdown/SearchableDropdown';
 
 const defaultCourse = {
   type: 'DANGEROUS GOODS AIR',
@@ -89,6 +91,9 @@ const CoursesPageComp = ({ courses }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [selectedCourse, setSelectedCourse] = React.useState<DropdownCourse[]>();
+
   // Set card size depending on course type
   const isOnline = true;
 
@@ -97,8 +102,8 @@ const CoursesPageComp = ({ courses }: Props) => {
   if (courses && courses.edges) {
     _courses = courses.edges.map((course: any) => ({
       id: course.ident,
-      type: course.category.name,
-      colour: course?.category.color,
+      type: course?.category?.name,
+      colour: course?.category?.color,
       url:
         course.bannerImageURL ||
         '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
@@ -159,7 +164,19 @@ const CoursesPageComp = ({ courses }: Props) => {
           _courses.map((course) => (
             <CourseCard
               course={course}
-              onClick={() => console.log('Pressed')}
+              onClick={() => {
+                const selected = courses && courses.edges && courses.edges.find(x => x && x.ident === course.id);
+                if (selected) {
+                  const courseItem = {
+                    id: selected?.ident,
+                    name: selected?.name,
+                    price: selected?.price,
+                    trainingReq: false
+                  };
+                  setSelectedCourse([courseItem])
+                }
+                setIsOpen((previous) => !previous);
+              }}
               size={isOnline ? 'small' : 'large'}
             />
           ))}
@@ -174,6 +191,11 @@ const CoursesPageComp = ({ courses }: Props) => {
         />
       </div>
       <Spacer vertical spacing={3} />
+      <MultiUser
+        courses={selectedCourse}
+        isOpen={isOpen}
+        onClose={() => setIsOpen((previous) => !previous)}
+      />
     </div>
   );
 };
