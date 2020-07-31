@@ -94,13 +94,35 @@ func (u *usersAppImpl) CreateCompany(company gentypes.CreateCompanyInput) (genty
 	return u.companyToGentype(comp), err
 }
 
-func (u *usersAppImpl) UpdateCompany(company gentypes.UpdateCompanyInput) (gentypes.Company, error) {
+func (u *usersAppImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Company, error) {
 	if !u.grant.IsAdmin {
 		return gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
-	comp, err := u.usersRepository.UpdateCompany(company)
-	return u.companyToGentype(comp), err
+	var logoKey *string
+
+	company, err := u.usersRepository.Company(input.UUID)
+	if err != nil {
+		return gentypes.Company{}, err
+	}
+
+	if input.LogoToken != nil {
+		if company.LogoKey != nil {
+			err := uploads.DeleteImageFromKey(*company.LogoKey)
+			if err != nil {
+				return gentypes.Company{}, err
+			}
+		}
+		key, err := uploads.VerifyUploadSuccess(*input.LogoToken, "profileImage")
+		if err != nil {
+			return gentypes.Company{}, err
+		}
+
+		logoKey = &key
+	}
+
+	company, err = u.usersRepository.UpdateCompany(input, logoKey)
+	return u.companyToGentype(company), err
 }
 
 func (u *usersAppImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error) {

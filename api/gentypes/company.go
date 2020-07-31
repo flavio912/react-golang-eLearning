@@ -35,7 +35,7 @@ type CreateCompanyInput struct {
 	PostCode     string  `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
 	Country      string  `valid:"required"`
 	ContactEmail string  `valid:"required,email"`
-	ContactPhone *string `valid:"numeric"`
+	ContactPhone *string `valid:"optional,numeric"`
 	LogoToken    *string
 }
 
@@ -55,6 +55,8 @@ type UpdateCompanyInput struct {
 	PostCode     *string `valid:"optional,alphanum,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
 	Country      *string `valid:"optional"`
 	ContactEmail *string `valid:"optional,email"`
+	ContactPhone *string `valid:"optional,numeric"`
+	LogoToken    *string
 }
 
 func (c *UpdateCompanyInput) Validate() error {

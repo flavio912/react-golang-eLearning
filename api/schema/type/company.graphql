@@ -43,9 +43,11 @@ input UpdateCompanyInput {
   approved: Boolean
   isContract: Boolean
   contactEmail: String
+  contactPhone: String
   addressLine1: String
   addressLine2: String
   county: String
   postCode: String
   country: String
+  logoToken: String
 }

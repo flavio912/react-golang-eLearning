@@ -213,7 +213,7 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput, logoK
 	return compModel, nil
 }
 
-func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error) {
+func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput, logoKey *string) (models.Company, error) {
 	var company models.Company
 	query := database.GormDB.Preload("Address").Where("uuid = ?", input.UUID).First(&company)
 	if query.Error != nil {
@@ -253,6 +253,12 @@ func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models
 	}
 	if input.IsContract != nil {
 		updates["is_contract"] = *input.IsContract
+	}
+	if input.ContactPhone != nil {
+		updates["contact_phone"] = input.ContactPhone
+	}
+	if logoKey != nil {
+		updates["logo_key"] = logoKey
 	}
 
 	tx := database.GormDB.Begin()

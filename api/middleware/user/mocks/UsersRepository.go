@@ -777,20 +777,20 @@ func (_m *UsersRepository) TakerTestMarks(courseTaker gentypes.UUID, courseID ui
 	return r0, r1
 }
 
-// UpdateCompany provides a mock function with given fields: input
-func (_m *UsersRepository) UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error) {
-	ret := _m.Called(input)
+// UpdateCompany provides a mock function with given fields: input, logoKey
+func (_m *UsersRepository) UpdateCompany(input gentypes.UpdateCompanyInput, logoKey *string) (models.Company, error) {
+	ret := _m.Called(input, logoKey)
 
 	var r0 models.Company
-	if rf, ok := ret.Get(0).(func(gentypes.UpdateCompanyInput) models.Company); ok {
-		r0 = rf(input)
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCompanyInput, *string) models.Company); ok {
+		r0 = rf(input, logoKey)
 	} else {
 		r0 = ret.Get(0).(models.Company)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.UpdateCompanyInput) error); ok {
-		r1 = rf(input)
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCompanyInput, *string) error); ok {
+		r1 = rf(input, logoKey)
 	} else {
 		r1 = ret.Error(1)
 	}
