@@ -8,6 +8,8 @@ type Company {
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
   address: Address!
   contactEmail: String!
+  contactPhone: String
+  logoURL: String
 }
 
 type Address {

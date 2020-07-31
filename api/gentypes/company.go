@@ -8,10 +8,12 @@ type Company struct {
 	CreatedAt    *string `valid:"rfc3339"`
 	IsContract   bool
 	ContactEmail string
+	ContactPhone *string
 	Approved     *bool
 	UUID         UUID
 	Name         string
 	AddressID    uint
+	LogoURL      *string
 }
 
 type CompanyFilter struct {

@@ -6,10 +6,17 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 // companyToGentype converts a company model to gentype.
 func (u *usersAppImpl) companyToGentype(company models.Company) gentypes.Company {
+	var url *string
+	if company.LogoKey != nil {
+		temp := uploads.GetImgixURL(*company.LogoKey)
+		url = &temp
+	}
+
 	if u.grant.ManagesCompany(company.UUID) {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
@@ -20,13 +27,16 @@ func (u *usersAppImpl) companyToGentype(company models.Company) gentypes.Company
 			AddressID:    company.AddressID,
 			IsContract:   company.IsContract,
 			ContactEmail: company.ContactEmail,
+			ContactPhone: company.ContactPhone,
+			LogoURL:      url,
 		}
 	}
 
 	if u.grant.IsCompanyDelegate(company.UUID) {
 		return gentypes.Company{
-			UUID: company.UUID,
-			Name: company.Name,
+			UUID:    company.UUID,
+			Name:    company.Name,
+			LogoURL: url,
 		}
 	}
 
