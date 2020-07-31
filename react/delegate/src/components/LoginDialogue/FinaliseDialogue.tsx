@@ -5,7 +5,7 @@ import FancyButton from './FancyButton';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import { ReactComponent as Logo } from '../../assets/logo/ttc-logo.svg';
-import { Link } from 'react-router-dom';
+
 const useStyles = createUseStyles((theme: Theme) => ({
   loginDialogueRoot: {},
   root: {

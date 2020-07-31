@@ -42,7 +42,7 @@ const AttemptLogin = (router: Router, token: String) => (
     token,
     password
   };
-  console.log(token, password, passwordRepeat)
+
   if (!password || !passwordRepeat) {
     return errorCallback('Please enter password twice');
   }
@@ -73,10 +73,9 @@ const FinaliseLogin = ({ data }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router, match } = useRouter();
-  const { token } = match?.location?.query
+  const { token } = match?.params;
   const decoded = jwt.decode(token, { json: true });
-  const { TTC_ID } = decoded ? decoded : { TTC_ID: 'Invalid TTC ID'};
-  console.log(match, token, TTC_ID)
+  const { TTC_ID } = decoded ? decoded.claims : { TTC_ID: 'Invalid TTC ID'};
 
   return (
     <>
