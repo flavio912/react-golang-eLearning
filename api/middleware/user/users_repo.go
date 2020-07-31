@@ -26,7 +26,7 @@ type UsersRepository interface {
 	GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error)
 	GetCompaniesByUUID(uuids []gentypes.UUID) ([]models.Company, error)
 	CompanyExists(companyUUID gentypes.UUID) bool
-	CreateCompany(company gentypes.CreateCompanyInput) (models.Company, error)
+	CreateCompany(company gentypes.CreateCompanyInput, logoKey *string) (models.Company, error)
 	UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error)
 	CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error
 	ApproveCompany(companyUUID gentypes.UUID) (models.Company, error)

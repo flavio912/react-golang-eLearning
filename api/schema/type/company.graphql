@@ -30,9 +30,11 @@ input CreateCompanyInput {
   addressLine1: String!
   addressLine2: String!
   contactEmail: String!
+  contactPhone: String
   county: String!
   postCode: String!
   country: String!
+  logoToken: String
 }
 
 input UpdateCompanyInput {

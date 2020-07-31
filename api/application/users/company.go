@@ -81,7 +81,16 @@ func (u *usersAppImpl) CreateCompany(company gentypes.CreateCompanyInput) (genty
 		return gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
-	comp, err := u.usersRepository.CreateCompany(company)
+	var logoKey *string
+	if company.LogoToken != nil {
+		key, err := uploads.VerifyUploadSuccess(*logoKey, "profileImage")
+		if err != nil {
+			return gentypes.Company{}, err
+		}
+		logoKey = &key
+	}
+
+	comp, err := u.usersRepository.CreateCompany(company, logoKey)
 	return u.companyToGentype(comp), err
 }
 

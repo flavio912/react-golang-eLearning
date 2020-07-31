@@ -179,7 +179,7 @@ func (u *usersRepoImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.Co
 }
 
 // CreateCompany is an admin function for creating companys directly
-func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (models.Company, error) {
+func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput, logoKey *string) (models.Company, error) {
 	// if !g.IsAdmin {
 	// 	return gentypes.Company{}, &errors.ErrUnauthorized
 	// }
@@ -200,6 +200,8 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (mode
 		},
 		Approved:     true,
 		ContactEmail: company.ContactEmail,
+		ContactPhone: company.ContactPhone,
+		LogoKey:      logoKey,
 	}
 
 	query := database.GormDB.Create(&compModel)

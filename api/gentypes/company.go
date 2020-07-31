@@ -28,13 +28,15 @@ type OrderBy struct {
 }
 
 type CreateCompanyInput struct {
-	CompanyName  string `valid:"required"`
-	AddressLine1 string `valid:"required"`
-	AddressLine2 string `valid:"required"`
-	County       string `valid:"required"`
-	PostCode     string `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
-	Country      string `valid:"required"`
-	ContactEmail string `valid:"required,email"`
+	CompanyName  string  `valid:"required"`
+	AddressLine1 string  `valid:"required"`
+	AddressLine2 string  `valid:"required"`
+	County       string  `valid:"required"`
+	PostCode     string  `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
+	Country      string  `valid:"required"`
+	ContactEmail string  `valid:"required,email"`
+	ContactPhone *string `valid:"numeric"`
+	LogoToken    *string
 }
 
 func (c *CreateCompanyInput) Validate() error {

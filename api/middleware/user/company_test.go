@@ -200,7 +200,7 @@ func TestCreateCompany(t *testing.T) {
 	prepareTestDatabase()
 
 	t.Run("Check company and address are created", func(t *testing.T) {
-		company, err := usersRepo.CreateCompany(newCompInput)
+		company, err := usersRepo.CreateCompany(newCompInput, nil)
 		assert.Nil(t, err)
 		assert.Equal(t, newCompInput.CompanyName, company.Name)
 		assert.Equal(t, true, company.Approved)
