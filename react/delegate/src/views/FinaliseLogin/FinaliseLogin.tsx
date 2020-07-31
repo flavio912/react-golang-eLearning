@@ -75,13 +75,16 @@ const FinaliseLogin = ({ data }: Props) => {
   const { router, match } = useRouter();
   const { token } = match?.params;
   const decoded = jwt.decode(token, { json: true });
-  const { TTC_ID } = decoded ? decoded.claims : { TTC_ID: 'Invalid TTC ID'};
+  const { TTC_ID } = decoded ? decoded.claims : { TTC_ID: 'Invalid TTC ID' };
 
   return (
     <>
       {/* <RedirectRequest/> */}
       <div className={classes.root}>
-        <FinaliseDialogue TTC_ID={TTC_ID} onSubmit={AttemptLogin(router, token)} />
+        <FinaliseDialogue
+          TTC_ID={TTC_ID}
+          onSubmit={AttemptLogin(router, token)}
+        />
       </div>
     </>
   );

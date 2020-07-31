@@ -50,8 +50,8 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
-      <Route path="/(password)?" Component={RecoverPassword} />
-      <Route path="/(finalise)?/:token" Component={FinaliseLogin} />
+      <Route path="/password" Component={RecoverPassword} />
+      <Route path="/finalise/:token" Component={FinaliseLogin} />
       <Route
         path="/app"
         Component={AppHolder}
