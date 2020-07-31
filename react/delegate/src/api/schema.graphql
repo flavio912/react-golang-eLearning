@@ -18,7 +18,9 @@ type Query {
 
 type Mutation {
   delegateLogin(input: DelegateLogin!): AuthToken
+  finaliseDelegate(input: FinaliseDelegateInput!): AuthToken
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
+  purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 }
 
 type CertificateInfo {
@@ -81,6 +83,11 @@ input DelegateLogin {
   noResp: Boolean
 }
 
+input FinaliseDelegateInput {
+  token: String!
+  password: String!
+}
+
 type Company {
   approved: Boolean
   uuid: UUID!
@@ -115,6 +122,19 @@ type Course {
   allowedToBuy: Boolean
   syllabus: [SyllabusItem!]
   bannerImageURL: String
+}
+
+input PurchaseCoursesInput {
+  courses: [Int!]!
+  users: [UUID!] # List of delegates UUIDs
+  extraInvoiceEmail: String
+  acceptedTerms: Boolean!
+  backgroundCheckConfirm: Boolean
+}
+
+type PurchaseCoursesResponse {
+  transactionComplete: Boolean! # true if the company is on a contract and thus doesn't need to pay upfront
+  stripeClientSecret: String # If transactionComplete is false, this is given so user can pay
 }
 
 type CoursePage implements PaginatedQuery {

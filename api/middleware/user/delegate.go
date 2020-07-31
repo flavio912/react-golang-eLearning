@@ -3,6 +3,8 @@ package user
 import (
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/getsentry/sentry-go"
@@ -235,7 +237,11 @@ func (u *usersRepoImpl) UpdateDelegate(
 		updates["profile_key"] = s3UploadKey
 	}
 	if password != nil {
-		updates["password"] = password
+		updates["password"], err = auth.HashPassword(*password)
+		if err != nil {
+			u.Logger.Log(sentry.LevelError, err, "UpdateDelegate: Unable to hash password")
+			return models.Delegate{}, &errors.ErrWhileHandling
+		}
 	}
 
 	save := database.GormDB.Model(&delegate).Updates(updates)

@@ -32,6 +32,7 @@ type Props = {
   labelColor?: string;
   labelClassName?: string;
   placeholder?: string;
+  disabled?: boolean,
   type?: InputTypes;
   onChange?: (text: string) => string | void;
 };
@@ -41,6 +42,7 @@ function FancyInput({
   labelColor = "black",
   labelClassName,
   placeholder = "",
+  disabled = false,
   type = "text",
   onChange = () => {},
 }: Props) {
@@ -59,6 +61,7 @@ function FancyInput({
         type={type}
         onChange={onTextChange}
         className={classes.fancyInput}
+        disabled={disabled}
       />
     </div>
   );
