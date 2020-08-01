@@ -1,10 +1,11 @@
 package users
 
 import (
+	"time"
+
 	"github.com/getsentry/sentry-go"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/email"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
-	"time"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
@@ -13,14 +14,15 @@ func (u *usersAppImpl) individualToGentype(ind models.Individual) gentypes.Indiv
 	created_at := ind.CreatedAt.Format(time.RFC3339)
 	last_login := ind.LastLogin.Format(time.RFC3339)
 	return gentypes.Individual{
-		UUID:      ind.UUID,
-		CreatedAt: &created_at,
-		Email:     ind.Email,
-		FirstName: ind.FirstName,
-		LastName:  ind.LastName,
-		JobTitle:  ind.JobTitle,
-		Telephone: ind.Telephone,
-		LastLogin: last_login,
+		UUID:            ind.UUID,
+		CreatedAt:       &created_at,
+		Email:           ind.Email,
+		FirstName:       ind.FirstName,
+		LastName:        ind.LastName,
+		JobTitle:        ind.JobTitle,
+		Telephone:       ind.Telephone,
+		LastLogin:       last_login,
+		CourseTakerUUID: ind.CourseTakerUUID,
 	}
 }
 
