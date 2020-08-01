@@ -10,6 +10,7 @@ export default {
 export const normal = () => {
   return (
     <ActiveCoursesEmpty
+      onClick={() => console.log('Pressed')}
       title={text("Title", '"Book John on their first Course"')}
     />
   );

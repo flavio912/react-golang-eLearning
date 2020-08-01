@@ -123,99 +123,22 @@ const courseSearchFunction = async (query: string) => {
   );
 };
 
-export const tabList: TabContent[] = [
-  {
-    key: 'Courses',
-    component: ({ state, setState, setTab, closeModal }) => (
-      <>
-        <Body>
-          <Heading>Book John's first Course</Heading>
-          <LargeText>Book John on Course(s)</LargeText>
-          <SearchableDropdown
-            multiselect
-            selected={state.courses}
-            searchQuery={courseSearchFunction}
-            setSelected={(courses) =>
-              setState((s: object) => ({ ...s, courses }))
-            }
-          />
-        </Body>
-        <Footer>
-          <CurrentTotal
-            total={state.courses
-              .map(({ price }: { price: number }) => price)
-              .reduce((a: number, b: number) => a + b, 0)}
-          />
-          <div style={{ display: 'flex' }}>
-            <Button archetype="default" onClick={() => closeModal()}>
-              Cancel
-            </Button>
-            <Button
-              archetype="submit"
-              onClick={() => setTab('Terms of Business')}
-              style={{ marginLeft: 20 }}
-            >
-              Continue to Terms
-            </Button>
-          </div>
-        </Footer>
-      </>
-    )
-  },
-  {
-    key: 'Terms of Business',
-    component: ({ state, setState, closeModal, setTab }) => {
-      const trainingReqCourses = state.courses.filter(
-        (course: Course) => !!course.trainingReq
-      );
-      return (
+export const tabList = (user: { firstName: string, uuid: string }) => {
+  const tabContent: TabContent[] = [
+    {
+      key: 'Courses',
+      component: ({ state, setState, setTab, closeModal }) => (
         <>
           <Body>
-            <Heading>Terms of Business</Heading>
-            <LargeText>
-              In order to book John onto these Courses, please refer to and
-              confirm you have read our Terms of Business below.
-            </LargeText>
-            <TermsBox title="TTC Hub - Terms of Business">
-              <Text>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut
-                deleniti nam porro optio! Nam quo enim ipsum eligendi in nihil
-                perferendis, eaque voluptatem esse dolore quaerat laboriosam rem
-                ipsa reprehenderit.
-              </Text>
-              <Text>
-                Corporis voluptate molestias saepe placeat consequatur, pariatur
-                recusandae ducimus at suscipit corrupti cupiditate, harum sint
-                libero laudantium quaerat ipsum? Sint, ut nisi.
-              </Text>
-              <Text>
-                Ipsam perferendis, id nobis autem, veniam porro magnam cum ex
-                expedita in placeat nemo asperiores aliquam sequi illo aliquid
-                pariatur saepe minus? Voluptas sint voluptatum nihil, suscipit
-                sed eaque rem porro at officiis eos voluptatibus, ullam
-                cupiditate? Nobis porro adipisci animi, vitae ex vel?
-              </Text>
-            </TermsBox>
-            {trainingReqCourses.length > 0 && (
-              <>
-                <Heading>Background Check</Heading>
-                <LargeText>
-                  The following Course require you to validate that the above
-                  delegates have recently completed a 5-year background check to
-                  comply with Civil Aviation Authority standards.
-                </LargeText>
-                <CourseList courses={trainingReqCourses} />
-                <Checkbox
-                  boxes={state.training}
-                  setBoxes={(training) =>
-                    setState((s: object) => ({ ...s, training }))
-                  }
-                />
-              </>
-            )}
-            <Checkbox
-              boxes={state.ToB}
-              setBoxes={(ToB) => setState((s: object) => ({ ...s, ToB }))}
+            <Heading>Book {user.firstName}'s first Course</Heading>
+            <LargeText>Book {user.firstName} on Course(s)</LargeText>
+            <SearchableDropdown
+              multiselect
+              selected={state.courses}
+              searchQuery={courseSearchFunction}
+              setSelected={(courses) =>
+                setState((s: object) => ({ ...s, courses }))
+              }
             />
           </Body>
           <Footer>
@@ -230,29 +153,109 @@ export const tabList: TabContent[] = [
               </Button>
               <Button
                 archetype="submit"
-                onClick={() => setTab('Payment')}
+                onClick={() => setTab('Terms of Business')}
                 style={{ marginLeft: 20 }}
               >
-                Continue to Payment
+                Continue to Terms
               </Button>
             </div>
           </Footer>
         </>
-      );
+      )
+    },
+    {
+      key: 'Terms of Business',
+      component: ({ state, setState, closeModal, setTab }) => {
+        const trainingReqCourses = state.courses.filter(
+          (course: Course) => !!course.trainingReq
+        );
+        return (
+          <>
+            <Body>
+              <Heading>Terms of Business</Heading>
+              <LargeText>
+                In order to book {user.firstName} onto these Courses, please refer to and
+                confirm you have read our Terms of Business below.
+              </LargeText>
+              <TermsBox title="TTC Hub - Terms of Business">
+                <Text>
+                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Aut
+                  deleniti nam porro optio! Nam quo enim ipsum eligendi in nihil
+                  perferendis, eaque voluptatem esse dolore quaerat laboriosam rem
+                  ipsa reprehenderit.
+                </Text>
+                <Text>
+                  Corporis voluptate molestias saepe placeat consequatur, pariatur
+                  recusandae ducimus at suscipit corrupti cupiditate, harum sint
+                  libero laudantium quaerat ipsum? Sint, ut nisi.
+                </Text>
+                <Text>
+                  Ipsam perferendis, id nobis autem, veniam porro magnam cum ex
+                  expedita in placeat nemo asperiores aliquam sequi illo aliquid
+                  pariatur saepe minus? Voluptas sint voluptatum nihil, suscipit
+                  sed eaque rem porro at officiis eos voluptatibus, ullam
+                  cupiditate? Nobis porro adipisci animi, vitae ex vel?
+                </Text>
+              </TermsBox>
+              {trainingReqCourses.length > 0 && (
+                <>
+                  <Heading>Background Check</Heading>
+                  <LargeText>
+                    The following Course require you to validate that the above
+                    delegates have recently completed a 5-year background check to
+                    comply with Civil Aviation Authority standards.
+                  </LargeText>
+                  <CourseList courses={trainingReqCourses} />
+                  <Checkbox
+                    boxes={state.training}
+                    setBoxes={(training) =>
+                      setState((s: object) => ({ ...s, training }))
+                    }
+                  />
+                </>
+              )}
+              <Checkbox
+                boxes={state.ToB}
+                setBoxes={(ToB) => setState((s: object) => ({ ...s, ToB }))}
+              />
+            </Body>
+            <Footer>
+              <CurrentTotal
+                total={state.courses
+                  .map(({ price }: { price: number }) => price)
+                  .reduce((a: number, b: number) => a + b, 0)}
+              />
+              <div style={{ display: 'flex' }}>
+                <Button archetype="default" onClick={() => closeModal()}>
+                  Cancel
+                </Button>
+                <Button
+                  archetype="submit"
+                  onClick={() => setTab('Payment')}
+                  style={{ marginLeft: 20 }}
+                >
+                  Continue to Payment
+                </Button>
+              </div>
+            </Footer>
+          </>
+        );
+      }
+    },
+    {
+      key: 'Payment',
+      component: ({ state }) => (
+        <Body>
+          <Payment
+            courses={state.courses}
+            userUUIDs={[user.uuid]}
+            isContract={false}
+            onSuccess={() => {}}
+            onError={() => {}}
+          />
+        </Body>
+      )
     }
-  },
-  {
-    key: 'Payment',
-    component: ({ state }) => (
-      <Body>
-        <Payment
-          courses={state.courses}
-          userUUIDs={[]}
-          isContract={false}
-          onSuccess={() => {}}
-          onError={() => {}}
-        />
-      </Body>
-    )
-  }
-];
+  ]
+  return tabContent;
+};
