@@ -5,12 +5,13 @@ import (
 )
 
 type Company struct {
-	CreatedAt  *string `valid:"rfc3339"`
-	IsContract bool
-	Approved   *bool
-	UUID       UUID
-	Name       string
-	AddressID  uint
+	CreatedAt    *string `valid:"rfc3339"`
+	IsContract   bool
+	ContactEmail string
+	Approved     *bool
+	UUID         UUID
+	Name         string
+	AddressID    uint
 }
 
 type CompanyFilter struct {
@@ -31,6 +32,7 @@ type CreateCompanyInput struct {
 	County       string `valid:"required"`
 	PostCode     string `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
 	Country      string `valid:"required"`
+	ContactEmail string `valid:"required,email"`
 }
 
 func (c *CreateCompanyInput) Validate() error {
@@ -42,11 +44,13 @@ type UpdateCompanyInput struct {
 	UUID         UUID
 	CompanyName  *string
 	Approved     *bool
+	IsContract   *bool
 	AddressLine1 *string
 	AddressLine2 *string
-	County       *string `valid:"optional,alpha"`
+	County       *string `valid:"optional"`
 	PostCode     *string `valid:"optional,alphanum,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
-	Country      *string `valid:"optional,alpha"`
+	Country      *string `valid:"optional"`
+	ContactEmail *string `valid:"optional,email"`
 }
 
 func (c *UpdateCompanyInput) Validate() error {

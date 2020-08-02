@@ -193,6 +193,7 @@ var newCompInput = gentypes.CreateCompanyInput{
 	County:       "York",
 	PostCode:     "YO108JD",
 	Country:      "UK",
+	ContactEmail: "email@email.com",
 }
 
 func TestCreateCompany(t *testing.T) {

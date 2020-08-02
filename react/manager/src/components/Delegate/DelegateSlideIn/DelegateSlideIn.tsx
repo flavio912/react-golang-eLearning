@@ -1,24 +1,25 @@
 import * as React from 'react';
-import SideModal from 'components/core/Modals/SideModal';
+import SideModal from 'sharedComponents/SideModal/SideModal';
 import Tabs, {
   TabContent,
   Body,
   Heading,
   Footer
-} from 'components/core/Modals/SideModal/Tabs';
+} from 'sharedComponents/SideModal/Tabs';
 import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
 import EasyInput from 'components/core/Input/EasyInput';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
-import { CreateDelegate } from './mutations';
+import { CreateDelegate, UpdateDelegate } from './mutations';
 import Checkbox from 'components/core/Input/Checkbox';
 import CheckboxSingle from 'components/core/Input/CheckboxSingle';
 import { check } from 'prettier';
 import { mutations_CreateDelegateMutationResponse } from './__generated__/mutations_CreateDelegateMutation.graphql';
-import IdentTag from 'components/IdentTag';
+import IdentTag from 'sharedComponents/IdentTag';
 import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
+import { mutations_UpdateDelegateMutationResponse } from './__generated__/mutations_UpdateDelegateMutation.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   personalContainer: {
@@ -105,20 +106,20 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 export type DelegateInfo = {
+  uuid: string;
   firstName: string;
   lastName: string;
   jobTitle: string;
   email: string;
   phone: string;
   ttcId: string;
+  generatedPassword: string | null | undefined;
+  generatePassword: boolean;
 };
-
-type SubmitDelegate = (delegate: DelegateInfo) => void;
 
 type Props = {
   isOpen: boolean;
   delegate?: DelegateInfo;
-  onSubmit?: SubmitDelegate;
   onClose: () => void;
 };
 
@@ -252,32 +253,32 @@ const delegateDetails: TabContent[] = [
               </Button>
               <Button
                 archetype="submit"
-                onClick={() =>
-                  CreateDelegate(
-                    {
-                      firstName: state.firstName,
-                      lastName: state.lastName,
-                      jobTitle: state.jobTitle,
-                      email: state.email,
-                      phone: state.phone
-                    },
-                    state.generatePassword,
-                    () => {},
-                    (resp: mutations_CreateDelegateMutationResponse) => {
-                      setState((s: object) => ({
+                onClick={() => {
+                  const delegate = {
+                    uuid: state.uuid,
+                    firstName: state.firstName,
+                    lastName: state.lastName,
+                    jobTitle: state.jobTitle,
+                    email: state.email,
+                    phone: state.phone,
+                    generatePassword: state.generatePassword
+                  };
+                  state.onSubmit(delegate,
+                    (resp : DelegateInfo) => setState(
+                      (s : object) => ({
                         ...s,
-                        firstName: resp.createDelegate?.delegate.firstName,
-                        lastName: resp.createDelegate?.delegate.lastName,
-                        // jobTitle: resp.createDelegate?.delegate.jobTitle,
-                        email: resp.createDelegate?.delegate.email,
-                        phone: resp.createDelegate?.delegate.telephone,
-                        generatedPassword:
-                          resp.createDelegate?.generatedPassword,
-                        ttcId: resp.createDelegate?.delegate.TTC_ID,
+                        firstName: resp.firstName,
+                        lastName: resp.lastName,
+                        jobTitle: resp.jobTitle,
+                        email: resp.email,
+                        phone: resp.phone,
+                        generatedPassword: resp.generatedPassword,
+                        ttcId: resp.ttcId,
                         update: true
-                      }));
-                    }
-                  )
+                      })
+                    )
+                  );
+                }
                 }
                 className={classes.submitBtn}
               >
@@ -291,23 +292,85 @@ const delegateDetails: TabContent[] = [
   }
 ];
 
-const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
+const DelegateSlideIn = ({ isOpen, delegate, onClose }: Props) => {
   const inputDel = delegate;
   if (delegate === undefined) {
     delegate = {
+      uuid: '',
       firstName: '',
       lastName: '',
       jobTitle: '',
       email: '',
       phone: '',
-      ttcId: ''
+      ttcId: '',
+      generatePassword: false,
+      generatedPassword: '',
     };
   }
+
+  const update = inputDel !== undefined;
+
+  const createDelegate = (delegate: DelegateInfo, stateUpdate: (resp: DelegateInfo) => void) => 
+    CreateDelegate(
+      {
+        firstName: delegate.firstName,
+        lastName: delegate.lastName,
+        jobTitle: delegate.jobTitle,
+        email: delegate.email,
+        phone: delegate.phone,
+      },
+      delegate.generatePassword ?? false,
+      () => {},
+      (resp: mutations_CreateDelegateMutationResponse) => stateUpdate(
+        {
+          uuid: delegate.uuid,
+          firstName: resp.createDelegate?.delegate.firstName ?? '',
+          lastName: resp.createDelegate?.delegate.lastName ?? '',
+          jobTitle: resp.createDelegate?.delegate.jobTitle ?? '',
+          email: resp.createDelegate?.delegate.email ?? '',
+          phone: resp.createDelegate?.delegate.telephone ?? '',
+          generatePassword: delegate.generatePassword,
+          ttcId: resp.createDelegate?.delegate.TTC_ID ?? '',
+          generatedPassword: resp.createDelegate?.generatedPassword
+        }
+      )
+    );
+
+  const updateDelegate = (delegate: DelegateInfo, stateUpdate: (resp: DelegateInfo) => void) => 
+    UpdateDelegate(
+      {
+        uuid: delegate.uuid,
+        firstName: delegate.firstName,
+        lastName: delegate.lastName,
+        jobTitle: delegate.jobTitle,
+        email: delegate.email,
+        phone: delegate.phone,
+      },
+      () => {},
+      (resp: mutations_UpdateDelegateMutationResponse) => stateUpdate(
+        {
+          uuid: delegate.uuid,
+          firstName: resp.updateDelegate?.firstName ?? '',
+          lastName: resp.updateDelegate?.lastName ?? '',
+          jobTitle: resp.updateDelegate?.jobTitle ?? '',
+          email: resp.updateDelegate?.email ?? '',
+          phone: resp.updateDelegate?.telephone ?? '',
+          generatePassword:
+            delegate.generatePassword,
+          ttcId: resp.updateDelegate?.TTC_ID ?? '',
+          generatedPassword: delegate.generatedPassword
+        }
+      )
+    );
+
+  const onSubmit = update
+    ? updateDelegate
+    : createDelegate;
 
   return (
     <SideModal
       title={
-        inputDel !== undefined
+        update
           ? `${delegate.firstName} ${delegate.lastName}`
           : 'Add New Delegate'
       }
@@ -319,13 +382,15 @@ const DelegateSlideIn = ({ isOpen, delegate, onClose, onSubmit }: Props) => {
         closeModal={onClose}
         initialState={{
           profileUrl: 'https://i.imgur.com/C0RGBYP.jpg',
+          uuid: delegate.uuid,
           firstName: delegate.firstName,
           lastName: delegate.lastName,
           jobTitle: delegate.jobTitle,
           email: delegate.email,
           phone: delegate.phone,
           ttcId: delegate.ttcId,
-          update: inputDel !== undefined
+          update: update,
+          onSubmit: onSubmit
         }}
       />
     </SideModal>

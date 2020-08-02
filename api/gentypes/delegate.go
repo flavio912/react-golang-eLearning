@@ -81,3 +81,8 @@ type DelegateLoginInput struct {
 	Password string
 	NoResp   *bool
 }
+
+type FinaliseDelegateInput struct {
+	Token    string
+	Password string
+}

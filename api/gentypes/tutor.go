@@ -36,3 +36,8 @@ func (u *UpdateTutorInput) Validate() error {
 	_, err := govalidator.ValidateStruct(u)
 	return err
 }
+
+type TutorFilter struct {
+	Name *string
+	CIN  *string
+}

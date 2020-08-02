@@ -10,11 +10,7 @@ import {
   Grid,
   Divider,
   TextField,
-  Typography,
-  FormLabel,
-  Checkbox,
-  FormControlLabel,
-  FormGroup
+  Typography
 } from '@material-ui/core';
 import clsx from 'clsx';
 
@@ -113,33 +109,6 @@ export default function AddUser({
               />
             </Grid>
             <Grid item></Grid>
-            <Grid item md={6} xs={12}>
-              <FormLabel component="legend">User Permissions</FormLabel>
-              <FormGroup>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={userType === 'delegate' ? true : false}
-                      onChange={handleFieldChange}
-                      name="delegate"
-                      disabled
-                    />
-                  }
-                  label="Is Delegate"
-                />
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={userType === 'manager' ? true : false}
-                      onChange={handleFieldChange}
-                      name="manager"
-                      disabled
-                    />
-                  }
-                  label="Is Manager"
-                />
-              </FormGroup>
-            </Grid>
           </Grid>
         </CardContent>
         <Divider />

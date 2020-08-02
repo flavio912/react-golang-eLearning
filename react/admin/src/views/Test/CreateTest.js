@@ -35,9 +35,9 @@ const CREATE_TEST = gql`
 var initState = {
   name: '',
   tags: [],
-  attemptsAllowed: false,
-  passPercentage: false,
-  questionsToAnswer: false,
+  attemptsAllowed: 1,
+  passPercentage: 0.0,
+  questionsToAnswer: 0,
   randomiseAnswers: false,
   questions: []
 };

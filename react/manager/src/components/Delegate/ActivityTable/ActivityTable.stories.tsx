@@ -7,6 +7,6 @@ export default {
   decorators: [withKnobs],
 };
 
-export const normal = () => {
-  return <ActivityTable />;
-};
+// export const normal = () => {
+//   return <ActivityTable />;
+// };

@@ -17,15 +17,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-type Props = { title: string };
-function ActiveCoursesEmpty({ title }: Props) {
+type Props = { title: string, onClick: () => void };
+function ActiveCoursesEmpty({ title, onClick }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   return (
     <div className={classes.root}>
       <Text text={title} color={themeConfig.colors.secondaryBlack} />
-      <Button bold archetype="submit">
+      <Button bold archetype="submit" onClick={onClick}>
         Book now
       </Button>
     </div>

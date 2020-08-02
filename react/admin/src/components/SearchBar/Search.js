@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-function Search({ onSearch, className, ...rest }) {
+function Search({ onSearch, setSearchText, className, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -45,6 +45,7 @@ function Search({ onSearch, className, ...rest }) {
         <SearchIcon className={classes.searchIcon} />
         <Input
           className={classes.searchInput}
+          onChange={inp => setSearchText && setSearchText(inp.target.value)}
           disableUnderline
           placeholder="Search"
         />

@@ -98,6 +98,15 @@ func (r *CourseResolver) ExpirationToEndMonth() bool {
 func (r *CourseResolver) Published() bool {
 	return r.Course.Published
 }
+func (r *CourseResolver) CertificateType(ctx context.Context) (*CertificateTypeResolver, error) {
+	if r.Course.CertificateTypeUUID == nil {
+		return nil, nil
+	}
+
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+		CertificateTypeUUID: r.Course.CertificateTypeUUID,
+	})
+}
 
 type CoursePageResolver struct {
 	edges    *[]*CourseResolver

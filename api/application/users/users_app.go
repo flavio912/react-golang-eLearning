@@ -11,6 +11,7 @@ type UsersApp interface {
 	GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilter, orderBy *gentypes.OrderBy) ([]gentypes.Delegate, gentypes.PageInfo, error)
 	CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, *string, error)
 	UpdateDelegate(input gentypes.UpdateDelegateInput) (gentypes.Delegate, error)
+	FinaliseDelegate(input gentypes.FinaliseDelegateInput) (string, error)
 
 	Company(uuid gentypes.UUID) (gentypes.Company, error)
 	GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error)
@@ -33,6 +34,10 @@ type UsersApp interface {
 	) ([]gentypes.UUID, gentypes.PageInfo, error)
 
 	CreateIndividual(input gentypes.CreateIndividualInput) (gentypes.User, error)
+	UpdateIndividual(input gentypes.UpdateIndividualInput) (gentypes.User, error)
+	DeleteIndividual(input gentypes.DeleteIndividualInput) (bool, error)
+	Individual(uuid gentypes.UUID) (gentypes.Individual, error)
+	Individuals(page *gentypes.Page, filter *gentypes.IndividualFilter, orderBy *gentypes.OrderBy) ([]gentypes.Individual, gentypes.PageInfo, error)
 
 	ProfileUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 	ManagerProfileUploadSuccess(token string) error

@@ -4,9 +4,9 @@ import RegisterCompany from './RegisterCompany';
 
 export default {
   title: 'Overview/Registration/RegisterCompany',
-  decorators: [withKnobs]
+  decorators: [withKnobs],
 };
 
 export const normal = () => {
-  return <RegisterCompany onSubmit={() => {}} />;
+  return <RegisterCompany onChange={() => {}} onNext={() => {}} />;
 };

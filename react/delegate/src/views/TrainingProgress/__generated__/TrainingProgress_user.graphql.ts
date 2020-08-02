@@ -4,8 +4,10 @@
 import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added value";
+export type UserType = "delegate" | "individual" | "manager" | "%future added value";
 export type TrainingProgress_user = {
     readonly firstName: string;
+    readonly type: UserType;
     readonly myCourses: ReadonlyArray<{
         readonly status: CourseStatus;
         readonly course: {
@@ -44,6 +46,13 @@ const node: ReaderFragment = (function () {
                 "kind": "ScalarField",
                 "alias": null,
                 "name": "firstName",
+                "args": null,
+                "storageKey": null
+            },
+            {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "type",
                 "args": null,
                 "storageKey": null
             },
@@ -92,5 +101,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = '5ce44a39f263de5298bc5b7eb24cf380';
+(node as any).hash = '67051e1e524681535447d2fbade72cab';
 export default node;

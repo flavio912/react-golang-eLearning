@@ -13,16 +13,16 @@ const useStyles = createUseStyles((theme: Theme) => ({
     backgroundSize: 'cover',
     backgroundRepeat: 'no-repeat',
     background: theme.colors.lightBlue,
-    paddingTop: 45
+    paddingTop: 45,
   },
   column: {
     display: 'flex',
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
   centerColumn: {
     display: 'flex',
     alignItems: 'center',
-    width: theme.centerColumnWidth
+    width: theme.centerColumnWidth,
   },
   row: {
     display: 'flex',
@@ -31,31 +31,31 @@ const useStyles = createUseStyles((theme: Theme) => ({
     alignItems: 'center',
     '@media (max-width: 1200px)': {
       justifyContent: 'center',
-      margin: '0 5% 0 5%'
-    }
+      margin: '0 5% 0 5%',
+    },
   },
   buttonRow: {
     display: 'flex',
     flexDirection: 'row',
     '@media (max-width: 600px)': {
-      flexDirection: 'column'
-    }
+      flexDirection: 'column',
+    },
   },
   title: {
     fontSize: 60,
     fontWeight: '900',
     marginTop: '5%',
     maxWidth: '800px',
-    color: theme.colors.primaryBlack
+    color: theme.colors.primaryBlack,
   },
   blueText: {
-    color: theme.colors.navyBlue
+    color: theme.colors.navyBlue,
   },
   description: {
     fontSize: theme.fontSizes.heading,
     fontWeight: '300',
     margin: '5% 0 5% 0',
-    maxWidth: '750px'
+    maxWidth: '750px',
   },
   button: {
     height: '52px',
@@ -64,32 +64,32 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '800',
     marginBottom: '5%',
     '@media (max-width: 600px)': {
-      width: '100%'
-    }
+      width: '100%',
+    },
   },
   boxShadow: {
     marginLeft: '25px',
     boxShadow: '0 1px 4px 0 rgba(0,0,0,0.09)',
     '@media (max-width: 600px)': {
-      marginLeft: '0'
-    }
+      marginLeft: '0',
+    },
   },
   nameBox: {
     '@media (max-width: 1200px)': {
       opacity: 0,
       flex: 0,
-      width: 0
-    }
+      width: 0,
+    },
   },
   name: {
     fontSize: theme.fontSizes.large,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
   jobTitle: {
     fontSize: theme.fontSizes.xSmall,
     color: theme.colors.textGrey,
-    marginTop: '2px'
-  }
+    marginTop: '2px',
+  },
 }));
 
 type Props = {
@@ -142,10 +142,10 @@ function Homepage({ imageURL, onView, onDemo, className }: Props) {
         </div>
       </div>
       <Curve height={140} />
-      <TrustedCard
+      {/* <TrustedCard
         text="Trusted by more than 1,000 businesses in 120 countries."
         noShadow
-      />
+      /> */}
     </div>
   );
 }

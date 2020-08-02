@@ -4,10 +4,9 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { useRouter } from 'found';
 import { Theme } from 'helpers/theme';
 import Footer from 'components/Menu/Footer';
-
-type Props = {
-  children?: React.ReactChildren;
-};
+import { delegateLogin } from 'api/config';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { AppHolder_categories } from './__generated__/AppHolder_categories.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -98,11 +97,25 @@ const footerColumns = [
   },
 ];
 
-export const AppHolder = ({ children }: Props) => {
+type Props = {
+  children?: React.ReactChildren;
+  categories: AppHolder_categories;
+};
+
+const AppHolder = ({ children, categories }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
   const { match, router } = useRouter();
+
+  const categoryOptions = (categories.edges ?? []).map((category) => ({
+    id: category?.uuid ?? '',
+    title: category?.name ?? '',
+    text:
+      'Training courses specifically designed for those who work in Aviation Security',
+    link: `/courses/${category?.uuid}`,
+  }));
+
   const tabs: Array<Tab> = [
     {
       id: 0,
@@ -133,36 +146,14 @@ export const AppHolder = ({ children }: Props) => {
           title: 'Online Courses',
           text:
             'Training courses specifically designed for those who work in Aviation Security',
-          link: '/',
+          options: categoryOptions,
         },
         {
           id: 1,
           title: 'Classroom Courses',
           text:
             'All classroom courses are delivered in London at our purpose built facility',
-          options: [
-            {
-              id: 0,
-              title: 'Aviation Security',
-              text:
-                'Training courses specifically designed for those who work in Aviation Security',
-              link: '/courses',
-            },
-            {
-              id: 1,
-              title: 'Dangerous Goods',
-              text:
-                'Courses for both air and road, all in accordance with CAA Regulations',
-              link: '/',
-            },
-            {
-              id: 2,
-              title: 'Health & Safety',
-              text:
-                'All our courses can be taken online in conjunction withyour internal policies',
-              link: '/',
-            },
-          ],
+          options: categoryOptions,
         },
       ],
     },
@@ -233,9 +224,27 @@ export const AppHolder = ({ children }: Props) => {
           router.push('/');
         }}
         onCheckout={() => console.log('Checkout')}
+        onLoginClick={() => {
+          window.location.href = delegateLogin;
+        }}
       />
       <div className={classes.appHolder}>{children}</div>
       <Footer columns={footerColumns} />
     </div>
   );
 };
+
+export default createFragmentContainer(AppHolder, {
+  categories: graphql`
+    fragment AppHolder_categories on CategoryPage {
+      edges {
+        uuid
+        name
+        color
+      }
+      pageInfo {
+        total
+      }
+    }
+  `,
+});

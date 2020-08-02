@@ -57,32 +57,58 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
 }));
 
-type Props = {
-  onSubmit: (
-    fname: string,
-    lname: string,
-    email: string,
-    password: string,
-    telephone: string,
-    companyName: string,
-  ) => void;
-  onLogoClick?: () => void;
+const initState: State = {
+  fname: '',
+  lname: '',
+  email: '',
+  password: '',
+  telephone: '',
+  companyName: '',
 };
 
-function RegisterCompany({ onSubmit, onLogoClick }: Props) {
+type StateUpdate = {
+  fname?: string;
+  lname?: string;
+  email?: string;
+  password?: string;
+  telephone?: string;
+  companyName?: string;
+};
+
+type State = {
+  fname: string;
+  lname: string;
+  email: string;
+  password: string;
+  telephone: string;
+  companyName: string;
+};
+
+type Props = {
+  onLogoClick?: () => void;
+  onChange: (value: State) => void;
+  onNext: () => void;
+};
+
+function RegisterCompany({ onLogoClick, onChange, onNext }: Props) {
   const classes = useStyles();
 
-  const [firstName, setFirstName] = React.useState('');
-  const [lastName, setLastName] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-  const [telephone, setTelephone] = React.useState('');
-  const [company, setCompany] = React.useState('');
-  const [agreedTerms, setAgreedTerms] = React.useState(false);
+  const [inputData, setInput] = React.useState(initState);
 
-  const submitInfo = () => {
-    onSubmit(firstName, lastName, email, password, telephone, company);
+  const onUpdate = (updates: StateUpdate) => {
+    const newState = { ...inputData, ...updates };
+    setInput(newState);
+    onChange(newState);
   };
+
+  let isComplete = true;
+
+  for (const key in inputData) {
+    if (!inputData[key]) {
+      isComplete = false;
+      break;
+    }
+  }
 
   return (
     <div className={classes.registerCompanyRoot}>
@@ -98,60 +124,54 @@ function RegisterCompany({ onSubmit, onLogoClick }: Props) {
         <CoreInput
           placeholder="First Name"
           type="text"
-          onChange={setFirstName}
+          onChange={(val) => onUpdate({ fname: val })}
           value={'fname'}
           className={classes.input}
         />
         <CoreInput
           placeholder="Last Name"
           type="text"
-          onChange={setLastName}
+          onChange={(val) => onUpdate({ lname: val })}
           value={'lname'}
           className={classes.input}
         />
         <CoreInput
           placeholder="Company Name"
           type="text"
-          onChange={setCompany}
+          onChange={(val) => onUpdate({ companyName: val })}
           value={'company'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
           placeholder="Company Email"
           type="email"
-          onChange={setEmail}
+          onChange={(val) => onUpdate({ email: val })}
           value={'email'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
           placeholder="Password"
           type="password"
-          onChange={setPassword}
+          onChange={(val) => onUpdate({ password: val })}
           value={'password'}
           className={classnames(classes.input, classes.fullWidth)}
         />
         <CoreInput
           placeholder="Telephone Number"
           type="tel"
-          onChange={setTelephone}
+          onChange={(val) => onUpdate({ telephone: val })}
           value={'telephone'}
           className={classnames(classes.input, classes.fullWidth)}
-        />
-        <CheckboxSingle
-          size={18}
-          onChange={() => {}}
-          fontStyle={classes.checkboxText}
-          className={classes.fullWidth}
-          label="By checking this box you confirm you are happy for our team to contact you during the registration period"
         />
       </div>
       <Spacer vertical spacing={3} />
       <Button
         archetype="submit"
         className={classes.button}
-        onClick={submitInfo}
+        disabled={!isComplete}
+        onClick={onNext}
       >
-        Register with TTC
+        Next
       </Button>
       <Spacer vertical spacing={3} />
     </div>

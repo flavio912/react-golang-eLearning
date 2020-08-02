@@ -34,11 +34,13 @@ input CoursesFilter {
   backgroundCheck: Boolean
   price: Float
   allowedToBuy: Boolean # Show only courses that you are authorized to book
+  categoryUUID: UUID
 }
 
 input CompanyFilter {
   uuid: UUID
   name: String
+  approved: Boolean
 }
 
 input LessonFilter {
@@ -52,6 +54,26 @@ input SyllabusFilter {
   excludeLesson: Boolean
   excludeModule: Boolean
   excludeTest: Boolean
+}
+
+input CertificateTypeFilter {
+  name: String
+  regulationText: String
+  requiresCAANo: Boolean
+  showTrainingSection: Boolean
+}
+
+input CAANumberFilter {
+  identifier: String
+  used: Boolean
+}
+
+input IndividualFilter {
+  uuid: UUID
+  name: String
+  email: String
+  jobTitle: String
+  telephone: String
 }
 
 interface PaginatedQuery {
@@ -86,6 +108,12 @@ type Query {
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   course(id: Int!): Course
   user: User
+  individual(uuid: UUID!): Individual
+  individuals(
+    page: Page
+    filter: IndividualFilter
+    orderBy: OrderBy
+  ): IndividualPage
 
   questions(page: Page, filter: QuestionFilter, orderBy: OrderBy): QuestionPage
   question(uuid: UUID!): Question
@@ -94,9 +122,21 @@ type Query {
   modules(page: Page, filter: ModuleFilter, orderBy: OrderBy): ModulePage
   module(uuid: UUID!): Module
 
+  tutor(uuid: UUID!): Tutor
+  tutors(page: Page, filter: TutorFilter, orderBy: OrderBy): TutorPage
+
   searchSyllabus(page: Page, filter: SyllabusFilter): SearchSyllabusResult # Allows searching modules, lessons and tests
   # tags(text: String) // searches all of the tags
   certificateInfo(token: String!): CertificateInfo!
+  certificateTypes(
+    page: Page
+    filter: CertificateTypeFilter
+  ): CertificateTypePage
+  certificateType(uuid: UUID!): CertificateType
+
+  caanumbers(page: Page, filter: CAANumberFilter): CAANumberPage
+
   categories(page: Page, text: String): CategoryPage
+  category(uuid: UUID!): Category
   # secondaryCategories(page: Page, text: String): CategoryPage
 }

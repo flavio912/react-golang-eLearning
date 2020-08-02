@@ -134,10 +134,6 @@ func (u *usersRepoImpl) GetManagerIDsByCompany(
 }
 
 func (u *usersRepoImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error) {
-	// if !g.IsAdmin {
-	// 	return []gentypes.UUID{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
-	// }
-
 	var companies []models.Company
 
 	query := database.GormDB.Select("uuid").Model(&models.Company{})
@@ -202,7 +198,8 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (mode
 			PostCode:     company.PostCode,
 			Country:      company.Country,
 		},
-		Approved: true,
+		Approved:     true,
+		ContactEmail: company.ContactEmail,
 	}
 
 	query := database.GormDB.Create(&compModel)
@@ -215,10 +212,6 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (mode
 }
 
 func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error) {
-	// if !g.IsAdmin {
-	// 	return gentypes.Company{}, &errors.ErrUnauthorized
-	// }
-
 	var company models.Company
 	query := database.GormDB.Preload("Address").Where("uuid = ?", input.UUID).First(&company)
 	if query.Error != nil {
@@ -230,11 +223,13 @@ func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models
 		return models.Company{}, &errors.ErrWhileHandling
 	}
 
+	updates := make(map[string]interface{})
+
 	if input.CompanyName != nil {
-		company.Name = *input.CompanyName
+		updates["name"] = *input.CompanyName
 	}
 	if input.Approved != nil {
-		company.Approved = *input.Approved
+		updates["approved"] = *input.Approved
 	}
 	if input.AddressLine1 != nil {
 		company.Address.AddressLine1 = *input.AddressLine1
@@ -251,10 +246,37 @@ func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models
 	if input.Country != nil {
 		company.Address.Country = *input.Country
 	}
+	if input.ContactEmail != nil {
+		updates["contact_email"] = *input.ContactEmail
+	}
+	if input.IsContract != nil {
+		updates["is_contract"] = *input.IsContract
+	}
 
-	save := database.GormDB.Save(&company)
+	tx := database.GormDB.Begin()
+
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+			u.Logger.LogMessage(sentry.LevelFatal, "UpdateCompany: Forced to recover")
+		}
+	}()
+
+	save := tx.Save(&company)
 	if save.Error != nil {
+		tx.Rollback()
 		u.Logger.Logf(sentry.LevelError, save.Error, "Unable to find company to update with UUID: %s", input.UUID)
+		return models.Company{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Model(&company).Updates(updates).Error; err != nil {
+		tx.Rollback()
+		u.Logger.Log(sentry.LevelError, err, "UpdateCompany: Unable to update")
+		return models.Company{}, &errors.ErrWhileHandling
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		u.Logger.Log(sentry.LevelError, err, "UpdateCompany: Unable to commit")
 		return models.Company{}, &errors.ErrWhileHandling
 	}
 
@@ -286,6 +308,7 @@ func (u *usersRepoImpl) CreateCompanyRequest(company gentypes.CreateCompanyInput
 				LastLogin: time.Now(),
 				Email:     manager.Email,
 			}},
+		ContactEmail: company.ContactEmail,
 	}
 	query := database.GormDB.Create(&compModel)
 	if query.Error != nil {

@@ -24,6 +24,9 @@ func InitMigrations() {
 
 	// Courses
 	database.GormDB.AutoMigrate(&models.Course{})
+	database.GormDB.Model(&models.Course{}).AddForeignKey("certificate_type_uuid", "certificate_types(uuid)", "RESTRICT", "RESTRICT")
+	database.GormDB.Model(&models.Course{}).AddForeignKey("category_uuid", "categories(uuid)", "RESTRICT", "RESTRICT")
+
 	database.GormDB.AutoMigrate(&models.CourseStructure{})
 	database.GormDB.AutoMigrate(&models.Category{})
 	database.GormDB.AutoMigrate(&models.Tag{})

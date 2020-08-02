@@ -81,6 +81,7 @@ type Course struct {
 	ExpiresInMonths      uint
 	ExpirationToEndMonth bool
 	Published            bool
+	CertificateTypeUUID  *UUID
 }
 
 type MyCourse struct {
@@ -97,11 +98,12 @@ type CourseFilter struct {
 	BackgroundCheck *bool
 	Price           *float64
 	AllowedToBuy    *bool
+	CategoryUUID    *UUID
 }
 
 type PurchaseCoursesInput struct {
 	Courses                []int32
-	Users                  []UUID
+	Users                  *[]UUID
 	ExtraInvoiceEmail      *string `valid:"email"`
 	AcceptedTerms          bool
 	BackgroundCheckConfirm *bool

@@ -1,14 +1,14 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
-import CoreInput, { InputTypes } from 'sharedComponents/core/Input/CoreInput';
-import classnames from 'classnames';
 import { Theme } from 'helpers/theme';
+import { createFragmentContainer, graphql } from 'react-relay';
 import Heading from 'components/core/Heading';
-import QuickInfo from 'components/Overview/QuickInfo';
 import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';
 import Page from 'components/Page';
+import { TrainingZone_user, CourseStatus } from './__generated__/TrainingZone_user.graphql';
+
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -54,25 +54,33 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-type Props = {};
+type Props = {
+  user: TrainingZone_user;
+};
 
-function TrainingZone({}: Props) {
+function TrainingZone({ user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
 
-  const userName = 'James';
+  const courses: {status: CourseStatus, enrolledAt: string}[] = [];
+  if (user?.myCourses) {
+    user?.myCourses.map((value) => {
+      courses.push({status: value.status, enrolledAt: value.enrolledAt})
+    })
+  }
+
   return (
     <Page>
       <div className={classes.trainingZoneRoot}>
         <div className={classes.trainingHeader}>
           <Heading text="Training Zone" size={'large'} />
           <Heading
-            text={`You're doing great ${userName}, keep up the good work so you don't loose your momentum`}
+            text={`You're doing great ${user?.firstName}, keep up the good work so you don't lose your momentum`}
             size={'medium'}
           />
         </div>
-        <TopInfo className={classes.topInfo} />
+        <TopInfo className={classes.topInfo} courses={courses} />
         <CardItem
           className={classes.card1}
           title={'All Courses'}
@@ -103,7 +111,7 @@ function TrainingZone({}: Props) {
         <div className={classes.jumpHeader}>
           <Heading text="Jump back in" size={'large'} />
           <Heading
-            text={`${userName}, you have some unfinished courses,
+            text={`${user?.firstName}, you have some unfinished courses,
           jump back in to continue learning now.`}
             size={'medium'}
           />
@@ -113,4 +121,14 @@ function TrainingZone({}: Props) {
   );
 }
 
-export default TrainingZone;
+export default createFragmentContainer(TrainingZone, {
+  user: graphql`
+    fragment TrainingZone_user on User {
+      firstName
+      myCourses {
+        status
+        enrolledAt
+      }
+    }
+  `
+});
