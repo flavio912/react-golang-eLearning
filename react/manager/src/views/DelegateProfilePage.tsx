@@ -14,6 +14,8 @@ import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegateProfilePage_delegate } from './__generated__/DelegateProfilePage_delegate.graphql';
 import SingleUser from 'components/SingleUser';
+import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
+import { DelegateProfilePage_activity } from './__generated__/DelegateProfilePage_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -47,24 +49,42 @@ const useStyles = createUseStyles((theme: Theme) => ({
   headerActions: {}
 }));
 
-const headerActionOptions: DropdownOption[] = [
-  {
-    id: 1,
-    title: 'Edit',
-    component: <div>Edit</div>
-  }
-];
-
 type Props = {
   delegate: DelegateProfilePage_delegate;
+  activity: DelegateProfilePage_activity;
   router: Router;
 };
 
-const DelegateProfilePage = ({ delegate, router }: Props) => {
+const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [action, setAction] = React.useState<DropdownOption>();
   const [isOpen, setIsOpen] = React.useState(false);
+  
+  const [openDelegateSlideIn, setOpenDelegateSlideIn] = React.useState(false);
+  
+  const headerActionOptions: DropdownOption[] = [
+    {
+      id: 1,
+      title: 'Edit',
+      component: <div onClick={() => setOpenDelegateSlideIn(true)}>Edit</div>
+    }
+  ];
+
+  const inpDelegate = {
+    uuid: delegate.uuid,
+    firstName: delegate.firstName,
+    lastName: delegate.lastName,
+    jobTitle: delegate.jobTitle,
+    email: delegate.email ?? '',
+    phone: delegate.telephone ?? '',
+    ttcId: delegate.TTC_ID,
+    generatePassword: false,
+    generatedPassword: '',
+  };
+
+  const lastActivity = (new Date()).getDay() - (new Date(delegate.lastLogin)).getDay();
+  const lastActive = lastActivity < 0 ? 0: lastActivity;
 
   const myCourses =
     delegate?.myCourses?.map((myCourse) => ({
@@ -80,6 +100,17 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
       },
       onClick: () => {}
     })) ?? [];
+  
+  const totalMinsTracked = delegate?.myCourses?.reduce((sum, current) => sum + current.minutesTracked, 0) ?? 0;
+  const totalTimeTracked = {
+    h: Math.floor(totalMinsTracked/60),
+    m: totalMinsTracked % 60,
+  };
+  
+  const onUpdatePage = (page: number, limit: number) => {
+    router.push(`/app/delegates/${delegate.uuid}?offset=${(page - 1) * limit}&limit=${limit}`);
+  }
+
   return (
     <div className={classes.root}>
       <div className={classes.top}>
@@ -107,8 +138,8 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
           className={classes.quickOverview}
         >
           <Summary
-            numActiveCourses={3}
-            numLastActive={4}
+            numActiveCourses={myCourses.length}
+            numLastActive={lastActive}
             numCertificates={2}
             numExpiringSoon={1}
           />
@@ -128,11 +159,11 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
             />
             <Spacer spacing={3} horizontal />
             <TrainingProgressCard
-              coursesDone={20}
+              coursesDone={myCourses.filter(course => course.status.isComplete).length}
               coursesPercent={300}
               courseNewCourseIcon={'CourseNewCourseGreen'}
               courseTimeTrackedIcon={'CourseTimeTrackedGreen'}
-              timeTracked={{ h: 30, m: 10 }}
+              timeTracked={totalTimeTracked}
               timePercent={100}
               title="Monthly"
             />
@@ -152,7 +183,16 @@ const DelegateProfilePage = ({ delegate, router }: Props) => {
         rowClicked={() => {}}
       />
       <Spacer vertical spacing={3} />
-      <ActivityTable />
+      <ActivityTable 
+        activity={activity}
+        onUpdatePage={onUpdatePage}
+        userName={delegate.firstName}
+      />
+      <DelegateSlideIn 
+        isOpen={openDelegateSlideIn}
+        onClose={() => setOpenDelegateSlideIn(false)}
+        delegate={inpDelegate}
+      />
       <SingleUser
         user={{firstName: delegate.firstName, uuid: delegate.uuid}}
         isOpen={isOpen}
@@ -168,8 +208,14 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
       uuid
       firstName
       lastName
+      email
+      jobTitle
+      telephone
+      TTC_ID
+      lastLogin
       myCourses {
         status
+        minutesTracked
         course {
           name
           category {
@@ -177,6 +223,11 @@ const DelegateProfilePageFrag = createFragmentContainer(DelegateProfilePage, {
           }
         }
       }
+    }
+  `,
+  activity: graphql`
+    fragment DelegateProfilePage_activity on ActivityPage {
+      ...ActivityTable_activity
     }
   `
 });

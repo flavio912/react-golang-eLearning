@@ -9,8 +9,10 @@ import Paginator from 'sharedComponents/Pagination/Paginator';
 import CheckboxSingle from 'components/core/Input/CheckboxSingle';
 import TimeSpent from 'components/Delegate/TimeSpent';
 import ActivityName from 'components/Delegate/ActivityName';
-
-type Props = {};
+import { DelegateProfilePage_activity } from 'views/__generated__/DelegateProfilePage_activity.graphql';
+import moment from 'moment';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { ActivityTable_activity } from './__generated__/ActivityTable_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   sectionTitleWrapper: {
@@ -58,17 +60,11 @@ const activityRow = (
 ): any => ({
   key,
   cells: [
-    // {
-    //   component: () => (
-    //     <CheckboxSingle
-    //       box={{
-    //         label: "",
-    //         checked: false,
-    //       }}
-    //       setBox={() => {}}
-    //     />
-    //   ),
-    // },
+    {
+      component: () => (
+        <CheckboxSingle/>
+      ),
+    },
     {
       component: () => {
         return (
@@ -98,13 +94,31 @@ const activityRow = (
   onClick: () => {}
 });
 
-const ActivityTable = (props: any) => {
+type Props = {
+  activity: ActivityTable_activity; 
+  userName: string;
+  onUpdatePage: (page: number, limit: number) => void;
+};
+
+const ActivityTable = ({activity, userName, onUpdatePage}: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const pageProps = {
+    total: activity.pageInfo?.total ?? 0,
+    limit: activity.pageInfo?.limit ?? 10,
+    offset: activity.pageInfo?.offset ?? 0
+  };
+
+  const pageInfo = {
+    currentPage: Math.ceil(pageProps.offset/ pageProps.limit),
+    totalPages: Math.ceil(pageProps.total/ pageProps.limit)
+  };
+
   return (
     <div>
       <div className={classes.sectionTitleWrapper}>
-        <h2>Bruce's activity</h2>
+        <h2>{userName}'s activity</h2>
         <div className={classes.courseDropdown}>
           <Button
             archetype={'default'}
@@ -114,87 +128,81 @@ const ActivityTable = (props: any) => {
         </div>
       </div>
       <Table
-        header={['ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', 'TIME SPENT', '', '']}
-        rows={[
-          activityRow(
-            1,
+        header={['', 'ACTIVITY TIME', 'NAME', 'ACTIVE TYPE', 'TIME SPENT', '', '']}
+        rows={(activity.edges ?? []).map((activity, index) => {
+          if (!activity) return;
+
+          var nameMap = {
+            completedCourse: 'Completed',
+            newCourse: 'Started',
+            activated: 'Account was created',
+            failedCourse: 'Failed'
+          };
+
+          var iconMap = {
+            completedCourse: 'CourseStatus_Completed',
+            newCourse: 'CourseNewCourseGreen',
+            activated: 'CourseStatus_NotStarted',
+            failedCourse: 'CourseFailed'
+          };
+
+          var iconTextMap = {
+            completedCourse: 'Completed Course',
+            newCourse: 'Started Course',
+            activated: 'Account Activated',
+            failedCourse: 'Failed course'
+          };
+
+          return activityRow(
+            index,
             {
-              time: '10:29',
-              date: '01/02/2020'
+              time: moment(activity?.createdAt).format('hh:mm'),
+              date: moment(activity?.createdAt).format('DD/MM/YY')
             },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
+            activity?.course
+              ? `${userName} ${nameMap[activity.type]} the ${activity?.course?.name} Course`
+              : nameMap[activity?.type],
             {
-              icon: 'CourseFailed',
-              text: 'Failed Course'
-            },
-            {
-              h: 3,
-              m: 15
-            },
-            'Bruce Willis',
-            classes
-          ),
-          activityRow(
-            2,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseNewCourse',
-              text: 'New Course'
-            },
-            {
-              h: 3,
-              m: 15
-            },
-            'Bruce Willis',
-            classes
-          ),
-          activityRow(
-            3,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseCertificates',
-              text: 'New New certificate!'
+              icon: iconMap[activity.type],
+              text: iconTextMap[activity.type]
             },
             {
               h: 3,
               m: 15
             },
-            'Bruce Willis',
+            userName,
             classes
-          ),
-          activityRow(
-            4,
-            {
-              time: '10:29',
-              date: '01/02/2020'
-            },
-            'Bruce failed the Dangerous Goods by Road Awareness Course',
-            {
-              icon: 'CourseAccountActivated',
-              text: 'Account active'
-            },
-            'n/a',
-            'Bruce Willis',
-            classes
+            
           )
-        ]}
+        })}
       />
       <Paginator
-        currentPage={1}
-        updatePage={() => {}}
-        numPages={10}
+        currentPage={pageInfo.currentPage}
+        updatePage={(page) => onUpdatePage(page, pageProps.limit)}
+        numPages={pageInfo.totalPages}
         itemsPerPage={10}
+        showRange={pageInfo.totalPages > 4 ? 4 : pageInfo.totalPages}
       />
     </div>
   );
 };
 
-export default ActivityTable;
+export default createFragmentContainer(ActivityTable, {
+  activity: graphql`
+    fragment ActivityTable_activity on ActivityPage {
+      edges {
+        type
+        createdAt
+        course {
+          ident: id
+          name
+        }
+      }
+      pageInfo {
+        total
+        limit
+        offset
+      }
+    }
+  `
+});

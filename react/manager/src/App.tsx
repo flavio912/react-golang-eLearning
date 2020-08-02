@@ -23,7 +23,8 @@ import OrgOverview from 'views/OrgOverview';
 import DelegatesPage from 'views/DelegatesPage';
 import CoursesPage from 'views/CoursesPage';
 import DelegateProfilePage from 'views/DelegateProfilePage';
-import { off } from 'process';
+import DelegateProfilePageFrag from 'views/DelegateProfilePage';
+import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -96,8 +97,11 @@ const Router = createFarceRouter({
           path="/delegates/:uuid"
           Component={DelegateProfilePage}
           query={graphql`
-            query App_DelegatesProfile_Query($uuid: UUID!) {
+            query App_DelegatesProfile_Query($uuid: UUID!, $offset: Int, $limit: Int) {
               delegate(uuid: $uuid) {
+                activity(page: { offset: $offset, limit: $limit }) {
+                  ...DelegateProfilePage_activity
+                }
                 ...DelegateProfilePage_delegate
               }
             }
@@ -106,9 +110,35 @@ const Router = createFarceRouter({
             console.log(params);
             console.log(location);
             const { uuid } = params;
+            const { offset, limit } = location.query;
             return {
-              uuid
+              uuid,
+              offset,
+              limit
             };
+          }}
+          render={(args: any) => {
+            if (args.error && args.error != null) {
+              if (args.error.type == 'ErrUnauthorized'){
+                args.match.router.push('/login');
+              }else {
+                args.match.router.push('/app/delegates');
+              }
+              return;
+            }
+            if (!args.props) {
+              return <div></div>;
+            }
+
+            return (
+              <ErrorBoundary>
+                <DelegateProfilePageFrag
+                  {...args.props}
+                  activity={args.props?.delegate.activity}
+                  delegate={args.props?.delegate}
+                />
+              </ErrorBoundary>
+            )
           }}
         />
         <Route
