@@ -124,12 +124,12 @@ const Router = createFarceRouter({
           prepareVariables={(params: any, { location }: any) => {
             console.log(params);
             console.log(location);
-            const { pageNum, type } = location.query;
+            const { offset, limit } = location.query;
             return {
               ...params,
               page: {
-                offset: pageNum,
-                limit: 10
+                offset: offset,
+                limit: limit
               }
             };
           }}
