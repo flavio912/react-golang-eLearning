@@ -1,6 +1,7 @@
 package uploads
 
 import (
+	"encoding/base64"
 	"fmt"
 	"io"
 	"time"
@@ -157,10 +158,13 @@ func UploadCertificate(body io.Reader) (string, error) {
 		return "", err
 	}
 
+	// Base64 Decode
+	decoder := base64.NewDecoder(base64.StdEncoding, body)
+
 	_, err = Uploader.Upload(&s3manager.UploadInput{
 		Bucket: aws.String(helpers.Config.AWS.UploadsBucket),
 		Key:    aws.String("certificates/" + str + ".pdf"),
-		Body:   body,
+		Body:   decoder,
 	})
 
 	if err != nil {

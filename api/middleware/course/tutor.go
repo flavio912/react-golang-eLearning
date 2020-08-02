@@ -2,9 +2,11 @@ package course
 
 import (
 	"github.com/getsentry/sentry-go"
+	"github.com/jinzhu/gorm"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/database"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -71,4 +73,35 @@ func (c *coursesRepoImpl) UpdateTutorSignature(tutorUUID gentypes.UUID, s3key st
 	}
 
 	return nil
+}
+
+func (c *coursesRepoImpl) Tutors(
+	page *gentypes.Page,
+	filter *gentypes.TutorFilter,
+	order *gentypes.OrderBy) ([]models.Tutor, gentypes.PageInfo, error) {
+	var tutors []models.Tutor
+	utils := dbutils.NewDBUtils(c.Logger)
+
+	pageInfo, err := utils.GetPageOf(
+		&models.Tutor{},
+		&tutors,
+		page,
+		order,
+		[]string{"name", "cin"},
+		"name ASC",
+		func(query *gorm.DB) *gorm.DB {
+			if filter != nil {
+				if filter.Name != nil {
+					query = query.Where("name ILIKE ?", "%%"+*filter.Name+"%%")
+				}
+				if filter.CIN != nil {
+					query = query.Where("cin ILIKE ?", "%%"+*filter.CIN+"%%")
+				}
+			}
+			return query
+		},
+	)
+
+	pageInfo.Given = int32(len(tutors))
+	return tutors, pageInfo, err
 }

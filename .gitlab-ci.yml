@@ -45,8 +45,6 @@ build-admin:
   only:
     changes:
       - react/admin/**/*
-  tags:
-    - big
   artifacts:
     expire_in: 3d
     paths:
@@ -80,14 +78,14 @@ build-delegate-webpack:
     - cd react/delegate
     - yarn
     - yarn run build
+  cache:
+    paths:
+      - node_modules/
   only:
     changes:
       - react/manager/**/*
       - react/delegate/**/*
       - .gitlab-ci.yml
-  cache:
-    paths:
-      - node_modules/
   tags:
     - big
   artifacts:

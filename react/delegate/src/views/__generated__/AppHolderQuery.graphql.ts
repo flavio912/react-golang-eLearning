@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 24c249e5803a4069cfb8cbc5ba0eeec9 */
+/* @relayHash 124a870cb72bc12dd8eb25644257860c */
 
 import { ConcreteRequest } from "relay-runtime";
 export type AppHolderQueryVariables = {
@@ -10,10 +10,11 @@ export type AppHolderQueryVariables = {
 export type AppHolderQueryResponse = {
     readonly courses: {
         readonly edges: ReadonlyArray<{
-            readonly notId: number;
+            readonly ident: number;
             readonly name: string;
             readonly bannerImageURL: string | null;
             readonly introduction: string | null;
+            readonly price: number;
         } | null> | null;
         readonly pageInfo: {
             readonly total: number;
@@ -37,10 +38,11 @@ query AppHolderQuery(
 ) {
   courses(filter: {name: $name}, page: {limit: 4, offset: $offset}) {
     edges {
-      notId: id
+      ident: id
       name
       bannerImageURL
       introduction
+      price
     }
     pageInfo {
       total
@@ -115,7 +117,7 @@ const node: ConcreteRequest = (function () {
                     "selections": [
                         {
                             "kind": "ScalarField",
-                            "alias": "notId",
+                            "alias": "ident",
                             "name": "id",
                             "args": null,
                             "storageKey": null
@@ -138,6 +140,13 @@ const node: ConcreteRequest = (function () {
                             "kind": "ScalarField",
                             "alias": null,
                             "name": "introduction",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
+                            "name": "price",
                             "args": null,
                             "storageKey": null
                         }
@@ -205,10 +214,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "AppHolderQuery",
             "id": null,
-            "text": "query AppHolderQuery(\n  $name: String!\n  $offset: Int!\n) {\n  courses(filter: {name: $name}, page: {limit: 4, offset: $offset}) {\n    edges {\n      notId: id\n      name\n      bannerImageURL\n      introduction\n    }\n    pageInfo {\n      total\n      limit\n      offset\n      given\n    }\n  }\n}\n",
+            "text": "query AppHolderQuery(\n  $name: String!\n  $offset: Int!\n) {\n  courses(filter: {name: $name}, page: {limit: 4, offset: $offset}) {\n    edges {\n      ident: id\n      name\n      bannerImageURL\n      introduction\n      price\n    }\n    pageInfo {\n      total\n      limit\n      offset\n      given\n    }\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '94543c2038b4dbed1f61e898a775f6a5';
+(node as any).hash = '387f333f0768f77fa9aae9e22be3ab24';
 export default node;

@@ -63,6 +63,7 @@
     "jss": "^10.0.0",
     "jss-rtl": "^0.3.0",
     "lodash": "^4.17.15",
+    "material-ui-color": "^0.4.5",
     "moment": "^2.24.0",
     "node-sass": "^4.13.0",
     "prismjs": "^1.17.1",
@@ -88,6 +89,7 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "serve": "^11.3.0",
+    "styled-components": "^5.1.1",
     "uuid": "^3.3.3",
     "validate.js": "^0.12.0"
   },

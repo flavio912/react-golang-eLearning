@@ -109,6 +109,7 @@ type Props = {
   onClick: (link: string) => void;
   onRegisterClick?: () => void;
   onLogoClick?: () => void;
+  onLoginClick?: () => void;
   basketItems?: BasketItem[];
   onCheckout: () => void;
   className?: string;
@@ -121,6 +122,7 @@ function HeaderMenu({
   onClick,
   onRegisterClick,
   onLogoClick,
+  onLoginClick,
   basketItems,
   onCheckout,
   className,
@@ -165,8 +167,9 @@ function HeaderMenu({
               />
               <div className={classes.tabs}>
                 {tabs &&
-                  tabs.map((tab) => (
+                  tabs.map((tab, index) => (
                     <TabOption
+                      key={index}
                       tab={tab}
                       selected={selected}
                       setSelected={setSelected}
@@ -195,7 +198,9 @@ function HeaderMenu({
                   />
                 </div>
               )}
-              <div className={classes.login}>Login</div>
+              <div className={classes.login} onClick={onLoginClick}>
+                Login
+              </div>
               <Button
                 archetype="gradient"
                 className={classes.register}

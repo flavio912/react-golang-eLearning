@@ -16,6 +16,7 @@ import { Resolver } from 'found-relay';
 import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
 import LoginPage from 'views/Login';
+import FinaliseLogin from 'views/FinaliseLogin';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
@@ -27,6 +28,8 @@ import TrainingProgress from 'views/TrainingProgress';
 import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
 import Test from 'views/Test/Test';
+import { SideModalProvider } from 'views/SideModalProvider';
+import RecoverPassword from 'views/RecoverPassword/RecoverPassword';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -47,6 +50,8 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/password" Component={RecoverPassword} />
+      <Route path="/finalise/:token" Component={FinaliseLogin} />
       <Route
         path="/app"
         Component={AppHolder}
@@ -164,7 +169,7 @@ const Router = createFarceRouter({
           }}
           render={(args: any) => {
             if (args.error) {
-              args.match.router.push('/app');
+              console.log(args.error);
             }
             if (!args.props) {
               return <div></div>;
@@ -221,7 +226,34 @@ const Router = createFarceRouter({
           }}
         />
       </Route>
-      <Route path="/cert-generator" Component={CertGenerator} />
+      <Route
+        path="/cert-generator"
+        Component={CertGenerator}
+        query={graphql`
+          query App_Certificate_Query($token: String!) {
+            certificateInfo(token: $token) {
+              ...CertGenerator_certificateInfo
+            }
+          }
+        `}
+        render={(args: any) => {
+          console.log('argts', args);
+          if (!args.props) {
+            return <div></div>;
+          }
+          return (
+            <ErrorBoundary>
+              <CertGenerator {...args.props} />
+            </ErrorBoundary>
+          );
+        }}
+        prepareVariables={(params: any, { location }: any) => {
+          const { token } = location.query;
+          return {
+            token
+          };
+        }}
+      />
     </Route>
   ),
   render: createRender({})
@@ -229,7 +261,9 @@ const Router = createFarceRouter({
 
 const App = () => (
   <ThemeProvider theme={theme}>
-    <Router resolver={new Resolver(environment)} />
+    <SideModalProvider>
+      <Router resolver={new Resolver(environment)} />
+    </SideModalProvider>
   </ThemeProvider>
 );
 

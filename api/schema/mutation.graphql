@@ -50,14 +50,22 @@ type Mutation {
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
   deleteCourse(input: DeleteCourseInput!): Boolean!
 
+  finaliseDelegate(input: FinaliseDelegateInput!): AuthToken
+
   createTag(input: CreateTagInput!): Tag
   createCategory(input: CreateCategoryInput!): Category
+  updateCategory(input: UpdateCategoryInput!): Category
+  deleteCategory(input: DeleteCategoryInput!): Boolean!
 
+  lessonBannerImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   createLesson(input: CreateLessonInput!): Lesson
   updateLesson(input: UpdateLessonInput!): Lesson
   deleteLesson(input: DeleteLessonInput!): Boolean!
 
   createIndividual(input: CreateIndividualInput!): CreateIndividualResponse
+  updateIndividual(input: UpdateIndividualInput!): UpdateIndividualResponse
+  deleteIndividual(input: DeleteIndividualInput!): Boolean!
+
   submitTest(input: SubmitTestInput!): SubmitTestPayload # Submits a delegate/individuals answers to a test
   createTest(input: CreateTestInput!): CreateTestPayload
   updateTest(input: UpdateTestInput!): UpdateTestPayload
@@ -80,6 +88,13 @@ type Mutation {
   tutorSignatureImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateTutorSignature(input: UpdateTutorSignatureInput!): Tutor
 
+  createCertificateType(input: CreateCertificateTypeInput!): CertificateType
+  updateCertificateType(input: UpdateCertificateTypeInput!): CertificateType
+  certificateBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+
+  createCAANumber(input: CreateCAANumberInput!): CAANumber
+  updateCAANumber(input: UpdateCAANumberInput!): CAANumber
+
   # setDelegateClassroomCompletion - sets if a delegate passed or failed a classroom course (For Tutors)
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 
@@ -88,4 +103,6 @@ type Mutation {
   blogHeaderImageUploadRequest(input: UploadFileMeta!): UploadFileResp
   updateBlogHeaderImage(input: UpdateBlogHeaderImageInput!): Blog
   blogBodyImageUploadRequest(input: UploadFileMeta!): UploadFileResp
+
+  regenerateCertificate(input: RegenerateCertificateInput!): Boolean!
 }

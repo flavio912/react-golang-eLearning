@@ -57,6 +57,9 @@ const useStyles = createUseStyles((theme: Theme) => ({
   body: {
     backgroundColor: theme.colors.backgroundGrey,
     flexGrow: 1
+  },
+  hidden: {
+    visibility: 'hidden'
   }
 }));
 
@@ -65,13 +68,15 @@ type Props = {
   onProfileClick?: Function;
   className?: string;
   onToggleSearchModal?: Function;
+  showSearch?: boolean;
 };
 
 function HeaderMenu({
   user,
   onProfileClick,
   onToggleSearchModal,
-  className
+  className,
+  showSearch = false
 }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
@@ -80,7 +85,10 @@ function HeaderMenu({
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
         <div
-          className={classes.search}
+          className={classNames(
+            classes.search,
+            showSearch ? '' : classes.hidden
+          )}
           onClick={() => onToggleSearchModal && onToggleSearchModal()}
         >
           <Icon name="SearchGlass" size={15} />

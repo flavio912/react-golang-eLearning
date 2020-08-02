@@ -9,16 +9,23 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/helpers"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
 func TestCreateLesson(t *testing.T) {
 	prepareTestDatabase()
 
-	var newLessonInput = gentypes.CreateLessonInput{
-		Name: "Test lesson",
-		Text: "{}",
-		Tags: nil,
+	vidType := gentypes.WistiaVideo
+	var newLessonInput = course.CreateLessonInput{
+		Name:         "Test lesson",
+		Description:  "{}",
+		Tags:         nil,
+		VoiceoverKey: helpers.StringPointer("/places/orange.mp3"),
+		BannerKey:    helpers.StringPointer("/images/banner.png"),
+		VideoURL:     helpers.StringPointer("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		VideoType:    &vidType,
+		Transcript:   helpers.StringPointer("never gonna give you up!"),
 	}
 
 	t.Run("Check non-tagged lesson is created with no tags", func(t *testing.T) {
@@ -26,7 +33,12 @@ func TestCreateLesson(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Equal(t, newLessonInput.Name, lesson.Name)
-		assert.Equal(t, newLessonInput.Text, lesson.Text)
+		assert.Equal(t, newLessonInput.Description, lesson.Description)
+		assert.Equal(t, newLessonInput.BannerKey, lesson.BannerKey)
+		assert.Equal(t, newLessonInput.VoiceoverKey, lesson.VoiceoverKey)
+		assert.Equal(t, newLessonInput.VideoType, lesson.VideoType)
+		assert.Equal(t, newLessonInput.VideoURL, lesson.VideoURL)
+		assert.Equal(t, newLessonInput.Transcript, lesson.Transcript)
 	})
 	tag, _ := courseRepo.CreateTag(gentypes.CreateTagInput{
 		Name:  "Go",
@@ -39,7 +51,7 @@ func TestCreateLesson(t *testing.T) {
 
 		assert.Nil(t, err)
 		assert.Equal(t, newLessonInput.Name, lesson.Name)
-		assert.Equal(t, newLessonInput.Text, lesson.Text)
+		assert.Equal(t, newLessonInput.Description, lesson.Description)
 
 		foundTags, err := courseRepo.GetTagsByLessonUUID(lesson.UUID.String())
 		assert.Nil(t, err)
@@ -148,10 +160,10 @@ func TestGetLessons(t *testing.T) {
 
 	t.Run("Should filter", func(t *testing.T) {
 		lesson := gentypes.Lesson{
-			UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
-			Name: "Dynamic Programming",
-			Tags: nil,
-			Text: "{}",
+			UUID:        gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000001"),
+			Name:        "Dynamic Programming",
+			Tags:        nil,
+			Description: "{}",
 		}
 		uuidString := lesson.UUID.String()
 
@@ -195,17 +207,23 @@ func TestUpdateLesson(t *testing.T) {
 
 	t.Run("Lesson must exist", func(t *testing.T) {
 		uuidZero := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000000")
-		l, err := courseRepo.UpdateLesson(gentypes.UpdateLessonInput{UUID: uuidZero})
+		l, err := courseRepo.UpdateLesson(course.UpdateLessonInput{UUID: uuidZero})
 		assert.Equal(t, &errors.ErrLessonNotFound, err)
 		assert.Equal(t, models.Lesson{}, l)
 	})
 
 	tags := []gentypes.UUID{gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000003")}
-	input := gentypes.UpdateLessonInput{
-		UUID: gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
-		Name: helpers.StringPointer("Diagonalizing Matrices"),
-		Text: helpers.StringPointer(`{"ayy" : "yoo"}`),
-		Tags: &tags,
+	vidType := gentypes.WistiaVideo
+	input := course.UpdateLessonInput{
+		UUID:           gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002"),
+		Name:           helpers.StringPointer("Diagonalizing Matrices"),
+		Description:    helpers.StringPointer(`{"ayy" : "yoo"}`),
+		Tags:           &tags,
+		VoiceoverKey:   helpers.StringPointer("/places/orange.mp3"),
+		BannerImageKey: helpers.StringPointer("/images/banner.png"),
+		VideoURL:       helpers.StringPointer("https://www.youtube.com/watch?v=dQw4w9WgXcQ"),
+		VideoType:      &vidType,
+		Transcript:     helpers.StringPointer("never gonna give you up!"),
 	}
 	t.Run("Updates existing lesson", func(t *testing.T) {
 		lesson, err := courseRepo.UpdateLesson(input)
@@ -213,9 +231,14 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Nil(t, err)
 		assert.Equal(t, input.UUID, lesson.UUID)
 		assert.Equal(t, *input.Name, lesson.Name)
-		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, *input.Description, lesson.Description)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
+		assert.Equal(t, input.BannerImageKey, lesson.BannerKey)
+		assert.Equal(t, input.VoiceoverKey, lesson.VoiceoverKey)
+		assert.Equal(t, input.VideoType, lesson.VideoType)
+		assert.Equal(t, input.VideoURL, lesson.VideoURL)
+		assert.Equal(t, input.Transcript, lesson.Transcript)
 
 		lesson, err = courseRepo.GetLessonByUUID(input.UUID)
 		assert.Nil(t, err)
@@ -226,7 +249,7 @@ func TestUpdateLesson(t *testing.T) {
 		assert.Nil(t, tag_err)
 		assert.Equal(t, input.UUID, lesson.UUID)
 		assert.Equal(t, *input.Name, lesson.Name)
-		assert.Equal(t, *input.Text, lesson.Text)
+		assert.Equal(t, *input.Description, lesson.Description)
 		assert.Equal(t, tags[0].UUID, lesson.Tags[0].UUID.UUID)
 		assert.Equal(t, "Fancy tag for cool people", lesson.Tags[0].Name)
 	})
@@ -238,9 +261,7 @@ func TestDeleteLesson(t *testing.T) {
 	t.Run("Must delete lesson", func(t *testing.T) {
 		uuid := gentypes.MustParseToUUID("00000000-0000-0000-0000-000000000002")
 
-		b, err := courseRepo.DeleteLesson(gentypes.DeleteLessonInput{
-			UUID: uuid,
-		})
+		b, err := courseRepo.DeleteLesson(uuid)
 
 		assert.Nil(t, err)
 		assert.True(t, b)

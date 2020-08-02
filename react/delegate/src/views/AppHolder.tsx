@@ -9,10 +9,8 @@ import { Theme } from 'helpers/theme';
 import { createFragmentContainer, graphql, fetchQuery } from 'react-relay';
 import { AppHolder_user } from './__generated__/AppHolder_user.graphql';
 import environment from 'api/environment';
-import {
-  AppHolderQuery,
-  AppHolderQueryResponse
-} from './__generated__/AppHolderQuery.graphql';
+import { AppHolderQueryResponse } from './__generated__/AppHolderQuery.graphql';
+import { SideModalProvider, useSideModalDispatch } from './SideModalProvider';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   appHolder: {
@@ -76,6 +74,8 @@ const AppHolder = ({ children, user }: Props) => {
   );
   const onToggleSearchModal = () => setIsShowSearchModal(!isShowSearchModal);
   const hideSearch = () => setIsShowSearchModal(false);
+
+  const dispatchModal = useSideModalDispatch();
   return (
     <div className={classes.appHolderRoot}>
       <SideMenu
@@ -100,6 +100,7 @@ const AppHolder = ({ children, user }: Props) => {
       <HeaderMenu
         user={{ name: `${user?.firstName} ${user?.lastName}`, url: '' }}
         onToggleSearchModal={onToggleSearchModal}
+        showSearch={user?.type === 'individual'}
       />
       <div className={classes.appHolder}>
         {children}
@@ -114,10 +115,11 @@ const AppHolder = ({ children, user }: Props) => {
                       page: { limit: 4, offset: $offset }
                     ) {
                       edges {
-                        notId: id
+                        ident: id
                         name
                         bannerImageURL
                         introduction
+                        price
                       }
                       pageInfo {
                         total
@@ -156,10 +158,31 @@ const AppHolder = ({ children, user }: Props) => {
                 }
 
                 const resultItems = data.courses.edges.map((course) => ({
-                  id: course?.notId ?? '',
+                  id: course?.ident ?? '',
                   title: course?.name ?? '',
                   image: course?.bannerImageURL ?? '',
-                  description: course?.introduction ?? ''
+                  description: course?.introduction ?? '',
+                  onClick: () => {
+                    if (
+                      course?.ident === undefined ||
+                      course?.name === undefined ||
+                      course?.price === undefined
+                    ) {
+                      console.error('Unable to get course', course);
+                      return;
+                    }
+
+                    dispatchModal({
+                      type: 'show',
+                      courses: [
+                        {
+                          id: course.ident,
+                          name: course.name,
+                          price: course.price
+                        }
+                      ]
+                    });
+                  }
                 }));
 
                 const pageInfo = {
@@ -184,24 +207,9 @@ const AppHolder = ({ children, user }: Props) => {
 export default createFragmentContainer(AppHolder, {
   user: graphql`
     fragment AppHolder_user on User {
+      type
       firstName
       lastName
-    }
-  `,
-  courses: graphql`
-    fragment AppHolder_courses on CoursePage {
-      edges {
-        notId: id
-        name
-        bannerImageURL
-        introduction
-      }
-      pageInfo {
-        total
-        offset
-        limit
-        given
-      }
     }
   `
 });

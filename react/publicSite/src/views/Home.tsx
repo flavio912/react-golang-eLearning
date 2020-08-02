@@ -12,46 +12,46 @@ import { Course } from 'sharedComponents/Overview/CourseCard';
 import Button from 'sharedComponents/core/Input/Button';
 import CarouselWithDemo from 'components/Misc/CarouselCourse/CarouselWithDemo';
 import PageMargin from 'components/core/PageMargin';
+import PeopleCurve from 'components/core/Curve/PeopleCurve';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   homeRoot: {
-    width: '100%'
+    width: '100%',
+    background: 'white',
   },
   whiteSpacer: {
     background: theme.colors.primaryWhite,
-    padding: '60px 0px 100px 0px'
+    padding: '60px 0px 100px 0px',
   },
   heading: {
     fontSize: 32,
     color: theme.colors.primaryBlack,
     fontWeight: 800,
     padding: '60px 0px',
-    textAlign: 'center'
+    textAlign: 'center',
   },
-  explore: {
-    paddingTop: 70
-  },
+  explore: {},
   exploreCont: {
     maxWidth: '100%',
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   exploreText: {
     textAlign: 'center',
     fontSize: theme.fontSizes.extraLarge,
-    maxWidth: 500
+    maxWidth: 500,
   },
   buttonHolder: {
-    display: 'flex'
+    display: 'flex',
   },
   button: {
     height: 52,
     fontSize: 18,
     fontWeight: 800,
     boxShadow: '0px 2px 9px #00000014',
-    padding: '0px 36px'
-  }
+    padding: '0px 36px',
+  },
 }));
 
 type Props = {
@@ -73,7 +73,7 @@ const defaultCourse: Course = {
   location: 'TTC at Hilton T4',
   modules: 16,
   lessons: 144,
-  videoTime: 4
+  videoTime: 4,
 };
 
 function Home({ router }: Props) {
@@ -89,26 +89,13 @@ function Home({ router }: Props) {
         }}
         onDemo={() => {}}
       />
-      <PageMargin centererStyle={classes.whiteSpacer}>
-        <FloatingVideo
-          width={560}
-          source={require('assets/Stock_Video.mp4')}
-          author={{
-            name: 'Kristian Durhuus',
-            title: 'Chief Executive Officer',
-            quote:
-              'TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore .'
-          }}
-        />
-    </PageMargin>
-    <PageMargin>
-      <CarouselWithDemo
+      <PageMargin>
+        <CarouselWithDemo
           className={classes.explore}
           heading="Explore our popular courses"
-          description="It’s time to remove the headache for you and your team, with TTC
-          you could be logged in and learning in 24 hours."
+          description="Empower your team with TTC knowledge"
           courses={[1, 2, 3, 4, 5, 6, 7].map(() => defaultCourse)}
-      />
+        />
       </PageMargin>
       <PageMargin centererStyle={classes.whiteSpacer}>
         <div className={classes.heading}>What you can do with TTC Hub</div>
@@ -137,6 +124,19 @@ function Home({ router }: Props) {
           link={{ title: 'See Online Courses', link: '/' }}
         />
       </PageMargin>
+      <PageMargin centererStyle={classes.whiteSpacer}>
+        <FloatingVideo
+          width={560}
+          source={require('assets/Stock_Video.mp4')}
+          author={{
+            name: 'Kristian Durhuus',
+            title: 'Chief Executive Officer',
+            quote:
+              'TTC Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore .',
+          }}
+        />
+      </PageMargin>
+      <PeopleCurve />
     </div>
   );
 }

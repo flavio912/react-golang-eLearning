@@ -76,7 +76,7 @@ function CreateQuestion({ match, history }) {
       });
       if (res.data?.createModule?.module?.uuid) {
         history.push(
-          `/module/${res.data?.createModule?.module?.uuid}/overview`
+          `/modules/${res.data?.createModule?.module?.uuid}/overview`
         );
       } else {
         console.warn('Unable to get save params');

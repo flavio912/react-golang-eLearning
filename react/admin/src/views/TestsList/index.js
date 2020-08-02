@@ -1,12 +1,13 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/styles';
-import { Container } from '@material-ui/core';
-import Page from 'src/components/Page';
-import SearchBar from 'src/components/SearchBar';
-import Header from './Header';
-import Results from './Results';
+import { Container, Button } from '@material-ui/core';
 import { gql } from 'apollo-boost';
 import { useQuery } from '@apollo/react-hooks';
+import { Link as RouterLink } from 'react-router-dom';
+import Page from 'src/components/Page';
+import SearchBar from 'src/components/SearchBar';
+import Results from 'src/components/Results';
+import Header from './Header';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,8 +29,10 @@ const GET_TESTS = gql`
         passPercentage
       }
       pageInfo {
-        given
         total
+        offset
+        limit
+        given
       }
     }
   }
@@ -37,27 +40,57 @@ const GET_TESTS = gql`
 
 function TestsList({ match, history }) {
   const classes = useStyles();
-
-  // const handleFilter = () => {};
-
-  const handleSearch = () => {};
-
-  const { loading, error, data } = useQuery(GET_TESTS, {
+  const [searchText, setSearchText] = React.useState('');
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+  const { error, data } = useQuery(GET_TESTS, {
     variables: {
       page: {
-        offset: 0,
-        limit: 100
+        offset: page,
+        limit: rowsPerPage
       },
-      filter: {},
+      filter: {
+        name: searchText
+      },
       orderBy: {
         ascending: false,
         field: 'created_at'
       }
-    }
+    },
+    fetchPolicy: 'cache-and-network'
   });
 
-  if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
+
+  // Results methods
+  const handleChangePage = (event, page) => {
+    setPage(page);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(event.target.value);
+  };
+
+  // Results table
+  const headers = ['Name', 'Pass Percentage', 'Attempts Allowed', 'Actions'];
+  const cells = [
+    { field: 'name' },
+    { field: 'passPercentage' },
+    { field: 'attemptsAllowed' },
+    {
+      component: result => (
+        <Button
+          color="primary"
+          component={RouterLink}
+          size="small"
+          to={`/test/${result.uuid}/overview`}
+          variant="outlined"
+        >
+          Edit
+        </Button>
+      )
+    }
+  ];
 
   return (
     <Page className={classes.root} title="Tests">
@@ -67,10 +100,15 @@ function TestsList({ match, history }) {
             history.push('/test/create/overview');
           }}
         />
-        <SearchBar onFilter={false} onSearch={handleSearch} />
-        {data.tests && (
-          <Results className={classes.results} tests={data.tests.edges} />
-        )}
+        <SearchBar setSearchText={setSearchText} />
+        <Results
+          className={classes.results}
+          results={data?.tests}
+          headers={headers}
+          cells={cells}
+          handleChangePage={handleChangePage}
+          handleChangeRowsPerPage={handleChangeRowsPerPage}
+        />
       </Container>
     </Page>
   );

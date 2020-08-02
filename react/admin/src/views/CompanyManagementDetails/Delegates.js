@@ -13,7 +13,6 @@ import {
   Table,
   TableBody,
   Link,
-  Button,
   TableCell,
   Avatar,
   TablePagination,
@@ -136,16 +135,12 @@ function Delegates({ className, company, onUpdateCompany, ...rest }) {
     onUpdateCompany();
   };
 
-  const openAddUserModal = () => {
-    setAddUserModalOpen(true);
-  };
-
   return (
     <div>
       <div className={classes.options}>
-        <Button variant="contained" color="primary" onClick={openAddUserModal}>
+        {/* <Button variant="contained" color="primary" onClick={openAddUserModal}>
           Add User
-        </Button>
+        </Button> */}
       </div>
       <Card {...rest} className={clsx(classes.root, className)}>
         <CardHeader title="Delegates" />
@@ -164,7 +159,7 @@ function Delegates({ className, company, onUpdateCompany, ...rest }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>User</TableCell>
+              <TableCell>Delegate</TableCell>
               <TableCell>Valid Certificates</TableCell>
               <TableCell>Expiring Certificates</TableCell>
               <TableCell>Last Login</TableCell>
@@ -178,14 +173,17 @@ function Delegates({ className, company, onUpdateCompany, ...rest }) {
                 <TableRow key={user.uuid}>
                   <TableCell>
                     <div className={classes.nameCell}>
-                      <Avatar className={classes.avatar} src={user.logo}>
+                      <Avatar
+                        className={classes.avatar}
+                        src={user.profileImageUrl + '?w=100'}
+                      >
                         {getInitials(user.fullName)}
                       </Avatar>
                       <div>
                         <Link
                           color="inherit"
                           component={RouterLink}
-                          to={`/users/${user.uuid}`}
+                          to={`/delegates/${user.uuid}`}
                           variant="h6"
                         >
                           {user.firstName} {user.lastName}
@@ -197,7 +195,9 @@ function Delegates({ className, company, onUpdateCompany, ...rest }) {
                   <TableCell>{user.noValidCerts}</TableCell>
                   <TableCell>{user.noExpiringCerts}</TableCell>
                   <TableCell>
-                    {moment(user.lastLogin.date).format('LLL')}
+                    {user.lastLogin
+                      ? moment(user.lastLogin).format('LLL')
+                      : 'Never'}
                   </TableCell>
                   <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
                 </TableRow>

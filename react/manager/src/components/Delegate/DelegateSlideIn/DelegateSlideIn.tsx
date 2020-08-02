@@ -1,11 +1,11 @@
 import * as React from 'react';
-import SideModal from 'components/core/Modals/SideModal';
+import SideModal from 'sharedComponents/SideModal/SideModal';
 import Tabs, {
   TabContent,
   Body,
   Heading,
   Footer
-} from 'components/core/Modals/SideModal/Tabs';
+} from 'sharedComponents/SideModal/Tabs';
 import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
 import EasyInput from 'components/core/Input/EasyInput';
@@ -16,7 +16,7 @@ import Checkbox from 'components/core/Input/Checkbox';
 import CheckboxSingle from 'components/core/Input/CheckboxSingle';
 import { check } from 'prettier';
 import { mutations_CreateDelegateMutationResponse } from './__generated__/mutations_CreateDelegateMutation.graphql';
-import IdentTag from 'components/IdentTag';
+import IdentTag from 'sharedComponents/IdentTag';
 import LabelledCard from 'sharedComponents/core/Cards/LabelledCard';
 import Spacer from 'sharedComponents/core/Spacers/Spacer';
 import { mutations_UpdateDelegateMutationResponse } from './__generated__/mutations_UpdateDelegateMutation.graphql';

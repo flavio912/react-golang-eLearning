@@ -361,6 +361,26 @@ func (m *MutationResolver) CreateCategory(ctx context.Context, args struct{ Inpu
 	})
 }
 
+func (m *MutationResolver) UpdateCategory(ctx context.Context, args struct{ Input gentypes.UpdateCategoryInput }) (*CategoryResolver, error) {
+	app := auth.AppFromContext(ctx)
+	category, err := app.CourseApp.UpdateCategory(args.Input)
+	if err != nil {
+		return &CategoryResolver{}, err
+	}
+	return NewCategoryResolver(ctx, NewCategoryResolverArgs{
+		Category: category,
+	})
+}
+
+func (m *MutationResolver) DeleteCategory(ctx context.Context, args struct{ Input gentypes.DeleteCategoryInput }) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	err := app.CourseApp.DeleteCategory(args.Input)
+	if err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
 func (m *MutationResolver) CreateLesson(ctx context.Context, args struct{ Input gentypes.CreateLessonInput }) (*LessonResolver, error) {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
@@ -773,6 +793,59 @@ func (m *MutationResolver) DeleteCourse(ctx context.Context, args struct{ Input 
 	return app.CourseApp.DeleteCourse(args.Input)
 }
 
+func (m *MutationResolver) CreateCertificateType(ctx context.Context, args struct {
+	Input gentypes.CreateCertificateTypeInput
+}) (*CertificateTypeResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certType, err := app.CourseApp.CreateCertificateType(args.Input)
+	if err != nil {
+		return &CertificateTypeResolver{}, err
+	}
+
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+		CertificateType: &certType,
+	})
+}
+
+func (m *MutationResolver) UpdateCertificateType(ctx context.Context, args struct {
+	Input gentypes.UpdateCertificateTypeInput
+}) (*CertificateTypeResolver, error) {
+	app := auth.AppFromContext(ctx)
+	certType, err := app.CourseApp.UpdateCertificateType(args.Input)
+	if err != nil {
+		return &CertificateTypeResolver{}, err
+	}
+
+	return NewCertificateTypeResolver(ctx, NewCertificateTypeArgs{
+		CertificateType: &certType,
+	})
+}
+
+func (m *MutationResolver) CreateCAANumber(ctx context.Context, args struct{ Input gentypes.CreateCAANumberInput }) (*CAANumberResolver, error) {
+	app := auth.AppFromContext(ctx)
+	number, err := app.CourseApp.CreateCAANumber(args.Input)
+	return &CAANumberResolver{
+		CAANumber: number,
+	}, err
+}
+
+func (m *MutationResolver) UpdateCAANumber(ctx context.Context, args struct{ Input gentypes.UpdateCAANumberInput }) (*CAANumberResolver, error) {
+	app := auth.AppFromContext(ctx)
+	number, err := app.CourseApp.UpdateCAANumber(args.Input)
+	return &CAANumberResolver{
+		CAANumber: number,
+	}, err
+}
+
+func (m *MutationResolver) CertificateBodyImageUploadRequest(ctx context.Context, args struct{ Input gentypes.UploadFileMeta }) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, token, err := app.CourseApp.CertificateBodyImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		SuccessToken: token,
+		URL:          url,
+	}, err
+}
+
 func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
 	CourseID  int32
 	Published *bool
@@ -788,4 +861,70 @@ func (m *MutationResolver) SetCoursePublished(ctx context.Context, args struct {
 		return false, err
 	}
 	return true, err
+}
+
+type UpdateIndividualResponse struct {
+	User *UserResolver
+}
+
+func (m *MutationResolver) UpdateIndividual(ctx context.Context, args struct {
+	Input gentypes.UpdateIndividualInput
+}) (*UpdateIndividualResponse, error) {
+	app := auth.AppFromContext(ctx)
+	user, err := app.UsersApp.UpdateIndividual(args.Input)
+
+	if err != nil {
+		return &UpdateIndividualResponse{}, err
+	}
+
+	user_res, err := NewUserResolver(ctx, NewUserArgs{
+		User: user,
+	})
+
+	return &UpdateIndividualResponse{
+		User: user_res,
+	}, err
+}
+
+func (m *MutationResolver) DeleteIndividual(ctx context.Context, args struct {
+	Input gentypes.DeleteIndividualInput
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	return app.UsersApp.DeleteIndividual(args.Input)
+}
+
+func (m *MutationResolver) LessonBannerImageUploadRequest(ctx context.Context, args struct{ Input gentypes.UploadFileMeta }) (*gentypes.UploadFileResp, error) {
+	app := auth.AppFromContext(ctx)
+	url, token, err := app.CourseApp.LessonBannerImageUploadRequest(args.Input)
+	return &gentypes.UploadFileResp{
+		SuccessToken: token,
+		URL:          url,
+	}, err
+}
+
+func (m *MutationResolver) RegenerateCertificate(ctx context.Context, args struct {
+	Input struct{ HistoricalCourseUUID gentypes.UUID }
+}) (bool, error) {
+	app := auth.AppFromContext(ctx)
+	err := app.CourseApp.RegenerateCertificate(args.Input.HistoricalCourseUUID)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
+func (m *MutationResolver) FinaliseDelegate(ctx context.Context, args struct {
+	Input gentypes.FinaliseDelegateInput
+}) (*gentypes.AuthToken, error) {
+	app := auth.AppFromContext(ctx)
+	token, err := app.UsersApp.FinaliseDelegate(args.Input)
+	if err != nil {
+		return nil, err
+	}
+
+	auth.SetAuthCookies(ctx, token)
+	return &gentypes.AuthToken{
+		Token: token,
+	}, nil
 }

@@ -27,7 +27,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function SearchBar({ onFilter, onSearch, className, ...rest }) {
+function SearchBar({ onFilter, onSearch, setSearchText, className, ...rest }) {
   const classes = useStyles();
   const [openFilter, setOpenFilter] = useState(false);
 
@@ -47,7 +47,7 @@ function SearchBar({ onFilter, onSearch, className, ...rest }) {
       spacing={3}
     >
       <Grid item>
-        <Search className={classes.search} onSearch={onSearch} />
+        <Search className={classes.search} onSearch={onSearch} setSearchText={setSearchText} />
       </Grid>
       <Grid item>
         {onFilter && (

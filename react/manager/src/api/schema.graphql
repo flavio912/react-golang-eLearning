@@ -8,6 +8,7 @@ schema {
 type Query {
   info: String!
   manager(uuid: UUID): Manager
+  course(id: Int!): Course
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   delegate(uuid: UUID!): Delegate
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
@@ -264,7 +265,7 @@ type MyCourse {
 
 input PurchaseCoursesInput {
   courses: [Int!]!
-  users: [UUID!]! # List of delegates UUIDs
+  users: [UUID!] # List of delegates UUIDs
   extraInvoiceEmail: String
   acceptedTerms: Boolean!
   backgroundCheckConfirm: Boolean

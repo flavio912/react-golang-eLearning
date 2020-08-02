@@ -6,8 +6,8 @@ import { Theme } from 'helpers/theme';
 import DelegateSlideIn, {
   DelegateInfo
 } from 'components/Delegate/DelegateSlideIn';
-import MultiUser from 'components/core/Modals/SideModal/CourseManagement/MultiUser';
-import SingleUser from 'components/core/Modals/SideModal/CourseManagement/SingleUser';
+import MultiUser from 'components/MultiUser';
+import SingleUser from 'components/SingleUser';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -71,7 +71,7 @@ const PageHeader = ({
           <Button
             bold
             archetype="submit"
-            onClick={(_) => {
+            onClick={() => {
               setOpenDelegateSlideIn(true);
             }}
           >
@@ -88,6 +88,7 @@ const PageHeader = ({
         onClose={() => setMultiUserOpen(false)}
       />
       <SingleUser
+        user={{firstName: 'John', uuid: '0000'}}
         isOpen={isSingleUserOpen}
         onClose={() => setSingleUserOpen(false)}
       />

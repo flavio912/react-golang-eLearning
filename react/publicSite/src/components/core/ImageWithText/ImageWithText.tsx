@@ -12,15 +12,15 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexWrap: 'wrap',
     '@media (max-width: 700px)': {
       flexDirection: 'column',
-      justifyContent: 'flex-start'
-    }
+      justifyContent: 'flex-start',
+    },
   },
   row: {
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    marginTop: '15px'
+    marginTop: '15px',
   },
   container: {
     display: 'flex',
@@ -29,18 +29,18 @@ const useStyles = createUseStyles((theme: Theme) => ({
     justifyContent: 'space-around',
     '@media (max-width: 700px)': {
       alignSelf: 'center',
-    }
+    },
   },
   title: {
     fontSize: 23,
     fontWeight: 400,
     color: theme.colors.textGrey,
-    marginBottom: '15px'
+    marginBottom: '15px',
   },
   subtitle: {
     fontSize: 32,
     fontWeight: '800',
-    marginBottom: '32px'
+    marginBottom: '32px',
   },
   description: {
     fontSize: theme.fontSizes.xSmallHeading,
@@ -48,49 +48,49 @@ const useStyles = createUseStyles((theme: Theme) => ({
     color: theme.colors.textGrey,
     marginBottom: '25px',
     '@media (max-width: 700px)': {
-      textAlign: 'center'
-    }
+      textAlign: 'center',
+    },
   },
   link: {
     cursor: 'pointer',
     fontSize: theme.fontSizes.xSmallHeading,
     fontWeight: 600,
     color: theme.colors.navyBlue,
-    marginBottom: '15px'
+    marginBottom: '15px',
   },
   image: {
     height: '457px',
-    width: '100%'
+    width: '100%',
   },
   text: {
     fontSize: theme.fontSizes.extraLarge,
     fontWeight: '500',
     color: theme.colors.textGrey,
-    marginTop: '10px'
+    marginTop: '10px',
   },
   center: {
-    alignItems: 'center'
+    alignItems: 'center',
   },
   maxWidth: {
     maxWidth: '400px',
     marginRight: '100px',
     '@media (max-width: 700px)': {
       marginRight: '0',
-      alignItems: 'center'
-    }
+      alignItems: 'center',
+    },
   },
   rowReverse: {
     flexDirection: 'row-reverse',
     '@media (max-width: 700px)': {
-      flexDirection: 'column'
-    }
+      flexDirection: 'column',
+    },
   },
   marginLeft: {
     margin: '0 0 0 100px',
     '@media (max-width: 700px)': {
-      margin: 0
-    }
-  }
+      margin: 0,
+    },
+  },
 }));
 
 export type Link = {
@@ -123,10 +123,9 @@ function ImageWithText({
   image,
   stack,
   textRight,
-  className
+  className,
 }: Props) {
   const theme = useTheme();
-  console.log(stack, stack !== undefined)
   const classes = useStyles({ theme });
 
   const { router } = useRouter();
@@ -139,7 +138,7 @@ function ImageWithText({
       className={classNames(
         classes.root,
         textRight && classes.rowReverse,
-        className
+        className,
       )}
     >
       {stack ? (
@@ -147,7 +146,7 @@ function ImageWithText({
           className={classNames(
             classes.container,
             classes.maxWidth,
-            textRight && classes.marginLeft
+            textRight && classes.marginLeft,
           )}
         >
           {stack.map((row: Row) => (
@@ -169,7 +168,7 @@ function ImageWithText({
           className={classNames(
             classes.container,
             classes.maxWidth,
-            textRight && classes.marginLeft
+            textRight && classes.marginLeft,
           )}
         >
           <div style={{ flex: 0.1 }} />

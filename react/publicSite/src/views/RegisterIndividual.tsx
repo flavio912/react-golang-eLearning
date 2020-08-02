@@ -11,7 +11,7 @@ import { GraphError } from 'types/general';
 import {
   RegisterIndividual_CreateIndividualMutationVariables,
   RegisterIndividual_CreateIndividualMutationResponse,
-} from '__generated__/RegisterIndividual_CreateIndividualMutation.graphql';
+} from './__generated__/RegisterIndividual_CreateIndividualMutation.graphql';
 import { delegateLogin } from 'api/config';
 
 const useStyles = createUseStyles((theme: Theme) => ({

@@ -3,6 +3,8 @@ package user
 import (
 	"fmt"
 
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/auth"
+
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
 
 	"github.com/getsentry/sentry-go"
@@ -152,9 +154,8 @@ func (u *usersRepoImpl) CreateDelegate(
 	}
 
 	// Add link manually because gorm doesn't like blank associations
-	var courseTaker = models.CourseTaker{}
-	if err := tx.Create(&courseTaker).Error; err != nil {
-		tx.Rollback()
+	courseTaker, err := u.createCourseTaker(tx)
+	if err != nil {
 		u.Logger.Log(sentry.LevelError, err, "Unable to create courseTaker")
 		return models.Delegate{}, &errors.ErrWhileHandling
 	}
@@ -236,7 +237,11 @@ func (u *usersRepoImpl) UpdateDelegate(
 		updates["profile_key"] = s3UploadKey
 	}
 	if password != nil {
-		updates["password"] = password
+		updates["password"], err = auth.HashPassword(*password)
+		if err != nil {
+			u.Logger.Log(sentry.LevelError, err, "UpdateDelegate: Unable to hash password")
+			return models.Delegate{}, &errors.ErrWhileHandling
+		}
 	}
 
 	save := database.GormDB.Model(&delegate).Updates(updates)

@@ -1,23 +1,23 @@
-import * as React from "react";
-import { createUseStyles, useTheme } from "react-jss";
-import { ResultItem } from "./UserSearch";
-import IdentTag from "../IdentTag";
-import { Theme } from "helpers/theme";
+import * as React from 'react';
+import { createUseStyles, useTheme } from 'react-jss';
+import { ResultItem } from './UserSearch';
+import IdentTag from 'sharedComponents/IdentTag';
+import { Theme } from 'helpers/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
     padding: [theme.spacing(0), theme.spacing(1)],
     borderRadius: theme.primaryBorderRadius,
-    "&:hover": {
-      background: theme.colors.searchHoverGrey,
+    '&:hover': {
+      background: theme.colors.searchHoverGrey
     },
     fontSize: theme.fontSizes.default,
     fontWeight: 300,
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    cursor: "pointer",
-  },
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    cursor: 'pointer'
+  }
 }));
 
 type Props = {

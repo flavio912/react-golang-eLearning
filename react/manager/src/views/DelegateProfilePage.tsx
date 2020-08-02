@@ -13,6 +13,7 @@ import ActiveCoursesEmpty from 'components/Delegate/ActiveCoursesEmpty';
 import { createFragmentContainer, graphql } from 'react-relay';
 import { Router } from 'found';
 import { DelegateProfilePage_delegate } from './__generated__/DelegateProfilePage_delegate.graphql';
+import SingleUser from 'components/SingleUser';
 import DelegateSlideIn from 'components/Delegate/DelegateSlideIn';
 import { DelegateProfilePage_activity } from './__generated__/DelegateProfilePage_activity.graphql';
 
@@ -58,6 +59,7 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const [action, setAction] = React.useState<DropdownOption>();
+  const [isOpen, setIsOpen] = React.useState(false);
   
   const [openDelegateSlideIn, setOpenDelegateSlideIn] = React.useState(false);
   
@@ -174,6 +176,7 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
         courses={myCourses}
         EmptyComponent={
           <ActiveCoursesEmpty
+            onClick={() => setIsOpen((previous) => !previous)}
             title={`Book ${delegate.firstName} on their first Course`}
           />
         }
@@ -189,6 +192,11 @@ const DelegateProfilePage = ({ delegate, activity, router }: Props) => {
         isOpen={openDelegateSlideIn}
         onClose={() => setOpenDelegateSlideIn(false)}
         delegate={inpDelegate}
+      />
+      <SingleUser
+        user={{firstName: delegate.firstName, uuid: delegate.uuid}}
+        isOpen={isOpen}
+        onClose={() => setIsOpen((previous) => !previous)}
       />
     </div>
   );
