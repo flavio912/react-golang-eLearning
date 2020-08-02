@@ -7,8 +7,10 @@ import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';
 import Page from 'components/Page';
-import { TrainingZone_user, CourseStatus } from './__generated__/TrainingZone_user.graphql';
-
+import {
+  TrainingZone_user,
+  CourseStatus
+} from './__generated__/TrainingZone_user.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -63,11 +65,11 @@ function TrainingZone({ user }: Props) {
   const classes = useStyles({ theme });
   const { router } = useRouter();
 
-  const courses: {status: CourseStatus, enrolledAt: string}[] = [];
+  const courses: { status: CourseStatus; enrolledAt: string }[] = [];
   if (user?.myCourses) {
     user?.myCourses.map((value) => {
-      courses.push({status: value.status, enrolledAt: value.enrolledAt})
-    })
+      courses.push({ status: value.status, enrolledAt: value.enrolledAt });
+    });
   }
 
   return (

@@ -31,20 +31,23 @@ type Props = {
   courses: {
     status: CourseStatus;
     enrolledAt: string;
-  }[]
+  }[];
 };
 
 function TopInfo({ className, courses }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
-  const month =moment().format('MMMM');
+  const month = moment().format('MMMM');
   const year = moment().format('YYYY');
 
-  const currentMonthCourses = courses.filter(x => moment(x.enrolledAt).isSameOrAfter(moment().format("YYYY-MM-01")));
+  const currentMonthCourses = courses.filter((x) =>
+    moment(x.enrolledAt).isSameOrAfter(moment().format('YYYY-MM-01'))
+  );
   const newCourses = currentMonthCourses.length;
-  const certificates = currentMonthCourses.filter(x => x.status !== 'failed').length;
-  
+  const certificates = currentMonthCourses.filter((x) => x.status !== 'failed')
+    .length;
+
   return (
     <div className={classnames(classes.outer, className)}>
       <div className={classes.cont}>
@@ -53,7 +56,6 @@ function TopInfo({ className, courses }: Props) {
           text={'Courses'}
           value={newCourses}
           footer={`in ${month} ${year}`}
-          valueArrow={'up'}
         />
         <div className={classes.divider} />
       </div>
@@ -63,7 +65,6 @@ function TopInfo({ className, courses }: Props) {
           text={'Certificates'}
           value={certificates}
           footer={`in ${month} ${year}`}
-          valueArrow={'up'}
         />
         {/* <div className={classes.divider} /> */}
       </div>
