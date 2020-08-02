@@ -33,16 +33,6 @@ import RegisterCalendar from 'views/RegisterCalendar';
 import ArticleLandingPage from 'views/ArticleLandingPage';
 import Article from 'views/Article';
 
-const ExamplePageQuery = graphql`
-  query App_Query {
-    manager {
-      uuid
-      firstName
-      lastName
-    }
-  }
-`;
-
 const Router = createFarceRouter({
   historyProtocol: new BrowserProtocol(),
   historyMiddlewares: [queryMiddleware],
@@ -75,7 +65,23 @@ const Router = createFarceRouter({
         <Route path="/" Component={Home} />
         <Route path="/aboutus" Component={AboutUs} />
         <Route path="/payment" Component={PaymentPage} />
-        <Route path="/course" Component={CourseDetailsPage} />
+        <Route
+          path="/course/:id"
+          Component={CourseDetailsPage}
+          query={graphql`
+            query App_CourseDetailsPage_Query($id: Int!) {
+              course(id: $id) {
+                ...CourseDetailsPage_course
+              }
+            }
+          `}
+          prepareVariables={(params: any) => {
+            const { id } = params;
+            return {
+              id: parseInt(id),
+            };
+          }}
+        />
         <Route
           path="/courses/:categoryUUID"
           Component={Courses}
