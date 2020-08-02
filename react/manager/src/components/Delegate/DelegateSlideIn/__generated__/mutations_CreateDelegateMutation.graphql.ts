@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash d13caf27023a74b544d37a5b521affe4 */
+/* @relayHash d0f128e17e4f48aeb18395f1c3754a5e */
 
 import { ConcreteRequest } from "relay-runtime";
 export type mutations_CreateDelegateMutationVariables = {
@@ -16,6 +16,7 @@ export type mutations_CreateDelegateMutationResponse = {
         readonly delegate: {
             readonly firstName: string;
             readonly lastName: string;
+            readonly jobTitle: string;
             readonly TTC_ID: string;
             readonly email: string | null;
             readonly telephone: string | null;
@@ -43,6 +44,7 @@ mutation mutations_CreateDelegateMutation(
     delegate {
       firstName
       lastName
+      jobTitle
       TTC_ID
       email
       telephone
@@ -163,6 +165,13 @@ const node: ConcreteRequest = (function () {
                         {
                             "kind": "ScalarField",
                             "alias": null,
+                            "name": "jobTitle",
+                            "args": null,
+                            "storageKey": null
+                        },
+                        {
+                            "kind": "ScalarField",
+                            "alias": null,
                             "name": "TTC_ID",
                             "args": null,
                             "storageKey": null
@@ -213,10 +222,10 @@ const node: ConcreteRequest = (function () {
             "operationKind": "mutation",
             "name": "mutations_CreateDelegateMutation",
             "id": null,
-            "text": "mutation mutations_CreateDelegateMutation(\n  $firstName: String!\n  $lastName: String!\n  $jobTitle: String!\n  $email: String!\n  $phone: String!\n  $generatePassword: Boolean\n) {\n  createDelegate(input: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: $jobTitle, telephone: $phone, generatePassword: $generatePassword}) {\n    delegate {\n      firstName\n      lastName\n      TTC_ID\n      email\n      telephone\n    }\n    generatedPassword\n  }\n}\n",
+            "text": "mutation mutations_CreateDelegateMutation(\n  $firstName: String!\n  $lastName: String!\n  $jobTitle: String!\n  $email: String!\n  $phone: String!\n  $generatePassword: Boolean\n) {\n  createDelegate(input: {firstName: $firstName, lastName: $lastName, email: $email, jobTitle: $jobTitle, telephone: $phone, generatePassword: $generatePassword}) {\n    delegate {\n      firstName\n      lastName\n      jobTitle\n      TTC_ID\n      email\n      telephone\n    }\n    generatedPassword\n  }\n}\n",
             "metadata": {}
         }
     } as any;
 })();
-(node as any).hash = '95feec1cdac1ecb372568c00f434df92';
+(node as any).hash = '8c0261fb51ca574f026fc8a00b1091c3';
 export default node;

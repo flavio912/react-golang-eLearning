@@ -21,6 +21,7 @@ import { Courses_courses } from './__generated__/Courses_courses.graphql';
 import { Courses_category } from './__generated__/Courses_category.graphql';
 import environment from 'api/environment';
 import { CoursesQueryResponse } from './__generated__/CoursesQuery.graphql';
+import { useRouter } from 'found';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   courseRoot: {
@@ -213,7 +214,7 @@ type Props = {
 function Courses({ courses, category }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
-
+  const { router } = useRouter();
   const [currentCourses, setCourses] = React.useState<Courses_courses['edges']>(
     courses.edges,
   );
@@ -230,7 +231,9 @@ function Courses({ courses, category }: Props) {
     type: category.name,
     colour: category.color,
     imageURL: course?.bannerImageURL ?? '',
-    viewCourse: () => {},
+    viewCourse: () => {
+      router.push('/course/' + course?.ident);
+    },
     addToBasket: () => {},
   }));
 

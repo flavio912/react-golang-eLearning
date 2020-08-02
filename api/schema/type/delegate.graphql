@@ -52,3 +52,8 @@ input DelegateLogin {
   password: String!
   noResp: Boolean
 }
+
+input FinaliseDelegateInput {
+  token: String!
+  password: String!
+}

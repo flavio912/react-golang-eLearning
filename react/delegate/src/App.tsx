@@ -16,6 +16,7 @@ import { Resolver } from 'found-relay';
 import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
 import LoginPage from 'views/Login';
+import FinaliseLogin from 'views/FinaliseLogin';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
@@ -28,6 +29,7 @@ import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
 import Test from 'views/Test/Test';
 import { SideModalProvider } from 'views/SideModalProvider';
+import RecoverPassword from 'views/RecoverPassword/RecoverPassword';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -48,6 +50,8 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/password" Component={RecoverPassword} />
+      <Route path="/finalise/:token" Component={FinaliseLogin} />
       <Route
         path="/app"
         Component={AppHolder}
@@ -157,10 +161,10 @@ const Router = createFarceRouter({
             }
           `}
           prepareVariables={(params: any, { location }: any) => {
-            const { pageNum } = location.query;
+            const { offset, limit } = location.query;
             return {
-              offset: pageNum ?? 0,
-              limit: 10
+              offset: offset,
+              limit: limit
             };
           }}
           render={(args: any) => {

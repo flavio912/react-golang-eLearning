@@ -8,6 +8,7 @@ schema {
 type Query {
   info: String!
   manager(uuid: UUID): Manager
+  course(id: Int!): Course
   courses(page: Page, filter: CoursesFilter, orderBy: OrderBy): CoursePage
   delegate(uuid: UUID!): Delegate
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage
@@ -16,6 +17,7 @@ type Query {
 type Mutation {
   managerLogin(input: ManagerLogin!): AuthToken
   createDelegate(input: CreateDelegateInput!): CreateDelegateResponse
+  updateDelegate(input: UpdateDelegateInput!): Delegate
   purchaseCourses(input: PurchaseCoursesInput!): PurchaseCoursesResponse
 }
 
@@ -51,6 +53,18 @@ input CreateDelegateInput {
 type CreateDelegateResponse {
   delegate: Delegate!
   generatedPassword: String
+}
+
+input UpdateDelegateInput {
+  uuid: UUID!
+  companyUUID: UUID
+  firstName: String
+  lastName: String
+  jobTitle: String
+  email: String
+  telephone: String
+  profileImageUploadToken: String
+  newPassword: String
 }
 
 input DelegateFilter {
