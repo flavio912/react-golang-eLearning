@@ -22,12 +22,21 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
+  },
+  margin: {
+    margin: `${theme.spacing(2)}px 0`
+  },
+  marginBottom: {
+    marginBottom: '100px'
+  },
+  padding: {
+    padding: theme.spacing(2)
   }
 }));
 
 const GET_MODULES = gql`
-  query SearchModules($page: Page!) {
-    modules(page: $page) {
+  query SearchModules {
+    modules {
       edges {
         uuid
         name
@@ -36,12 +45,6 @@ const GET_MODULES = gql`
           uuid
           name
         }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
@@ -53,7 +56,6 @@ const SEARCH = gql`
     $excludeLesson: Boolean
     $excludeTest: Boolean
     $excludeModule: Boolean
-    $page: Page!
   ) {
     searchSyllabus(
       filter: {
@@ -62,107 +64,48 @@ const SEARCH = gql`
         excludeTest: $excludeTest
         excludeModule: $excludeModule
       }
-      page: $page
     ) {
       edges {
         uuid
         name
         type
-        complete
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
 `;
 
-function useModulesQuery(page) {
-  const { error, data } = useQuery(GET_MODULES, {
-    variables: {
-      page
-    }
-  });
-
-  if (!data || !data.modules || !data.modules.edges || !data.modules.pageInfo) {
+const cleanResult = (data, error) => {
+  if (!data || !data.edges) {
     error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
+    return [];
   }
 
-  const resultItems = data.modules.edges.map(module => ({
-    uuid: module?.uuid ?? '',
-    name: module?.name ?? '',
-    type: module?.type ?? '',
-    syllabus: module?.syllabus ?? ''
+  const resultItems = data.edges.map(item => ({
+    uuid: item?.uuid ?? '',
+    name: item?.name ?? '',
+    type: item?.type ?? '',
+    text: item?.text ?? '',
+    syllabus: item?.syllabus ?? ''
   }));
 
-  const pageInfo = {
-    total: data.modules.pageInfo?.total,
-    offset: data.modules.pageInfo.offset,
-    limit: data.modules.pageInfo.limit,
-    given: data.modules.pageInfo.given
-  };
+  return resultItems;
+};
 
-  return { resultItems, pageInfo };
+function useModulesQuery() {
+  const { error, data } = useQuery(GET_MODULES);
+  return cleanResult(data && data.modules, error);
 }
 
-function useSearchQuery(text, filter, page) {
-  console.log('page: ', page);
+function useSearchQuery(text, filter) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
       excludeLesson: filter.excludeLesson,
       excludeTest: filter.excludeTest,
-      excludeModule: filter.excludeModule,
-      page: page
+      excludeModule: filter.excludeModule
     }
   });
-
-  if (
-    !data ||
-    !data.searchSyllabus ||
-    !data.searchSyllabus.edges ||
-    !data.searchSyllabus.pageInfo
-  ) {
-    error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
-  }
-
-  const resultItems = data.searchSyllabus.edges.map(syllabus => ({
-    uuid: syllabus?.uuid ?? '',
-    name: syllabus?.name ?? '',
-    text: syllabus?.text ?? '',
-    type: syllabus?.type ?? '',
-    tags: syllabus?.tags ?? ''
-  }));
-
-  const pageInfo = {
-    total: data.searchSyllabus.pageInfo?.total,
-    offset: data.searchSyllabus.pageInfo.offset,
-    limit: data.searchSyllabus.pageInfo.limit,
-    given: data.searchSyllabus.pageInfo.given
-  };
-
-  return { resultItems, pageInfo };
+  return cleanResult(data && data.searchSyllabus, error);
 }
 
 function CourseBuilder({ state, setState }) {
@@ -179,38 +122,65 @@ function CourseBuilder({ state, setState }) {
     ]
   });
   const [searchText, setSearchText] = React.useState('');
-  const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, searchFilters, page);
+  const searchResults = useSearchQuery(searchText, searchFilters);
+  const resultItems = useModulesQuery();
 
-  const [courseStructure, setCourseStructure] = React.useState([]);
-  const { resultItems } = useModulesQuery(page);
-
-  // Add module syllabus and name
-  const addModule = array => {
-    array.forEach(element => {
-      if (element.type === 'module') {
+  React.useEffect(() => {
+    state.syllabus.forEach(element => {
+      // Add module syllabus and name
+      if (element.type === 'module' && element.syllabus === undefined) {
         const module = resultItems.find(x => x.uuid === element.uuid);
-        if (module && !courseStructure.find(x => x.uuid === module.uuid)) {
-          setCourseStructure([...courseStructure, module]);
+        const index =
+          module && state.syllabus.findIndex(x => x.uuid === module.uuid);
+        if (index > -1) {
+          const syllabus = [...state.syllabus];
+          syllabus[index] = module;
+          setState({ syllabus });
         }
       }
     });
-  };
-
-  console.log('strut: ', courseStructure);
-  React.useEffect(() => {
-    if (state.syllabus) {
-      addModule(state.syllabus);
-    } else if (state.structure) {
-      addModule(state.structure);
-    }
-  });
+  }, [resultItems, setState, state]);
 
   const onDelete = uuid => {
-    setState({
-      syllabus: state.syllabus.filter(item => item.uuid !== uuid)
-    });
+    const newStructure = [...state.syllabus];
+    const index = state.syllabus.findIndex(x => x.uuid === uuid);
+    newStructure.splice(index, 1);
+    setState({ syllabus: newStructure });
   };
+
+  const newItem = item => ({
+    uuid: item.uuid,
+    item,
+    items: item.syllabus ? item.syllabus : [],
+    component:
+      item.type === 'module' ? (
+        <ReoderableDropdown
+          className={classes.margin}
+          title={item.name}
+          onDelete={() => onDelete(item.uuid)}
+          items={
+            item.syllabus &&
+            item.syllabus.map(child => ({
+              uuid: child.uuid,
+              item: child.item,
+              component: (
+                <ReoderableListItem
+                  className={classes.margin}
+                  uuid={child.uuid}
+                  text={child.name}
+                />
+              )
+            }))
+          }
+        />
+      ) : (
+        <ReoderableListItem
+          uuid={item.uuid}
+          text={item.name}
+          onDelete={onDelete}
+        />
+      )
+  });
 
   return (
     <div className={classes.root}>
@@ -242,12 +212,16 @@ function CourseBuilder({ state, setState }) {
                   placeholder="Search Modules, Lessons or Tests"
                   searchFilters={searchFilters}
                   setSearchFilters={setSearchFilters}
-                  searchResults={searchResults.resultItems}
+                  searchResults={searchResults}
                   setSearchText={setSearchText}
-                  onChange={({ uuid, name, type }) => {
-                    setState({
-                      syllabus: [...state.syllabus, { uuid, name, type }]
-                    });
+                  onChange={item => {
+                    // No duplicates
+                    if (
+                      module &&
+                      !state.syllabus.find(x => x.uuid === item.uuid)
+                    ) {
+                      setState({ syllabus: [...state.syllabus, item] });
+                    }
                   }}
                 />
               </CardContent>
@@ -257,53 +231,30 @@ function CourseBuilder({ state, setState }) {
             <SuggestedTable
               title="Suggested Modules based on Tags"
               suggestions={resultItems.slice(0, 3)}
-              onAdd={({ uuid, name }) =>
-                setState({
-                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
-                })
-              }
+              onAdd={module => {
+                const toAdd = resultItems.find(x => x.uuid === module.uuid);
+                // No duplicates
+                if (
+                  module &&
+                  !state.syllabus.find(x => x.uuid === module.uuid)
+                ) {
+                  setState({ syllabus: [...state.syllabus, toAdd] });
+                }
+              }}
             />
           </Grid>
-          <Grid item>
+          <Grid item className={classes.marginBottom}>
             <Card>
               <CardHeader title="Course Structure" />
               <Divider />
-              <CardContent>
-                <ReoderableList
-                  items={courseStructure.map(module => ({
-                    id: module.uuid,
-                    component: (
-                      <ReoderableDropdown
-                        title={module.name}
-                        items={
-                          module.syllabus &&
-                          module.syllabus.map(item => ({
-                            id: item.uuid,
-                            component: (
-                              <ReoderableListItem
-                                uuid={item.uuid}
-                                text={item.name}
-                                onDelete={onDelete}
-                              />
-                            )
-                          }))
-                        }
-                        setItems={items => {
-                          const newModule = {
-                            ...module,
-                            syllabus: items
-                          };
-                          setCourseStructure([
-                            ...courseStructure,
-                            ...newModule
-                          ]);
-                        }}
-                      />
-                    )
-                  }))}
-                  setItems={setCourseStructure}
-                />
-              </CardContent>
+              <ReoderableList
+                className={classes.padding}
+                newItem={newItem}
+                items={state.syllabus.map(item => newItem(item))}
+                setItems={items => {
+                  setState({ syllabus: items.map(({ item }) => item) });
+                }}
+              />
             </Card>
           </Grid>
         </Grid>

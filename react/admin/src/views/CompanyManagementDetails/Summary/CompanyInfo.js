@@ -12,12 +12,11 @@ import {
   Table,
   TableBody,
   TableRow,
-  TableCell,
-  colors
+  TableCell
 } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
+import CompanyEditModal from './CompanyEditModal';
 import Label from 'src/components/Label';
-import CustomerEditModal from './CustomerEditModal';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -36,7 +35,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function CustomerInfo({ customer, className, ...rest }) {
+function CustomerInfo({ company, onUpdate, className, ...rest }) {
   const classes = useStyles();
   const [openEdit, setOpenEdit] = useState(false);
 
@@ -45,6 +44,7 @@ function CustomerInfo({ customer, className, ...rest }) {
   };
 
   const handleEditClose = () => {
+    onUpdate();
     setOpenEdit(false);
   };
 
@@ -56,41 +56,36 @@ function CustomerInfo({ customer, className, ...rest }) {
         <Table>
           <TableBody>
             <TableRow>
-              <TableCell>Email</TableCell>
-              <TableCell>
-                {customer.email}
-                <div>
-                  <Label
-                    color={
-                      customer.verified ? colors.green[600] : colors.orange[600]
-                    }
-                  >
-                    {customer.verified
-                      ? 'Email verified'
-                      : 'Email not verified'}
-                  </Label>
-                </div>
-              </TableCell>
-            </TableRow>
-            <TableRow selected>
-              <TableCell>Phone</TableCell>
-              <TableCell>{customer.phone}</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>Country</TableCell>
-              <TableCell>{customer.country}</TableCell>
+              <TableCell>Contact Email</TableCell>
+              <TableCell>{company.contactEmail}</TableCell>
             </TableRow>
             <TableRow selected>
               <TableCell>Address 1</TableCell>
-              <TableCell>{customer.address1}</TableCell>
+              <TableCell>{company.address.addressLine1}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>Address 2</TableCell>
-              <TableCell>{customer.address2}</TableCell>
+              <TableCell>{company.address.addressLine2}</TableCell>
             </TableRow>
             <TableRow selected>
+              <TableCell>County</TableCell>
+              <TableCell>{company.address.county}</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell>Post Code</TableCell>
-              <TableCell></TableCell>
+              <TableCell>{company.address.postCode}</TableCell>
+            </TableRow>
+            <TableRow selected>
+              <TableCell>Country</TableCell>
+              <TableCell>{company.address.country}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Company Type</TableCell>
+              <TableCell>
+                <Label color={'rgb(119, 125, 156)'}>
+                  {company.isContract ? 'Contract' : 'Pay as you go'}
+                </Label>
+              </TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -101,8 +96,8 @@ function CustomerInfo({ customer, className, ...rest }) {
           Edit
         </Button>
       </CardActions>
-      <CustomerEditModal
-        customer={customer}
+      <CompanyEditModal
+        company={company}
         onClose={handleEditClose}
         open={openEdit}
       />

@@ -30,7 +30,10 @@ type CoursesRepository interface {
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
 
 	AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error)
+
 	Categories(page *gentypes.Page, text *string) ([]models.Category, gentypes.PageInfo, error)
+	UpdateCategory(input gentypes.UpdateCategoryInput) (models.Category, error)
+	DeleteCategory(uuid gentypes.UUID) error
 
 	CreateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
 	UpdateOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (models.Course, error)
@@ -110,6 +113,10 @@ type CoursesRepository interface {
 	UpdateTutor(details gentypes.UpdateTutorInput) (models.Tutor, error)
 	UpdateTutorSignature(tutorUUID gentypes.UUID, s3key string) error
 	Tutor(uuid gentypes.UUID) (models.Tutor, error)
+	Tutors(
+		page *gentypes.Page,
+		filter *gentypes.TutorFilter,
+		order *gentypes.OrderBy) ([]models.Tutor, gentypes.PageInfo, error)
 }
 
 type coursesRepoImpl struct {
@@ -465,6 +472,9 @@ func filterCourse(query *gorm.DB, filter *gentypes.CourseFilter, fullyApproved b
 		}
 		if filter.Price != nil {
 			query = query.Where("price = ?", *filter.Price)
+		}
+		if filter.CategoryUUID != nil {
+			query = query.Where("category_uuid = ?", *filter.CategoryUUID)
 		}
 		if filter.AllowedToBuy != nil && *filter.AllowedToBuy {
 			if !fullyApproved {

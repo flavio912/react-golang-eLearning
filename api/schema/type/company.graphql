@@ -7,6 +7,7 @@ type Company {
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
   address: Address!
+  contactEmail: String!
 }
 
 type Address {
@@ -26,6 +27,7 @@ input CreateCompanyInput {
   companyName: String!
   addressLine1: String!
   addressLine2: String!
+  contactEmail: String!
   county: String!
   postCode: String!
   country: String!
@@ -35,6 +37,8 @@ input UpdateCompanyInput {
   uuid: UUID!
   companyName: String
   approved: Boolean
+  isContract: Boolean
+  contactEmail: String
   addressLine1: String
   addressLine2: String
   county: String

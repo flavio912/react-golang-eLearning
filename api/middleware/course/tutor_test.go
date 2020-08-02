@@ -1,6 +1,7 @@
 package course_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -76,4 +77,65 @@ func TestUpdateTutor(t *testing.T) {
 		assert.Equal(t, *input.Name, tutor.Name)
 		assert.Equal(t, *input.CIN, tutor.CIN)
 	})
+}
+
+func TestTutors(t *testing.T) {
+	prepareTestDatabase()
+
+	t.Run("Should return ALL tutors", func(t *testing.T) {
+		ts, _, err := courseRepo.Tutors(nil, nil, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, ts, 2)
+	})
+
+	t.Run("Should page", func(t *testing.T) {
+		limit := int32(1)
+		page := gentypes.Page{Limit: &limit, Offset: nil}
+		ts, info, err := courseRepo.Tutors(&page, nil, nil)
+
+		assert.Nil(t, err)
+		assert.Len(t, ts, 1)
+		assert.Equal(t, gentypes.PageInfo{Total: 2, Given: 1, Limit: limit}, info)
+	})
+
+	t.Run("Should order", func(t *testing.T) {
+		asc := true
+		order := gentypes.OrderBy{Field: "name", Ascending: &asc}
+		ts, _, err := courseRepo.Tutors(nil, nil, &order)
+
+		assert.Nil(t, err)
+		assert.Len(t, ts, 2)
+		assert.Equal(t, "Mohammed Rashwan", ts[0].Name)
+	})
+
+	tests := []struct {
+		name    string
+		filter  gentypes.TutorFilter
+		wantLen int
+	}{
+		{
+			name: "name",
+			filter: gentypes.TutorFilter{
+				Name: helpers.StringPointer("walt"),
+			},
+			wantLen: 1,
+		},
+		{
+			name: "cin",
+			filter: gentypes.TutorFilter{
+				CIN: helpers.StringPointer("1"),
+			},
+			wantLen: 2,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(fmt.Sprintf("Should filter by %s", test.name), func(t *testing.T) {
+			ts, _, err := courseRepo.Tutors(nil, &test.filter, nil)
+
+			assert.Nil(t, err)
+			assert.Len(t, ts, test.wantLen)
+		})
+	}
 }

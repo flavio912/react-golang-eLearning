@@ -26,7 +26,10 @@ type CourseApp interface {
 	SaveOnlineCourse(courseInfo gentypes.SaveOnlineCourseInput) (gentypes.Course, error)
 	SaveClassroomCourse(courseInfo gentypes.SaveClassroomCourseInput) (gentypes.Course, error)
 	CourseBannerImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
+
 	Categories(page *gentypes.Page, text *string) ([]gentypes.Category, gentypes.PageInfo, error)
+	UpdateCategory(input gentypes.UpdateCategoryInput) (gentypes.Category, error)
+	DeleteCategory(input gentypes.DeleteCategoryInput) error
 
 	CreateTag(input gentypes.CreateTagInput) (gentypes.Tag, error)
 	ManyCourseTags(ids []uint) (map[uint][]gentypes.Tag, error)
@@ -103,6 +106,11 @@ type CourseApp interface {
 	UpdateCAANumber(input gentypes.UpdateCAANumberInput) (gentypes.CAANumber, error)
 	CertificateBodyImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)
 
+	Tutor(uuid gentypes.UUID) (gentypes.Tutor, error)
+	Tutors(
+		page *gentypes.Page,
+		filter *gentypes.TutorFilter,
+		order *gentypes.OrderBy) ([]gentypes.Tutor, gentypes.PageInfo, error)
 	CreateTutor(input gentypes.CreateTutorInput) (gentypes.Tutor, error)
 	UpdateTutor(input gentypes.UpdateTutorInput) (gentypes.Tutor, error)
 	TutorSignatureImageUploadRequest(imageMeta gentypes.UploadFileMeta) (string, string, error)

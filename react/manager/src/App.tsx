@@ -15,6 +15,7 @@ import { Resolver } from 'found-relay';
 import environment, { FetchError } from './api/environment';
 import { graphql } from 'react-relay';
 import LoginPage from 'views/Login';
+import RecoverPassword from 'views/RecoverPassword';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
@@ -43,6 +44,7 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/(password)?" Component={RecoverPassword} />
       <Route
         path="/app"
         Component={AppHolder}

@@ -59,7 +59,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-function Results({ individuals, className, ...rest }) {
+function Results({ delegates, className, ...rest }) {
   const classes = useStyles();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -72,41 +72,44 @@ function Results({ individuals, className, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
-  const resultsPerPage = (offset) => (page + offset) * rowsPerPage;
-  const results = individuals.slice(resultsPerPage(0), resultsPerPage(1));
-
   return (
     <Card {...rest} className={clsx(classes.root, className)}>
       <Table>
         <TableHead>
           <TableRow>
             <TableCell>Email</TableCell>
-            <TableCell>First Name</TableCell>
-            <TableCell>Last Name</TableCell>
+            <TableCell>Job Title</TableCell>
+            <TableCell>Telephone</TableCell>
+            <TableCell>Company</TableCell>
             <TableCell>Created At</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {results && results.map(individual => (
-            <TableRow key={individual.uuid}>
+          {delegates.map(delegate => (
+            <TableRow key={delegate.uuid}>
               <TableCell>
                 <div className={classes.nameCell}>
-                  <Avatar className={classes.avatar} src={individual.logo}>
-                    {/* {getInitials(individual.fullName)} */}
+                  <Avatar className={classes.avatar} src={delegate.logo}>
+                    {delegate.firstName.charAt(0).toUpperCase()}
+                    {delegate.lastName.charAt(0).toUpperCase()}
                   </Avatar>
-                  <Link
-                    color="inherit"
-                    component={RouterLink}
-                    to={`/individuals/${individual.uuid}/overview`}
-                    variant="h6"
-                  >
-                    {individual.email}
-                  </Link>
+                  <div>
+                    <Link
+                      color="inherit"
+                      component={RouterLink}
+                      to={`/delegates/${delegate.uuid}/overview`}
+                      variant="h6"
+                    >
+                      {delegate.firstName} {delegate.lastName}
+                    </Link>
+                    <div>{delegate.email}</div>
+                  </div>
                 </div>
               </TableCell>
-              <TableCell>{individual.firstName}</TableCell>
-              <TableCell>{individual.lastName}</TableCell>
-              <TableCell>{moment(individual.createdAt).format('LLL')}</TableCell>
+              <TableCell>{delegate.jobTitle}</TableCell>
+              <TableCell>{delegate.telephone}</TableCell>
+              <TableCell>{delegate.company.name}</TableCell>
+              <TableCell>{moment(delegate.createdAt).format('LLL')}</TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -114,7 +117,7 @@ function Results({ individuals, className, ...rest }) {
       <CardActions className={classes.actions}>
         <TablePagination
           component="div"
-          count={individuals.length}
+          count={delegates.length}
           onChangePage={handleChangePage}
           onChangeRowsPerPage={handleChangeRowsPerPage}
           page={page}
@@ -127,8 +130,7 @@ function Results({ individuals, className, ...rest }) {
 }
 
 Results.propTypes = {
-  className: PropTypes.string,
-  avatars: PropTypes.array.isRequired
+  className: PropTypes.string
 };
 
 export default Results;

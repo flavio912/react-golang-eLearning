@@ -25,8 +25,9 @@ function ErrorModal({ error }) {
   if (!show) return false;
   if (!error) return false;
   var message = error.message;
-  if (error.graphQLErrors && error.graphQLErrors.length === 1) {
-    message = error.graphQLErrors[0]?.extensions?.message;
+
+  if (error.graphQLErrors && error.graphQLErrors.length >= 1) {
+    message = error.graphQLErrors[0]?.extensions?.message ?? message;
   }
 
   return (

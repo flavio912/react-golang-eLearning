@@ -77,33 +77,8 @@ function Managers({ className, company, ...rest }) {
   const [addUserModalOpen, setAddUserModalOpen] = useState(false);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const exampleUsers = [
-    {
-      fullName: 'Tom Emmerson',
-      userId: 'tom_emmerson',
-      roles: ['Manager'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    },
-    {
-      fullName: 'John Doe',
-      userId: 'john_doe2',
-      roles: ['Manager', 'Delegate'],
-      email: 'tom@tom.com',
-      noValidCerts: 4,
-      noExpiringCerts: 2,
-      lastLogin: {
-        date: '02/01/2020'
-      },
-      createdAt: '05/01/2020'
-    }
-  ];
-
+  const { managers } = company;
+  console.log('ma', managers);
   const handleChangePage = (event, page) => {
     setPage(page);
   };
@@ -150,30 +125,32 @@ function Managers({ className, company, ...rest }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {exampleUsers.map(user => (
-              <TableRow key={user.userId}>
+            {(managers?.edges ?? []).map(manager => (
+              <TableRow key={manager.uuid}>
                 <TableCell>
                   <div className={classes.nameCell}>
-                    <Avatar className={classes.avatar} src={user.logo}>
-                      {getInitials(user.fullName)}
+                    <Avatar className={classes.avatar} src={manager.logo}>
+                      {getInitials(`${manager.firstName} ${manager.lastName}`)}
                     </Avatar>
                     <div>
                       <Link
                         color="inherit"
                         component={RouterLink}
-                        to="/users/1"
+                        to="/managers/1"
                         variant="h6"
                       >
-                        {user.fullName}
+                        {`${manager.firstName} ${manager.lastName}`}
                       </Link>
-                      <div>{user.email}</div>
+                      <div>{manager.email}</div>
                     </div>
                   </div>
                 </TableCell>
                 <TableCell>
-                  {moment(user.lastLogin.date).format('LLL')}
+                  {manager.lastLogin
+                    ? moment(manager.lastLogin).format('LLL')
+                    : 'Never'}
                 </TableCell>
-                <TableCell>{moment(user.createdAt).format('LLL')}</TableCell>
+                <TableCell>{moment(manager.createdAt).format('LLL')}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -181,7 +158,7 @@ function Managers({ className, company, ...rest }) {
         <CardActions className={classes.actions}>
           <TablePagination
             component="div"
-            count={exampleUsers.length}
+            count={managers.length}
             onChangePage={handleChangePage}
             onChangeRowsPerPage={handleChangeRowsPerPage}
             page={page}

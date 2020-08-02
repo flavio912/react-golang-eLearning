@@ -5,6 +5,11 @@ type Tutor {
   signatureURL: String!
 }
 
+type TutorPage implements PaginatedQuery {
+  edges: [Tutor]
+  pageInfo: PageInfo
+}
+
 input CreateTutorInput {
   name: String!
   cin: String!
@@ -21,4 +26,9 @@ input UpdateTutorInput {
   name: String
   cin: String
   signatureToken: String
+}
+
+input TutorFilter {
+  name: String
+  cin: String
 }

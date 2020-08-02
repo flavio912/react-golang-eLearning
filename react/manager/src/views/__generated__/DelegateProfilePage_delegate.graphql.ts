@@ -5,6 +5,7 @@ import { ReaderFragment } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
 export type CourseStatus = "complete" | "failed" | "incomplete" | "%future added value";
 export type DelegateProfilePage_delegate = {
+    readonly uuid: string;
     readonly firstName: string;
     readonly lastName: string;
     readonly myCourses: ReadonlyArray<{
@@ -41,6 +42,13 @@ const node: ReaderFragment = (function () {
         "metadata": null,
         "argumentDefinitions": [],
         "selections": [
+            {
+                "kind": "ScalarField",
+                "alias": null,
+                "name": "uuid",
+                "args": null,
+                "storageKey": null
+            },
             {
                 "kind": "ScalarField",
                 "alias": null,
@@ -100,5 +108,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = 'd85d7e60751bc1864497e64c71994411';
+(node as any).hash = '6c7eefd2a75d5c941965d847b75f75db';
 export default node;

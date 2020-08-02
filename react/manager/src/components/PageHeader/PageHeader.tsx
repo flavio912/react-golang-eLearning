@@ -71,7 +71,7 @@ const PageHeader = ({
           <Button
             bold
             archetype="submit"
-            onClick={(_) => {
+            onClick={() => {
               setOpenDelegateSlideIn(true);
             }}
           >
@@ -88,6 +88,7 @@ const PageHeader = ({
         onClose={() => setMultiUserOpen(false)}
       />
       <SingleUser
+        user={{firstName: 'John', uuid: '0000'}}
         isOpen={isSingleUserOpen}
         onClose={() => setSingleUserOpen(false)}
       />

@@ -5,7 +5,9 @@ import { Redirect } from 'react-router-dom';
 import AuthLayout from './layouts/Auth';
 import ErrorLayout from './layouts/Error';
 import DashboardLayout from './layouts/Dashboard';
-import TutorsView from './views/TutorsList';
+import TutorsList from './views/TutorsList';
+import CreateTutor from './views/Tutor/CreateTutor';
+import UpdateTutor from './views/Tutor/UpdateTutor';
 import OverviewView from './views/Overview';
 import CoursesView from './views/CoursesView';
 import CreateCourse from './views/CreateCourse';
@@ -18,6 +20,9 @@ import UpdateModule from './views/Module/UpdateModule';
 import TestsList from './views/TestsList';
 import CreateTest from './views/Test/CreateTest';
 import UpdateTest from './views/Test/UpdateTest';
+import LessonsList from './views/LessonsList';
+import CreateLesson from './views/Lesson/CreateLesson';
+import UpdateLesson from './views/Lesson/UpdateLesson';
 import CertificateTypes from './views/CertificateTypesList';
 import CreateCertificateType from './views/CertificateType/CreateCertificateType';
 import UpdateCertificateType from './views/CertificateType/UpdateCertificateType';
@@ -116,6 +121,11 @@ export default [
         component: lazy(() => import('src/views/OrderManagementDetails'))
       },
       {
+        path: '/categories',
+        exact: true,
+        component: lazy(() => import('src/views/CategoriesList'))
+      },
+      {
         path: '/admins',
         exact: true,
         component: lazy(() => import('src/views/AdminsList'))
@@ -146,9 +156,34 @@ export default [
         component: lazy(() => import('src/views/IndividualDetails'))
       },
       {
+        path: '/delegates',
+        exact: true,
+        component: lazy(() => import('src/views/DelegatesList'))
+      },
+      {
+        path: '/delegates/:id',
+        exact: true,
+        component: lazy(() => import('src/views/DelegateDetails'))
+      },
+      {
+        path: '/delegates/:id/:tab',
+        exact: true,
+        component: lazy(() => import('src/views/DelegateDetails'))
+      },
+      {
         path: '/tutors',
         exact: true,
-        component: TutorsView
+        component: TutorsList
+      },
+      {
+        path: '/tutor/create/:tab',
+        exact: true,
+        component: CreateTutor
+      },
+      {
+        path: '/tutor/:ident/:tab',
+        exact: true,
+        component: UpdateTutor
       },
       {
         path: '/overview',
@@ -219,6 +254,21 @@ export default [
         path: '/question/:ident/:tab',
         exact: true,
         component: UpdateQuestion
+      },
+      {
+        path: '/lessons',
+        exact: true,
+        component: LessonsList
+      },
+      {
+        path: '/lessons/create/:tab',
+        exact: true,
+        component: CreateLesson
+      },
+      {
+        path: '/lesson/:ident/:tab',
+        exact: true,
+        component: UpdateLesson
       },
       {
         path: '/certificateTypes',
