@@ -128,7 +128,7 @@ function CourseDetailsPage({ course }: Props) {
         estimatedTime={`${course.hoursToComplete} hours`}
         lastUpdated="August 2020"
         price={`£${course.price}`}
-        video={require('assets/Stock_Video.mp4')}
+        image={course.bannerImageURL ?? undefined}
         onBuy={() => console.log('Buy')}
         onBasket={() => console.log('Basket')}
         sideComponent={
