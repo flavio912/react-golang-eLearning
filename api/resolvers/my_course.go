@@ -29,6 +29,13 @@ func (a *MyCourseResolver) EnrolledAt() string {
 func (a *MyCourseResolver) UpTo() *gentypes.UUID {
 	return a.MyCourse.UpTo
 }
+func (a *MyCourseResolver) Progress() (*ProgressResolver, error) {
+	if a.MyCourse.Progress == nil {
+		return nil, nil
+	}
+
+	return &ProgressResolver{Progress: *a.MyCourse.Progress}, nil
+}
 
 type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID

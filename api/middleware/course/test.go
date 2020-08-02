@@ -282,38 +282,50 @@ func (c *coursesRepoImpl) TestQuestions(testUUID gentypes.UUID) ([]models.Questi
 	return questions, nil
 }
 
-// CourseTests gets all the tests in a course (including ones nested in modules), in no particular order
-func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error) {
+// CourseTestUUIDs gets a list of testUUIDs in a course, in the order they appear in the course.
+func (c *coursesRepoImpl) CourseTestUUIDs(onlineCourseUUID gentypes.UUID) ([]gentypes.UUID, error) {
 	// Get outer course structure
 	structures, err := c.OnlineCourseStructure(onlineCourseUUID)
 	if err != nil {
-		return []models.Test{}, err
+		return []gentypes.UUID{}, err
 	}
 
-	var testIDs []gentypes.UUID
 	var moduleIDs []gentypes.UUID
 	for _, item := range structures {
-		if item.TestUUID != nil {
-			testIDs = append(testIDs, *item.TestUUID)
-		}
 		if item.ModuleUUID != nil {
 			moduleIDs = append(moduleIDs, *item.ModuleUUID)
 		}
 	}
 
-	// Get get structures of all modules given
+	// Get structures of all modules given
 	moduleMap, err := c.ManyModuleItems(moduleIDs)
 	if err != nil && err != &errors.ErrNotFound {
 		c.Logger.Log(sentry.LevelWarning, err, "Unable to get module items")
-		return []models.Test{}, &errors.ErrWhileHandling
+		return []gentypes.UUID{}, &errors.ErrWhileHandling
 	}
 
-	for _, moduleItems := range moduleMap {
-		for _, item := range moduleItems {
-			if item.Type == gentypes.ModuleTest {
-				testIDs = append(testIDs, item.UUID)
+	var testIDs []gentypes.UUID
+	for _, item := range structures {
+		if item.ModuleUUID != nil {
+			for _, module := range moduleMap[*item.ModuleUUID] {
+				if module.Type == gentypes.ModuleTest {
+					testIDs = append(testIDs, module.UUID)
+				}
 			}
 		}
+		if item.TestUUID != nil {
+			testIDs = append(testIDs, *item.TestUUID)
+		}
+	}
+
+	return testIDs, nil
+}
+
+// CourseTests gets all the tests in a course (including ones nested in modules), in the order they appear in the course
+func (c *coursesRepoImpl) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error) {
+	testIDs, err := c.CourseTestUUIDs(onlineCourseUUID)
+	if err != nil {
+		return []models.Test{}, err
 	}
 
 	// Fetch the tests

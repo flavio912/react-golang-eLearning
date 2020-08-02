@@ -13,13 +13,14 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
-func activeCourseToMyCourse(activeCourse models.ActiveCourse, upTo *gentypes.UUID) gentypes.MyCourse {
+func activeCourseToMyCourse(activeCourse models.ActiveCourse, upTo *gentypes.UUID, progress *gentypes.Progress) gentypes.MyCourse {
 	return gentypes.MyCourse{
 		CourseID:       activeCourse.CourseID,
 		MinutesTracked: activeCourse.MinutesTracked,
 		Status:         gentypes.CourseIncomplete,
 		CreatedAt:      activeCourse.CreatedAt.Format(time.RFC3339),
 		UpTo:           upTo,
+		Progress:       progress,
 	}
 }
 
@@ -35,10 +36,11 @@ func historicalCourseToMyCourse(historicalCourse models.HistoricalCourse) gentyp
 	}
 }
 
-func userCoursesToGentypes(activeCourses []models.ActiveCourse, historicalCourses []models.HistoricalCourse) []gentypes.MyCourse {
+func (u *usersAppImpl) userCoursesToGentypes(activeCourses []models.ActiveCourse, historicalCourses []models.HistoricalCourse) []gentypes.MyCourse {
 	var genCourses = make([]gentypes.MyCourse, len(activeCourses)+len(historicalCourses))
 	for i, course := range activeCourses {
-		genCourses[i] = activeCourseToMyCourse(course, nil)
+		progress, lastTest, _ := u.activeCourseProgress(course)
+		genCourses[i] = activeCourseToMyCourse(course, lastTest, progress)
 	}
 	for i, course := range historicalCourses {
 		genCourses[len(activeCourses)+i] = historicalCourseToMyCourse(course)
@@ -149,7 +151,7 @@ func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool
 		}
 
 		if !showHistorical {
-			return userCoursesToGentypes(activeCourses, []models.HistoricalCourse{}), nil
+			return u.userCoursesToGentypes(activeCourses, []models.HistoricalCourse{}), nil
 		}
 
 		historicalCourses, err := u.usersRepository.TakerHistoricalCourses(takerUUID)
@@ -157,7 +159,7 @@ func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool
 			return []gentypes.MyCourse{}, &errors.ErrWhileHandling
 		}
 
-		return userCoursesToGentypes(activeCourses, historicalCourses), nil
+		return u.userCoursesToGentypes(activeCourses, historicalCourses), nil
 	}
 
 	return []gentypes.MyCourse{}, &errors.ErrUnauthorized
@@ -175,10 +177,33 @@ func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gent
 		return gentypes.MyCourse{}, &errors.ErrWhileHandling
 	}
 
-	// Get last test taken
+	progress, latestTest, _ := u.activeCourseProgress(activeCourse)
+
+	return activeCourseToMyCourse(activeCourse, latestTest, progress), nil
+}
+
+func (u *usersAppImpl) activeCourseProgress(activeCourse models.ActiveCourse) (*gentypes.Progress, *gentypes.UUID, error) {
+
+	onlineCourse, err := u.coursesRepository.OnlineCourse(activeCourse.CourseID)
+	if err != nil {
+		if err == &errors.ErrNotFound {
+			u.grant.Logger.Log(sentry.LevelInfo, err, "activeCourseProgress: onlineCourse not found")
+			return nil, nil, nil
+		}
+		u.grant.Logger.Log(sentry.LevelError, err, "activeCourseProgress: Unable to get online course")
+		return nil, nil, &errors.ErrWhileHandling
+	}
+
+	testUUIDs, err := u.coursesRepository.CourseTestUUIDs(onlineCourse.UUID)
+	if err != nil {
+		u.grant.Logger.Log(sentry.LevelWarning, err, "activeCourseProgress: Unable to get course tests")
+		return nil, nil, err
+	}
+
+	// Get the last tests taken by finding the most recently taken testMark
 	var latestTest *gentypes.UUID
 	var latestDate = time.Time{}
-	marks, err := u.usersRepository.TakerTestMarks(takerUUID, courseID)
+	marks, err := u.usersRepository.TakerTestMarks(activeCourse.CourseTakerUUID, activeCourse.CourseID) // TODO: Inefficiency
 	if err != nil {
 		u.grant.Logger.Log(sentry.LevelWarning, err, "TakerCourse: Unable to get test marks")
 	} else {
@@ -190,5 +215,22 @@ func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gent
 		}
 	}
 
-	return activeCourseToMyCourse(activeCourse, latestTest), nil
+	if latestTest == nil {
+		return &gentypes.Progress{
+			Total:     len(testUUIDs),
+			Completed: 0,
+		}, nil, nil
+	}
+
+	for i, uuid := range testUUIDs {
+		if uuid == *latestTest {
+			return &gentypes.Progress{
+				Total:     len(testUUIDs),
+				Completed: i,
+			}, latestTest, nil
+		}
+	}
+
+	u.grant.Logger.LogMessage(sentry.LevelError, "Unable to get testUUID for user")
+	return nil, latestTest, &errors.ErrWhileHandling
 }

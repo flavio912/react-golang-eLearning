@@ -54,3 +54,8 @@ type CreateUserInput struct {
 	Telephone string `valid:"numeric"`
 	Password  string `valid:"required,stringlength(5|30)"`
 }
+
+type Progress struct {
+	Total     int
+	Completed int
+}
