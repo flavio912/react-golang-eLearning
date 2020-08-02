@@ -47,6 +47,8 @@ fragment ActivityTable_activity on ActivityPage {
   }
   pageInfo {
     total
+    limit
+    offset
   }
 }
 
@@ -230,6 +232,20 @@ const node: ConcreteRequest = (function () {
                                             "kind": "ScalarField",
                                             "alias": null,
                                             "name": "total",
+                                            "args": null,
+                                            "storageKey": null
+                                        },
+                                        {
+                                            "kind": "ScalarField",
+                                            "alias": null,
+                                            "name": "limit",
+                                            "args": null,
+                                            "storageKey": null
+                                        },
+                                        {
+                                            "kind": "ScalarField",
+                                            "alias": null,
+                                            "name": "offset",
                                             "args": null,
                                             "storageKey": null
                                         }

@@ -15,6 +15,8 @@ export type ActivityTable_activity = {
     } | null> | null;
     readonly pageInfo: {
         readonly total: number;
+        readonly limit: number;
+        readonly offset: number;
     } | null;
     readonly " $refType": "ActivityTable_activity";
 };
@@ -98,10 +100,24 @@ const node: ReaderFragment = ({
                     "name": "total",
                     "args": null,
                     "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "limit",
+                    "args": null,
+                    "storageKey": null
+                },
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "offset",
+                    "args": null,
+                    "storageKey": null
                 }
             ]
         }
     ]
 } as any);
-(node as any).hash = '5cefbb0c47b5c00744989f8ad125d160';
+(node as any).hash = '0834b53af77015cdec392c6a08dca6f0';
 export default node;

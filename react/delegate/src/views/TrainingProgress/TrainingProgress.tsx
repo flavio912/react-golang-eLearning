@@ -60,6 +60,10 @@ function Progress({ activity, user }: Props) {
       onClick: () => {}
     })) ?? [];
 
+  const onUpdatePage = (page: number, limit: number) => {
+    router.push(`/app/progress?offset=${(page - 1) * limit}&limit=${limit}`);
+  }
+
   return (
     <Page>
       <div className={classes.progressRoot}>
@@ -93,7 +97,11 @@ function Progress({ activity, user }: Props) {
             router.push('/app/courses/1');
           }}
         />
-        <ActivityTable className={classes.activeTable} activity={activity} />
+        <ActivityTable 
+          className={classes.activeTable}
+          activity={activity}
+          onUpdatePage={onUpdatePage}
+        />
       </div>
     </Page>
   );
