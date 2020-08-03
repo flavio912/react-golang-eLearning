@@ -201,6 +201,12 @@ enum CourseStatus {
   incomplete
 }
 
+type Progress {
+  total: Int!
+  completed: Int!
+  percent: Float!
+}
+
 # # A course currently being taken by a user
 type MyCourse {
   status: CourseStatus!
@@ -208,6 +214,7 @@ type MyCourse {
   minutesTracked: Float!
   enrolledAt: String!
   upTo: UUID
+  progress: Progress
 }
 
 type AuthToken {
@@ -240,9 +247,13 @@ interface SyllabusItem {
 type Lesson implements SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
-  mp3URL: String
-  text: String!
+  description: String!
+  bannerImageURL: String
+  voiceoverURL: String
+  transcript: String
+  video: Video
 }
 
 type Module implements SyllabusItem {

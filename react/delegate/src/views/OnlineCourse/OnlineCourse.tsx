@@ -219,7 +219,7 @@ function OnlineCourse({
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-  console.log('course', myActiveCourse);
+  console.log(myActiveCourse);
   return (
     <Page>
       <div className={classes.rootOnlineCourse}>
@@ -236,11 +236,13 @@ function OnlineCourse({
           <div className={classes.courseHead}>
             <div className={classes.courseHeadItem}>
               <span className={classes.labelBold}>Category: </span>
-              <span className={classes.labelValue}>{course.category}</span>
+              <span className={classes.labelValue}>
+                {myActiveCourse?.course?.category?.name ?? ''}
+              </span>
             </div>
             <div className={classes.courseHeadItem}>
               <span className={classes.labelBold}>
-                {course.percentCompleted}% Completed
+                {myActiveCourse?.progress?.percent}% Completed
               </span>
             </div>
             <div className={classes.courseHeadItem}>
@@ -294,11 +296,12 @@ function OnlineCourse({
               <h6 className={classes.courseContentTitle}>
                 How to complete this Course
               </h6>
-              <div className={classes.howToCompleteDescription}>
+              <div className={classes.courseContentText}>
                 {myActiveCourse?.course.howToComplete}
               </div>
             </div>
           )}
+          <Spacer vertical spacing={3} />
           {myActiveCourse?.course.whatYouLearn &&
             myActiveCourse?.course.whatYouLearn.length > 0 && (
               <div className={classes.courseContent}>
@@ -325,6 +328,7 @@ function OnlineCourse({
           <CourseSyllabusCardFrag
             course={myActiveCourse?.course}
             upTo={myActiveCourse?.upTo ?? undefined}
+            completePercent={myActiveCourse?.progress?.percent}
           />
         </div>
       </div>
@@ -338,6 +342,9 @@ export default createFragmentContainer(OnlineCourse, {
       status
       enrolledAt
       upTo
+      progress {
+        percent
+      }
       course {
         ident: id
         name
@@ -346,6 +353,9 @@ export default createFragmentContainer(OnlineCourse, {
         howToComplete
         whatYouLearn
         hoursToComplete
+        category {
+          name
+        }
         syllabus {
           name
           type

@@ -10,6 +10,10 @@ export type TrainingProgress_user = {
     readonly type: UserType;
     readonly myCourses: ReadonlyArray<{
         readonly status: CourseStatus;
+        readonly progress: {
+            readonly total: number;
+            readonly completed: number;
+        } | null;
         readonly course: {
             readonly name: string;
             readonly category: {
@@ -75,6 +79,31 @@ const node: ReaderFragment = (function () {
                     {
                         "kind": "LinkedField",
                         "alias": null,
+                        "name": "progress",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Progress",
+                        "plural": false,
+                        "selections": [
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "total",
+                                "args": null,
+                                "storageKey": null
+                            },
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "completed",
+                                "args": null,
+                                "storageKey": null
+                            }
+                        ]
+                    },
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
                         "name": "course",
                         "storageKey": null,
                         "args": null,
@@ -101,5 +130,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = '67051e1e524681535447d2fbade72cab';
+(node as any).hash = 'fc70dab998b028a3051bcbb246e82167';
 export default node;

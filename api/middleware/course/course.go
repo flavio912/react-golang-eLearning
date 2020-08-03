@@ -28,6 +28,7 @@ type CoursesRepository interface {
 	ManyOnlineCourseStructures(onlineCourseUUIDs []gentypes.UUID) (map[gentypes.UUID][]models.CourseStructure, error)
 	OnlineCourseStructure(onlineCourseUUID gentypes.UUID) ([]models.CourseStructure, error)
 	OnlineCourse(courseID uint) (models.OnlineCourse, error)
+	CourseTestUUIDs(onlineCourseUUID gentypes.UUID) ([]gentypes.UUID, error)
 
 	AreInCourses(courseIDs []uint, uuids []gentypes.UUID, courseElement gentypes.CourseElement) (bool, error)
 

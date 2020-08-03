@@ -3,6 +3,7 @@ package users
 import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
 )
 
@@ -51,13 +52,15 @@ type UsersApp interface {
 }
 
 type usersAppImpl struct {
-	grant           *middleware.Grant
-	usersRepository user.UsersRepository
+	grant             *middleware.Grant
+	usersRepository   user.UsersRepository
+	coursesRepository course.CoursesRepository
 }
 
 func NewUsersApp(grant *middleware.Grant) UsersApp {
 	return &usersAppImpl{
-		grant:           grant,
-		usersRepository: user.NewUsersRepository(&grant.Logger),
+		grant:             grant,
+		usersRepository:   user.NewUsersRepository(&grant.Logger),
+		coursesRepository: course.NewCoursesRepository(&grant.Logger),
 	}
 }

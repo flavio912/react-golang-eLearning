@@ -94,7 +94,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 		}
 
 		if company.IsContract {
-			success, err := c.FulfilPendingOrder(intent.ClientSecret)
+			success, err := c.unauthFulfilPendingOrder(intent.ClientSecret)
 			if err != nil || !success {
 				c.grant.Logger.Log(sentry.LevelError, err, "Unable to fulfil contract order")
 				return &gentypes.PurchaseCoursesResponse{}, &errors.ErrWhileHandling
@@ -114,11 +114,7 @@ func (c *courseAppImpl) PurchaseCourses(input gentypes.PurchaseCoursesInput) (*g
 	}, nil
 }
 
-func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
-	if !c.grant.IsAdmin {
-		return false, &errors.ErrUnauthorized
-	}
-
+func (c *courseAppImpl) unauthFulfilPendingOrder(clientSecret string) (bool, error) {
 	activeCourses, err := c.ordersRepository.FulfilPendingOrder(clientSecret)
 	if err != nil {
 		return false, err
@@ -132,6 +128,14 @@ func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func (c *courseAppImpl) FulfilPendingOrder(clientSecret string) (bool, error) {
+	if !c.grant.IsAdmin {
+		return false, &errors.ErrUnauthorized
+	}
+
+	return c.unauthFulfilPendingOrder(clientSecret)
 }
 
 func (c *courseAppImpl) CancelPendingOrder(clientSecret string) (bool, error) {
