@@ -19,25 +19,6 @@ import { CoursesPage_courses } from './__generated__/CoursesPage_courses.graphql
 import MultiUser from 'components/MultiUser';
 import { Course as DropdownCourse } from 'sharedComponents/core/Input/SearchableDropdown/SearchableDropdown';
 
-const defaultCourse = {
-  type: 'DANGEROUS GOODS AIR',
-  colour: '#8C1CB4',
-  url: '/static/media/SampleImage_ClassroomCoursesDetail_Feat.d89b5773.png',
-  title: 'Dangerous goods by air category 7',
-  price: 60,
-  description:
-    'This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage, This course is for those involved in the handling, storage and loading of cargo or mail and baggage',
-  assigned: 40,
-  expiring: 9,
-  date: 'MAR 3rd 2020',
-  location: 'TTC at Hilton T4',
-  modules: 5,
-  lessons: 5,
-  video_time: 5
-};
-
-const filterColour = '#AAAAAA90';
-
 const defaultComponent = () => <div>PlaceHolder Name</div>;
 
 const defaultOption: DropdownOption = {
@@ -93,7 +74,9 @@ const CoursesPageComp = ({ courses, router }: Props) => {
   const classes = useStyles({ theme });
 
   const [isOpen, setIsOpen] = React.useState(false);
-  const [selectedCourse, setSelectedCourse] = React.useState<DropdownCourse[]>();
+  const [selectedCourse, setSelectedCourse] = React.useState<
+    DropdownCourse[]
+  >();
 
   // Set card size depending on course type
   const isOnline = true;
@@ -130,16 +113,20 @@ const CoursesPageComp = ({ courses, router }: Props) => {
   const pageProps = {
     total: courses?.pageInfo?.total ?? 0,
     limit: courses?.pageInfo?.limit ?? 10,
-    offset: courses?.pageInfo?.total ?? 0,
+    offset: courses?.pageInfo?.total ?? 0
   };
 
   const pageInfo = {
-    currentPage: Math.ceil(pageProps.offset/pageProps.limit),
-    numPages: Math.ceil(pageProps.total/pageProps.limit)
+    currentPage: Math.ceil(pageProps.offset / pageProps.limit),
+    numPages: Math.ceil(pageProps.total / pageProps.limit)
   };
 
   const onUpdatePage = (page: number) => {
-    router.push(`/app/courses?offset=${(page - 1) * pageProps.limit}&limit=${pageProps.limit}`);
+    router.push(
+      `/app/courses?offset=${(page - 1) * pageProps.limit}&limit=${
+        pageProps.limit
+      }`
+    );
   };
 
   return (
@@ -181,7 +168,10 @@ const CoursesPageComp = ({ courses, router }: Props) => {
             <CourseCard
               course={course}
               onClick={() => {
-                const selected = courses && courses.edges && courses.edges.find(x => x && x.ident === course.id);
+                const selected =
+                  courses &&
+                  courses.edges &&
+                  courses.edges.find((x) => x && x.ident === course.id);
                 if (selected) {
                   const courseItem = {
                     id: selected?.ident,
@@ -189,7 +179,7 @@ const CoursesPageComp = ({ courses, router }: Props) => {
                     price: selected?.price,
                     trainingReq: false
                   };
-                  setSelectedCourse([courseItem])
+                  setSelectedCourse([courseItem]);
                 }
                 setIsOpen((previous) => !previous);
               }}
