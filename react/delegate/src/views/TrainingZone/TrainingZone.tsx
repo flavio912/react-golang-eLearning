@@ -11,6 +11,7 @@ import {
   TrainingZone_user,
   CourseStatus
 } from './__generated__/TrainingZone_user.graphql';
+import CourseCard from 'sharedComponents/Overview/CourseCard';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -23,6 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "header header header topinf topinf topinf"
       "allcou allcou expire expire trainp trainp"
       "jumpba jumpba jumpba .      .      .     "
+      "jumpco jumpco jumpco jumpco jumpco jumpco"
     `,
     '@media (max-width: 1350px)': {
       gridTemplateAreas: `
@@ -32,6 +34,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "expire"
       "trainp"
       "jumpba"
+      "jumpco"
     `,
       gridTemplateColumns: 'repeat(1, 1fr)'
     }
@@ -53,6 +56,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   jumpHeader: {
     gridArea: 'jumpba'
+  },
+  courseHolder: {
+    gridArea: 'jumpco',
+    display: 'grid',
+    gridGap: 26,
+    gridTemplateColumns: 'repeat(auto-fit, 298px)'
   }
 }));
 
@@ -71,6 +80,10 @@ function TrainingZone({ user }: Props) {
       courses.push({ status: value.status, enrolledAt: value.enrolledAt });
     });
   }
+
+  const incomplete = user?.myCourses?.filter(
+    (course) => course.status === 'incomplete'
+  );
 
   return (
     <Page>
@@ -110,13 +123,35 @@ function TrainingZone({ user }: Props) {
           description={'Review your progress of all Courses in real time'}
           buttonProps={{ title: 'See Help Guides', onClick: () => {} }}
         />
-        <div className={classes.jumpHeader}>
-          <Heading text="Jump back in" size={'large'} />
-          <Heading
-            text={`${user?.firstName}, you have some unfinished courses,
-          jump back in to continue learning now.`}
-            size={'medium'}
-          />
+        {incomplete && incomplete.length > 0 && (
+          <div className={classes.jumpHeader}>
+            <Heading text="Jump back in" size={'large'} />
+            <Heading
+              text={`${user?.firstName}, you have some unfinished courses,
+            jump back in to continue learning now.`}
+              size={'medium'}
+            />
+          </div>
+        )}
+        <div className={classes.courseHolder}>
+          {incomplete &&
+            incomplete.map((course, index) => (
+              <CourseCard
+                key={index}
+                course={{
+                  title: course.course.name,
+                  id: course.course.ident,
+                  type: course.course.category?.name ?? 'Online Course',
+                  colour: course.course.category?.color ?? '',
+                  description: course.course.excerpt ?? '',
+                  url: course.course.bannerImageURL ?? ''
+                }}
+                onClick={() => {
+                  router.push(`/app/courses/${course.course.ident}`);
+                }}
+                progress={course.progress?.percent ?? 0}
+              />
+            ))}
         </div>
       </div>
     </Page>
@@ -128,8 +163,22 @@ export default createFragmentContainer(TrainingZone, {
     fragment TrainingZone_user on User {
       firstName
       myCourses {
+        course {
+          ident: id
+          name
+          excerpt
+          category {
+            color
+            name
+          }
+          type
+          bannerImageURL
+        }
         status
         enrolledAt
+        progress {
+          percent
+        }
       }
     }
   `
