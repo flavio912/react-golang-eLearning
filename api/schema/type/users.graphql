@@ -42,6 +42,12 @@ type Activity {
   course: Course
 }
 
+type Progress {
+  total: Int!
+  completed: Int!
+  percent: Float!
+}
+
 # # A course currently being taken by a user
 type MyCourse {
   status: CourseStatus!
@@ -49,6 +55,7 @@ type MyCourse {
   minutesTracked: Float!
   enrolledAt: String!
   upTo: UUID
+  progress: Progress
 }
 
 enum CourseStatus {

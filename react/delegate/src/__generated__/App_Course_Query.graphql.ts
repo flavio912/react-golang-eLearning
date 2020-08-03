@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 69c27049fdf0d590c266f5029b15b446 */
+/* @relayHash e36fa3b8f322f9ac93d81cea5df9a702 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -55,6 +55,9 @@ fragment OnlineCourse_myActiveCourse on MyCourse {
   status
   enrolledAt
   upTo
+  progress {
+    percent
+  }
   course {
     ident: id
     name
@@ -63,6 +66,9 @@ fragment OnlineCourse_myActiveCourse on MyCourse {
     howToComplete
     whatYouLearn
     hoursToComplete
+    category {
+      name
+    }
     syllabus {
       __typename
       name
@@ -212,6 +218,24 @@ const node: ConcreteRequest = (function () {
                                 {
                                     "kind": "LinkedField",
                                     "alias": null,
+                                    "name": "progress",
+                                    "storageKey": null,
+                                    "args": null,
+                                    "concreteType": "Progress",
+                                    "plural": false,
+                                    "selections": [
+                                        {
+                                            "kind": "ScalarField",
+                                            "alias": null,
+                                            "name": "percent",
+                                            "args": null,
+                                            "storageKey": null
+                                        }
+                                    ]
+                                },
+                                {
+                                    "kind": "LinkedField",
+                                    "alias": null,
                                     "name": "course",
                                     "storageKey": null,
                                     "args": null,
@@ -264,6 +288,18 @@ const node: ConcreteRequest = (function () {
                                         {
                                             "kind": "LinkedField",
                                             "alias": null,
+                                            "name": "category",
+                                            "storageKey": null,
+                                            "args": null,
+                                            "concreteType": "Category",
+                                            "plural": false,
+                                            "selections": [
+                                                (v2 /*: any*/)
+                                            ]
+                                        },
+                                        {
+                                            "kind": "LinkedField",
+                                            "alias": null,
                                             "name": "syllabus",
                                             "storageKey": null,
                                             "args": null,
@@ -311,7 +347,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Course_Query",
             "id": null,
-            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  upTo\n  course {\n    ident: id\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    syllabus {\n      __typename\n      name\n      type\n      uuid\n      ... on Module {\n        syllabus {\n          __typename\n          name\n          uuid\n          type\n        }\n      }\n    }\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
+            "text": "query App_Course_Query(\n  $ident: Int!\n) {\n  user {\n    myActiveCourse(id: $ident) {\n      ...OnlineCourse_myActiveCourse\n    }\n  }\n}\n\nfragment CourseSyllabusCardFrag_course on Course {\n  syllabus {\n    __typename\n    name\n    type\n    uuid\n    complete\n    ... on Module {\n      syllabus {\n        __typename\n        name\n        type\n        uuid\n        complete\n      }\n    }\n  }\n}\n\nfragment OnlineCourse_myActiveCourse on MyCourse {\n  status\n  enrolledAt\n  upTo\n  progress {\n    percent\n  }\n  course {\n    ident: id\n    name\n    excerpt\n    introduction\n    howToComplete\n    whatYouLearn\n    hoursToComplete\n    category {\n      name\n    }\n    syllabus {\n      __typename\n      name\n      type\n      uuid\n      ... on Module {\n        syllabus {\n          __typename\n          name\n          uuid\n          type\n        }\n      }\n    }\n    ...CourseSyllabusCardFrag_course\n  }\n}\n",
             "metadata": {}
         }
     } as any;

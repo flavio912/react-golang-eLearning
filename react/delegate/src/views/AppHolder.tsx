@@ -39,7 +39,6 @@ type Props = {
 };
 
 const AppHolder = ({ children, user }: Props) => {
-  console.log('USER', user);
   const classes = useStyles();
   const { match, router } = useRouter();
   const tabs: Tab[] = [
@@ -47,7 +46,7 @@ const AppHolder = ({ children, user }: Props) => {
     { id: 1, icon: 'LeftNav_Icon_Courses', title: 'Online Courses', size: 23 },
     {
       id: 2,
-      icon: 'LeftNav_Icon_Courses',
+      icon: 'LeftNav_Icon_Training',
       title: 'Training Progress',
       size: 23
     }

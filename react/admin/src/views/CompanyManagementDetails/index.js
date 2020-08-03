@@ -107,9 +107,7 @@ function CompanyManagementDetails({ match, history }) {
     { value: 'summary', label: 'Summary' },
     { value: 'Courses', label: 'Courses' },
     { value: 'managers', label: 'Managers' },
-    { value: 'delegates', label: 'Delegates' },
-    { value: 'invoices', label: 'Invoices' },
-    { value: 'logs', label: 'Logs' }
+    { value: 'delegates', label: 'Delegates' }
   ];
 
   if (!company.approved) {

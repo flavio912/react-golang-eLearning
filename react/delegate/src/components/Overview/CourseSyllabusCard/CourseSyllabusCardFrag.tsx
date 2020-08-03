@@ -6,9 +6,10 @@ import { CourseSyllabusCardFrag_course } from './__generated__/CourseSyllabusCar
 type Props = {
   course?: CourseSyllabusCardFrag_course;
   upTo?: String;
+  completePercent?: number;
 };
 
-function SyllabusCard({ course, upTo }: Props) {
+function SyllabusCard({ course, upTo, completePercent = 0 }: Props) {
   const syllabusSections = (course?.syllabus ?? []).map((courseElement) => {
     if (courseElement.type == 'module') {
       return {
@@ -57,7 +58,7 @@ function SyllabusCard({ course, upTo }: Props) {
 
   const syllabus = revSyllabus.reverse();
   const syllabusProp = {
-    completePercentage: 23,
+    completePercentage: completePercent,
     modules: syllabus
   };
   return <CourseSyllabusCard courseSyllabus={syllabusProp} />;

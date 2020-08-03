@@ -236,6 +236,29 @@ func (_m *CoursesRepository) Course(courseID uint) (models.Course, error) {
 	return r0, r1
 }
 
+// CourseTestUUIDs provides a mock function with given fields: onlineCourseUUID
+func (_m *CoursesRepository) CourseTestUUIDs(onlineCourseUUID gentypes.UUID) ([]gentypes.UUID, error) {
+	ret := _m.Called(onlineCourseUUID)
+
+	var r0 []gentypes.UUID
+	if rf, ok := ret.Get(0).(func(gentypes.UUID) []gentypes.UUID); ok {
+		r0 = rf(onlineCourseUUID)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]gentypes.UUID)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(gentypes.UUID) error); ok {
+		r1 = rf(onlineCourseUUID)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // CourseTests provides a mock function with given fields: onlineCourseUUID
 func (_m *CoursesRepository) CourseTests(onlineCourseUUID gentypes.UUID) ([]models.Test, error) {
 	ret := _m.Called(onlineCourseUUID)

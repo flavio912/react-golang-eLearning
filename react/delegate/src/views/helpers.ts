@@ -40,10 +40,10 @@ export function goToNextURL(
       });
     }
   });
-  console.log('flat', flatSyllabus);
-  console.log('n', currentUUID);
+
   var found = false;
   for (const item of flatSyllabus) {
+    console.log('item', item);
     if (found) {
       return `/app/courses/${courseID}/${item.type}/${item.uuid}`;
     }
