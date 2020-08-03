@@ -39,6 +39,7 @@ const GET_COMPANY = gql`
       approved
       contactEmail
       isContract
+      logoURL
       managers {
         edges {
           uuid

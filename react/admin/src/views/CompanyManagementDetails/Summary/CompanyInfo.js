@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import Imgix from 'react-imgix';
 import clsx from 'clsx';
 import { makeStyles } from '@material-ui/styles';
 import {
@@ -85,6 +86,12 @@ function CustomerInfo({ company, onUpdate, className, ...rest }) {
                 <Label color={'rgb(119, 125, 156)'}>
                   {company.isContract ? 'Contract' : 'Pay as you go'}
                 </Label>
+              </TableCell>
+            </TableRow>
+            <TableRow selected>
+              <TableCell>Logo</TableCell>
+              <TableCell>
+                {company.logoURL && <Imgix src={company.logoURL} height={50} />}
               </TableCell>
             </TableRow>
           </TableBody>

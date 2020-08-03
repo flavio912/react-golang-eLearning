@@ -18,6 +18,7 @@ import {
 import { gql } from 'apollo-boost';
 import { useMutation } from '@apollo/react-hooks';
 import ErrorModal from 'src/components/ErrorModal';
+import UploadFile from 'src/components/UploadFile';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -37,6 +38,17 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const UPLOAD_REQUEST = gql`
+  mutation UploadRequest($fileType: String!, $contentLength: Int!) {
+    profileImageUploadRequest(
+      input: { fileType: $fileType, contentLength: $contentLength }
+    ) {
+      url
+      successToken
+    }
+  }
+`;
+
 const UPDATE_COMPANY = gql`
   mutation UpdateCompany(
     $uuid: UUID!
@@ -48,6 +60,7 @@ const UPDATE_COMPANY = gql`
     $postCode: String
     $country: String
     $isContract: Boolean
+    $logoToken: String
   ) {
     updateCompany(
       input: {
@@ -60,6 +73,7 @@ const UPDATE_COMPANY = gql`
         postCode: $postCode
         country: $country
         isContract: $isContract
+        logoToken: $logoToken
       }
     ) {
       uuid
@@ -192,7 +206,19 @@ function CompanyEditModal({ open, onClose, company, className, ...rest }) {
                     variant="outlined"
                   />
                 </Grid>
-                <Grid item />
+                <Grid item md={6} xs={12}>
+                  <Typography variant="h5">Company Logo</Typography>
+                  <Typography variant="body2">
+                    Shown on to managers on the manager site
+                  </Typography>
+                  <UploadFile
+                    uploadMutation={UPLOAD_REQUEST}
+                    onUploaded={token => {
+                      setValues({ ...values, logoToken: token });
+                    }}
+                    title={'Update logo'}
+                  />
+                </Grid>
                 <Grid item md={6} xs={12}>
                   <Typography variant="h5">Is Contract</Typography>
                   <Typography variant="body2">
