@@ -1,49 +1,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
+import { Link as RouterLink } from 'react-router-dom';
 import { makeStyles } from '@material-ui/styles';
-import {
-  Card,
-  CardHeader,
-  CardContent,
-  Divider,
-  Table,
-  TableBody,
-  TableRow,
-  TableCell,
-  Grid
-} from '@material-ui/core';
+import { Link } from '@material-ui/core';
 import gql from 'graphql-tag';
 import { useQuery } from '@apollo/react-hooks';
+import Results from 'src/components/Results';
+import Page from 'src/components/Page';
 
 const useStyles = makeStyles(theme => ({
-  root: {},
-  content: {
-    padding: 0
+  root: {
+    wisth: '100%'
   },
-  actions: {
-    flexDirection: 'column',
-    alignItems: 'flex-start',
-    '& > * + *': {
-      marginLeft: 0
-    }
-  },
-  buttonIcon: {
-    marginRight: theme.spacing(1)
-  }
 }));
 
 const GET_MY_COURSES = gql`
-  query GetCourses($uuid: UUID!) {
-    delegate(uuid: $uuid) {
-      myCourses {
-        status
-        course {
-          name
+  query GetCourses($uuid: UUID!, $page: Page) {
+    delegates(filter: { uuid: $uuid }, page: $page) {
+      edges {
+        myCourses {
+          status
+          course {
+            id
+            name
+          }
+          minutesTracked
+          enrolledAt
+          upTo
         }
-        minutesTracked
-        enrolledAt
-        upTo
+      }
+      pageInfo {
+        total
+        limit
+        offset
+        given
       }
     }
   }
@@ -51,47 +42,72 @@ const GET_MY_COURSES = gql`
 
 function Courses({ delegate, className, ...rest }) {
   const classes = useStyles();
-  console.log('del', delegate);
+
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const { error, data } = useQuery(GET_MY_COURSES, {
     variables: {
       uuid: delegate.uuid,
+      page: {
+        offset: page,
+        limit: rowsPerPage
+      }
     },
     fetchPolicy: 'cache-and-network'
   });
-  console.log('data', data);
-
+  
   if (error) return <div>{error.message}</div>;
 
-  const tableData = [
-    {header: 'Status', field: 'status'},
-    {header: 'Minutes', field: 'minutesTracked'},
-    {header: 'Enrolled At', field: 'enrolledAt'},
-    {header: 'Up to', field: 'upTo'},
+  const extractCourses = (array) => {
+    const myCourses = [];
+    const courses = array?.delegates?.edges.map((ind) => (
+        ind.myCourses.map(({status,course,minutesTracked,enrolledAt,upTo}) => (
+          myCourses.push({
+            status,course,minutesTracked,enrolledAt,upTo
+          })
+        ))
+    ));
+    console.log(courses, data);
+    return {edges: myCourses, pageInfo: array?.delegates?.pageInfo};
+  };
+
+  // Results methods
+  const handleChangePage = (event, page) => {
+    setPage(page);
+  };
+
+  const handleChangeRowsPerPage = event => {
+    setRowsPerPage(event.target.value);
+  };
+
+  const headers = ['Course', 'Status', 'Minutes', 'Enrolled At', 'Up to'];
+  const cells = [
+    {
+      component: (result) => (
+        <Link
+          color="inherit"
+          component={RouterLink}
+          to={`/course/${result.course.id}/overview`}
+          variant="h6"
+        >
+          {result.course.name}
+        </Link>
+      )
+    },
+    {field: 'status'},{field: 'minutesTracked'},
+    {field: 'enrolledAt'},{field: 'upTo'},
   ];
 
   return (
-    <Grid container spacing={4} {...rest} className={clsx(classes.root, className)}>
-      {data && data.delegate.myCourses.map(course => (
-        <Grid item>
-          <Card>
-            <CardHeader title={course.course.name} />
-            <Divider />
-            <CardContent className={classes.content}>
-              <Table>
-                <TableBody>
-                  {tableData.map(row => (
-                    <TableRow>
-                      <TableCell>{row.header}</TableCell>
-                      <TableCell>{data[row.field]}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+    <Page {...rest} className={clsx(classes.root, className)}>
+      <Results
+        results={extractCourses(data)}
+        headers={headers}
+        cells={cells}
+        handleChangePage={handleChangePage}
+        handleChangeRowsPerPage={handleChangeRowsPerPage}
+      />
+    </Page>
   );
 }
 
