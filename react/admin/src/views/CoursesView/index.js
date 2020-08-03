@@ -32,6 +32,7 @@ const GET_COURSES = gql`
         type
         name
         price
+        excerpt
         category {
           name
         }
@@ -50,7 +51,7 @@ function CoursesView() {
 
   if (loading) return <div>Loading</div>;
   if (error) return <div>{error.message}</div>;
-  console.log(data);
+
   return (
     <Page className={classes.root} title="All Courses">
       <Container maxWidth="lg">
