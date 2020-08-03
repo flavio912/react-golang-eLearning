@@ -30,10 +30,18 @@ func historicalCourseToMyCourse(historicalCourse models.HistoricalCourse) gentyp
 	if historicalCourse.Passed {
 		status = gentypes.CourseComplete
 	}
+
+	var certUrl *string
+	if historicalCourse.CertificateKey != nil {
+		url := uploads.GetImgixURL(*historicalCourse.CertificateKey)
+		certUrl = &url
+	}
+
 	return gentypes.MyCourse{
 		CourseID:       historicalCourse.CourseID,
 		MinutesTracked: historicalCourse.MinutesTracked,
 		Status:         status,
+		CertificateURL: certUrl,
 	}
 }
 

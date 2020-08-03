@@ -59,6 +59,7 @@ function Progress({ activity, user }: Props) {
       status: {
         isComplete: myCourse.status === 'complete'
       },
+      certURL: '',
       onClick: () => {}
     })) ?? [];
 
@@ -131,6 +132,7 @@ export default createFragmentContainer(Progress, {
             name
           }
         }
+        certificateURL
       }
     }
   `

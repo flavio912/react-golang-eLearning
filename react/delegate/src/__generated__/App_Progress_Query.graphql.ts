@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash c3b02856fda26bc31f15043de7825461 */
+/* @relayHash 0b8791ff86ae562ddbfba619f16aacd1 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -71,6 +71,7 @@ fragment TrainingProgress_user on User {
         name
       }
     }
+    certificateURL
   }
 }
 */
@@ -323,6 +324,13 @@ const node: ConcreteRequest = (function () {
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    "kind": "ScalarField",
+                                    "alias": null,
+                                    "name": "certificateURL",
+                                    "args": null,
+                                    "storageKey": null
                                 }
                             ]
                         }
@@ -334,7 +342,7 @@ const node: ConcreteRequest = (function () {
             "operationKind": "query",
             "name": "App_Progress_Query",
             "id": null,
-            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n    ...TrainingProgress_user\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n    limit\n    offset\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n\nfragment TrainingProgress_user on User {\n  firstName\n  type\n  myCourses {\n    status\n    progress {\n      total\n      completed\n    }\n    course {\n      name\n      category {\n        name\n      }\n    }\n  }\n}\n",
+            "text": "query App_Progress_Query(\n  $offset: Int\n  $limit: Int\n) {\n  user {\n    activity(page: {offset: $offset, limit: $limit}) {\n      ...TrainingProgress_activity\n    }\n    ...TrainingProgress_user\n  }\n}\n\nfragment ActivityTable_activity on ActivityPage {\n  edges {\n    type\n    createdAt\n    course {\n      ident: id\n      name\n    }\n  }\n  pageInfo {\n    total\n    limit\n    offset\n  }\n}\n\nfragment TrainingProgress_activity on ActivityPage {\n  ...ActivityTable_activity\n}\n\nfragment TrainingProgress_user on User {\n  firstName\n  type\n  myCourses {\n    status\n    progress {\n      total\n      completed\n    }\n    course {\n      name\n      category {\n        name\n      }\n    }\n    certificateURL\n  }\n}\n",
             "metadata": {}
         }
     } as any;

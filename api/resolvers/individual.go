@@ -20,6 +20,11 @@ func (i *IndividualResolver) LastName() string    { return i.Individual.LastName
 func (i *IndividualResolver) JobTitle() *string   { return i.Individual.JobTitle }
 func (i *IndividualResolver) Telephone() *string  { return i.Individual.Telephone }
 func (i *IndividualResolver) LastLogin() string   { return i.Individual.LastLogin }
+func (i *IndividualResolver) MyCourses(ctx context.Context) (*[]*MyCourseResolver, error) {
+	return NewMyCoursesResolvers(ctx, NewMyCoursesArgs{
+		TakerUUID: &i.Individual.CourseTakerUUID,
+	})
+}
 
 type NewIndividualArgs struct {
 	Individual     *gentypes.Individual

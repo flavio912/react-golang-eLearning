@@ -9,6 +9,7 @@ type Individual struct {
 	JobTitle  *string
 	Telephone *string
 	LastLogin string
+	CourseTakerUUID UUID
 }
 
 type CreateIndividualInput struct {

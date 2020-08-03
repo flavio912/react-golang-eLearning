@@ -215,6 +215,7 @@ type MyCourse {
   enrolledAt: String!
   upTo: UUID
   progress: Progress
+  certificateURL: String
 }
 
 type AuthToken {
