@@ -20,6 +20,7 @@ export type TrainingProgress_user = {
                 readonly name: string;
             } | null;
         };
+        readonly certificateURL: string | null;
     }> | null;
     readonly " $refType": "TrainingProgress_user";
 };
@@ -124,11 +125,18 @@ const node: ReaderFragment = (function () {
                                 ]
                             }
                         ]
+                    },
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "certificateURL",
+                        "args": null,
+                        "storageKey": null
                     }
                 ]
             }
         ]
     } as any;
 })();
-(node as any).hash = 'fc70dab998b028a3051bcbb246e82167';
+(node as any).hash = 'c8b26aec27b6144be5cfacbcb4cb9f1e';
 export default node;
