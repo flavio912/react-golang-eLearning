@@ -97,7 +97,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
     fontWeight: '300',
     fontSize: theme.fontSizes.small,
     margin: `10px ${theme.spacing(2)}px ${theme.spacing(2)}px`,
-    color: theme.colors.secondaryBlack
+    color: theme.colors.secondaryBlack,
+    height: 56
   },
   progress: {
     color: theme.colors.primaryBlack,
@@ -179,6 +180,11 @@ function CourseCard({
   const classes = useStyles({ theme });
 
   const backgroundColor = { backgroundColor: course.colour };
+
+  const description =
+    course.description.length > 100
+      ? `${course.description.substr(0, 100)}...`
+      : course.description;
   return (
     <Card
       className={classNames(
@@ -246,7 +252,7 @@ function CourseCard({
                   : '22px'
             }}
           >
-            {course.description}
+            {description}
           </div>
           {size === 'large' && (
             <div className={classNames(classes.button)}>
