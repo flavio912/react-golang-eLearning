@@ -57,6 +57,7 @@ type MyCourse {
   enrolledAt: String!
   upTo: UUID
   progress: Progress
+  certificateURL: String
 }
 
 enum CourseStatus {

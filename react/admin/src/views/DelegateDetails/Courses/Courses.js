@@ -13,28 +13,24 @@ const useStyles = makeStyles(theme => ({
   root: {
     wisth: '100%'
   },
+  certLink: {
+    cursor: 'pointer'
+  }
 }));
 
 const GET_MY_COURSES = gql`
-  query GetCourses($uuid: UUID!, $page: Page) {
-    delegates(filter: { uuid: $uuid }, page: $page) {
-      edges {
-        myCourses {
-          status
-          course {
-            id
-            name
-          }
-          minutesTracked
-          enrolledAt
-          upTo
+  query GetCourses($uuid: UUID!) {
+    delegate(uuid: $uuid) {
+      myCourses {
+        status
+        course {
+          id
+          name
         }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
+        minutesTracked
+        enrolledAt
+        upTo
+        certificateURL
       }
     }
   }
@@ -55,20 +51,12 @@ function Courses({ delegate, className, ...rest }) {
     },
     fetchPolicy: 'cache-and-network'
   });
-  
+
   if (error) return <div>{error.message}</div>;
 
-  const extractCourses = (array) => {
-    const myCourses = [];
-    const courses = array?.delegates?.edges.map((ind) => (
-        ind.myCourses.map(({status,course,minutesTracked,enrolledAt,upTo}) => (
-          myCourses.push({
-            status,course,minutesTracked,enrolledAt,upTo
-          })
-        ))
-    ));
-    console.log(courses, data);
-    return {edges: myCourses, pageInfo: array?.delegates?.pageInfo};
+  const extractCourses = info => {
+    const myCourses = info?.delegate?.myCourses ?? [];
+    return { edges: myCourses, pageInfo: {} };
   };
 
   // Results methods
@@ -80,10 +68,10 @@ function Courses({ delegate, className, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
-  const headers = ['Course', 'Status', 'Minutes', 'Enrolled At', 'Up to'];
+  const headers = ['Course', 'Status', 'Enrolled At', 'Certificate'];
   const cells = [
     {
-      component: (result) => (
+      component: result => (
         <Link
           color="inherit"
           component={RouterLink}
@@ -94,8 +82,22 @@ function Courses({ delegate, className, ...rest }) {
         </Link>
       )
     },
-    {field: 'status'},{field: 'minutesTracked'},
-    {field: 'enrolledAt'},{field: 'upTo'},
+    { field: 'status' },
+    { field: 'enrolledAt' },
+    {
+      component: result =>
+        result.certificateURL ? (
+          <Link
+            href={result.certificateURL}
+            target={'_blank'}
+            className={classes.certLink}
+          >
+            Certificate
+          </Link>
+        ) : (
+          <div>Not Available</div>
+        )
+    }
   ];
 
   return (

@@ -12,29 +12,22 @@ import Page from 'src/components/Page';
 const useStyles = makeStyles(theme => ({
   root: {
     wisth: '100%'
-  },
+  }
 }));
 
 const GET_MY_COURSES = gql`
-  query GetCourses($uuid: UUID!, $page: Page) {
-    individuals(filter: { uuid: $uuid }, page: $page) {
-      edges {
-        myCourses {
-          status
-          course {
-            id
-            name
-          }
-          minutesTracked
-          enrolledAt
-          upTo
+  query GetCourses($uuid: UUID!) {
+    individual(uuid: $uuid) {
+      myCourses {
+        status
+        course {
+          id
+          name
         }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
+        minutesTracked
+        enrolledAt
+        upTo
+        certificateURL
       }
     }
   }
@@ -55,20 +48,12 @@ function Courses({ individual, className, ...rest }) {
     },
     fetchPolicy: 'cache-and-network'
   });
-  
+
   if (error) return <div>{error.message}</div>;
 
-  const extractCourses = (array) => {
-    const myCourses = [];
-    const courses = array?.individuals?.edges.map((ind) => (
-        ind.myCourses.map(({status,course,minutesTracked,enrolledAt,upTo}) => (
-          myCourses.push({
-            status,course,minutesTracked,enrolledAt,upTo
-          })
-        ))
-    ));
-    console.log(courses);
-    return {edges: myCourses, pageInfo: array?.individuals?.pageInfo};
+  const extractCourses = array => {
+    const myCourses = array?.individual?.myCourses ?? [];
+    return { edges: myCourses, pageInfo: array?.individuals?.pageInfo };
   };
 
   // Results methods
@@ -80,10 +65,10 @@ function Courses({ individual, className, ...rest }) {
     setRowsPerPage(event.target.value);
   };
 
-  const headers = ['Course', 'Status', 'Minutes', 'Enrolled At', 'Up to'];
+  const headers = ['Course', 'Status', 'Enrolled At', 'Certificate'];
   const cells = [
     {
-      component: (result) => (
+      component: result => (
         <Link
           color="inherit"
           component={RouterLink}
@@ -94,8 +79,22 @@ function Courses({ individual, className, ...rest }) {
         </Link>
       )
     },
-    {field: 'status'},{field: 'minutesTracked'},
-    {field: 'enrolledAt'},{field: 'upTo'},
+    { field: 'status' },
+    { field: 'enrolledAt' },
+    {
+      component: result =>
+        result.certificateURL ? (
+          <Link
+            href={result.certificateURL}
+            target={'_blank'}
+            className={classes.certLink}
+          >
+            Certificate
+          </Link>
+        ) : (
+          <div>Not Available</div>
+        )
+    }
   ];
 
   return (

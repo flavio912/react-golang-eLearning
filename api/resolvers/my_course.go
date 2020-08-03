@@ -36,6 +36,9 @@ func (a *MyCourseResolver) Progress() (*ProgressResolver, error) {
 
 	return &ProgressResolver{Progress: *a.MyCourse.Progress}, nil
 }
+func (a *MyCourseResolver) CertificateUrl() *string {
+	return a.MyCourse.CertificateURL
+}
 
 type NewMyCoursesArgs struct {
 	TakerUUID *gentypes.UUID

@@ -91,6 +91,7 @@ type MyCourse struct {
 	CreatedAt      string
 	UpTo           *UUID
 	Progress       *Progress
+	CertificateURL *string
 }
 
 type CourseFilter struct {
