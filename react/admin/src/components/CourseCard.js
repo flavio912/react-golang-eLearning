@@ -29,6 +29,11 @@ const useStyles = makeStyles(theme => ({
   description: {
     padding: theme.spacing(2, 3, 1, 3)
   },
+  descriptionText: {
+    whiteSpace: 'nowrap',
+    textOverflow: 'ellipsis',
+    overflow: 'hidden'
+  },
   tags: {
     padding: theme.spacing(0, 3, 2, 3),
     '& > * + *': {
@@ -46,6 +51,9 @@ const useStyles = makeStyles(theme => ({
   },
   details: {
     padding: theme.spacing(2, 3)
+  },
+  capitalise: {
+    textTransform: 'uppercase'
   }
 }));
 
@@ -75,7 +83,11 @@ function CourseCard({ course, className, ...rest }) {
         }
       />
       <CardContent className={classes.content}>
-        <div className={classes.description}></div>
+        <div className={classes.description}>
+          <Typography className={classes.descriptionText}>
+            {course.excerpt}
+          </Typography>
+        </div>
         <div className={classes.tags}>
           {/* {course.tags.map(tag => (
             <Label color={tag.color} key={tag.text}>
@@ -98,12 +110,14 @@ function CourseCard({ course, className, ...rest }) {
               </Typography>
             </Grid>
             <Grid item>
-              {/* <Typography variant="h5">
-                {course.delegates.pageInfo.total}
-              </Typography> */}
-              {/* <Typography gutterBottom variant="overline">
-                DELEGATES
-              </Typography> */}
+              <div>
+                <Typography variant="button" className={classes.capitalise}>
+                  {course.type}
+                </Typography>
+              </div>
+              <Typography gutterBottom variant="overline">
+                TYPE
+              </Typography>
             </Grid>
             <Grid item>
               <Button
