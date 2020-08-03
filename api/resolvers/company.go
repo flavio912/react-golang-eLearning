@@ -152,6 +152,11 @@ func (r *CompanyResolver) Delegates(ctx context.Context, args struct {
 		PageInfo:  pageInfo,
 	})
 }
+func (r *CompanyResolver) Activity(ctx context.Context, args struct{ Page *gentypes.Page }) (*ActivityPageResolver, error) {
+	return NewActivityPageResolver(ctx, NewActivityPageArgs{
+		CompanyUUID: &r.company.UUID,
+	}, args.Page)
+}
 
 type CompanyPageResolver struct {
 	edges    *[]*CompanyResolver

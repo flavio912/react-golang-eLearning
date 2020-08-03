@@ -55,6 +55,8 @@ type UsersRepository interface {
 	GetAddressesByIDs(ids []uint) ([]models.Address, error)
 
 	UserFromCourseTaker(takerUUID gentypes.UUID) (*models.Delegate, *models.Individual)
+	UsersFromTakers(uuids []gentypes.UUID) (*[]models.Delegate, *[]models.Individual)
+	CompanyActivity(companyUUID gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	TakerActivity(courseTaker gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)

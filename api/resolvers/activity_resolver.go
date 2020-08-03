@@ -3,8 +3,6 @@ package resolvers
 import (
 	"context"
 
-	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/application/users"
-
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/handler/auth"
@@ -35,10 +33,16 @@ func (a *ActivityResolver) Course(ctx context.Context) (*CourseResolver, error) 
 		ID: a.activity.CourseID,
 	})
 }
+func (a *ActivityResolver) User(ctx context.Context) (*UserResolver, error) {
+	return NewUserResolver(ctx, NewUserArgs{
+		CourseTakerUUID: &a.activity.CourseTakerUUID,
+	})
+}
 
 type NewActivityPageArgs struct {
 	ActivityItems   *[]gentypes.Activity
 	CourseTakerUUID *gentypes.UUID
+	CompanyUUID     *gentypes.UUID
 }
 
 type ActivityPageResolver struct {
@@ -47,32 +51,45 @@ type ActivityPageResolver struct {
 }
 
 func NewActivityPageResolver(ctx context.Context, args NewActivityPageArgs, page *gentypes.Page) (*ActivityPageResolver, error) {
-	if args.CourseTakerUUID != nil {
-		grant := auth.GrantFromContext(ctx)
-		if grant == nil {
-			return &ActivityPageResolver{}, &errors.ErrUnauthorized
-		}
+	var (
+		activityItems []gentypes.Activity
+		pageInfo      gentypes.PageInfo
+	)
 
-		usersApp := users.NewUsersApp(grant)
-		activityItems, pageInfo, err := usersApp.TakerActivity(*args.CourseTakerUUID, page)
+	app := auth.AppFromContext(ctx)
+
+	switch {
+	case args.CourseTakerUUID != nil:
+		takerActivity, takerPageInfo, err := app.UsersApp.TakerActivity(*args.CourseTakerUUID, page)
+		if err != nil {
+			return &ActivityPageResolver{}, err
+		}
+		activityItems = takerActivity
+		pageInfo = takerPageInfo
+	case args.CompanyUUID != nil:
+		companyActivity, companyPageInfo, err := app.UsersApp.CompanyActivity(*args.CompanyUUID, page)
 		if err != nil {
 			return &ActivityPageResolver{}, err
 		}
 
-		var resolvers = make([]*ActivityResolver, len(activityItems))
-		for i, activity := range activityItems {
-			resolvers[i] = &ActivityResolver{activity: activity}
-		}
-
-		return &ActivityPageResolver{
-			edges: &resolvers,
-			pageInfo: &PageInfoResolver{
-				pageInfo: &pageInfo,
-			},
-		}, nil
+		activityItems = companyActivity
+		pageInfo = companyPageInfo
+	default:
+		return &ActivityPageResolver{}, &errors.ErrUnableToResolve
 	}
 
-	return &ActivityPageResolver{}, &errors.ErrUnableToResolve
+	var resolvers = make([]*ActivityResolver, len(activityItems))
+	for i, activity := range activityItems {
+		resolvers[i] = &ActivityResolver{activity: activity}
+	}
+
+	return &ActivityPageResolver{
+		edges: &resolvers,
+		pageInfo: &PageInfoResolver{
+			pageInfo: &pageInfo,
+		},
+	}, nil
+
 }
 
 func (r *ActivityPageResolver) PageInfo() *PageInfoResolver { return r.pageInfo }

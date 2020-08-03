@@ -347,32 +347,3 @@ func (u *usersRepoImpl) ApproveCompany(companyUUID gentypes.UUID) (models.Compan
 
 	return comp, nil
 }
-
-// Returns true if all the courseTakers given are managed by the company
-func (u *usersRepoImpl) CompanyManagesCourseTakers(companyUUID gentypes.UUID, courseTakerUUIDs []gentypes.UUID) (bool, error) {
-	var delegates []models.Delegate
-	query := database.GormDB.
-		Where(
-			"company_uuid = ? AND course_taker_uuid IN (?)",
-			companyUUID,
-			courseTakerUUIDs,
-		).Find(&delegates)
-	if query.Error != nil {
-		u.Logger.Log(sentry.LevelError, query.Error, "Unable to check if company manages course takers")
-		return false, &errors.ErrWhileHandling
-	}
-
-	// TODO: Optimisation - Use a map, not O(x^2) search
-	for _, delegate := range delegates {
-		var ok = false
-		for _, takerID := range courseTakerUUIDs {
-			if delegate.CourseTakerUUID == takerID {
-				ok = true
-			}
-		}
-		if !ok {
-			return false, nil
-		}
-	}
-	return true, nil
-}

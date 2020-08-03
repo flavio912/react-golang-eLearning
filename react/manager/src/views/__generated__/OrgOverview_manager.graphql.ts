@@ -16,6 +16,9 @@ export type OrgOverview_manager = {
                 readonly total: number;
             } | null;
         };
+        readonly activity: {
+            readonly " $fragmentRefs": FragmentRefs<"ActivityCard_activity">;
+        };
     };
     readonly " $refType": "OrgOverview_manager";
 };
@@ -113,10 +116,34 @@ const node: ReaderFragment = ({
                             ]
                         }
                     ]
+                },
+                {
+                    "kind": "LinkedField",
+                    "alias": null,
+                    "name": "activity",
+                    "storageKey": "activity(page:{\"limit\":6})",
+                    "args": [
+                        {
+                            "kind": "Literal",
+                            "name": "page",
+                            "value": {
+                                "limit": 6
+                            }
+                        }
+                    ],
+                    "concreteType": "ActivityPage",
+                    "plural": false,
+                    "selections": [
+                        {
+                            "kind": "FragmentSpread",
+                            "name": "ActivityCard_activity",
+                            "args": null
+                        }
+                    ]
                 }
             ]
         }
     ]
 } as any);
-(node as any).hash = '2b05b70b64616f7cdb49e3058abce406';
+(node as any).hash = '06246cceb9cae31b8c28295d1edb163d';
 export default node;

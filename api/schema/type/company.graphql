@@ -6,6 +6,7 @@ type Company {
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
+  activity(page: Page): ActivityPage!
   address: Address!
   contactEmail: String!
   contactPhone: String

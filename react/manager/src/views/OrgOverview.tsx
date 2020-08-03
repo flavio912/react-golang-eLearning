@@ -1,5 +1,5 @@
 import * as React from 'react';
-import ActvityCard from 'components/Overview/ActivityCard';
+import ActivityCard from 'components/Overview/ActivityCard';
 import { createUseStyles, useTheme } from 'react-jss';
 import UserSearch from 'components/UserSearch';
 import TitleWrapper from 'components/Overview/TitleWrapper';
@@ -92,6 +92,7 @@ type Props = {
 const OrgOverview = ({ manager }: Props) => {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
   return (
     <div className={classes.root}>
       <PageHeader
@@ -188,13 +189,13 @@ const OrgOverview = ({ manager }: Props) => {
           />
         </TitleWrapper>
         <TitleWrapper title={'Activity'} className={classes.activityWrapper}>
-          <ActvityCard
+          <ActivityCard
             className={classes.activity}
             padding={'medium'}
             leftHeading={'Certificate status'}
             rightHeading={'Recent Updates'}
             options={[]}
-            updates={[]}
+            activity={manager.company.activity}
             data={{
               outerRing: {
                 name: 'Current',
@@ -226,6 +227,9 @@ export default createFragmentContainer(OrgOverview, {
           pageInfo {
             total
           }
+        }
+        activity(page: { limit: 6 }) {
+          ...ActivityCard_activity
         }
       }
     }

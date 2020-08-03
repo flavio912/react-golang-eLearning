@@ -42,6 +42,18 @@ func (u *usersRepoImpl) UserFromCourseTaker(takerUUID gentypes.UUID) (*models.De
 	return &delegate, &individual
 }
 
+func (u *usersRepoImpl) UsersFromTakers(uuids []gentypes.UUID) (*[]models.Delegate, *[]models.Individual) {
+	var delegates []models.Delegate
+	var individuals []models.Individual
+
+	query := database.GormDB.Where("course_taker_uuid IN (?)", uuids)
+
+	query.Find(&delegates)
+	query.Find(&individuals)
+
+	return &delegates, &individuals
+}
+
 func filterDelegate(query *gorm.DB, filter *gentypes.DelegatesFilter) *gorm.DB {
 	if filter != nil {
 		query = middleware.FilterUser(query, &filter.UserFilter)
