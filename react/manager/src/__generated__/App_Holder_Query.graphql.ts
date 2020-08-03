@@ -1,6 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
-/* @relayHash 5b146788fa68940c630c24d2249aa186 */
+/* @relayHash 4238750ceb49f1d8d3550ff9a241a095 */
 
 import { ConcreteRequest } from "relay-runtime";
 import { FragmentRefs } from "relay-runtime";
@@ -28,6 +28,9 @@ fragment AppHolder_manager on Manager {
   firstName
   lastName
   profileImageUrl
+  company {
+    logoURL
+  }
 }
 */
 
@@ -92,6 +95,24 @@ const node: ConcreteRequest = ({
                         "name": "profileImageUrl",
                         "args": null,
                         "storageKey": null
+                    },
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "name": "company",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Company",
+                        "plural": false,
+                        "selections": [
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "logoURL",
+                                "args": null,
+                                "storageKey": null
+                            }
+                        ]
                     }
                 ]
             }
@@ -101,7 +122,7 @@ const node: ConcreteRequest = ({
         "operationKind": "query",
         "name": "App_Holder_Query",
         "id": null,
-        "text": "query App_Holder_Query {\n  manager {\n    ...AppHolder_manager\n  }\n}\n\nfragment AppHolder_manager on Manager {\n  firstName\n  lastName\n  profileImageUrl\n}\n",
+        "text": "query App_Holder_Query {\n  manager {\n    ...AppHolder_manager\n  }\n}\n\nfragment AppHolder_manager on Manager {\n  firstName\n  lastName\n  profileImageUrl\n  company {\n    logoURL\n  }\n}\n",
         "metadata": {}
     }
 } as any);

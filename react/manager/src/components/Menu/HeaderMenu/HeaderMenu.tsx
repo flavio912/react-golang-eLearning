@@ -26,7 +26,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     borderRadius: theme.buttonBorderRadius,
     border: [1, 'solid', theme.colors.borderGrey],
     boxShadow: '2px 2px 3px rgba(0, 0, 0, 0.04)',
-    objectFit: 'cover'
+    objectFit: 'contain'
   },
   row: {
     display: 'flex',
@@ -41,7 +41,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 type Props = {
-  logo: string;
+  logo?: string;
   user: User;
   children?: React.ReactNode;
   onLogoClick?: Function;
@@ -64,12 +64,15 @@ function HeaderMenu({
     <div className={classNames(classes.root, className)}>
       <div className={classNames(classes.row, classes.menu)}>
         <Icon name="TTC_Logo_Icon" size={55} />
-        <img
-          className={classNames(classes.logo)}
-          onClick={() => onLogoClick && onLogoClick()}
-          src={logo}
-          alt="Logo"
-        />
+        {logo && (
+          <img
+            className={classNames(classes.logo)}
+            onClick={() => onLogoClick && onLogoClick()}
+            src={logo}
+            alt="Logo"
+          />
+        )}
+
         <div className={classNames(classes.row)}>
           <CircleBorder user={user} />
           <Icon

@@ -64,9 +64,7 @@ const AppHolder = ({ children, manager }: Props) => {
   return (
     <div>
       <HeaderMenu
-        logo={
-          'https://i.pinimg.com/originals/e3/a5/19/e3a5199fde5caf756884d99fc60178de.png'
-        }
+        logo={manager.company?.logoURL ?? undefined}
         user={{
           name: `${manager.firstName} ${manager.lastName}`,
           url: manager?.profileImageUrl || undefined
@@ -103,6 +101,9 @@ export default createFragmentContainer(AppHolder, {
       firstName
       lastName
       profileImageUrl
+      company {
+        logoURL
+      }
     }
   `
 });

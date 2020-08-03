@@ -7,6 +7,9 @@ export type AppHolder_manager = {
     readonly firstName: string;
     readonly lastName: string;
     readonly profileImageUrl: string | null;
+    readonly company: {
+        readonly logoURL: string | null;
+    };
     readonly " $refType": "AppHolder_manager";
 };
 export type AppHolder_manager$data = AppHolder_manager;
@@ -44,8 +47,26 @@ const node: ReaderFragment = ({
             "name": "profileImageUrl",
             "args": null,
             "storageKey": null
+        },
+        {
+            "kind": "LinkedField",
+            "alias": null,
+            "name": "company",
+            "storageKey": null,
+            "args": null,
+            "concreteType": "Company",
+            "plural": false,
+            "selections": [
+                {
+                    "kind": "ScalarField",
+                    "alias": null,
+                    "name": "logoURL",
+                    "args": null,
+                    "storageKey": null
+                }
+            ]
         }
     ]
 } as any);
-(node as any).hash = 'ec59545289870c174052616b7c79b5d3';
+(node as any).hash = 'ad6c5177293ee421311268539136ff1a';
 export default node;
