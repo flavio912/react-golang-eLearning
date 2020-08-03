@@ -17,5 +17,5 @@ func (p *ProgressResolver) Percent() float64 {
 		return 0
 	}
 
-	return float64(p.Progress.Completed / p.Progress.Total)
+	return (float64(p.Progress.Completed) / float64(p.Progress.Total)) * 100
 }

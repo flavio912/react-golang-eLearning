@@ -1,6 +1,7 @@
 package users
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/getsentry/sentry-go"
@@ -174,6 +175,7 @@ func (u *usersAppImpl) TakerCourse(takerUUID gentypes.UUID, courseID uint) (gent
 
 	activeCourse, err := u.usersRepository.TakerActiveCourse(takerUUID, courseID)
 	if err != nil {
+		u.grant.Logger.Log(sentry.LevelWarning, err, "TakerCourse: Unable to find active course")
 		return gentypes.MyCourse{}, &errors.ErrWhileHandling
 	}
 
@@ -187,7 +189,7 @@ func (u *usersAppImpl) activeCourseProgress(activeCourse models.ActiveCourse) (*
 	onlineCourse, err := u.coursesRepository.OnlineCourse(activeCourse.CourseID)
 	if err != nil {
 		if err == &errors.ErrNotFound {
-			u.grant.Logger.Log(sentry.LevelInfo, err, "activeCourseProgress: onlineCourse not found")
+			u.grant.Logger.Log(sentry.LevelInfo, err, fmt.Sprintf("activeCourseProgress: onlineCourse not found - ID: %d", activeCourse.CourseID))
 			return nil, nil, nil
 		}
 		u.grant.Logger.Log(sentry.LevelError, err, "activeCourseProgress: Unable to get online course")
@@ -226,7 +228,7 @@ func (u *usersAppImpl) activeCourseProgress(activeCourse models.ActiveCourse) (*
 		if uuid == *latestTest {
 			return &gentypes.Progress{
 				Total:     len(testUUIDs),
-				Completed: i,
+				Completed: i + 1,
 			}, latestTest, nil
 		}
 	}

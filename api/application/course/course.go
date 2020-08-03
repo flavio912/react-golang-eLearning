@@ -204,12 +204,14 @@ func (c *courseAppImpl) CourseSyllabus(courseID uint) ([]gentypes.CourseItem, er
 	// Check that its an online course
 	onlineCourse, err := c.coursesRepository.OnlineCourse(courseID)
 	if err != nil {
+		c.grant.Logger.Log(sentry.LevelDebug, err, "CourseSyllabus: OnlineCourse: unable to get online part of course")
 		return []gentypes.CourseItem{}, err
 	}
 
 	structures, structErr := c.coursesRepository.OnlineCourseStructure(onlineCourse.UUID)
 
 	if structErr != nil {
+		c.grant.Logger.Log(sentry.LevelWarning, err, "CourseSyllabus: Unable to get course structure")
 		return []gentypes.CourseItem{}, structErr
 	}
 

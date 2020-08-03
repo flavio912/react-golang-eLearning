@@ -247,9 +247,13 @@ interface SyllabusItem {
 type Lesson implements SyllabusItem {
   name: String!
   uuid: UUID!
+  type: StructureElement!
   complete: Boolean
-  mp3URL: String
-  text: String!
+  description: String!
+  bannerImageURL: String
+  voiceoverURL: String
+  transcript: String
+  video: Video
 }
 
 type Module implements SyllabusItem {

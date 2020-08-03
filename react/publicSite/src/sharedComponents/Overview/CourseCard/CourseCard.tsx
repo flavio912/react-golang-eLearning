@@ -263,7 +263,7 @@ function CourseCard({
         </div>
       </div>
 
-      {progress ? (
+      {progress !== undefined ? (
         <div className={classNames(classes.row, classes.footer)}>
           <div className={classes.progress}>PROGRESS</div>
           <CourseCompletion

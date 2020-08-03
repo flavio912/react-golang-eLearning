@@ -73,7 +73,6 @@ function OnlineCourses({ className, user }: Props) {
   const [selectedOption, setSelectedOption] = React.useState(selectOptions[0]);
 
   const filterOptions = [defaultOption];
-
   return (
     <Page>
       <div className={classes.onlineCoursesRoot}>
@@ -133,7 +132,11 @@ function OnlineCourses({ className, user }: Props) {
                 onClick={() => {
                   router.push(`/app/courses/${course.course.ident}`);
                 }}
-                progress={course.status == 'complete' ? 100 : 30}
+                progress={
+                  course.status == 'complete'
+                    ? 100
+                    : course.progress?.percent ?? 0
+                }
               />
             ))}
         </div>
@@ -169,6 +172,9 @@ export default createFragmentContainer(OnlineCourses, {
           bannerImageURL
         }
         status
+        progress {
+          percent
+        }
       }
     }
   `

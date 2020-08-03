@@ -44,6 +44,7 @@ export type IconNames =
   | 'LeftNav_Icon_Courses'
   | 'LeftNav_Icon_Dashboard'
   | 'LeftNav_Icon_Delegates'
+  | 'LeftNav_Icon_Training'
   | 'LinkedIn_Logo'
   | 'Loading_Screen_Donut'
   | 'Location_Pin'
@@ -114,6 +115,7 @@ const iconNameMap = {
   LeftNav_Icon_Courses: require('../../../assets/LeftNav_Icon_Courses.svg'),
   LeftNav_Icon_Dashboard: require('../../../assets/LeftNav_Icon_Dashboard.svg'),
   LeftNav_Icon_Delegates: require('../../../assets/LeftNav_Icon_Delegates.svg'),
+  LeftNav_Icon_Training: require('../../../assets/LeftNav_Icon_Training.svg'),
   LinkedIn_Logo: require('../../../assets/LinkedIn_Logo.png'),
   Loading_Screen_Donut: require('../../../assets/Loading_Screen_Donut.svg'),
   Location_Pin: require('../../../assets/Location_Pin.svg'),

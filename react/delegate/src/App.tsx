@@ -30,6 +30,7 @@ import Module from 'views/Module';
 import Test from 'views/Test/Test';
 import { SideModalProvider } from 'views/SideModalProvider';
 import RecoverPassword from 'views/RecoverPassword/RecoverPassword';
+import Lesson from 'views/Lesson';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -232,6 +233,46 @@ const Router = createFarceRouter({
             return (
               <ErrorBoundary>
                 <Test
+                  {...args.props}
+                  myActiveCourse={args.props?.user?.myActiveCourse}
+                />
+              </ErrorBoundary>
+            );
+          }}
+        />
+        <Route
+          path="/courses/:courseID/lesson/:lessonUUID"
+          Component={Lesson}
+          query={graphql`
+            query App_Lesson_Query($id: Int!, $uuid: UUID!) {
+              user {
+                myActiveCourse(id: $id) {
+                  ...Lesson_myActiveCourse
+                }
+              }
+              lesson(uuid: $uuid) {
+                ...Lesson_lesson
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { courseID, lessonUUID } = params;
+            return {
+              id: parseInt(courseID),
+              uuid: lessonUUID
+            };
+          }}
+          render={(args: any) => {
+            console.log('args', args);
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            if (!args.props) {
+              return <div></div>;
+            }
+            return (
+              <ErrorBoundary>
+                <Lesson
                   {...args.props}
                   myActiveCourse={args.props?.user?.myActiveCourse}
                 />

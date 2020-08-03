@@ -147,6 +147,7 @@ func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.
 
 		activeCourses, err := c.usersRepository.TakerActiveCourses(courseTakerID)
 		if err != nil {
+			c.grant.Logger.Log(sentry.LevelError, err, "grantCanViewSyllabusItems: Unable to get taker active courses")
 			return false
 		}
 
@@ -157,6 +158,7 @@ func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.
 
 		areTestsInCourses, err := c.coursesRepository.AreInCourses(courseIds, courseElementUUIDs, elementType)
 		if err != nil {
+			c.grant.Logger.Log(sentry.LevelError, err, "grantCanViewSyllabusItems: AreInCourses error")
 			return false
 		}
 
@@ -170,7 +172,7 @@ func (c *courseAppImpl) grantCanViewSyllabusItems(courseElementUUIDs []gentypes.
 
 func (c *courseAppImpl) TestsByUUIDs(uuids []gentypes.UUID) ([]gentypes.Test, error) {
 	if !c.grantCanViewSyllabusItems(uuids, gentypes.TestType) {
-		return []gentypes.Test{}, &errors.ErrWhileHandling
+		return []gentypes.Test{}, &errors.ErrUnauthorized
 	}
 
 	tests, err := c.coursesRepository.TestsByUUIDs(uuids)

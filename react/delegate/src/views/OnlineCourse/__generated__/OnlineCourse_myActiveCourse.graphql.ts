@@ -9,6 +9,9 @@ export type OnlineCourse_myActiveCourse = {
     readonly status: CourseStatus;
     readonly enrolledAt: string;
     readonly upTo: string | null;
+    readonly progress: {
+        readonly percent: number;
+    } | null;
     readonly course: {
         readonly ident: number;
         readonly name: string;
@@ -17,6 +20,9 @@ export type OnlineCourse_myActiveCourse = {
         readonly howToComplete: string | null;
         readonly whatYouLearn: ReadonlyArray<string> | null;
         readonly hoursToComplete: number | null;
+        readonly category: {
+            readonly name: string;
+        } | null;
         readonly syllabus: ReadonlyArray<{
             readonly name: string;
             readonly type: StructureElement;
@@ -90,6 +96,24 @@ const node: ReaderFragment = (function () {
             {
                 "kind": "LinkedField",
                 "alias": null,
+                "name": "progress",
+                "storageKey": null,
+                "args": null,
+                "concreteType": "Progress",
+                "plural": false,
+                "selections": [
+                    {
+                        "kind": "ScalarField",
+                        "alias": null,
+                        "name": "percent",
+                        "args": null,
+                        "storageKey": null
+                    }
+                ]
+            },
+            {
+                "kind": "LinkedField",
+                "alias": null,
                 "name": "course",
                 "storageKey": null,
                 "args": null,
@@ -142,6 +166,18 @@ const node: ReaderFragment = (function () {
                     {
                         "kind": "LinkedField",
                         "alias": null,
+                        "name": "category",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Category",
+                        "plural": false,
+                        "selections": [
+                            (v0 /*: any*/)
+                        ]
+                    },
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
                         "name": "syllabus",
                         "storageKey": null,
                         "args": null,
@@ -183,5 +219,5 @@ const node: ReaderFragment = (function () {
         ]
     } as any;
 })();
-(node as any).hash = 'faeb533c3d8639f512ecdb1bf152f23a';
+(node as any).hash = 'c65777ad719780a941a18dd1c914e2b8';
 export default node;
