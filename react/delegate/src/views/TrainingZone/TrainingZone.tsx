@@ -24,6 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "header header header topinf topinf topinf"
       "allcou allcou expire expire trainp trainp"
       "jumpba jumpba jumpba .      .      .     "
+      "jumpco jumpco jumpco jumpco jumpco jumpco"
     `,
     '@media (max-width: 1350px)': {
       gridTemplateAreas: `
@@ -33,6 +34,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "expire"
       "trainp"
       "jumpba"
+      "jumpco"
     `,
       gridTemplateColumns: 'repeat(1, 1fr)'
     }
@@ -56,11 +58,11 @@ const useStyles = createUseStyles((theme: Theme) => ({
     gridArea: 'jumpba'
   },
   courseHolder: {
+    gridArea: 'jumpco',
     display: 'grid',
     gridGap: 26,
-    marginTop: theme.spacing(3),
     gridTemplateColumns: 'repeat(auto-fit, 298px)'
-  },
+  }
 }));
 
 type Props = {
@@ -79,7 +81,9 @@ function TrainingZone({ user }: Props) {
     });
   }
 
-  const incomplete = user?.myCourses?.filter((course) => course.status === 'incomplete');
+  const incomplete = user?.myCourses?.filter(
+    (course) => course.status === 'incomplete'
+  );
 
   return (
     <Page>
@@ -130,7 +134,8 @@ function TrainingZone({ user }: Props) {
           </div>
         )}
         <div className={classes.courseHolder}>
-          {incomplete && incomplete.map((course, index) => (
+          {incomplete &&
+            incomplete.map((course, index) => (
               <CourseCard
                 key={index}
                 course={{
