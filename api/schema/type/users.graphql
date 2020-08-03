@@ -40,6 +40,7 @@ type Activity {
   type: ActivityType!
   createdAt: String!
   course: Course
+  user: User
 }
 
 type Progress {

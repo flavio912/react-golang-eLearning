@@ -6,8 +6,11 @@ type Company {
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
+  activity(page: Page): ActivityPage!
   address: Address!
   contactEmail: String!
+  contactPhone: String
+  logoURL: String
 }
 
 type Address {
@@ -28,9 +31,11 @@ input CreateCompanyInput {
   addressLine1: String!
   addressLine2: String!
   contactEmail: String!
+  contactPhone: String
   county: String!
   postCode: String!
   country: String!
+  logoToken: String
 }
 
 input UpdateCompanyInput {
@@ -39,9 +44,11 @@ input UpdateCompanyInput {
   approved: Boolean
   isContract: Boolean
   contactEmail: String
+  contactPhone: String
   addressLine1: String
   addressLine2: String
   county: String
   postCode: String
   country: String
+  logoToken: String
 }

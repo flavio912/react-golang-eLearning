@@ -116,6 +116,43 @@ func (u *usersAppImpl) GetCurrentUser() (gentypes.User, error) {
 	return gentypes.User{}, &errors.ErrUnauthorized
 }
 
+func (u *usersAppImpl) UsersFromTakers(takerUUIDs []gentypes.UUID) (map[gentypes.UUID]gentypes.User, error) {
+	var authed = false
+
+	if u.grant.IsDelegate || u.grant.IsIndividual {
+		if len(takerUUIDs) == 1 && u.grant.Claims.UUID == takerUUIDs[0] {
+			authed = true
+		}
+	}
+	if u.grant.IsAdmin {
+		authed = true
+	}
+	if u.grant.IsManager {
+		if success, _ := u.usersRepository.CompanyManagesCourseTakers(u.grant.Claims.Company, takerUUIDs); success {
+			authed = true
+		}
+	}
+
+	if !authed {
+		return map[gentypes.UUID]gentypes.User{}, &errors.ErrWhileHandling
+	}
+
+	var usersMap = map[gentypes.UUID]gentypes.User{}
+	delegates, individuals := u.usersRepository.UsersFromTakers(takerUUIDs)
+	if delegates != nil {
+		for _, delegate := range *delegates {
+			usersMap[delegate.CourseTakerUUID] = u.DelegateToUser(delegate)
+		}
+	}
+	if individuals != nil {
+		for _, individual := range *individuals {
+			usersMap[individual.CourseTakerUUID] = u.IndividualToUser(individual)
+		}
+	}
+
+	return usersMap, nil
+}
+
 // TakerCourses gets the courses for a course taker
 func (u *usersAppImpl) TakerCourses(takerUUID gentypes.UUID, showHistorical bool) ([]gentypes.MyCourse, error) {
 	var authorized = false

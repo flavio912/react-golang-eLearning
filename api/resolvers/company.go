@@ -93,10 +93,12 @@ func uuidsToStrings(uuids []gentypes.UUID) []string {
 	return strings
 }
 
-func (r *CompanyResolver) Name() string         { return r.company.Name }
-func (r *CompanyResolver) CreatedAt() *string   { return r.company.CreatedAt }
-func (r *CompanyResolver) UUID() gentypes.UUID  { return r.company.UUID }
-func (r *CompanyResolver) ContactEmail() string { return r.company.ContactEmail }
+func (r *CompanyResolver) Name() string          { return r.company.Name }
+func (r *CompanyResolver) CreatedAt() *string    { return r.company.CreatedAt }
+func (r *CompanyResolver) UUID() gentypes.UUID   { return r.company.UUID }
+func (r *CompanyResolver) ContactEmail() string  { return r.company.ContactEmail }
+func (r *CompanyResolver) ContactPhone() *string { return r.company.ContactPhone }
+func (r *CompanyResolver) LogoURL() *string      { return r.company.LogoURL }
 func (r *CompanyResolver) Approved(ctx context.Context) *bool {
 	grant := auth.GrantFromContext(ctx)
 	if grant == nil {
@@ -149,6 +151,11 @@ func (r *CompanyResolver) Delegates(ctx context.Context, args struct {
 		Delegates: &delegates,
 		PageInfo:  pageInfo,
 	})
+}
+func (r *CompanyResolver) Activity(ctx context.Context, args struct{ Page *gentypes.Page }) (*ActivityPageResolver, error) {
+	return NewActivityPageResolver(ctx, NewActivityPageArgs{
+		CompanyUUID: &r.company.UUID,
+	}, args.Page)
 }
 
 type CompanyPageResolver struct {

@@ -93,20 +93,20 @@ func (_m *UsersRepository) CompanyManagesCourseTakers(companyUUID gentypes.UUID,
 	return r0, r1
 }
 
-// CreateCompany provides a mock function with given fields: company
-func (_m *UsersRepository) CreateCompany(company gentypes.CreateCompanyInput) (models.Company, error) {
-	ret := _m.Called(company)
+// CreateCompany provides a mock function with given fields: company, logoKey
+func (_m *UsersRepository) CreateCompany(company gentypes.CreateCompanyInput, logoKey *string) (models.Company, error) {
+	ret := _m.Called(company, logoKey)
 
 	var r0 models.Company
-	if rf, ok := ret.Get(0).(func(gentypes.CreateCompanyInput) models.Company); ok {
-		r0 = rf(company)
+	if rf, ok := ret.Get(0).(func(gentypes.CreateCompanyInput, *string) models.Company); ok {
+		r0 = rf(company, logoKey)
 	} else {
 		r0 = ret.Get(0).(models.Company)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.CreateCompanyInput) error); ok {
-		r1 = rf(company)
+	if rf, ok := ret.Get(1).(func(gentypes.CreateCompanyInput, *string) error); ok {
+		r1 = rf(company, logoKey)
 	} else {
 		r1 = ret.Error(1)
 	}
@@ -777,20 +777,20 @@ func (_m *UsersRepository) TakerTestMarks(courseTaker gentypes.UUID, courseID ui
 	return r0, r1
 }
 
-// UpdateCompany provides a mock function with given fields: input
-func (_m *UsersRepository) UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error) {
-	ret := _m.Called(input)
+// UpdateCompany provides a mock function with given fields: input, logoKey
+func (_m *UsersRepository) UpdateCompany(input gentypes.UpdateCompanyInput, logoKey *string) (models.Company, error) {
+	ret := _m.Called(input, logoKey)
 
 	var r0 models.Company
-	if rf, ok := ret.Get(0).(func(gentypes.UpdateCompanyInput) models.Company); ok {
-		r0 = rf(input)
+	if rf, ok := ret.Get(0).(func(gentypes.UpdateCompanyInput, *string) models.Company); ok {
+		r0 = rf(input, logoKey)
 	} else {
 		r0 = ret.Get(0).(models.Company)
 	}
 
 	var r1 error
-	if rf, ok := ret.Get(1).(func(gentypes.UpdateCompanyInput) error); ok {
-		r1 = rf(input)
+	if rf, ok := ret.Get(1).(func(gentypes.UpdateCompanyInput, *string) error); ok {
+		r1 = rf(input, logoKey)
 	} else {
 		r1 = ret.Error(1)
 	}

@@ -82,3 +82,18 @@ func (u *usersAppImpl) TakerActivity(courseTakerUUID gentypes.UUID, page *gentyp
 
 	return []gentypes.Activity{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
 }
+
+func (u *usersAppImpl) CompanyActivity(companyUUID gentypes.UUID, page *gentypes.Page) ([]gentypes.Activity, gentypes.PageInfo, error) {
+	if !u.grant.ManagesCompany(companyUUID) {
+		return []gentypes.Activity{}, gentypes.PageInfo{}, &errors.ErrUnauthorized
+	}
+
+	// Get company activity
+	activity, pageInfo, err := u.usersRepository.CompanyActivity(companyUUID, page)
+	if err != nil {
+		u.grant.Logger.Log(sentry.LevelError, err, "CompanyActivity: Unable to get company activity")
+		return activityToGentypes(activity), pageInfo, &errors.ErrWhileHandling
+	}
+
+	return activityToGentypes(activity), pageInfo, nil
+}

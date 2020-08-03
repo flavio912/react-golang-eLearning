@@ -117,6 +117,7 @@ type Company {
   name: String!
   managers(page: Page, filter: ManagerFilter, orderBy: OrderBy): ManagerPage!
   delegates(page: Page, filter: DelegateFilter, orderBy: OrderBy): DelegatePage!
+  activity(page: Page): ActivityPage!
   address: Address!
 }
 
@@ -128,20 +129,30 @@ type Address {
   country: String!
 }
 
-interface User {
-  uuid: UUID!
-  createdAt: String
-  email: String!
+type User {
+  type: UserType!
+  email: String
   firstName: String!
   lastName: String!
-  telephone: String!
+  telephone: String
+  jobTitle: String
   lastLogin: String!
-  jobTitle: String!
+  company: Company
+  profileImageUrl: String
+  activity(page: Page): ActivityPage
+  myCourses: [MyCourse!]
+  myActiveCourse(id: Int!): MyCourse # Get my course from courseID
+  # address: Address
+}
+enum UserType {
+  manager
+  individual
+  delegate
 }
 
 # Manager
 
-type Manager implements User {
+type Manager {
   uuid: UUID!
   createdAt: String
   email: String!
@@ -248,6 +259,7 @@ type Activity {
   type: ActivityType!
   createdAt: String!
   course: Course
+  user: User
 }
 
 enum CourseStatus {

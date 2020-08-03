@@ -8,10 +8,12 @@ type Company struct {
 	CreatedAt    *string `valid:"rfc3339"`
 	IsContract   bool
 	ContactEmail string
+	ContactPhone *string
 	Approved     *bool
 	UUID         UUID
 	Name         string
 	AddressID    uint
+	LogoURL      *string
 }
 
 type CompanyFilter struct {
@@ -26,13 +28,15 @@ type OrderBy struct {
 }
 
 type CreateCompanyInput struct {
-	CompanyName  string `valid:"required"`
-	AddressLine1 string `valid:"required"`
-	AddressLine2 string `valid:"required"`
-	County       string `valid:"required"`
-	PostCode     string `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
-	Country      string `valid:"required"`
-	ContactEmail string `valid:"required,email"`
+	CompanyName  string  `valid:"required"`
+	AddressLine1 string  `valid:"required"`
+	AddressLine2 string  `valid:"required"`
+	County       string  `valid:"required"`
+	PostCode     string  `valid:"required,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
+	Country      string  `valid:"required"`
+	ContactEmail string  `valid:"required,email"`
+	ContactPhone *string `valid:"optional,numeric"`
+	LogoToken    *string
 }
 
 func (c *CreateCompanyInput) Validate() error {
@@ -51,6 +55,8 @@ type UpdateCompanyInput struct {
 	PostCode     *string `valid:"optional,alphanum,stringlength(6|7)"` // 6 or 7 depending on whether space in middle
 	Country      *string `valid:"optional"`
 	ContactEmail *string `valid:"optional,email"`
+	ContactPhone *string `valid:"optional,numeric"`
+	LogoToken    *string
 }
 
 func (c *UpdateCompanyInput) Validate() error {
