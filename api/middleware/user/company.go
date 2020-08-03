@@ -179,7 +179,7 @@ func (u *usersRepoImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.Co
 }
 
 // CreateCompany is an admin function for creating companys directly
-func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (models.Company, error) {
+func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput, logoKey *string) (models.Company, error) {
 	// if !g.IsAdmin {
 	// 	return gentypes.Company{}, &errors.ErrUnauthorized
 	// }
@@ -200,6 +200,8 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (mode
 		},
 		Approved:     true,
 		ContactEmail: company.ContactEmail,
+		ContactPhone: company.ContactPhone,
+		LogoKey:      logoKey,
 	}
 
 	query := database.GormDB.Create(&compModel)
@@ -211,7 +213,7 @@ func (u *usersRepoImpl) CreateCompany(company gentypes.CreateCompanyInput) (mode
 	return compModel, nil
 }
 
-func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error) {
+func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput, logoKey *string) (models.Company, error) {
 	var company models.Company
 	query := database.GormDB.Preload("Address").Where("uuid = ?", input.UUID).First(&company)
 	if query.Error != nil {
@@ -251,6 +253,12 @@ func (u *usersRepoImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (models
 	}
 	if input.IsContract != nil {
 		updates["is_contract"] = *input.IsContract
+	}
+	if input.ContactPhone != nil {
+		updates["contact_phone"] = input.ContactPhone
+	}
+	if logoKey != nil {
+		updates["logo_key"] = logoKey
 	}
 
 	tx := database.GormDB.Begin()
@@ -338,33 +346,4 @@ func (u *usersRepoImpl) ApproveCompany(companyUUID gentypes.UUID) (models.Compan
 	}
 
 	return comp, nil
-}
-
-// Returns true if all the courseTakers given are managed by the company
-func (u *usersRepoImpl) CompanyManagesCourseTakers(companyUUID gentypes.UUID, courseTakerUUIDs []gentypes.UUID) (bool, error) {
-	var delegates []models.Delegate
-	query := database.GormDB.
-		Where(
-			"company_uuid = ? AND course_taker_uuid IN (?)",
-			companyUUID,
-			courseTakerUUIDs,
-		).Find(&delegates)
-	if query.Error != nil {
-		u.Logger.Log(sentry.LevelError, query.Error, "Unable to check if company manages course takers")
-		return false, &errors.ErrWhileHandling
-	}
-
-	// TODO: Optimisation - Use a map, not O(x^2) search
-	for _, delegate := range delegates {
-		var ok = false
-		for _, takerID := range courseTakerUUIDs {
-			if delegate.CourseTakerUUID == takerID {
-				ok = true
-			}
-		}
-		if !ok {
-			return false, nil
-		}
-	}
-	return true, nil
 }

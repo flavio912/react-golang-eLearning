@@ -16,6 +16,7 @@ import { Resolver } from 'found-relay';
 import environment from './api/environment';
 import { graphql, createFragmentContainer } from 'react-relay';
 import LoginPage from 'views/Login';
+import FinaliseLogin from 'views/FinaliseLogin';
 import { ThemeProvider } from 'react-jss';
 import theme from './helpers/theme';
 import AppHolder from 'views/AppHolder';
@@ -28,6 +29,8 @@ import ErrorBoundary from 'components/ErrorBoundarys/PageBoundary';
 import Module from 'views/Module';
 import Test from 'views/Test/Test';
 import { SideModalProvider } from 'views/SideModalProvider';
+import RecoverPassword from 'views/RecoverPassword/RecoverPassword';
+import Lesson from 'views/Lesson';
 
 const protectedRenderer = (Comp: React.ReactNode) => (
   args: RouteRenderArgs
@@ -48,6 +51,8 @@ const Router = createFarceRouter({
   routeConfig: makeRouteConfig(
     <Route>
       <Route path="/(login)?" Component={LoginPage} />
+      <Route path="/password" Component={RecoverPassword} />
+      <Route path="/finalise/:token" Component={FinaliseLogin} />
       <Route
         path="/app"
         Component={AppHolder}
@@ -60,7 +65,17 @@ const Router = createFarceRouter({
         `}
         render={protectedRenderer(AppHolder)}
       >
-        <Route path="/" Component={TrainingZone} />
+        <Route
+          path="/"
+          Component={TrainingZone}
+          query={graphql`
+            query App_TrainingZone_Query {
+              user {
+                ...TrainingZone_user
+              }
+            }
+          `}
+        />
         <Route
           path="/courses"
           Component={OnlineCourses}
@@ -72,7 +87,11 @@ const Router = createFarceRouter({
             }
           `}
           render={(args: any) => {
-            return <OnlineCourses {...args.props} />;
+            return (
+              <ErrorBoundary>
+                <OnlineCourses {...args.props} />
+              </ErrorBoundary>
+            );
           }}
         />
         <Route
@@ -157,10 +176,10 @@ const Router = createFarceRouter({
             }
           `}
           prepareVariables={(params: any, { location }: any) => {
-            const { pageNum } = location.query;
+            const { offset, limit } = location.query;
             return {
-              offset: pageNum ?? 0,
-              limit: 10
+              offset: offset,
+              limit: limit
             };
           }}
           render={(args: any) => {
@@ -214,6 +233,46 @@ const Router = createFarceRouter({
             return (
               <ErrorBoundary>
                 <Test
+                  {...args.props}
+                  myActiveCourse={args.props?.user?.myActiveCourse}
+                />
+              </ErrorBoundary>
+            );
+          }}
+        />
+        <Route
+          path="/courses/:courseID/lesson/:lessonUUID"
+          Component={Lesson}
+          query={graphql`
+            query App_Lesson_Query($id: Int!, $uuid: UUID!) {
+              user {
+                myActiveCourse(id: $id) {
+                  ...Lesson_myActiveCourse
+                }
+              }
+              lesson(uuid: $uuid) {
+                ...Lesson_lesson
+              }
+            }
+          `}
+          prepareVariables={(params: any, { location }: any) => {
+            const { courseID, lessonUUID } = params;
+            return {
+              id: parseInt(courseID),
+              uuid: lessonUUID
+            };
+          }}
+          render={(args: any) => {
+            console.log('args', args);
+            if (args.error) {
+              args.match.router.push('/app');
+            }
+            if (!args.props) {
+              return <div></div>;
+            }
+            return (
+              <ErrorBoundary>
+                <Lesson
                   {...args.props}
                   myActiveCourse={args.props?.user?.myActiveCourse}
                 />

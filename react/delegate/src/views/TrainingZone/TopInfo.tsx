@@ -3,6 +3,8 @@ import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
 import QuickInfo from 'components/Overview/QuickInfo';
 import classnames from 'classnames';
+import { CourseStatus } from './__generated__/TrainingZone_user.graphql';
+import moment from 'moment';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   divider: {
@@ -26,20 +28,34 @@ const useStyles = createUseStyles((theme: Theme) => ({
 
 type Props = {
   className?: string;
+  courses: {
+    status: CourseStatus;
+    enrolledAt: string;
+  }[];
 };
 
-function TopInfo({ className }: Props) {
+function TopInfo({ className, courses }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
+
+  const month = moment().format('MMMM');
+  const year = moment().format('YYYY');
+
+  const currentMonthCourses = courses.filter((x) =>
+    moment(x.enrolledAt).isSameOrAfter(moment().format('YYYY-MM-01'))
+  );
+  const newCourses = currentMonthCourses.length;
+  const certificates = currentMonthCourses.filter((x) => x.status !== 'failed')
+    .length;
+
   return (
     <div className={classnames(classes.outer, className)}>
       <div className={classes.cont}>
         <QuickInfo
           icon={'CourseNewCourseGreen'}
           text={'Courses'}
-          value={10}
-          footer={'in March 2020'}
-          valueArrow={'up'}
+          value={newCourses}
+          footer={`in ${month} ${year}`}
         />
         <div className={classes.divider} />
       </div>
@@ -47,19 +63,18 @@ function TopInfo({ className }: Props) {
         <QuickInfo
           icon={'CourseCertificates'}
           text={'Certificates'}
-          value={7}
-          footer={'in March 2020'}
-          valueArrow={'up'}
+          value={certificates}
+          footer={`in ${month} ${year}`}
         />
-        <div className={classes.divider} />
+        {/* <div className={classes.divider} /> */}
       </div>
-      <QuickInfo
+      {/* <QuickInfo
         icon={'CourseTimeTrackedGreen'}
         text={'Time Tracked'}
         value={{ h: 14, m: 2 }}
         footer={'in March 2020'}
         valueArrow={'up'}
-      />
+      /> */}
     </div>
   );
 }

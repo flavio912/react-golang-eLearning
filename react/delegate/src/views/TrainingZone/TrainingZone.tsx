@@ -1,11 +1,17 @@
 import * as React from 'react';
 import { createUseStyles, useTheme } from 'react-jss';
 import { Theme } from 'helpers/theme';
+import { createFragmentContainer, graphql } from 'react-relay';
 import Heading from 'components/core/Heading';
 import TopInfo from './TopInfo';
 import CardItem from 'components/core/Cards/CardItem';
 import { useRouter } from 'found';
 import Page from 'components/Page';
+import {
+  TrainingZone_user,
+  CourseStatus
+} from './__generated__/TrainingZone_user.graphql';
+import CourseCard from 'sharedComponents/Overview/CourseCard';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   trainingZoneRoot: {
@@ -18,6 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "header header header topinf topinf topinf"
       "allcou allcou expire expire trainp trainp"
       "jumpba jumpba jumpba .      .      .     "
+      "jumpco jumpco jumpco jumpco jumpco jumpco"
     `,
     '@media (max-width: 1350px)': {
       gridTemplateAreas: `
@@ -27,6 +34,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
       "expire"
       "trainp"
       "jumpba"
+      "jumpco"
     `,
       gridTemplateColumns: 'repeat(1, 1fr)'
     }
@@ -48,28 +56,46 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   jumpHeader: {
     gridArea: 'jumpba'
+  },
+  courseHolder: {
+    gridArea: 'jumpco',
+    display: 'grid',
+    gridGap: 26,
+    gridTemplateColumns: 'repeat(auto-fit, 298px)'
   }
 }));
 
-type Props = {};
+type Props = {
+  user: TrainingZone_user;
+};
 
-function TrainingZone({}: Props) {
+function TrainingZone({ user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
 
-  const userName = 'James';
+  const courses: { status: CourseStatus; enrolledAt: string }[] = [];
+  if (user?.myCourses) {
+    user?.myCourses.map((value) => {
+      courses.push({ status: value.status, enrolledAt: value.enrolledAt });
+    });
+  }
+
+  const incomplete = user?.myCourses?.filter(
+    (course) => course.status === 'incomplete'
+  );
+
   return (
     <Page>
       <div className={classes.trainingZoneRoot}>
         <div className={classes.trainingHeader}>
           <Heading text="Training Zone" size={'large'} />
           <Heading
-            text={`You're doing great ${userName}, keep up the good work so you don't loose your momentum`}
+            text={`You're doing great ${user?.firstName}, keep up the good work so you don't lose your momentum`}
             size={'medium'}
           />
         </div>
-        <TopInfo className={classes.topInfo} />
+        <TopInfo className={classes.topInfo} courses={courses} />
         <CardItem
           className={classes.card1}
           title={'All Courses'}
@@ -97,17 +123,63 @@ function TrainingZone({}: Props) {
           description={'Review your progress of all Courses in real time'}
           buttonProps={{ title: 'See Help Guides', onClick: () => {} }}
         />
-        <div className={classes.jumpHeader}>
-          <Heading text="Jump back in" size={'large'} />
-          <Heading
-            text={`${userName}, you have some unfinished courses,
-          jump back in to continue learning now.`}
-            size={'medium'}
-          />
+        {incomplete && incomplete.length > 0 && (
+          <div className={classes.jumpHeader}>
+            <Heading text="Jump back in" size={'large'} />
+            <Heading
+              text={`${user?.firstName}, you have some unfinished courses,
+            jump back in to continue learning now.`}
+              size={'medium'}
+            />
+          </div>
+        )}
+        <div className={classes.courseHolder}>
+          {incomplete &&
+            incomplete.map((course, index) => (
+              <CourseCard
+                key={index}
+                course={{
+                  title: course.course.name,
+                  id: course.course.ident,
+                  type: course.course.category?.name ?? 'Online Course',
+                  colour: course.course.category?.color ?? '',
+                  description: course.course.excerpt ?? '',
+                  url: course.course.bannerImageURL ?? ''
+                }}
+                onClick={() => {
+                  router.push(`/app/courses/${course.course.ident}`);
+                }}
+                progress={course.progress?.percent ?? 0}
+              />
+            ))}
         </div>
       </div>
     </Page>
   );
 }
 
-export default TrainingZone;
+export default createFragmentContainer(TrainingZone, {
+  user: graphql`
+    fragment TrainingZone_user on User {
+      firstName
+      myCourses {
+        course {
+          ident: id
+          name
+          excerpt
+          category {
+            color
+            name
+          }
+          type
+          bannerImageURL
+        }
+        status
+        enrolledAt
+        progress {
+          percent
+        }
+      }
+    }
+  `
+});

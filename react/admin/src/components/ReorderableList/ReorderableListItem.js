@@ -16,11 +16,11 @@ const useStyles = makeStyles({
   },
 });
 
-export default function ReoderableListItem({ uuid, text, onDelete  }) {
+export default function ReoderableListItem({ className, uuid, text, onDelete  }) {
   const classes = useStyles();
 
   return (
-    <ListItem button>
+    <ListItem button className={className}>
       <ListItemIcon>
         <DragHandleIcon />
       </ListItemIcon>
@@ -35,14 +35,16 @@ export default function ReoderableListItem({ uuid, text, onDelete  }) {
           </Typography>
         }
       />
-      <ListItemIcon>
-        <IconButton
-          onClick={() => onDelete(uuid)}
-          edge="end"
-        >
-          <DeleteIcon color="disabled" />
-        </IconButton>
-      </ListItemIcon>
+      {onDelete && (
+        <ListItemIcon>
+          <IconButton
+            onClick={() => onDelete(uuid)}
+            edge="end"
+          >
+            <DeleteIcon color="disabled" />
+          </IconButton>
+        </ListItemIcon>
+      )}
     </ListItem>
   );
 }

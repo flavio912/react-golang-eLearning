@@ -3,6 +3,7 @@ package users
 import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/course"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/user"
 )
 
@@ -11,6 +12,7 @@ type UsersApp interface {
 	GetDelegates(page *gentypes.Page, filter *gentypes.DelegatesFilter, orderBy *gentypes.OrderBy) ([]gentypes.Delegate, gentypes.PageInfo, error)
 	CreateDelegate(delegateDetails gentypes.CreateDelegateInput) (gentypes.Delegate, *string, error)
 	UpdateDelegate(input gentypes.UpdateDelegateInput) (gentypes.Delegate, error)
+	FinaliseDelegate(input gentypes.FinaliseDelegateInput) (string, error)
 
 	Company(uuid gentypes.UUID) (gentypes.Company, error)
 	GetCompaniesByUUID(uuids []gentypes.UUID) ([]gentypes.Company, error)
@@ -46,17 +48,22 @@ type UsersApp interface {
 
 	TakerCourse(takerUUID gentypes.UUID, courseID uint) (gentypes.MyCourse, error)
 	TakerCourses(takerUUID gentypes.UUID, showHistorical bool) ([]gentypes.MyCourse, error)
+
 	TakerActivity(courseTakerUUID gentypes.UUID, page *gentypes.Page) ([]gentypes.Activity, gentypes.PageInfo, error)
+	CompanyActivity(companyUUID gentypes.UUID, page *gentypes.Page) ([]gentypes.Activity, gentypes.PageInfo, error)
+	UsersFromTakers(takerUUIDs []gentypes.UUID) (map[gentypes.UUID]gentypes.User, error)
 }
 
 type usersAppImpl struct {
-	grant           *middleware.Grant
-	usersRepository user.UsersRepository
+	grant             *middleware.Grant
+	usersRepository   user.UsersRepository
+	coursesRepository course.CoursesRepository
 }
 
 func NewUsersApp(grant *middleware.Grant) UsersApp {
 	return &usersAppImpl{
-		grant:           grant,
-		usersRepository: user.NewUsersRepository(&grant.Logger),
+		grant:             grant,
+		usersRepository:   user.NewUsersRepository(&grant.Logger),
+		coursesRepository: course.NewCoursesRepository(&grant.Logger),
 	}
 }

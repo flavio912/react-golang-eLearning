@@ -6,6 +6,10 @@ import { tabList } from './Tabs';
 type Props = {
   isOpen: boolean;
   onClose: Function;
+  user: {
+    firstName: string,
+    uuid: string
+  }
 };
 
 const trainingInitialValue = [
@@ -24,7 +28,7 @@ const ToBInitialValue = [
   }
 ];
 
-const SingleUser = ({ isOpen, onClose }: Props) => {
+const SingleUser = ({ isOpen, onClose, user }: Props) => {
   return (
     <SideModal
       isOpen={isOpen}
@@ -32,7 +36,7 @@ const SingleUser = ({ isOpen, onClose }: Props) => {
       closeModal={() => onClose()}
     >
       <Tabs
-        content={tabList}
+        content={tabList(user)}
         closeModal={() => onClose()}
         initialState={{
           courses: [],

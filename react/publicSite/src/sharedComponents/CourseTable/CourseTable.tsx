@@ -76,9 +76,16 @@ const courseRow = (
         )
       },
       {
-        component: () => (
-          <CourseCompletion total={totalProcess} complete={totalCompleted} />
-        )
+        component: () => {
+          if (!status)
+            return (
+              <CourseCompletion
+                total={totalProcess}
+                complete={totalCompleted}
+              />
+            );
+          return <div></div>;
+        }
       },
       { component: () => <Status isComplete={status} expires={expires} /> }
     ]

@@ -26,8 +26,8 @@ type UsersRepository interface {
 	GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error)
 	GetCompaniesByUUID(uuids []gentypes.UUID) ([]models.Company, error)
 	CompanyExists(companyUUID gentypes.UUID) bool
-	CreateCompany(company gentypes.CreateCompanyInput) (models.Company, error)
-	UpdateCompany(input gentypes.UpdateCompanyInput) (models.Company, error)
+	CreateCompany(company gentypes.CreateCompanyInput, logoKey *string) (models.Company, error)
+	UpdateCompany(input gentypes.UpdateCompanyInput, logoKey *string) (models.Company, error)
 	CreateCompanyRequest(company gentypes.CreateCompanyInput, manager gentypes.CreateManagerInput) error
 	ApproveCompany(companyUUID gentypes.UUID) (models.Company, error)
 
@@ -55,6 +55,8 @@ type UsersRepository interface {
 	GetAddressesByIDs(ids []uint) ([]models.Address, error)
 
 	UserFromCourseTaker(takerUUID gentypes.UUID) (*models.Delegate, *models.Individual)
+	UsersFromTakers(uuids []gentypes.UUID) (*[]models.Delegate, *[]models.Individual)
+	CompanyActivity(companyUUID gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	TakerActivity(courseTaker gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	TakerActivitys(courseTakers []gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error)
 	CreateTakerActivity(courseTaker gentypes.UUID, activityType gentypes.ActivityType, relatedCourseID *uint) (models.CourseTakerActivity, error)

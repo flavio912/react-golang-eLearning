@@ -9,7 +9,9 @@ import { Theme } from 'helpers/theme';
 import StatCircle from './StatCircle';
 import HeaderOptions from './HeaderOptions';
 import Graph from './Graph';
-import UserUpdate, { Update } from './UserUpdate';
+import UserUpdate from './UserUpdate';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { ActivityCard_activity } from './__generated__/ActivityCard_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   container: {
@@ -68,7 +70,7 @@ type Props = {
   leftHeading: string;
   rightHeading: string;
   options: string[];
-  updates: Update[];
+  activity: ActivityCard_activity;
   data: Statistic;
   onClick?: Function;
   padding?: PaddingOptions;
@@ -79,7 +81,7 @@ function ActvityCard({
   leftHeading,
   rightHeading,
   options,
-  updates,
+  activity,
   data,
   onClick,
   padding = 'none',
@@ -150,20 +152,21 @@ function ActvityCard({
           {rightHeading}
         </div>
 
-        {updates &&
-          updates
-            .slice(0, 7)
-            .map((update, i) => (
-              <UserUpdate
-                key={i}
-                name={update.name}
-                course={update.course}
-                time={update.time}
-              />
-            ))}
+        {activity &&
+          (activity.edges ?? []).map(
+            (act, i) => act && <UserUpdate key={i} activity={act} />
+          )}
       </div>
     </Card>
   );
 }
 
-export default ActvityCard;
+export default createFragmentContainer(ActvityCard, {
+  activity: graphql`
+    fragment ActivityCard_activity on ActivityPage {
+      edges {
+        ...UserUpdate_activity
+      }
+    }
+  `
+});

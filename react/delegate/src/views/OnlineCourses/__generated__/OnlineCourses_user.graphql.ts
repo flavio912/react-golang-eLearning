@@ -20,6 +20,9 @@ export type OnlineCourses_user = {
             readonly bannerImageURL: string | null;
         };
         readonly status: CourseStatus;
+        readonly progress: {
+            readonly percent: number;
+        } | null;
     }> | null;
     readonly " $refType": "OnlineCourses_user";
 };
@@ -127,11 +130,29 @@ const node: ReaderFragment = (function () {
                         "name": "status",
                         "args": null,
                         "storageKey": null
+                    },
+                    {
+                        "kind": "LinkedField",
+                        "alias": null,
+                        "name": "progress",
+                        "storageKey": null,
+                        "args": null,
+                        "concreteType": "Progress",
+                        "plural": false,
+                        "selections": [
+                            {
+                                "kind": "ScalarField",
+                                "alias": null,
+                                "name": "percent",
+                                "args": null,
+                                "storageKey": null
+                            }
+                        ]
                     }
                 ]
             }
         ]
     } as any;
 })();
-(node as any).hash = '1fbdcdc9cf03aba00a7d2fed26f6a1cc';
+(node as any).hash = '057379e84a52f8ec33e01297bef91958';
 export default node;

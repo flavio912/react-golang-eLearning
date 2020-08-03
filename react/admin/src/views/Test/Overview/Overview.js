@@ -25,7 +25,7 @@ function Overview({ state, setState }) {
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
-        <Grid item={6} xs={8}>
+        <Grid item xs={8}>
           <Grid container spacing={2} direction={'column'}>
             <Grid item>
               <Card>
@@ -77,7 +77,7 @@ function Overview({ state, setState }) {
                   <TextField
                     label="Pass Percentage"
                     fullWidth
-                    value={state.passPercentage}
+                    value={state.passPercentage.toString()}
                     onChange={inp => {
                       try {
                         setState(
@@ -100,7 +100,7 @@ function Overview({ state, setState }) {
                   <TextField
                     label="Num questions to answer"
                     fullWidth
-                    value={state.questionsToAnswer}
+                    value={state.questionsToAnswer.toString()}
                     onChange={inp => {
                       try {
                         setState(

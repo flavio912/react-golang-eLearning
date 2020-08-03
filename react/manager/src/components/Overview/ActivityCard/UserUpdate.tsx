@@ -4,6 +4,8 @@ import classNames from 'classnames';
 import moment from 'moment';
 import { Theme } from 'helpers/theme';
 import ProfileIcon from 'sharedComponents/core/ProfileIcon';
+import { createFragmentContainer, graphql } from 'react-relay';
+import { UserUpdate_activity } from './__generated__/UserUpdate_activity.graphql';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -11,7 +13,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     flexDirection: 'row',
     justifyContent: 'flex-start',
     alignItems: 'center',
-    margin: '10px 0px'
+    margin: '13px 0px'
   },
   icon: {
     width: '30px',
@@ -22,7 +24,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   },
   heading: {
     fontSize: theme.fontSizes.default,
-    fontWeight: 400,
+    fontWeight: 300,
     color: theme.colors.primaryBlack,
     width: '275px',
     whiteSpace: 'nowrap',
@@ -32,7 +34,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
   time: {
     fontSize: theme.fontSizes.tiny,
     fontWeight: 300,
-    color: theme.colors.textGrey,
+    color: theme.colors.textGrey
   },
   borderLeft: {
     borderLeft: `1px solid ${theme.colors.borderGrey}`
@@ -42,32 +44,57 @@ const useStyles = createUseStyles((theme: Theme) => ({
   }
 }));
 
-export interface Update {
-    name: string;
-    course: string;
-    time: Date;
-  }
-
 type Props = {
-  name: string;
-  course: string;
-  time: Date;
+  activity: UserUpdate_activity;
   className?: string;
 };
 
-function UserUpdate({ name, course, time, className }: Props) {
+function UserUpdate({ activity, className }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
 
+  let description = '';
+  switch (activity.type) {
+    case 'activated':
+      description = `Account created for ${activity.user?.firstName} ${activity.user?.lastName}`;
+    case 'completedCourse':
+      description = `${activity.user?.firstName} ${activity.user?.lastName} completed ${activity.course?.name}`;
+    case 'failedCourse':
+      description = `${activity.user?.firstName} ${activity.user?.lastName} failed ${activity.course?.name}`;
+    case 'newCourse':
+      description = `${activity.user?.firstName} ${activity.user?.lastName} started ${activity.course?.name}`;
+  }
   return (
     <div className={classNames(classes.root, className)}>
-        <ProfileIcon className={classNames(classes.icon)} name={name} size={30} />
-        <div>
-            <div className={classNames(classes.heading)}>{`${name} took a course in ${course}`}</div>
-            <div className={classNames(classes.time)}>{moment(time.toISOString()).fromNow()}</div>
+      <ProfileIcon
+        className={classNames(classes.icon)}
+        name={`${activity.user?.firstName} ${activity.user?.lastName}`}
+        url={activity.user?.profileImageUrl ?? undefined}
+        size={30}
+      />
+      <div>
+        <div className={classNames(classes.heading)}>{description}</div>
+        <div className={classNames(classes.time)}>
+          {moment(activity.createdAt).fromNow()}
         </div>
+      </div>
     </div>
   );
 }
 
-export default UserUpdate;
+export default createFragmentContainer(UserUpdate, {
+  activity: graphql`
+    fragment UserUpdate_activity on Activity {
+      type
+      createdAt
+      course {
+        name
+      }
+      user {
+        firstName
+        lastName
+        profileImageUrl
+      }
+    }
+  `
+});

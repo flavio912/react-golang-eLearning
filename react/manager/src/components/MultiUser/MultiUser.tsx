@@ -2,10 +2,13 @@ import * as React from 'react';
 import SideModal from 'sharedComponents/SideModal/SideModal';
 import Tabs from 'sharedComponents/SideModal/Tabs';
 import { tabList } from './Tabs';
+import { Course } from 'sharedComponents/core/Input/SearchableDropdown/SearchableDropdown';
+
 
 type Props = {
   isOpen: boolean;
   onClose: Function;
+  courses?: Course[];
 };
 
 const trainingInitialValue = [
@@ -24,7 +27,7 @@ const ToBInitialValue = [
   }
 ];
 
-const multipleUsers = ({ isOpen, onClose }: Props) => {
+const multipleUsers = ({ isOpen, onClose, courses }: Props) => {
   return (
     <SideModal
       isOpen={isOpen}
@@ -35,7 +38,7 @@ const multipleUsers = ({ isOpen, onClose }: Props) => {
         content={tabList(false)}
         closeModal={() => onClose()}
         initialState={{
-          courses: [],
+          courses: courses ? courses : [],
           users: [undefined],
           training: trainingInitialValue,
           ToB: ToBInitialValue

@@ -6,6 +6,7 @@ import Button from 'sharedComponents/core/Input/Button';
 import Icon from 'sharedComponents/core/Icon';
 import VideoPlayer from '../VideoPlayer';
 import PageMargin from '../PageMargin';
+import Imgix from 'react-imgix';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   root: {
@@ -154,6 +155,12 @@ const useStyles = createUseStyles((theme: Theme) => ({
       display: 'none',
     },
   },
+  image: {
+    '@media (min-width: 850px)': {
+      display: 'none',
+    },
+    width: '100%',
+  },
   preview: {
     fontSize: theme.fontSizes.xSmall,
     fontWeight: 'bold',
@@ -199,7 +206,8 @@ type Props = {
   estimatedTime: string;
   lastUpdated: string;
   price: string;
-  video: string;
+  video?: string;
+  image?: string;
   onBuy: () => void;
   onBasket: () => void;
   sideComponent: React.ReactNode;
@@ -214,6 +222,7 @@ function CoursePageHeader({
   lastUpdated,
   price,
   video,
+  image,
   onBuy,
   onBasket,
   sideComponent,
@@ -244,18 +253,27 @@ function CoursePageHeader({
               )}
             </div>
           )}
-          <VideoPlayer
-            source={video}
-            className={classes.video}
-            thumbnail={
-              <div className={classes.thumbnail}>
-                <div className={classes.playCircle}>
-                  <div className={classes.playTriangle} />
+          {video && (
+            <VideoPlayer
+              source={video}
+              className={classes.video}
+              thumbnail={
+                <div className={classes.thumbnail}>
+                  <div className={classes.playCircle}>
+                    <div className={classes.playTriangle} />
+                  </div>
+                  <div className={classes.preview}>Preview this course</div>
                 </div>
-                <div className={classes.preview}>Preview this course</div>
-              </div>
-            }
-          />
+              }
+            />
+          )}
+          {image && !video && (
+            <Imgix
+              src={image}
+              imgixParams={{ fit: 'crop' }}
+              className={classes.image}
+            />
+          )}
           <div
             className={classNames(classes.courseTitle, classes.mobileMargin)}
           >

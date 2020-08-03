@@ -8,7 +8,7 @@ const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-function Header({ className, ...rest }) {
+function Header({ className, onAdd, ...rest }) {
   const classes = useStyles();
 
   return (
@@ -16,14 +16,14 @@ function Header({ className, ...rest }) {
       <Grid alignItems="flex-end" container justify="space-between" spacing={3}>
         <Grid item>
           <Typography component="h2" gutterBottom variant="overline">
-            Certificates
+            Courses
           </Typography>
           <Typography component="h1" variant="h3">
             Tutors
           </Typography>
         </Grid>
         <Grid item>
-          <Button color="primary" variant="contained">
+          <Button color="primary" variant="contained" onClick={onAdd}>
             Add tutor
           </Button>
         </Grid>
@@ -33,7 +33,8 @@ function Header({ className, ...rest }) {
 }
 
 Header.propTypes = {
-  className: PropTypes.string
+  className: PropTypes.string,
+  onAdd: PropTypes.func
 };
 
 export default Header;

@@ -143,9 +143,9 @@ var initState = {
   bannerImageURL: undefined,
   bannerImageSuccess: undefined,
   categoryUUID: { title: '', value: '' },
-  structure: [{ type: 'module', uuid: 'aeb4762e-7d99-4b53-84fb-9c427f8196e9' }],
+  syllabus: [],
   certificateType: { name: '', uuid: undefined },
-  expiresInMonths: false,
+  expiresInMonths: 0,
   expirationToEndMonth: false
 };
 
@@ -220,7 +220,6 @@ function CreateCourse({ match, history }) {
 
   const saveDraft = async () => {
     if (state.courseType === 'online') {
-      console.log('updating', state);
       const { data } = await saveOnlineCourse({
         variables: {
           id: ident ? parseInt(ident) : undefined,
@@ -235,7 +234,7 @@ function CreateCourse({ match, history }) {
           bannerImageSuccess: state.bannerImageSuccess,
           categoryUUID: state.category?.uuid,
           price: state.price,
-          structure: state.structure,
+          structure: state.syllabus.map(({type, uuid}) => ({type, uuid})),
           expiresInMonths: state.expiresInMonths,
           expirationToEndMonth: state.expirationToEndMonth,
           certificateType: state.certificateType?.uuid,

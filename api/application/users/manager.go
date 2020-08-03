@@ -52,7 +52,7 @@ func (u *usersAppImpl) managersToGentype(managers []models.Manager) []gentypes.M
 
 func (u *usersAppImpl) GetManagersByUUID(uuids []gentypes.UUID) ([]gentypes.Manager, error) {
 	// Manager can get own uuid, admin can get any
-	if !(len(uuids) == 1 && u.grant.Claims.UUID == uuids[0]) && !u.grant.IsAdmin {
+	if !(len(uuids) == 1 && u.grant.Claims.UUID == uuids[0] && u.grant.IsManager) && !u.grant.IsAdmin {
 		return []gentypes.Manager{}, &errors.ErrUnauthorized
 	}
 

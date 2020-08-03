@@ -21,6 +21,12 @@ const useStyles = makeStyles(theme => ({
   },
   heading: {
     margin: theme.spacing(2)
+  },
+  marginBottom: {
+    marginBottom: '100px',
+  },
+  padding: {
+    padding: theme.spacing(2),
   }
 }));
 
@@ -30,130 +36,88 @@ const GET_LESSONS = gql`
       edges {
         uuid
         name
-        text
         type
         tags {
           uuid
         }
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
 `;
 
 const SEARCH = gql`
-  query SearchSyllabus($name: String!, $page: Page!) {
-    searchSyllabus(filter: { name: $name, excludeModule: true }, page: $page) {
+  query SearchSyllabus(
+    $name: String!
+    $excludeLesson: Boolean
+    $excludeTest: Boolean
+  ) {
+    searchSyllabus(filter: {
+      name: $name
+      excludeLesson: $excludeLesson
+      excludeTest: $excludeTest
+      excludeModule: true
+    }) {
       edges {
         uuid
         name
         type
-        complete
-      }
-      pageInfo {
-        total
-        limit
-        offset
-        given
       }
     }
   }
 `;
 
-function useSuggestedQuery(text, page) {
+const cleanResult = (data, error) => {
+  if (!data || !data.edges) {
+    error && console.error('Could not get data', data, error);
+    return [];
+  }
+
+  const resultItems = data.edges.map(item => ({
+    uuid: item?.uuid ?? '',
+    name: item?.name ?? '',
+    text: item?.text ?? '',
+    type: item?.type ?? '',
+    tags: item?.tags ?? ''
+  }));
+
+  return resultItems;
+}
+
+function useSuggestedQuery(text) {
   const { error, data } = useQuery(GET_LESSONS, {
     variables: {
       name: text,
-      page: page
     }
   });
 
-  if (!data || !data.lessons || !data.lessons.edges || !data.lessons.pageInfo) {
-    error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
-  }
-
-  const resultItems = data.lessons.edges.map(lesson => ({
-    uuid: lesson?.uuid ?? '',
-    name: lesson?.name ?? '',
-    text: lesson?.text ?? '',
-    type: lesson?.type ?? '',
-    tags: lesson?.tags ?? ''
-  }));
-
-  const pageInfo = {
-    total: data.lessons.pageInfo?.total,
-    offset: data.lessons.pageInfo.offset,
-    limit: data.lessons.pageInfo.limit,
-    given: data.lessons.pageInfo.given
-  };
-
-  return { resultItems, pageInfo };
+  return cleanResult(data && data.lessons, error);
 }
 
-function useSearchQuery(text, page) {
+function useSearchQuery(text, filter) {
   const { error, data } = useQuery(SEARCH, {
     variables: {
       name: text,
-      page: page
+      excludeLesson: filter.excludeLesson,
+      excludeTest: filter.excludeTest,
     }
   });
 
-  if (
-    !data ||
-    !data.searchSyllabus ||
-    !data.searchSyllabus.edges ||
-    !data.searchSyllabus.pageInfo
-  ) {
-    error && console.error('Could not get data', data, error);
-    return {
-      resultItems: [],
-      pageInfo: {
-        total: 1,
-        offset: 0,
-        limit: 4,
-        given: 0
-      }
-    };
-  }
-
-  const resultItems = data.searchSyllabus.edges.map(syllabus => ({
-    uuid: syllabus?.uuid ?? '',
-    name: syllabus?.name ?? '',
-    text: syllabus?.text ?? '',
-    type: syllabus?.type ?? '',
-    tags: syllabus?.tags ?? ''
-  }));
-
-  const pageInfo = {
-    total: data.searchSyllabus.pageInfo?.total,
-    offset: data.searchSyllabus.pageInfo.offset,
-    limit: data.searchSyllabus.pageInfo.limit,
-    given: data.searchSyllabus.pageInfo.given
-  };
-
-  return { resultItems, pageInfo };
+  return cleanResult(data && data.searchSyllabus, error);
 }
 
 function ModuleBuilder({ state, setState }) {
   const classes = useStyles();
 
+  const [searchFilters, setSearchFilters] = React.useState({
+    excludeLesson: false,
+    excludeTest: false,
+    filters: [
+      { name: 'Exclude Tests', type: 'Filter', isFilter: 'excludeTest' },
+      { name: 'Exclude Lessons', type: 'Filter', isFilter: 'excludeLesson' },
+    ]
+  });
   const [searchText, setSearchText] = React.useState('');
-  const page = { total: 4, offset: 0, given: 4 };
-  const searchResults = useSearchQuery(searchText, page);
+  const searchResults = useSearchQuery(searchText, searchFilters);
   const suggestedLessons = useSuggestedQuery(state.tags);
 
   const onDelete = uuid => {
@@ -161,6 +125,20 @@ function ModuleBuilder({ state, setState }) {
       syllabus: state.syllabus.filter(item => item.uuid !== uuid)
     });
   };
+
+  const newItem = (item) => ({
+    uuid: item.uuid,
+    item,
+    items: [],
+    component: (
+        <ReoderableListItem
+          uuid={item.uuid}
+          text={item.name}
+          onDelete={onDelete}
+        />
+    )
+  })
+
   return (
     <div className={classes.root}>
       <Grid container spacing={2}>
@@ -189,14 +167,17 @@ function ModuleBuilder({ state, setState }) {
               <CardContent>
                 <SyllabusSearch
                   placeholder="Search Lessons or Tests"
-                  searchFilters={{ filters: [] }}
-                  setSearchFilters={() => {}}
-                  searchResults={searchResults.resultItems}
+                  searchFilters={searchFilters}
+                  setSearchFilters={setSearchFilters}
+                  searchResults={searchResults}
                   setSearchText={setSearchText}
                   onChange={({ uuid, name, type }) => {
-                    setState({
-                      syllabus: [...state.syllabus, { uuid, name, type }]
-                    });
+                    // No duplicates
+                    if (!state.syllabus.find(x => x.uuid === uuid)) {
+                      setState({
+                        syllabus: [...state.syllabus, { uuid, name, type }]
+                      });
+                    }
                   }}
                 />
               </CardContent>
@@ -205,34 +186,32 @@ function ModuleBuilder({ state, setState }) {
           <Grid item>
             <SuggestedTable
               title="Suggested Lessons based on Tags"
-              suggestions={suggestedLessons.resultItems.slice(0, 3)}
-              onAdd={({ uuid, name }) =>
-                setState({
-                  syllabus: [...state.syllabus, { uuid, name, type: 'lesson' }]
-                })
-              }
+              suggestions={suggestedLessons.slice(0, 3)}
+              onAdd={({ uuid, name, type }) => {
+                // No duplicates
+                if (!state.syllabus.find(x => x.uuid === uuid)) {
+                  setState({
+                    syllabus: [...state.syllabus, { uuid, name, type }]
+                  });
+                }
+              }}
             />
           </Grid>
-          <Grid item>
+          <Grid item className={classes.marginBottom}>
             <Card>
               <CardHeader title="Module Structure" />
               <Divider />
-              <CardContent>
-                <ReoderableDropdown
-                  title={state.name ?? ''}
-                  items={state.syllabus.map(({ name, uuid }) => ({
-                    id: uuid,
-                    component: (
-                      <ReoderableListItem
-                        uuid={uuid}
-                        text={name}
-                        onDelete={onDelete}
-                      />
-                    )
-                  }))}
-                  setItems={setState}
-                />
-              </CardContent>
+              <ReoderableDropdown
+                className={classes.padding}
+                newItem={newItem}
+                title={state.name ?? ''}
+                items={state.syllabus.map((item) => (
+                  newItem(item)
+                ))}
+                setItems={items => {
+                  setState({ syllabus: items.map(({item}) => item)})
+                }}
+              />
             </Card>
           </Grid>
         </Grid>

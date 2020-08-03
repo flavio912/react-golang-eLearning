@@ -55,6 +55,7 @@ function Overview({ state, setState }) {
 
   const defaultAnswer = {
     answerType: 'TEXT',
+    isCorrect: false,
     text: ''
   };
 

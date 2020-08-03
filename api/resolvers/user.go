@@ -14,8 +14,9 @@ type UserResolver struct {
 }
 
 type NewUserArgs struct {
-	User gentypes.User
-	UUID *gentypes.UUID
+	User            gentypes.User
+	UUID            *gentypes.UUID
+	CourseTakerUUID *gentypes.UUID
 }
 
 func NewUserResolver(ctx context.Context, args NewUserArgs) (*UserResolver, error) {
@@ -27,6 +28,15 @@ func NewUserResolver(ctx context.Context, args NewUserArgs) (*UserResolver, erro
 		}
 
 		return &UserResolver{user: user}, nil
+	}
+	if args.CourseTakerUUID != nil {
+		app := auth.AppFromContext(ctx)
+		usersMap, err := app.UsersApp.UsersFromTakers([]gentypes.UUID{*args.CourseTakerUUID})
+		if err != nil {
+			return &UserResolver{}, err
+		}
+
+		return &UserResolver{user: usersMap[*args.CourseTakerUUID]}, nil
 	}
 
 	return &UserResolver{user: args.User}, nil

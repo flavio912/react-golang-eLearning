@@ -6,10 +6,17 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/uploads"
 )
 
 // companyToGentype converts a company model to gentype.
 func (u *usersAppImpl) companyToGentype(company models.Company) gentypes.Company {
+	var url *string
+	if company.LogoKey != nil {
+		temp := uploads.GetImgixURL(*company.LogoKey)
+		url = &temp
+	}
+
 	if u.grant.ManagesCompany(company.UUID) {
 		createdAt := company.CreatedAt.Format(time.RFC3339)
 		return gentypes.Company{
@@ -20,13 +27,16 @@ func (u *usersAppImpl) companyToGentype(company models.Company) gentypes.Company
 			AddressID:    company.AddressID,
 			IsContract:   company.IsContract,
 			ContactEmail: company.ContactEmail,
+			ContactPhone: company.ContactPhone,
+			LogoURL:      url,
 		}
 	}
 
 	if u.grant.IsCompanyDelegate(company.UUID) {
 		return gentypes.Company{
-			UUID: company.UUID,
-			Name: company.Name,
+			UUID:    company.UUID,
+			Name:    company.Name,
+			LogoURL: url,
 		}
 	}
 
@@ -71,17 +81,48 @@ func (u *usersAppImpl) CreateCompany(company gentypes.CreateCompanyInput) (genty
 		return gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
-	comp, err := u.usersRepository.CreateCompany(company)
+	var logoKey *string
+	if company.LogoToken != nil {
+		key, err := uploads.VerifyUploadSuccess(*logoKey, "profileImage")
+		if err != nil {
+			return gentypes.Company{}, err
+		}
+		logoKey = &key
+	}
+
+	comp, err := u.usersRepository.CreateCompany(company, logoKey)
 	return u.companyToGentype(comp), err
 }
 
-func (u *usersAppImpl) UpdateCompany(company gentypes.UpdateCompanyInput) (gentypes.Company, error) {
+func (u *usersAppImpl) UpdateCompany(input gentypes.UpdateCompanyInput) (gentypes.Company, error) {
 	if !u.grant.IsAdmin {
 		return gentypes.Company{}, &errors.ErrUnauthorized
 	}
 
-	comp, err := u.usersRepository.UpdateCompany(company)
-	return u.companyToGentype(comp), err
+	var logoKey *string
+
+	company, err := u.usersRepository.Company(input.UUID)
+	if err != nil {
+		return gentypes.Company{}, err
+	}
+
+	if input.LogoToken != nil {
+		if company.LogoKey != nil {
+			err := uploads.DeleteImageFromKey(*company.LogoKey)
+			if err != nil {
+				return gentypes.Company{}, err
+			}
+		}
+		key, err := uploads.VerifyUploadSuccess(*input.LogoToken, "profileImage")
+		if err != nil {
+			return gentypes.Company{}, err
+		}
+
+		logoKey = &key
+	}
+
+	company, err = u.usersRepository.UpdateCompany(input, logoKey)
+	return u.companyToGentype(company), err
 }
 
 func (u *usersAppImpl) GetCompanyUUIDs(page *gentypes.Page, filter *gentypes.CompanyFilter, orderBy *gentypes.OrderBy) ([]gentypes.UUID, gentypes.PageInfo, error) {

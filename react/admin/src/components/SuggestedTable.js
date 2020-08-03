@@ -72,7 +72,7 @@ function SuggestedTable({ title, suggestions, onAdd }) {
                     variant="body1"
                     color="textPrimary"
                   >
-                    {suggestion.type.replace(/^\w/, (c) => c.toUpperCase())}
+                    {suggestion.type && suggestion.type.replace(/^\w/, (c) => c.toUpperCase())}
                   </Typography>
                 </TableCell>
                 <TableCell padding="none">

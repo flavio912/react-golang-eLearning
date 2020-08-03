@@ -44,14 +44,16 @@ function Progress({ activity, user }: Props) {
   const theme = useTheme();
   const classes = useStyles({ theme });
   const { router } = useRouter();
-
   const myCourses =
     user?.myCourses?.map((myCourse) => ({
       title: myCourse.course.name,
       categoryName: myCourse.course.category?.name ?? '',
       progress: {
-        total: 100,
-        completed: myCourse.status === 'complete' ? 100 : 0
+        total: myCourse.progress?.total ?? 0,
+        completed:
+          myCourse.status === 'complete'
+            ? 100
+            : myCourse.progress?.completed ?? 0
       },
       attempt: 1,
       status: {
@@ -59,6 +61,10 @@ function Progress({ activity, user }: Props) {
       },
       onClick: () => {}
     })) ?? [];
+
+  const onUpdatePage = (page: number, limit: number) => {
+    router.push(`/app/progress?offset=${(page - 1) * limit}&limit=${limit}`);
+  };
 
   return (
     <Page>
@@ -93,7 +99,11 @@ function Progress({ activity, user }: Props) {
             router.push('/app/courses/1');
           }}
         />
-        <ActivityTable className={classes.activeTable} activity={activity} />
+        <ActivityTable
+          className={classes.activeTable}
+          activity={activity}
+          onUpdatePage={onUpdatePage}
+        />
       </div>
     </Page>
   );
@@ -111,6 +121,10 @@ export default createFragmentContainer(Progress, {
       type
       myCourses {
         status
+        progress {
+          total
+          completed
+        }
         course {
           name
           category {

@@ -90,6 +90,7 @@ type MyCourse struct {
 	Status         CourseStatus
 	CreatedAt      string
 	UpTo           *UUID
+	Progress       *Progress
 }
 
 type CourseFilter struct {

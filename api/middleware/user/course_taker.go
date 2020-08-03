@@ -7,6 +7,7 @@ import (
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/errors"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/gentypes"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware"
+	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/middleware/dbutils"
 	"gitlab.codesigned.co.uk/ttc-heathrow/ttc-project/admin-react/api/models"
 )
 
@@ -281,4 +282,55 @@ func (u *usersRepoImpl) createCourseTaker(tx *gorm.DB) (models.CourseTaker, erro
 	}
 
 	return courseTaker, nil
+}
+
+func (u *usersRepoImpl) CompanyActivity(companyUUID gentypes.UUID, page *gentypes.Page) ([]models.CourseTakerActivity, gentypes.PageInfo, error) {
+	var activity []models.CourseTakerActivity
+	utils := dbutils.NewDBUtils(u.Logger)
+
+	pageInfo, err := utils.GetPageOf(
+		&models.CourseTakerActivity{},
+		&activity,
+		page,
+		nil,
+		[]string{},
+		"created_at DESC",
+		func(db *gorm.DB) *gorm.DB {
+			return db.Table("course_taker_activities").
+				Joins("JOIN delegates ON delegates.course_taker_uuid = course_taker_activities.course_taker_uuid AND company_uuid = ?",
+					companyUUID)
+		},
+	)
+
+	pageInfo.Given = int32(len(activity))
+
+	return activity, pageInfo, err
+}
+
+func (u *usersRepoImpl) CompanyManagesCourseTakers(companyUUID gentypes.UUID, takers []gentypes.UUID) (bool, error) {
+	takersMap := map[gentypes.UUID]bool{}
+	for _, uuid := range takers {
+		takersMap[uuid] = true
+	}
+
+	uniqueTakers := []gentypes.UUID{}
+	for key := range takersMap {
+		uniqueTakers = append(uniqueTakers, key)
+	}
+
+	var count int
+	err := database.GormDB.Table("delegates").
+		Joins("JOIN course_takers ON course_takers.uuid = delegates.course_taker_uuid AND delegates.company_uuid = ? AND course_takers.uuid IN (?)",
+			companyUUID,
+			uniqueTakers).
+		Count(&count).Error
+	if err != nil {
+		u.Logger.Log(sentry.LevelError, err, "CompanyManagesCourseTakers: Unable to check")
+		return false, &errors.ErrWhileHandling
+	}
+
+	if count == len(uniqueTakers) {
+		return true, nil
+	}
+	return false, nil
 }
